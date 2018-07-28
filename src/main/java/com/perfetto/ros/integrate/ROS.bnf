@@ -1,0 +1,28 @@
+{
+  parserClass="com.perfetto.ros.integrate.parser.ROSMsgParser"
+
+  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  psiClassPrefix="ROSMsg"
+  psiImplClassSuffix="Impl"
+  psiPackage="com.perfetto.ros.integrate.psi"
+  psiImplPackage="com.perfetto.ros.integrate.psi.impl"
+
+  elementTypeHolderClass="com.perfetto.ros.integrate.psi.ROSMsgTypes"
+  elementTypeClass="com.perfetto.ros.integrate.psi.ROSMsgElementType"
+  tokenTypeClass="com.perfetto.ros.integrate.psi.ROSMsgTokenType"
+
+  psiImplUtilClass="com.perfetto.ros.integrate.psi.impl.ROSMsgPsiImplUtil"
+}
+
+rosMsgFile ::= item_*
+
+private item_ ::= (property|COMMENT|CRLF|separator)
+
+private type_ ::= (TYPE|KEYTYPE)
+
+separator ::= SERVICE_SEPERATOR
+
+property ::= (type_ NAME CONST_ASSIGNER (NEG_OPERATOR? NUMBER | STRING)) | (type_ (LBRACKET NUMBER? RBRACKET)? NAME) {
+    methods=[getType setType getPresentation]
+}

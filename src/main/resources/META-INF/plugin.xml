@@ -1,0 +1,31 @@
+<idea-plugin>
+    <id>com.perfetto.ros-integrate</id>
+    <name>ROS Support</name>
+    <vendor email="TheNODO55@gmail.com">Noam Dori</vendor>
+
+    <description><![CDATA[
+    A basic plugin for creating ROS programs
+    ]]></description>
+
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+         on how to target different products -->
+    <!-- this should be changed to CLion when done -->
+    <depends>com.intellij.modules.lang</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <fileTypeFactory implementation="com.perfetto.ros.integrate.ROSMsgFileTypeFactory"/>
+        <lang.parserDefinition language="RosMSG" implementationClass="com.perfetto.ros.integrate.ROSMsgParserDefinition"/>
+        <lang.syntaxHighlighterFactory language="RosMSG" implementationClass="com.perfetto.ros.integrate.ROSMsgSyntaxHighlighterFactory"/>
+        <colorSettingsPage implementation="com.perfetto.ros.integrate.ROSMsgColorSettings"/>
+        <!--<additionalTextAttributes scheme="Default" file="colorSchemes/ROSMsgDefault.xml"/>-->
+        <!--<additionalTextAttributes scheme="Dracula" file="colorSchemes/ROSMsgDarkDefault.xml"/>-->
+        <completion.contributor language="RosMSG" implementationClass="com.perfetto.ros.integrate.ROSMsgCompletionContributor"/>
+        <lang.commenter language="RosMSG" implementationClass="com.perfetto.ros.integrate.ROSMsgCommenter"/>
+        <annotator language="RosMSG" implementationClass="com.perfetto.ros.integrate.ROSMsgAnnotator"/>
+        <gotoSymbolContributor implementation="com.perfetto.ros.integrate.ROSMsgChooseByNameContributor"/>
+    </extensions>
+
+    <actions>
+        <!-- Add your actions here -->
+    </actions>
+</idea-plugin>
