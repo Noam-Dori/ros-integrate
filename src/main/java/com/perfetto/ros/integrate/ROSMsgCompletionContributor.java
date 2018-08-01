@@ -2,6 +2,7 @@ package com.perfetto.ros.integrate;
 
 import com.intellij.codeInsight.completion.*;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
+import com.intellij.openapi.editor.CaretModel;
 import com.intellij.patterns.PlatformPatterns;
 import com.intellij.util.ProcessingContext;
 import com.perfetto.ros.integrate.psi.ROSMsgTypes;
@@ -27,11 +28,23 @@ public class ROSMsgCompletionContributor extends CompletionContributor {
                         resultSet.addElement(LookupElementBuilder.create("bool").bold()
                                 .withTypeText("u_byte/u_char data-type"));
                         resultSet.addElement(LookupElementBuilder.create("float").bold()
-                                .withTypeText("float/double data-type"));
+                                .withTypeText("float/double data-type").withInsertHandler((insertionContext, item) -> {
+                                    CaretModel model = insertionContext.getEditor().getCaretModel();
+                                    insertionContext.getDocument().insertString(model.getOffset(),"64");
+                                    model.getCurrentCaret().moveCaretRelatively(2,0,true,false);
+                                }));
                         resultSet.addElement(LookupElementBuilder.create("int").bold()
-                                .withTypeText("integer data-type"));
+                                .withTypeText("integer data-type").withInsertHandler((insertionContext, item) -> {
+                                    CaretModel model = insertionContext.getEditor().getCaretModel();
+                                    insertionContext.getDocument().insertString(model.getOffset(),"32");
+                                    model.getCurrentCaret().moveCaretRelatively(2,0,true,false);
+                                }));
                         resultSet.addElement(LookupElementBuilder.create("uint").bold()
-                                .withTypeText("unsigned integer data-type"));
+                                .withTypeText("unsigned integer data-type").withInsertHandler((insertionContext, item) -> {
+                                    CaretModel model = insertionContext.getEditor().getCaretModel();
+                                    insertionContext.getDocument().insertString(model.getOffset(),"8");
+                                    model.getCurrentCaret().moveCaretRelatively(1,0,true,false);
+                                }));
                     }
                 }
         );
