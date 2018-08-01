@@ -30,7 +30,7 @@ public class ROSMsgAnnotator implements Annotator {
                         !value.contains("/")) {
                     TextRange range = new TextRange(element.getTextRange().getStartOffset(),
                             element.getTextRange().getStartOffset() + value.length());
-                    Annotation ann = holder.createInfoAnnotation(range, "Could not find message object");
+                    Annotation ann = holder.createInfoAnnotation(range, "Unresolved message object");
                     ann.setHighlightType(ProblemHighlightType.LIKE_UNKNOWN_SYMBOL);
                 }
             }
@@ -38,7 +38,8 @@ public class ROSMsgAnnotator implements Annotator {
             if (ROSMsgUtil.countServiceSeparators(element.getContainingFile()) > 0) { // in Srv files this is 1
                 TextRange range = new TextRange(element.getTextRange().getStartOffset(),
                         element.getTextRange().getEndOffset());
-                holder.createErrorAnnotation(range, "ROS Messages cannot have service separators");
+                holder.createErrorAnnotation(range, "ROS Messages cannot have service separators")
+                        .registerFix(new RemoveSrvLineQuickFix((ROSMsgSeparator)element));
             }
         }
     }

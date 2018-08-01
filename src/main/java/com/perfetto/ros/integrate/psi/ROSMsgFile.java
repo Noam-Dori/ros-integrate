@@ -4,6 +4,7 @@ import com.intellij.extapi.psi.PsiFileBase;
 import com.intellij.navigation.ItemPresentation;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.psi.FileViewProvider;
+import com.intellij.psi.PsiElement;
 import com.perfetto.ros.integrate.ROSIcons;
 import com.perfetto.ros.integrate.ROSMsgFileType;
 import com.perfetto.ros.integrate.ROSMsgLanguage;
