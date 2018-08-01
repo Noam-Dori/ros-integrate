@@ -7,8 +7,10 @@ import com.intellij.lang.annotation.Annotator;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
+import com.perfetto.ros.integrate.intention.RemoveAllSrvLinesQuickFix;
 import com.perfetto.ros.integrate.psi.ROSMsgProperty;
 import com.perfetto.ros.integrate.psi.ROSMsgSeparator;
+import com.perfetto.ros.integrate.intention.RemoveSrvLineQuickFix;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -38,8 +40,9 @@ public class ROSMsgAnnotator implements Annotator {
             if (ROSMsgUtil.countServiceSeparators(element.getContainingFile()) > 0) { // in Srv files this is 1
                 TextRange range = new TextRange(element.getTextRange().getStartOffset(),
                         element.getTextRange().getEndOffset());
-                holder.createErrorAnnotation(range, "ROS Messages cannot have service separators")
-                        .registerFix(new RemoveSrvLineQuickFix((ROSMsgSeparator)element));
+                Annotation ann = holder.createErrorAnnotation(range, "ROS Messages cannot have service separators");
+                ann.registerFix(new RemoveSrvLineQuickFix((ROSMsgSeparator)element));
+                ann.registerFix(new RemoveAllSrvLinesQuickFix());
             }
         }
     }

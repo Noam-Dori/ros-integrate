@@ -1,4 +1,4 @@
-package com.perfetto.ros.integrate;
+package com.perfetto.ros.integrate.intention;
 
 import com.intellij.codeInsight.intention.impl.BaseIntentionAction;
 import com.intellij.openapi.application.ApplicationManager;
