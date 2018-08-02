@@ -22,6 +22,9 @@ public class ROSMsgAnnotator implements Annotator {
             ROSMsgProperty rosMsgProperty = (ROSMsgProperty) element;
             String value = rosMsgProperty.getType();
 
+            // type search
+            // TODO: Search outside project (include files) for 'slashed' msgs
+            // TODO: if catkin is defined, use it to search for msgs.
             if (value != null) {
                 Project project = element.getProject();
 
@@ -35,8 +38,18 @@ public class ROSMsgAnnotator implements Annotator {
                     Annotation ann = holder.createInfoAnnotation(range, "Unresolved message object");
                     ann.setHighlightType(ProblemHighlightType.LIKE_UNKNOWN_SYMBOL);
                 }
+
+                // constant inspection:
+                // only int,uint,float may use integer consts
+                // strings are the only type which can use str consts.
+                // In case of array found:
+                // TODO: Fixes: 1. remove array, 2. remove const
+                // In case of time,duration,<other> found:
+                // TODO: Fixes: 1. change to string 2. remove const
+
             }
         } else if (element instanceof ROSMsgSeparator) {
+            // Too many service separators annotation
             if (ROSMsgUtil.countServiceSeparators(element.getContainingFile()) > 0) { // in Srv files this is 1
                 TextRange range = new TextRange(element.getTextRange().getStartOffset(),
                         element.getTextRange().getEndOffset());

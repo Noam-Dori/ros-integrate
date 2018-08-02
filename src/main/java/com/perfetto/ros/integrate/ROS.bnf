@@ -23,6 +23,6 @@ private type_ ::= (TYPE|KEYTYPE)
 
 separator ::= SERVICE_SEPERATOR
 
-property ::= (type_ NAME CONST_ASSIGNER (NEG_OPERATOR? NUMBER | STRING)) | (type_ (LBRACKET NUMBER? RBRACKET)? NAME) {
+property ::= type_ (LBRACKET NUMBER? RBRACKET)? NAME (CONST_ASSIGNER (NEG_OPERATOR? NUMBER | STRING))? {
     methods=[getType setType getPresentation]
 }

@@ -52,94 +52,90 @@ public class ROSMsgParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // (type_ NAME CONST_ASSIGNER (NEG_OPERATOR? NUMBER | STRING)) | (type_ (LBRACKET NUMBER? RBRACKET)? NAME)
+  // type_ (LBRACKET NUMBER? RBRACKET)? NAME (CONST_ASSIGNER (NEG_OPERATOR? NUMBER | STRING))?
   public static boolean property(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "property")) return false;
     if (!nextTokenIs(b, "<property>", KEYTYPE, TYPE)) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, PROPERTY, "<property>");
-    r = property_0(b, l + 1);
-    if (!r) r = property_1(b, l + 1);
+    r = type_(b, l + 1);
+    r = r && property_1(b, l + 1);
+    r = r && consumeToken(b, NAME);
+    r = r && property_3(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
 
-  // type_ NAME CONST_ASSIGNER (NEG_OPERATOR? NUMBER | STRING)
-  private static boolean property_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "property_0")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = type_(b, l + 1);
-    r = r && consumeTokens(b, 0, NAME, CONST_ASSIGNER);
-    r = r && property_0_3(b, l + 1);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // NEG_OPERATOR? NUMBER | STRING
-  private static boolean property_0_3(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "property_0_3")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = property_0_3_0(b, l + 1);
-    if (!r) r = consumeToken(b, STRING);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // NEG_OPERATOR? NUMBER
-  private static boolean property_0_3_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "property_0_3_0")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = property_0_3_0_0(b, l + 1);
-    r = r && consumeToken(b, NUMBER);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // NEG_OPERATOR?
-  private static boolean property_0_3_0_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "property_0_3_0_0")) return false;
-    consumeToken(b, NEG_OPERATOR);
-    return true;
-  }
-
-  // type_ (LBRACKET NUMBER? RBRACKET)? NAME
+  // (LBRACKET NUMBER? RBRACKET)?
   private static boolean property_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "property_1")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = type_(b, l + 1);
-    r = r && property_1_1(b, l + 1);
-    r = r && consumeToken(b, NAME);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // (LBRACKET NUMBER? RBRACKET)?
-  private static boolean property_1_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "property_1_1")) return false;
-    property_1_1_0(b, l + 1);
+    property_1_0(b, l + 1);
     return true;
   }
 
   // LBRACKET NUMBER? RBRACKET
-  private static boolean property_1_1_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "property_1_1_0")) return false;
+  private static boolean property_1_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "property_1_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, LBRACKET);
-    r = r && property_1_1_0_1(b, l + 1);
+    r = r && property_1_0_1(b, l + 1);
     r = r && consumeToken(b, RBRACKET);
     exit_section_(b, m, null, r);
     return r;
   }
 
   // NUMBER?
-  private static boolean property_1_1_0_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "property_1_1_0_1")) return false;
+  private static boolean property_1_0_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "property_1_0_1")) return false;
     consumeToken(b, NUMBER);
+    return true;
+  }
+
+  // (CONST_ASSIGNER (NEG_OPERATOR? NUMBER | STRING))?
+  private static boolean property_3(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "property_3")) return false;
+    property_3_0(b, l + 1);
+    return true;
+  }
+
+  // CONST_ASSIGNER (NEG_OPERATOR? NUMBER | STRING)
+  private static boolean property_3_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "property_3_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, CONST_ASSIGNER);
+    r = r && property_3_0_1(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // NEG_OPERATOR? NUMBER | STRING
+  private static boolean property_3_0_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "property_3_0_1")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = property_3_0_1_0(b, l + 1);
+    if (!r) r = consumeToken(b, STRING);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // NEG_OPERATOR? NUMBER
+  private static boolean property_3_0_1_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "property_3_0_1_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = property_3_0_1_0_0(b, l + 1);
+    r = r && consumeToken(b, NUMBER);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // NEG_OPERATOR?
+  private static boolean property_3_0_1_0_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "property_3_0_1_0_0")) return false;
+    consumeToken(b, NEG_OPERATOR);
     return true;
   }
 
