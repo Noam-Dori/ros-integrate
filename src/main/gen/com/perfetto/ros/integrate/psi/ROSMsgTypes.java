@@ -8,6 +8,7 @@ import com.perfetto.ros.integrate.psi.impl.*;
 
 public interface ROSMsgTypes {
 
+  IElementType CONST = new ROSMsgElementType("CONST");
   IElementType PROPERTY = new ROSMsgElementType("PROPERTY");
   IElementType SEPARATOR = new ROSMsgElementType("SEPARATOR");
 
@@ -27,7 +28,10 @@ public interface ROSMsgTypes {
   class Factory {
     public static PsiElement createElement(ASTNode node) {
       IElementType type = node.getElementType();
-       if (type == PROPERTY) {
+       if (type == CONST) {
+        return new ROSMsgConstImpl(node);
+      }
+      else if (type == PROPERTY) {
         return new ROSMsgPropertyImpl(node);
       }
       else if (type == SEPARATOR) {

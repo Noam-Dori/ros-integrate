@@ -8,11 +8,18 @@ import com.intellij.navigation.ItemPresentation;
 
 public interface ROSMsgProperty extends PsiElement {
 
+  @Nullable
+  ROSMsgConst getConst();
+
+  @Nullable
   String getType();
 
-  //WARNING: setType(...) is skipped
-  //matching setType(ROSMsgProperty, ...)
-  //methods are not found in ROSMsgPsiImplUtil
+  PsiElement setType(String newName);
+
+  int getArraySize();
+
+  @Nullable
+  String getConst();
 
   ItemPresentation getPresentation();
 

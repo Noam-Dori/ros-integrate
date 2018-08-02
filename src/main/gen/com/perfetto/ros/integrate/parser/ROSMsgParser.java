@@ -23,7 +23,10 @@ public class ROSMsgParser implements PsiParser, LightPsiParser {
     boolean r;
     b = adapt_builder_(t, b, this, null);
     Marker m = enter_section_(b, 0, _COLLAPSE_, null);
-    if (t == PROPERTY) {
+    if (t == CONST) {
+      r = const_$(b, 0);
+    }
+    else if (t == PROPERTY) {
       r = property(b, 0);
     }
     else if (t == SEPARATOR) {
@@ -40,6 +43,36 @@ public class ROSMsgParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // NEG_OPERATOR? NUMBER | STRING
+  public static boolean const_$(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "const_$")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, CONST, "<const $>");
+    r = const_0(b, l + 1);
+    if (!r) r = consumeToken(b, STRING);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // NEG_OPERATOR? NUMBER
+  private static boolean const_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "const_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = const_0_0(b, l + 1);
+    r = r && consumeToken(b, NUMBER);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // NEG_OPERATOR?
+  private static boolean const_0_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "const_0_0")) return false;
+    consumeToken(b, NEG_OPERATOR);
+    return true;
+  }
+
+  /* ********************************************************** */
   // property|COMMENT|CRLF|separator
   static boolean item_(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "item_")) return false;
@@ -52,7 +85,7 @@ public class ROSMsgParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // type_ (LBRACKET NUMBER? RBRACKET)? NAME (CONST_ASSIGNER (NEG_OPERATOR? NUMBER | STRING))?
+  // type_ (LBRACKET NUMBER? RBRACKET)? NAME (CONST_ASSIGNER const)?
   public static boolean property(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "property")) return false;
     if (!nextTokenIs(b, "<property>", KEYTYPE, TYPE)) return false;
@@ -92,51 +125,22 @@ public class ROSMsgParser implements PsiParser, LightPsiParser {
     return true;
   }
 
-  // (CONST_ASSIGNER (NEG_OPERATOR? NUMBER | STRING))?
+  // (CONST_ASSIGNER const)?
   private static boolean property_3(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "property_3")) return false;
     property_3_0(b, l + 1);
     return true;
   }
 
-  // CONST_ASSIGNER (NEG_OPERATOR? NUMBER | STRING)
+  // CONST_ASSIGNER const
   private static boolean property_3_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "property_3_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, CONST_ASSIGNER);
-    r = r && property_3_0_1(b, l + 1);
+    r = r && const_$(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
-  }
-
-  // NEG_OPERATOR? NUMBER | STRING
-  private static boolean property_3_0_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "property_3_0_1")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = property_3_0_1_0(b, l + 1);
-    if (!r) r = consumeToken(b, STRING);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // NEG_OPERATOR? NUMBER
-  private static boolean property_3_0_1_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "property_3_0_1_0")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = property_3_0_1_0_0(b, l + 1);
-    r = r && consumeToken(b, NUMBER);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // NEG_OPERATOR?
-  private static boolean property_3_0_1_0_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "property_3_0_1_0_0")) return false;
-    consumeToken(b, NEG_OPERATOR);
-    return true;
   }
 
   /* ********************************************************** */

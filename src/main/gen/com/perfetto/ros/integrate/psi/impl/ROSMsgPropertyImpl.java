@@ -27,8 +27,28 @@ public class ROSMsgPropertyImpl extends ASTWrapperPsiElement implements ROSMsgPr
     else super.accept(visitor);
   }
 
+  @Override
+  @Nullable
+  public ROSMsgConst getConst() {
+    return findChildByClass(ROSMsgConst.class);
+  }
+
+  @Nullable
   public String getType() {
     return ROSMsgPsiImplUtil.getType(this);
+  }
+
+  public PsiElement setType(String newName) {
+    return ROSMsgPsiImplUtil.setType(this, newName);
+  }
+
+  public int getArraySize() {
+    return ROSMsgPsiImplUtil.getArraySize(this);
+  }
+
+  @Nullable
+  public String getConst() {
+    return ROSMsgPsiImplUtil.getConst(this);
   }
 
   public ItemPresentation getPresentation() {

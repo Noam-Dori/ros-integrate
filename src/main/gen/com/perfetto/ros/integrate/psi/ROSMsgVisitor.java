@@ -7,6 +7,10 @@ import com.intellij.psi.PsiElement;
 
 public class ROSMsgVisitor extends PsiElementVisitor {
 
+  public void visitConst(@NotNull ROSMsgConst o) {
+    visitPsiElement(o);
+  }
+
   public void visitProperty(@NotNull ROSMsgProperty o) {
     visitPsiElement(o);
   }
