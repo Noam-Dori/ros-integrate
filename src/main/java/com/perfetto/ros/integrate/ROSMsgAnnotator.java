@@ -8,6 +8,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.perfetto.ros.integrate.intention.RemoveAllSrvLinesQuickFix;
+import com.perfetto.ros.integrate.intention.RemoveConstQuickFix;
 import com.perfetto.ros.integrate.psi.ROSMsgProperty;
 import com.perfetto.ros.integrate.psi.ROSMsgSeparator;
 import com.perfetto.ros.integrate.intention.RemoveSrvLineQuickFix;
@@ -40,33 +41,54 @@ public class ROSMsgAnnotator implements Annotator {
                     holder.createInfoAnnotation(range, "Unresolved message object")
                             .setHighlightType(ProblemHighlightType.LIKE_UNKNOWN_SYMBOL);
                 }
+            }
+            value = prop.getGeneralType();
+            if(value != null) {
 
                 // constant inspection:
                 // only int,uint,float may use integer consts
                 // strings are the only type which can use str consts.
                 // In case of array found:
-                // TODO: Fixes: 1. remove array, 2. remove const
+                // TODO: Fixes: 2. remove array, 1. remove const
                 // In case of time,duration,<other> found:
-                // TODO: Fixes: 1. change to string 2. remove const
-                if(prop.getConst() != null) {
+                // TODO: Fixes: 2. change to <builtin> 1. remove const
+                if(prop.getCConst() != null) {
+                    boolean hasArrayAnn = false;
                     if(prop.getArraySize() != -1) {
-                        int start = Objects.requireNonNull(element.getNode().findChildByType(ROSMsgTypes.LBRACKET)).getStartOffset();
-                        int end = Objects.requireNonNull(element.getNode().findChildByType(ROSMsgTypes.RBRACKET)).getStartOffset() + 1;
-                        TextRange range = new TextRange(start, end);
+                        int start = Objects.requireNonNull(element.getNode().findChildByType(ROSMsgTypes.CONST)).getStartOffset();
+                        TextRange range = new TextRange(start, start + prop.getCConst().length());
                         Annotation ann = holder.createErrorAnnotation(range, "Array fields cannot be assigned a constant.");
-                        ann.registerFix(null);
-                        ann.registerFix(null);
+                        ann.registerFix(new RemoveConstQuickFix(prop)); // remove const
+                        //ann.registerFix(null); // remove arr
+                        hasArrayAnn = true;
+                    }
+
+                    if(!value.matches("(bool)|(string)|((uint|int)(8|16|32|64))|(float(32|64))")) { // a very simple regex
+                        int start = Objects.requireNonNull(element.getNode().findChildByType(ROSMsgTypes.CONST)).getStartOffset();
+                        TextRange range = new TextRange(start, start + prop.getCConst().length());
+                        Annotation ann = holder.createErrorAnnotation(range, "Only the built-in string and numerical types may be assigned a constant.");
+                        if(!hasArrayAnn) {
+                            ann.registerFix(new RemoveConstQuickFix(prop)); // remove const
+                        }
+                        //ann.registerFix(null); // change type
+                    } else {
+                        // builtin inspection:
+                        // booleans may only have 1 or 0 as const
+                        // unsigned integrals cannot have negative sign
+                        // TODO: fix for bool is convert const to 'uint8/int8'
+                        // TODO: fix for uint<> is convert to int<>
                     }
                 }
             }
         } else if (element instanceof ROSMsgSeparator) {
             // Too many service separators annotation
-            if (ROSMsgUtil.countServiceSeparators(element.getContainingFile()) > 0) { // in Srv files this is 1
+            int separatorCount = ROSMsgUtil.countServiceSeparators(element.getContainingFile());
+            if (separatorCount > 0) { // in Srv files this is 1
                 TextRange range = new TextRange(element.getTextRange().getStartOffset(),
                         element.getTextRange().getEndOffset());
                 Annotation ann = holder.createErrorAnnotation(range, "ROS Messages cannot have service separators");
                 ann.registerFix(new RemoveSrvLineQuickFix((ROSMsgSeparator)element));
-                ann.registerFix(new RemoveAllSrvLinesQuickFix());
+                if(separatorCount > 1) {ann.registerFix(new RemoveAllSrvLinesQuickFix());}
             }
         }
     }

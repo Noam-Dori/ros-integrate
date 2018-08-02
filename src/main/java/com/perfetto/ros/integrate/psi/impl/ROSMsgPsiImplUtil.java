@@ -23,6 +23,16 @@ public class ROSMsgPsiImplUtil {
         }
     }
 
+    @Nullable
+    public static String getGeneralType(@NotNull ROSMsgProperty element) {
+        ASTNode keyNode = element.getNode().findChildByType(ROSMsgTypes.KEYTYPE);
+        if (keyNode != null) {
+            return keyNode.getText();
+        } else {
+            return getType(element);
+        }
+    }
+
     /**
      * gets the array size of the property, if its even an array
      * @param element the element to test
@@ -43,7 +53,7 @@ public class ROSMsgPsiImplUtil {
     }
 
     @Nullable
-    public static String getConst(@NotNull ROSMsgProperty element) {
+    public static String getCConst(@NotNull ROSMsgProperty element) {
         ASTNode keyNode = element.getNode().findChildByType(ROSMsgTypes.CONST);
         if (keyNode != null) {
             return keyNode.getText();
