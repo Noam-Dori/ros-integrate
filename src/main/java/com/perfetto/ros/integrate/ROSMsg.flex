@@ -22,7 +22,6 @@ NAME_CHARACTER=[a-zA-Z0-9_/]
 END_OF_LINE_COMMENT=("#")[^\r\n]*
 CONST_ASSIGNER="="
 NEG_OPERATOR="-"
-LEAD_NUMBER=[1-9]
 NUMBER=[0-9]
 ARRAY_LEAD="["
 ARRAY_END="]"
@@ -71,7 +70,7 @@ KEYTYPE_OTHER={KEYTYPE_STRING}|{KEYTYPE_TIME}
 <START_INT_CONST> {WHITE_SPACE}+                            { yybegin(START_INT_CONST); return TokenType.WHITE_SPACE; }
 
 <START_INT_CONST> {NEG_OPERATOR}                            { yybegin(NEG_NUM); return ROSMsgTypes.NEG_OPERATOR; }
-<NEG_NUM,START_INT_CONST> {NUMBER}+                         { yybegin(END_LINE); return ROSMsgTypes.NUMBER;}
+<NEG_NUM,START_INT_CONST> {NUMBER}+(\.)?{NUMBER}*           { yybegin(END_LINE); return ROSMsgTypes.NUMBER;}
 
 <START_CONST> {FIRST_CONST_STRING}{CONST_STRING}*           { yybegin(END_LINE); return ROSMsgTypes.STRING;}
 
