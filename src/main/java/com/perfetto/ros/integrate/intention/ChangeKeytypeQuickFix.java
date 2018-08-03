@@ -49,6 +49,7 @@ public class ChangeKeytypeQuickFix extends BaseIntentionAction {
         ApplicationManager.getApplication().invokeLater(() ->
                 WriteCommandAction.writeCommandAction(project).run(() -> {
                     ASTNode type = rosMsg.getNode().findChildByType(ROSMsgTypes.TYPE);
+                    type = type == null ? rosMsg.getNode().findChildByType(ROSMsgTypes.KEYTYPE) : type;
                     PsiElement value = ROSMsgUtil.getBestFit(
                             (ROSMsgConst) Objects.requireNonNull(rosMsg.getNode().findChildByType(ROSMsgTypes.CONST)).getPsi()
                     );

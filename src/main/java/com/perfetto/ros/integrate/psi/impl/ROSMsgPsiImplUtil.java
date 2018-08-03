@@ -1,9 +1,11 @@
 package com.perfetto.ros.integrate.psi.impl;
 
+import com.google.common.primitives.UnsignedLong;
 import com.intellij.lang.ASTNode;
 import com.intellij.navigation.ItemPresentation;
 import com.intellij.psi.PsiElement;
 import com.perfetto.ros.integrate.ROSIcons;
+import com.perfetto.ros.integrate.psi.ROSMsgConst;
 import com.perfetto.ros.integrate.psi.ROSMsgElementFactory;
 import com.perfetto.ros.integrate.psi.ROSMsgProperty;
 import com.perfetto.ros.integrate.psi.ROSMsgTypes;
@@ -99,5 +101,76 @@ public class ROSMsgPsiImplUtil {
                 return ROSIcons.MSG_FILE;
             }
         };
+    }
+
+
+    public static boolean canHandle(ROSMsgProperty element, @NotNull ROSMsgConst msgConst) {
+        String num = msgConst.getText();
+        String type = element.getGeneralType();
+        boolean f64 = "float64".equals(type),
+                f32 = "float32".equals(type),
+                i64 = "int64".equals(type),
+                i32 = "int32".equals(type),
+                i16 = "int16".equals(type),
+                i8 = "int8".equals(type),
+                ui64 = "uint64".equals(type),
+                ui32 = "uint32".equals(type),
+                ui16 = "uint16".equals(type),
+                ui8 = "uint8".equals(type),
+                str = "string".equals(type),
+                ret = false;
+        try {
+            if (num.contains(".")) { // must be floating-point
+                double floaty = Double.parseDouble(num);
+                if ((double) (float) floaty == floaty) {
+                    ret = f32;
+                }
+            } else { // integral
+                if (num.contains("-")) { // must be int
+                    long integral = Long.parseLong(num);
+                    if ((long) (byte) integral == integral) {
+                        ret = i8;
+                    }
+                    if ((long) (short) integral == integral) {
+                        ret |= i16;
+                    }
+                    if ((long) (int) integral == integral) {
+                        ret |= i32;
+                    }
+                    ret |= i64;
+                } else { // uint
+                    UnsignedLong integral = UnsignedLong.valueOf(num);
+                    if (integral.byteValue() == 0 || integral.byteValue() == 1) {
+                        ret = "bool".equals(type);
+                    }
+                    if (integral.compareTo(UnsignedLong.valueOf(Byte.MAX_VALUE)) <= 0) {
+                        ret |= i8;
+                    }
+                    if (integral.compareTo(UnsignedLong.valueOf((long)Byte.MAX_VALUE - Byte.MIN_VALUE)) <= 0) {
+                        ret |= ui8;
+                    }
+                    if (integral.compareTo(UnsignedLong.valueOf(Short.MAX_VALUE)) <= 0) {
+                        ret |= i16;
+                    }
+                    if (integral.compareTo(UnsignedLong.valueOf((long)Short.MAX_VALUE - Short.MIN_VALUE)) <= 0) {
+                        ret |= ui16;
+                    }
+                    if (integral.compareTo(UnsignedLong.valueOf(Integer.MAX_VALUE)) <= 0) {
+                        ret |= i32;
+                    }
+                    if (integral.compareTo(UnsignedLong.valueOf((long)Integer.MAX_VALUE - Integer.MIN_VALUE)) <= 0) {
+                        ret |= ui32;
+                    }
+                    if (integral.compareTo(UnsignedLong.valueOf(Long.MAX_VALUE)) <= 0) {
+                        ret |= i64;
+                    }
+                    ret |= ui64;
+                }
+                ret |= f32; // f32 is certainly in the range, but precision is damaged (doesnt matter in integrals)
+            }
+            return ret || f64 || str; // same reasoning as f32
+        } catch (NumberFormatException e) {
+            return str;
+        }
     }
 }

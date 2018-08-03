@@ -64,4 +64,8 @@ public class ROSMsgPropertyImpl extends ASTWrapperPsiElement implements ROSMsgPr
     return ROSMsgPsiImplUtil.getPresentation(this);
   }
 
+  public boolean canHandle(@NotNull ROSMsgConst msgConst) {
+    return ROSMsgPsiImplUtil.canHandle(this, msgConst);
+  }
+
 }

@@ -8,6 +8,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.perfetto.ros.integrate.intention.*;
+import com.perfetto.ros.integrate.psi.ROSMsgConst;
 import com.perfetto.ros.integrate.psi.ROSMsgProperty;
 import com.perfetto.ros.integrate.psi.ROSMsgSeparator;
 import com.perfetto.ros.integrate.psi.ROSMsgTypes;
@@ -65,12 +66,12 @@ public class ROSMsgAnnotator implements Annotator {
                             ann.registerFix(new RemoveConstQuickFix(prop)); // remove const
                         }
                         ann.registerFix(new ChangeKeytypeQuickFix(prop)); // change type
-                    } else {
-                        // builtin inspection:
-                        // booleans may only have 1 or 0 as const
-                        // unsigned integrals cannot have negative sign
-                        // TODO: fix for bool is convert const to 'uint8/int8'
-                        // TODO: fix for uint<> is convert to int<>
+                    } else if(!prop.canHandle((ROSMsgConst)
+                            Objects.requireNonNull(element.getNode().findChildByType(ROSMsgTypes.CONST)).getPsi())) {
+                        int start = Objects.requireNonNull(element.getNode().findChildByType(ROSMsgTypes.CONST)).getStartOffset();
+                        TextRange range = new TextRange(start, start + prop.getCConst().length());
+                        Annotation ann = holder.createErrorAnnotation(range, "The constant's value cannot fit within the given type.");
+                        ann.registerFix(new ChangeKeytypeQuickFix(prop)); // change type
                     }
                 }
             }

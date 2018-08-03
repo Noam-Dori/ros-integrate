@@ -146,13 +146,13 @@ public class ROSMsgUtil {
                     if (integral.byteValue() == 0 || integral.byteValue() == 1) {
                         return ROSMsgElementFactory.createType(msgConst.getProject(), "bool");
                     }
-                    if (UnsignedLong.valueOf(Math.abs(integral.byteValue())).equals(integral)) {
+                    if (integral.compareTo(UnsignedLong.valueOf((long)Byte.MAX_VALUE - Byte.MIN_VALUE)) < 0) {
                         return ROSMsgElementFactory.createType(msgConst.getProject(), "uint8");
                     }
-                    if (UnsignedLong.valueOf(Math.abs(integral.shortValue())).equals(integral)) {
+                    if (integral.compareTo(UnsignedLong.valueOf((long)Short.MAX_VALUE - Short.MIN_VALUE)) < 0) {
                         return ROSMsgElementFactory.createType(msgConst.getProject(), "uint16");
                     }
-                    if (UnsignedLong.valueOf(Math.abs(integral.intValue())).equals(integral)) {
+                    if (integral.compareTo(UnsignedLong.valueOf((long)Integer.MAX_VALUE - Integer.MIN_VALUE)) < 0) {
                         return ROSMsgElementFactory.createType(msgConst.getProject(), "uint32");
                     }
                     return ROSMsgElementFactory.createType(msgConst.getProject(), "uint64");

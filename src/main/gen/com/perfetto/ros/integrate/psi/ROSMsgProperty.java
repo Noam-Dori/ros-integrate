@@ -28,4 +28,6 @@ public interface ROSMsgProperty extends PsiElement {
 
   ItemPresentation getPresentation();
 
+  boolean canHandle(@NotNull ROSMsgConst msgConst);
+
 }
