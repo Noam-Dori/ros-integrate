@@ -42,6 +42,8 @@ NON_NUMERICAL_STR={START_STR_SEQ}?{NON_NUMERICAL}{END_STR_SEQ}?|{START_STR_SEQ}\
 BAD_NEG_STR={START_STR_SEQ}-{END_STR_SEQ}?
 STR_CONST=-?\.|{BAD_NEG_STR}|{MULTI_PERIOD_STR}|{NON_NUMERICAL_STR}
 
+FLOATING_POINT={NUMBER}+(\.)?{NUMBER}*|{NUMBER}*(\.)?{NUMBER}+
+
 %states END_TYPE, IN_ARRAY, END_ARRAY, START_NAME, END_NAME, START_CONST, END_LINE
 %states END_INT_TYPE, IN_INT_ARRAY, END_INT_ARRAY, START_INT_NAME, END_INT_NAME, START_INT_CONST, NEG_NUM
 
@@ -77,8 +79,7 @@ STR_CONST=-?\.|{BAD_NEG_STR}|{MULTI_PERIOD_STR}|{NON_NUMERICAL_STR}
 <START_INT_CONST> {WHITE_SPACE}+                            { yybegin(START_INT_CONST); return TokenType.WHITE_SPACE; }
 
 <START_INT_CONST> -                                         { yybegin(NEG_NUM); return ROSMsgTypes.NEG_OPERATOR; }
-<NEG_NUM,START_INT_CONST> {NUMBER}+(\.)?{NUMBER}*|
-                          {NUMBER}*(\.)?{NUMBER}+           { yybegin(END_LINE); return ROSMsgTypes.NUMBER;}
+<NEG_NUM,START_INT_CONST> {FLOATING_POINT}                  { yybegin(END_LINE); return ROSMsgTypes.NUMBER;}
 
 <START_INT_CONST> {STR_CONST}                               { yybegin(END_LINE); return ROSMsgTypes.STRING;}
 
