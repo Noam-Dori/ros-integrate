@@ -12,9 +12,9 @@ import com.perfetto.ros.integrate.psi.ROSMsgProperty;
 import com.perfetto.ros.integrate.psi.ROSMsgTypes;
 import org.jetbrains.annotations.NotNull;
 
-public class RemoveConstQuickFix extends BaseIntentionAction {
+public class RemoveArrayQuickFix extends BaseIntentionAction {
 
-    public RemoveConstQuickFix(ROSMsgProperty field) {
+    public RemoveArrayQuickFix(ROSMsgProperty field) {
         rosMsg = field;
     }
 
@@ -29,7 +29,7 @@ public class RemoveConstQuickFix extends BaseIntentionAction {
     @NotNull
     @Override
     public String getText() {
-        return "Remove constant";
+        return "Remove array";
     }
 
     @Override
@@ -42,8 +42,8 @@ public class RemoveConstQuickFix extends BaseIntentionAction {
             throws IncorrectOperationException {
         ApplicationManager.getApplication().invokeLater(() ->
                 WriteCommandAction.writeCommandAction(project).run(() -> {
-                    ASTNode start = rosMsg.getNode().findChildByType(ROSMsgTypes.CONST_ASSIGNER),
-                            end = rosMsg.getNode().findChildByType(ROSMsgTypes.CONST);
+                    ASTNode start = rosMsg.getNode().findChildByType(ROSMsgTypes.LBRACKET),
+                            end = rosMsg.getNode().findChildByType(ROSMsgTypes.RBRACKET);
                     if (start != null && end != null) {
                         rosMsg.deleteChildRange(start.getPsi(),end.getPsi());
                     }

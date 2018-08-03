@@ -8,6 +8,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.perfetto.ros.integrate.intention.RemoveAllSrvLinesQuickFix;
+import com.perfetto.ros.integrate.intention.RemoveArrayQuickFix;
 import com.perfetto.ros.integrate.intention.RemoveConstQuickFix;
 import com.perfetto.ros.integrate.psi.ROSMsgProperty;
 import com.perfetto.ros.integrate.psi.ROSMsgSeparator;
@@ -59,7 +60,7 @@ public class ROSMsgAnnotator implements Annotator {
                         TextRange range = new TextRange(start, start + prop.getCConst().length());
                         Annotation ann = holder.createErrorAnnotation(range, "Array fields cannot be assigned a constant.");
                         ann.registerFix(new RemoveConstQuickFix(prop)); // remove const
-                        //ann.registerFix(null); // remove arr
+                        ann.registerFix(new RemoveArrayQuickFix(prop)); // remove arr
                         hasArrayAnn = true;
                     }
 
