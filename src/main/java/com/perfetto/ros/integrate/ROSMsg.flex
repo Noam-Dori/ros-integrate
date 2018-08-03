@@ -21,12 +21,14 @@ FIRST_NAME_CHARACTER=[a-zA-Z/]
 NAME_CHARACTER=[a-zA-Z0-9_/]
 END_OF_LINE_COMMENT=("#")[^\r\n]*
 CONST_ASSIGNER="="
-NEG_OPERATOR="-"
 NUMBER=[0-9]
 ARRAY_LEAD="["
 ARRAY_END="]"
+NON_NUMERICAL=[^\n\ 0-9\.-]
 CONST_STRING=[^\n]
-FIRST_CONST_STRING=[^\n\ ]
+FIRST_STRING=[^\n\ ]
+END_STR_SEQ={CONST_STRING}*{FIRST_STRING}
+START_STR_SEQ={FIRST_STRING}{CONST_STRING}*
 KEYTYPE_INT=u?int(8|16|32|64)
 KEYTYPE_FLOAT=float(32|64)
 KEYTYPE_TIME=(time)|(duration)
@@ -34,6 +36,11 @@ KEYTYPE_STRING=string
 KEYTYPE_BOOL=bool
 KEYTYPE_NUM={KEYTYPE_BOOL}|{KEYTYPE_INT}|{KEYTYPE_FLOAT}
 KEYTYPE_OTHER={KEYTYPE_STRING}|{KEYTYPE_TIME}
+
+MULTI_PERIOD_STR={START_STR_SEQ}?\.{CONST_STRING}*\.{END_STR_SEQ}?
+NON_NUMERICAL_STR={START_STR_SEQ}?{NON_NUMERICAL}{END_STR_SEQ}?|{START_STR_SEQ}\ {END_STR_SEQ}
+BAD_NEG_STR={START_STR_SEQ}-{END_STR_SEQ}?
+STR_CONST=-?\.|{BAD_NEG_STR}|{MULTI_PERIOD_STR}|{NON_NUMERICAL_STR}
 
 %states END_TYPE, IN_ARRAY, END_ARRAY, START_NAME, END_NAME, START_CONST, END_LINE
 %states END_INT_TYPE, IN_INT_ARRAY, END_INT_ARRAY, START_INT_NAME, END_INT_NAME, START_INT_CONST, NEG_NUM
@@ -69,10 +76,13 @@ KEYTYPE_OTHER={KEYTYPE_STRING}|{KEYTYPE_TIME}
 <START_CONST> {WHITE_SPACE}+                                { yybegin(START_CONST); return TokenType.WHITE_SPACE; }
 <START_INT_CONST> {WHITE_SPACE}+                            { yybegin(START_INT_CONST); return TokenType.WHITE_SPACE; }
 
-<START_INT_CONST> {NEG_OPERATOR}                            { yybegin(NEG_NUM); return ROSMsgTypes.NEG_OPERATOR; }
-<NEG_NUM,START_INT_CONST> {NUMBER}+(\.)?{NUMBER}*           { yybegin(END_LINE); return ROSMsgTypes.NUMBER;}
+<START_INT_CONST> -                                         { yybegin(NEG_NUM); return ROSMsgTypes.NEG_OPERATOR; }
+<NEG_NUM,START_INT_CONST> {NUMBER}+(\.)?{NUMBER}*|
+                          {NUMBER}*(\.)?{NUMBER}+           { yybegin(END_LINE); return ROSMsgTypes.NUMBER;}
 
-<START_CONST> {FIRST_CONST_STRING}{CONST_STRING}*           { yybegin(END_LINE); return ROSMsgTypes.STRING;}
+<START_INT_CONST> {STR_CONST}                               { yybegin(END_LINE); return ROSMsgTypes.STRING;}
+
+<START_CONST> {FIRST_STRING}{END_STR_SEQ}?                  { yybegin(END_LINE); return ROSMsgTypes.STRING;}
 
 <END_NAME> {WHITE_SPACE}+                                   { yybegin(END_NAME); return TokenType.WHITE_SPACE; }
 <END_INT_NAME> {WHITE_SPACE}+                               { yybegin(END_INT_NAME); return TokenType.WHITE_SPACE; }
