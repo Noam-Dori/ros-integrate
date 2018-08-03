@@ -1,5 +1,6 @@
 package com.perfetto.ros.integrate.psi;
 
+import com.intellij.lang.ASTNode;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFileFactory;
@@ -22,7 +23,6 @@ public class ROSMsgElementFactory {
     }
 
     public static PsiElement createCRLF(Project project) {
-        System.out.println("in CRLF");
         final ROSMsgFile file = createFile(project, "\n");
         return file.getFirstChild();
     }
@@ -31,5 +31,10 @@ public class ROSMsgElementFactory {
         String name = "dummy.msg";
         return (ROSMsgFile) PsiFileFactory.getInstance(project).
                 createFileFromText(name, ROSMsgFileType.INSTANCE, text);
+    }
+
+    public static PsiElement createType(Project project, String typeName) {
+        final ROSMsgFile file = createFile(project, typeName + " dummyName");
+        return file.getFirstChild().getFirstChild();
     }
 }

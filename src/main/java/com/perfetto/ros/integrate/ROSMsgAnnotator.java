@@ -7,12 +7,9 @@ import com.intellij.lang.annotation.Annotator;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
-import com.perfetto.ros.integrate.intention.RemoveAllSrvLinesQuickFix;
-import com.perfetto.ros.integrate.intention.RemoveArrayQuickFix;
-import com.perfetto.ros.integrate.intention.RemoveConstQuickFix;
+import com.perfetto.ros.integrate.intention.*;
 import com.perfetto.ros.integrate.psi.ROSMsgProperty;
 import com.perfetto.ros.integrate.psi.ROSMsgSeparator;
-import com.perfetto.ros.integrate.intention.RemoveSrvLineQuickFix;
 import com.perfetto.ros.integrate.psi.ROSMsgTypes;
 import org.jetbrains.annotations.NotNull;
 
@@ -49,10 +46,6 @@ public class ROSMsgAnnotator implements Annotator {
                 // constant inspection:
                 // only int,uint,float may use integer consts
                 // strings are the only type which can use str consts.
-                // In case of array found:
-                // TODO: Fixes: 2. remove array, 1. remove const
-                // In case of time,duration,<other> found:
-                // TODO: Fixes: 2. change to <builtin> 1. remove const
                 if(prop.getCConst() != null) {
                     boolean hasArrayAnn = false;
                     if(prop.getArraySize() != -1) {
@@ -71,7 +64,7 @@ public class ROSMsgAnnotator implements Annotator {
                         if(!hasArrayAnn) {
                             ann.registerFix(new RemoveConstQuickFix(prop)); // remove const
                         }
-                        //ann.registerFix(null); // change type
+                        ann.registerFix(new ChangeKeytypeQuickFix(prop)); // change type
                     } else {
                         // builtin inspection:
                         // booleans may only have 1 or 0 as const

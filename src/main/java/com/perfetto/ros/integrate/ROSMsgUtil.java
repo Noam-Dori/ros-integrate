@@ -1,16 +1,17 @@
 package com.perfetto.ros.integrate;
 
+import com.google.common.primitives.UnsignedLong;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.search.FileTypeIndex;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.indexing.FileBasedIndex;
-import com.perfetto.ros.integrate.psi.ROSMsgFile;
-import com.perfetto.ros.integrate.psi.ROSMsgProperty;
-import com.perfetto.ros.integrate.psi.ROSMsgSeparator;
+import com.perfetto.ros.integrate.psi.*;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -110,5 +111,55 @@ public class ROSMsgUtil {
             }
         }
         return result;
+    }
+
+
+    @Contract("null -> null")
+    public static PsiElement getBestFit(ROSMsgConst msgConst) {
+        if (msgConst == null) {
+            return null;
+        }
+        String num = msgConst.getText();
+        try {
+            if (num.contains(".")) { // floating-point
+                double floaty = Double.parseDouble(num);
+                if ((double) (float) floaty == floaty) {
+                    return ROSMsgElementFactory.createType(msgConst.getProject(), "float32");
+                } else {
+                    return ROSMsgElementFactory.createType(msgConst.getProject(), "float64");
+                }
+            } else { // integral
+                if (num.contains("-")) { // int
+                    long integral = Long.parseLong(num);
+                    if ((long) (byte) integral == integral) {
+                        return ROSMsgElementFactory.createType(msgConst.getProject(), "int8");
+                    }
+                    if ((long) (short) integral == integral) {
+                        return ROSMsgElementFactory.createType(msgConst.getProject(), "int16");
+                    }
+                    if ((long) (int) integral == integral) {
+                        return ROSMsgElementFactory.createType(msgConst.getProject(), "int32");
+                    }
+                    return ROSMsgElementFactory.createType(msgConst.getProject(), "int64");
+                } else { // uint
+                    UnsignedLong integral = UnsignedLong.valueOf(num);
+                    if (integral.byteValue() == 0 || integral.byteValue() == 1) {
+                        return ROSMsgElementFactory.createType(msgConst.getProject(), "bool");
+                    }
+                    if (UnsignedLong.valueOf(Math.abs(integral.byteValue())).equals(integral)) {
+                        return ROSMsgElementFactory.createType(msgConst.getProject(), "uint8");
+                    }
+                    if (UnsignedLong.valueOf(Math.abs(integral.shortValue())).equals(integral)) {
+                        return ROSMsgElementFactory.createType(msgConst.getProject(), "uint16");
+                    }
+                    if (UnsignedLong.valueOf(Math.abs(integral.intValue())).equals(integral)) {
+                        return ROSMsgElementFactory.createType(msgConst.getProject(), "uint32");
+                    }
+                    return ROSMsgElementFactory.createType(msgConst.getProject(), "uint64");
+                }
+            }
+        } catch (NumberFormatException e) {
+            return ROSMsgElementFactory.createType(msgConst.getProject(),"string");
+        }
     }
 }
