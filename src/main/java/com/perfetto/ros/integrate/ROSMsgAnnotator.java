@@ -22,11 +22,12 @@ public class ROSMsgAnnotator implements Annotator {
     public void annotate(@NotNull final PsiElement element, @NotNull AnnotationHolder holder) {
         if (element instanceof ROSMsgProperty) {
             ROSMsgProperty prop = (ROSMsgProperty) element;
-            String value = prop.getType();
+            String value = prop.getType(),
+                    msgName = ROSMsgUtil.trimMsgFileName(prop.getContainingFile().getName());
 
             if (value != null) {
                 // self containing msg inspection
-                if(value.equals(ROSMsgUtil.trimMsgFileName(prop.getContainingFile().getName()))) {
+                if(value.equals(msgName)) {
                     TextRange range = new TextRange(element.getTextRange().getStartOffset(),
                             element.getTextRange().getStartOffset() + value.length());
                     holder.createErrorAnnotation(range, "A message cannot contain itself")
@@ -43,7 +44,7 @@ public class ROSMsgAnnotator implements Annotator {
                 if (types.size() == 0 && // if we need special annotation for headers, then sure.
                         !(value.equals("Header") && element.getNode()
                                 .equals(element.getContainingFile().getNode().findChildByType(ROSMsgTypes.PROPERTY))) &&
-                        !value.contains("/")) {
+                        !value.contains("/") && !value.equals(msgName)) {
                     TextRange range = new TextRange(element.getTextRange().getStartOffset(),
                             element.getTextRange().getStartOffset() + value.length());
                     if(value.equals("Header")) {

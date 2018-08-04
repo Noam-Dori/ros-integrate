@@ -45,6 +45,10 @@ public class ROSMsgCompletionContributor extends CompletionContributor {
                                     insertionContext.getDocument().insertString(model.getOffset(),"8");
                                     model.getCurrentCaret().moveCaretRelatively(1,0,true,false);
                                 }));
+                        for (String projectMsg : ROSMsgUtil.findProjectMsgNames(parameters.getEditor().getProject(),
+                                null,parameters.getOriginalFile().getVirtualFile())) {
+                            resultSet.addElement(LookupElementBuilder.create(projectMsg).withIcon(ROSIcons.MSG_FILE));
+                        }
                     }
                 }
         );
