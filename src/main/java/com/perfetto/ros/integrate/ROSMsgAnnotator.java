@@ -47,12 +47,13 @@ public class ROSMsgAnnotator implements Annotator {
                     TextRange range = new TextRange(element.getTextRange().getStartOffset(),
                             element.getTextRange().getStartOffset() + value.length());
                     if(value.equals("Header")) {
-                        Annotation ann = holder.createInfoAnnotation(range,
+                        Annotation ann = holder.createErrorAnnotation(range,
                                 "Header types must be prefixed with 'std_msgs/' if they are not the first field");
                         ann.setHighlightType(ProblemHighlightType.LIKE_UNKNOWN_SYMBOL);
+                        ann.registerFix(new ChangeHeaderQuickFix(prop));
                     } else {
-                        holder.createInfoAnnotation(range, "Unresolved message object")
-                                .setHighlightType(ProblemHighlightType.LIKE_UNKNOWN_SYMBOL);
+                        Annotation ann = holder.createErrorAnnotation(range, "Unresolved message object");
+                        ann.setHighlightType(ProblemHighlightType.LIKE_UNKNOWN_SYMBOL);
                     }
                 }
             }
