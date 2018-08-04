@@ -25,6 +25,14 @@ public class ROSMsgAnnotator implements Annotator {
             String value = prop.getType();
 
             if (value != null) {
+                // self containing msg inspection
+                if(value.equals(ROSMsgUtil.trimMsgFileName(prop.getContainingFile().getName()))) {
+                    TextRange range = new TextRange(element.getTextRange().getStartOffset(),
+                            element.getTextRange().getStartOffset() + value.length());
+                    holder.createErrorAnnotation(range, "A message cannot contain itself")
+                            .registerFix(new RemovePropertyQuickFix(prop));
+                }
+
                 Project project = element.getProject();
 
                 // type search
@@ -33,12 +41,19 @@ public class ROSMsgAnnotator implements Annotator {
                 List<String> types = ROSMsgUtil.findProjectMsgNames(project, value,
                         element.getContainingFile().getVirtualFile());
                 if (types.size() == 0 && // if we need special annotation for headers, then sure.
-                        !(value.equals("Header") && element.getTextRange().getStartOffset() == 0) &&
+                        !(value.equals("Header") && element.getNode()
+                                .equals(element.getContainingFile().getNode().findChildByType(ROSMsgTypes.PROPERTY))) &&
                         !value.contains("/")) {
                     TextRange range = new TextRange(element.getTextRange().getStartOffset(),
                             element.getTextRange().getStartOffset() + value.length());
-                    holder.createInfoAnnotation(range, "Unresolved message object")
-                            .setHighlightType(ProblemHighlightType.LIKE_UNKNOWN_SYMBOL);
+                    if(value.equals("Header")) {
+                        Annotation ann = holder.createInfoAnnotation(range,
+                                "Header types must be prefixed with 'std_msgs/' if they are not the first field");
+                        ann.setHighlightType(ProblemHighlightType.LIKE_UNKNOWN_SYMBOL);
+                    } else {
+                        holder.createInfoAnnotation(range, "Unresolved message object")
+                                .setHighlightType(ProblemHighlightType.LIKE_UNKNOWN_SYMBOL);
+                    }
                 }
             }
             value = prop.getGeneralType();
