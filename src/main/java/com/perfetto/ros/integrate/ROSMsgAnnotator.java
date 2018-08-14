@@ -55,6 +55,9 @@ public class ROSMsgAnnotator implements Annotator {
                     } else {
                         Annotation ann = holder.createErrorAnnotation(range, "Unresolved message object");
                         ann.setHighlightType(ProblemHighlightType.LIKE_UNKNOWN_SYMBOL);
+                        ann.registerFix(new AddROSMsgQuickFix(
+                                Objects.requireNonNull(prop.getNode().findChildByType(ROSMsgTypes.TYPE)).getPsi())
+                        );
                     }
                 }
             }
@@ -92,6 +95,12 @@ public class ROSMsgAnnotator implements Annotator {
                     }
                 }
             }
+
+            //TODO: duplicate name inspection
+            //TODO: fix duplicate by changing name
+
+            //TODO: actual inspection detecting proper naming for ROS msg (two inspections - one here for making sure the name is legal, the other is a warning which checks for CamelCase)
+
         } else if (element instanceof ROSMsgSeparator) {
             // Too many service separators annotation
             int separatorCount = ROSMsgUtil.countServiceSeparators(element.getContainingFile());

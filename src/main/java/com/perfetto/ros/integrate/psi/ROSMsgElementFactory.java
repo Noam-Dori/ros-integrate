@@ -2,7 +2,9 @@ package com.perfetto.ros.integrate.psi;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.project.Project;
+import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiFileFactory;
 import com.perfetto.ros.integrate.ROSMsgFileType;
 
@@ -36,5 +38,9 @@ public class ROSMsgElementFactory {
     public static PsiElement createType(Project project, String typeName) {
         final ROSMsgFile file = createFile(project, typeName + " dummyName");
         return file.getFirstChild().getFirstChild();
+    }
+
+    public static ROSMsgFile createFile(String fileName, PsiDirectory directory) {
+        return (ROSMsgFile) directory.createFile(fileName + ".msg");
     }
 }
