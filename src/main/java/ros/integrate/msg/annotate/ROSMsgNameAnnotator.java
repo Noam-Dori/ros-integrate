@@ -2,13 +2,11 @@ package ros.integrate.msg.annotate;
 
 import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
-import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.msg.ROSMsgUtil;
-import ros.integrate.msg.psi.ROSMsgElementType;
+import ros.integrate.msg.intention.RemoveFieldQuickFix;
 import ros.integrate.msg.psi.ROSMsgProperty;
 import ros.integrate.msg.psi.ROSMsgTypes;
 
@@ -28,15 +26,14 @@ class ROSMsgNameAnnotator {
         this.fieldName = fieldName;
     }
 
-    //TODO: fix: remove field
     void annDuplicateName() {
         int separatorCount = ROSMsgUtil.countNameInFile(prop.getContainingFile(),fieldName);
         if (separatorCount > 1 && !ROSMsgUtil.isFirstDefinition(prop.getContainingFile(),prop)) {
             PsiElement name = Objects.requireNonNull(prop.getNode().findChildByType(ROSMsgTypes.NAME)).getPsi();
             TextRange range = new TextRange(name.getTextRange().getStartOffset(),
                     name.getTextRange().getEndOffset());
-            Annotation ann = holder.createErrorAnnotation(range, "Field name is already used");
-            //ann.registerFix(new RemoveFieldQuickFix(sep));
+            Annotation ann = holder.createErrorAnnotation(range, "Field name '" + name.getText() + "' is already used");
+            ann.registerFix(new RemoveFieldQuickFix(prop));
         }
     }
 
@@ -46,6 +43,6 @@ class ROSMsgNameAnnotator {
 
     }
 
-    //TODO: a warning which checks for snake_case in names
+    //TODO: a warning which checks for snake_case in names. make sure to check JB-inspection first
     //TODO: fix: offer conversion to snake_case
 }

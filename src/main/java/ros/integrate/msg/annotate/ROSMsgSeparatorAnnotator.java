@@ -18,12 +18,12 @@ class ROSMsgSeparatorAnnotator {
         this.sep = sep;
     }
 
-    void annTooManySeparators(int max) {
+    void annTooManySeparators(int max, String message) {
         int separatorCount = ROSMsgUtil.countServiceSeparators(sep.getContainingFile());
         if (separatorCount > max) { // in Srv files this is 1
             TextRange range = new TextRange(sep.getTextRange().getStartOffset(),
                     sep.getTextRange().getEndOffset());
-            Annotation ann = holder.createErrorAnnotation(range, "ROS Messages cannot have service separators");
+            Annotation ann = holder.createErrorAnnotation(range, message);
             ann.registerFix(new RemoveSrvLineQuickFix(sep));
             if(separatorCount > 1) {ann.registerFix(new RemoveAllSrvLinesQuickFix());}
         }

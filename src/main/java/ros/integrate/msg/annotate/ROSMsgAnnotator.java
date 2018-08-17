@@ -48,7 +48,7 @@ public class ROSMsgAnnotator implements Annotator {
 
         } else if (element instanceof ROSMsgSeparator) {
             ROSMsgSeparatorAnnotator annotator = new ROSMsgSeparatorAnnotator(holder,(ROSMsgSeparator)element);
-            annotator.annTooManySeparators(0);
+            annotator.annTooManySeparators(0,"ROS Messages cannot have service separators");
         }
     }
 }
