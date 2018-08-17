@@ -13,16 +13,16 @@
     <depends>com.intellij.modules.lang</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <fileTypeFactory implementation="com.perfetto.ros.integrate.ROSMsgFileTypeFactory"/>
-        <lang.parserDefinition language="RosMSG" implementationClass="com.perfetto.ros.integrate.ROSMsgParserDefinition"/>
-        <lang.syntaxHighlighterFactory language="RosMSG" implementationClass="com.perfetto.ros.integrate.ROSMsgSyntaxHighlighterFactory"/>
-        <colorSettingsPage implementation="com.perfetto.ros.integrate.ROSMsgColorSettings"/>
+        <fileTypeFactory implementation="ros.integrate.msg.ROSMsgFileTypeFactory"/>
+        <lang.parserDefinition language="RosMSG" implementationClass="ros.integrate.msg.ROSMsgParserDefinition"/>
+        <lang.syntaxHighlighterFactory language="RosMSG" implementationClass="ros.integrate.msg.ROSMsgSyntaxHighlighterFactory"/>
+        <colorSettingsPage implementation="ros.integrate.msg.ROSMsgColorSettings"/>
         <!--<additionalTextAttributes scheme="Default" file="colorSchemes/ROSMsgDefault.xml"/>-->
         <!--<additionalTextAttributes scheme="Dracula" file="colorSchemes/ROSMsgDarkDefault.xml"/>-->
-        <completion.contributor language="RosMSG" implementationClass="com.perfetto.ros.integrate.ROSMsgCompletionContributor"/>
-        <lang.commenter language="RosMSG" implementationClass="com.perfetto.ros.integrate.ROSMsgCommenter"/>
-        <annotator language="RosMSG" implementationClass="com.perfetto.ros.integrate.ROSMsgAnnotator"/>
-        <gotoSymbolContributor implementation="com.perfetto.ros.integrate.ROSMsgChooseByNameContributor"/>
+        <completion.contributor language="RosMSG" implementationClass="ros.integrate.msg.ROSMsgCompletionContributor"/>
+        <lang.commenter language="RosMSG" implementationClass="ros.integrate.msg.ROSMsgCommenter"/>
+        <annotator language="RosMSG" implementationClass="ros.integrate.msg.annotate.ROSMsgAnnotator"/>
+        <gotoSymbolContributor implementation="ros.integrate.msg.ROSMsgChooseByNameContributor"/>
     </extensions>
 
     <actions>

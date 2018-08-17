@@ -1,0 +1,30 @@
+{
+  parserClass="ros.integrate.msg.parser.ROSMsgParser"
+
+  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  psiClassPrefix="ROSMsg"
+  psiImplClassSuffix="Impl"
+  psiPackage="ros.integrate.msg.psi"
+  psiImplPackage="ros.integrate.msg.psi.impl"
+
+  elementTypeHolderClass="ros.integrate.msg.psi.ROSMsgTypes"
+  elementTypeClass="ros.integrate.msg.psi.ROSMsgElementType"
+  tokenTypeClass="ros.integrate.msg.psi.ROSMsgTokenType"
+
+  psiImplUtilClass="ros.integrate.msg.psi.impl.ROSMsgPsiImplUtil"
+}
+
+rosMsgFile ::= item_*
+
+private item_ ::= (property|COMMENT|CRLF|separator)
+
+private type_ ::= (TYPE|KEYTYPE)
+
+separator ::= SERVICE_SEPARATOR
+
+const ::= (NEG_OPERATOR? NUMBER | STRING)
+
+property ::= type_ (LBRACKET NUMBER? RBRACKET)? NAME (CONST_ASSIGNER const)? {
+    methods=[getGeneralType getType setType getArraySize removeArray getCConst getPresentation canHandle]
+}
