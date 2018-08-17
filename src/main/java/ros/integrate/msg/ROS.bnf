@@ -26,5 +26,9 @@ separator ::= SERVICE_SEPARATOR
 const ::= (NEG_OPERATOR? NUMBER | STRING)
 
 property ::= type_ (LBRACKET NUMBER? RBRACKET)? NAME (CONST_ASSIGNER const)? {
-    methods=[getGeneralType getType setType getArraySize removeArray getCConst getPresentation canHandle]
+    methods=[getGeneralType getType setType
+    getName
+    getArraySize removeArray
+    getCConst getPresentation
+    canHandle]
 }

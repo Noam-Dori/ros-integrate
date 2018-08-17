@@ -47,6 +47,11 @@ public class ROSMsgPropertyImpl extends ASTWrapperPsiElement implements ROSMsgPr
     return ROSMsgPsiImplUtil.setType(this, newName);
   }
 
+  @Nullable
+  public String getName() {
+    return ROSMsgPsiImplUtil.getName(this);
+  }
+
   public int getArraySize() {
     return ROSMsgPsiImplUtil.getArraySize(this);
   }
@@ -60,6 +65,7 @@ public class ROSMsgPropertyImpl extends ASTWrapperPsiElement implements ROSMsgPr
     return ROSMsgPsiImplUtil.getCConst(this);
   }
 
+  @NotNull
   public ItemPresentation getPresentation() {
     return ROSMsgPsiImplUtil.getPresentation(this);
   }

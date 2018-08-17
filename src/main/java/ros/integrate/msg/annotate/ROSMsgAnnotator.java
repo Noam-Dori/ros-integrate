@@ -39,10 +39,12 @@ public class ROSMsgAnnotator implements Annotator {
                 }
             }
 
-            //TODO: duplicate name inspection
-            //TODO: fix duplicate by changing name
-
-            //TODO: actual inspection detecting proper naming for ROS msg (two inspections - one here for making sure the name is legal, the other is a warning which checks for CamelCase)
+            String fieldName = prop.getName();
+            if(fieldName != null) {
+                ROSMsgNameAnnotator nameAnnotator = new ROSMsgNameAnnotator(holder, prop, fieldName);
+                nameAnnotator.annDuplicateName();
+                nameAnnotator.annIllegalName();
+            }
 
         } else if (element instanceof ROSMsgSeparator) {
             ROSMsgSeparatorAnnotator annotator = new ROSMsgSeparatorAnnotator(holder,(ROSMsgSeparator)element);

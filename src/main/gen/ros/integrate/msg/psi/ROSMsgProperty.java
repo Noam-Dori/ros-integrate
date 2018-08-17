@@ -19,6 +19,9 @@ public interface ROSMsgProperty extends PsiElement {
 
   PsiElement setType(String newName);
 
+  @Nullable
+  String getName();
+
   int getArraySize();
 
   PsiElement removeArray();
@@ -26,6 +29,7 @@ public interface ROSMsgProperty extends PsiElement {
   @Nullable
   String getCConst();
 
+  @NotNull
   ItemPresentation getPresentation();
 
   boolean canHandle(@NotNull ROSMsgConst msgConst);

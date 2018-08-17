@@ -15,10 +15,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class ROSMsgUtil {
 
@@ -31,6 +28,41 @@ public class ROSMsgUtil {
             }
         }
         return 0;
+    }
+
+    public static int countNameInFile(PsiFile file, String name) {
+        ROSMsgFile rosMsgFile = (ROSMsgFile) file;
+        int count = 0;
+        if (rosMsgFile != null) {
+            ROSMsgProperty[] properties = PsiTreeUtil.getChildrenOfType(rosMsgFile, ROSMsgProperty.class);
+            if (properties != null) {
+                for (ROSMsgProperty prop : properties) {
+                    if (name.equals(prop.getName())) {
+                        count++;
+                    }
+                }
+            }
+        }
+        return count;
+    }
+
+
+    public static boolean isFirstDefinition(PsiFile file, @NotNull ROSMsgProperty prop) {
+        PsiElement name = Objects.requireNonNull(prop.getNode().findChildByType(ROSMsgTypes.NAME)).getPsi();
+        return name.equals(Objects.requireNonNull(getFirstNameInFile(file, Objects.requireNonNull(prop.getName()))));
+    }
+
+    @Nullable
+    private static PsiElement getFirstNameInFile(PsiFile file, String name) {
+        ROSMsgProperty[] properties = PsiTreeUtil.getChildrenOfType(file, ROSMsgProperty.class);
+        if (properties != null) {
+            for (ROSMsgProperty property : properties) {
+                if (name.equals(property.getName())) {
+                    return Objects.requireNonNull(property.getNode().findChildByType(ROSMsgTypes.NAME)).getPsi();
+                }
+            }
+        }
+        return null;
     }
 
     public static List<String> findProjectMsgNames(Project project, @Nullable String key, @Nullable VirtualFile file) {

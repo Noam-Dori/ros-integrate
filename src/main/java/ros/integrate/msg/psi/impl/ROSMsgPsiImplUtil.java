@@ -4,6 +4,7 @@ import com.google.common.primitives.UnsignedLong;
 import com.intellij.lang.ASTNode;
 import com.intellij.navigation.ItemPresentation;
 import com.intellij.psi.PsiElement;
+import org.jetbrains.annotations.Contract;
 import ros.integrate.ROSIcons;
 import ros.integrate.msg.psi.ROSMsgConst;
 import ros.integrate.msg.psi.ROSMsgElementFactory;
@@ -64,7 +65,8 @@ public class ROSMsgPsiImplUtil {
         }
     }
 
-    public static PsiElement setType(ROSMsgProperty element, String newName) {
+    @Contract("_, _ -> param1")
+    public static PsiElement setType(@NotNull ROSMsgProperty element, String newName) {
         ASTNode typeNode = element.getNode().findChildByType(ROSMsgTypes.TYPE);
         if (typeNode != null) {
 
@@ -75,7 +77,8 @@ public class ROSMsgPsiImplUtil {
         return element;
     }
 
-    public static PsiElement removeArray(ROSMsgProperty element) {
+    @Contract("_ -> param1")
+    public static PsiElement removeArray(@NotNull ROSMsgProperty element) {
         ASTNode lbr = element.getNode().findChildByType(ROSMsgTypes.LBRACKET);
         ASTNode rbr = element.getNode().findChildByType(ROSMsgTypes.RBRACKET);
         if (rbr != null && lbr != null) {
@@ -84,6 +87,8 @@ public class ROSMsgPsiImplUtil {
         return element;
     }
 
+    @NotNull
+    @Contract(value = "_ -> new", pure = true)
     public static ItemPresentation getPresentation(final ROSMsgProperty element) { return new ItemPresentation() {
             @Nullable
             @Override
@@ -103,8 +108,17 @@ public class ROSMsgPsiImplUtil {
         };
     }
 
+    @Nullable
+    public static String getName(@NotNull ROSMsgProperty element) {
+        ASTNode keyNode = element.getNode().findChildByType(ROSMsgTypes.NAME);
+        if (keyNode != null) {
+            return keyNode.getText();
+        } else {
+            return null;
+        }
+    }
 
-    public static boolean canHandle(ROSMsgProperty element, @NotNull ROSMsgConst msgConst) {
+    public static boolean canHandle(@NotNull ROSMsgProperty element, @NotNull ROSMsgConst msgConst) {
         String num = msgConst.getText();
         String type = element.getGeneralType();
         boolean f64 = "float64".equals(type),
