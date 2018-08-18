@@ -24,6 +24,7 @@ public class ROSMsgAnnotator implements Annotator {
                 annotator.setFieldType(fieldType);
                 annotator.annSelfContaining();
                 annotator.annTypeNotDefined();
+                annotator.annIllegalType();
             }
 
             fieldType = prop.getGeneralType();

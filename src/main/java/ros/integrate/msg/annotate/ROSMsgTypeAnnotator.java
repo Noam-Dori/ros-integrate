@@ -112,4 +112,9 @@ class ROSMsgTypeAnnotator {
             ann.registerFix(new ChangeKeytypeQuickFix(prop)); // change type
         }
     }
+
+    //TODO: msg types must follow the pattern [a-zA-Z][a-zA-Z0-9_]*/?[a-zA-Z0-9_]*
+    void annIllegalType() {
+
+    }
 }

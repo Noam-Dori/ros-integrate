@@ -1,4 +1,4 @@
-package com.perfetto.ros.integrate;
+package ros.integrate.msg;
 
 import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.tree.IElementType;
@@ -17,8 +17,8 @@ import com.intellij.psi.TokenType;
 
 CRLF=\R
 WHITE_SPACE=[\ \t\f]
-FIRST_NAME_CHARACTER=[a-zA-Z/]
-NAME_CHARACTER=[a-zA-Z0-9_/]
+NAME_CHARACTER=[^\r\n =]
+TYPE_CHARACTER=[^\r\n \[]
 END_OF_LINE_COMMENT=("#")[^\r\n]*
 CONST_ASSIGNER="="
 NUMBER=[0-9]
@@ -55,7 +55,7 @@ FLOATING_POINT={NUMBER}+(\.)?{NUMBER}*|{NUMBER}*(\.)?{NUMBER}+
 
 <YYINITIAL> {KEYTYPE_NUM}                                   { yybegin(END_INT_TYPE); return ROSMsgTypes.KEYTYPE; }
 <YYINITIAL> {KEYTYPE_OTHER}                                 { yybegin(END_TYPE); return ROSMsgTypes.KEYTYPE; }
-<YYINITIAL> {FIRST_NAME_CHARACTER}{NAME_CHARACTER}*         { yybegin(END_TYPE); return ROSMsgTypes.TYPE; }
+<YYINITIAL> {TYPE_CHARACTER}+                               { yybegin(END_TYPE); return ROSMsgTypes.TYPE; }
 
 <END_TYPE> {ARRAY_LEAD}                                     { yybegin(IN_ARRAY); return ROSMsgTypes.LBRACKET; }
 <END_INT_TYPE> {ARRAY_LEAD}                                 { yybegin(IN_INT_ARRAY); return ROSMsgTypes.LBRACKET; }
@@ -69,8 +69,8 @@ FLOATING_POINT={NUMBER}+(\.)?{NUMBER}*|{NUMBER}*(\.)?{NUMBER}+
 <END_ARRAY,END_TYPE> {WHITE_SPACE}                          { yybegin(START_NAME); return TokenType.WHITE_SPACE; }
 <END_INT_ARRAY,END_INT_TYPE> {WHITE_SPACE}                  { yybegin(START_INT_NAME); return TokenType.WHITE_SPACE; }
 
-<START_NAME> {FIRST_NAME_CHARACTER}{NAME_CHARACTER}*        { yybegin(END_NAME); return ROSMsgTypes.NAME; }
-<START_INT_NAME> {FIRST_NAME_CHARACTER}{NAME_CHARACTER}*    { yybegin(END_INT_NAME); return ROSMsgTypes.NAME; }
+<START_NAME> {NAME_CHARACTER}+                              { yybegin(END_NAME); return ROSMsgTypes.NAME; }
+<START_INT_NAME> {NAME_CHARACTER}+                          { yybegin(END_INT_NAME); return ROSMsgTypes.NAME; }
 
 <END_NAME> {CONST_ASSIGNER}                                 { yybegin(START_CONST); return ROSMsgTypes.CONST_ASSIGNER; }
 <END_INT_NAME> {CONST_ASSIGNER}                             { yybegin(START_INT_CONST); return ROSMsgTypes.CONST_ASSIGNER; }
