@@ -14,11 +14,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.util.Objects;
 
 public class ROSMsgPsiImplUtil {
     @Nullable
-    public static String getType(@NotNull ROSMsgProperty element) {
-        ASTNode keyNode = element.getNode().findChildByType(ROSMsgTypes.TYPE);
+    public static String getCustomType(@NotNull ROSMsgProperty element) {
+        ASTNode keyNode = element.getNode().findChildByType(ROSMsgTypes.CUSTOM_TYPE);
         if (keyNode != null) {
             return keyNode.getText();
         } else {
@@ -27,12 +28,12 @@ public class ROSMsgPsiImplUtil {
     }
 
     @Nullable
-    public static String getGeneralType(@NotNull ROSMsgProperty element) {
+    public static String getRawType(@NotNull ROSMsgProperty element) {
         ASTNode keyNode = element.getNode().findChildByType(ROSMsgTypes.KEYTYPE);
         if (keyNode != null) {
             return keyNode.getText();
         } else {
-            return getType(element);
+            return getCustomType(element);
         }
     }
 
@@ -55,16 +56,6 @@ public class ROSMsgPsiImplUtil {
         }
     }
 
-    @Nullable
-    public static String getCConst(@NotNull ROSMsgProperty element) {
-        ASTNode keyNode = element.getNode().findChildByType(ROSMsgTypes.CONST);
-        if (keyNode != null) {
-            return keyNode.getText();
-        } else {
-            return null;
-        }
-    }
-
     @Contract("_, _ -> param1")
     public static PsiElement setType(@NotNull ROSMsgProperty element, String newName) {
         ASTNode typeNode = element.getNode().findChildByType(ROSMsgTypes.TYPE);
@@ -72,6 +63,18 @@ public class ROSMsgPsiImplUtil {
 
             ROSMsgProperty property = ROSMsgElementFactory.createProperty(element.getProject(), newName);
             ASTNode newTypeNode = property.getFirstChild().getNode();
+            element.getNode().replaceChild(typeNode, newTypeNode);
+        }
+        return element;
+    }
+
+    @Contract("_, _ -> param1")
+    public static PsiElement setFieldName(@NotNull ROSMsgProperty element, String newName) {
+        ASTNode typeNode = element.getNode().findChildByType(ROSMsgTypes.NAME);
+        if (typeNode != null) {
+
+            ROSMsgProperty property = ROSMsgElementFactory.createProperty(element.getProject(),"dummy " + newName);
+            ASTNode newTypeNode = Objects.requireNonNull(property.getNode().findChildByType(ROSMsgTypes.NAME));
             element.getNode().replaceChild(typeNode, newTypeNode);
         }
         return element;
@@ -93,7 +96,7 @@ public class ROSMsgPsiImplUtil {
             @Nullable
             @Override
             public String getPresentableText() {
-                return element.getType();
+                return element.getType().getText();
             }
 
             @Override
@@ -108,19 +111,9 @@ public class ROSMsgPsiImplUtil {
         };
     }
 
-    @Nullable
-    public static String getName(@NotNull ROSMsgProperty element) {
-        ASTNode keyNode = element.getNode().findChildByType(ROSMsgTypes.NAME);
-        if (keyNode != null) {
-            return keyNode.getText();
-        } else {
-            return null;
-        }
-    }
-
     public static boolean canHandle(@NotNull ROSMsgProperty element, @NotNull ROSMsgConst msgConst) {
         String num = msgConst.getText();
-        String type = element.getGeneralType();
+        String type = element.getRawType();
         boolean f64 = "float64".equals(type),
                 f32 = "float32".equals(type),
                 i64 = "int64".equals(type),

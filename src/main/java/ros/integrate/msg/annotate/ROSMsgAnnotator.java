@@ -19,7 +19,7 @@ public class ROSMsgAnnotator implements Annotator {
             ROSMsgProperty prop = (ROSMsgProperty) element;
             ROSMsgTypeAnnotator annotator = new ROSMsgTypeAnnotator(holder, project, prop, msgName);
 
-            String fieldType = prop.getType();
+            String fieldType = prop.getCustomType();
             if (fieldType != null) {
                 annotator.setFieldType(fieldType);
                 annotator.annSelfContaining();
@@ -27,12 +27,15 @@ public class ROSMsgAnnotator implements Annotator {
                 annotator.annIllegalType();
             }
 
-            fieldType = prop.getGeneralType();
+            fieldType = prop.getRawType();
             if(fieldType != null) {
                 annotator.setFieldType(fieldType);
 
                 // constant inspection:
-                String constant = prop.getCConst();
+                String constant = null;
+                if (prop.getConst() != null) {
+                    constant = prop.getConst().getText();
+                }
                 if(constant != null) {
                     boolean removeIntention = annotator.annArrayConst(false, constant), // only int,uint,float may use integer consts
                             badTypeActivated = annotator.annBadTypeConst(removeIntention,constant);
@@ -40,7 +43,7 @@ public class ROSMsgAnnotator implements Annotator {
                 }
             }
 
-            String fieldName = prop.getName();
+            String fieldName = prop.getFieldName().getText();
             if(fieldName != null) {
                 ROSMsgNameAnnotator nameAnnotator = new ROSMsgNameAnnotator(holder, prop, fieldName);
                 nameAnnotator.annDuplicateName();

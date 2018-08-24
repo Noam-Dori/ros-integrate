@@ -1,6 +1,5 @@
 package ros.integrate.msg.annotate;
 
-import com.intellij.codeInsight.daemon.impl.quickfix.RenameElementFix;
 import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.openapi.util.TextRange;
@@ -8,6 +7,7 @@ import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.msg.ROSMsgUtil;
 import ros.integrate.msg.intention.RemoveFieldQuickFix;
+import ros.integrate.msg.intention.RenameElementQuickFix;
 import ros.integrate.msg.psi.ROSMsgProperty;
 import ros.integrate.msg.psi.ROSMsgTypes;
 
@@ -26,7 +26,7 @@ class ROSMsgNameAnnotator {
         this.holder = holder;
         this.prop = prop;
         this.fieldName = fieldName;
-        name = Objects.requireNonNull(prop.getNode().findChildByType(ROSMsgTypes.NAME)).getPsi();
+        name = Objects.requireNonNull(prop.getNode().findChildByType(ROSMsgTypes.FIELD_NAME)).getPsi();
     }
 
     void annDuplicateName() {
@@ -52,7 +52,7 @@ class ROSMsgNameAnnotator {
                 message = "Field names may only contain alphanumeric characters or underscores";
             }
             Annotation ann = holder.createErrorAnnotation(range, message);
-            //ann.registerFix(new RenameElementFix(name));
+            ann.registerFix(new RenameElementQuickFix(prop,name));
         }
     }
 

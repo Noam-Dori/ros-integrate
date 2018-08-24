@@ -55,7 +55,7 @@ FLOATING_POINT={NUMBER}+(\.)?{NUMBER}*|{NUMBER}*(\.)?{NUMBER}+
 
 <YYINITIAL> {KEYTYPE_NUM}                                   { yybegin(END_INT_TYPE); return ROSMsgTypes.KEYTYPE; }
 <YYINITIAL> {KEYTYPE_OTHER}                                 { yybegin(END_TYPE); return ROSMsgTypes.KEYTYPE; }
-<YYINITIAL> {TYPE_CHARACTER}+                               { yybegin(END_TYPE); return ROSMsgTypes.TYPE; }
+<YYINITIAL> {TYPE_CHARACTER}+                               { yybegin(END_TYPE); return ROSMsgTypes.CUSTOM_TYPE; }
 
 <END_TYPE> {ARRAY_LEAD}                                     { yybegin(IN_ARRAY); return ROSMsgTypes.LBRACKET; }
 <END_INT_TYPE> {ARRAY_LEAD}                                 { yybegin(IN_INT_ARRAY); return ROSMsgTypes.LBRACKET; }

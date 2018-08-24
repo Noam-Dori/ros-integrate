@@ -50,10 +50,6 @@ public class ROSMsgParserDefinition implements ParserDefinition {
         return new ROSMsgFile(viewProvider);
     }
 
-    public SpaceRequirements spaceExistanceTypeBetweenTokens(ASTNode left, ASTNode right) {
-        return SpaceRequirements.MAY;
-    }
-
     @NotNull
     public PsiElement createElement(ASTNode node) {
         return ROSMsgTypes.Factory.createElement(node);

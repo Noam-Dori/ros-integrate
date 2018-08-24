@@ -9,12 +9,15 @@ import ros.integrate.msg.psi.impl.*;
 public interface ROSMsgTypes {
 
   IElementType CONST = new ROSMsgElementType("CONST");
+  IElementType FIELD_NAME = new ROSMsgElementType("FIELD_NAME");
   IElementType PROPERTY = new ROSMsgElementType("PROPERTY");
   IElementType SEPARATOR = new ROSMsgElementType("SEPARATOR");
+  IElementType TYPE = new ROSMsgElementType("TYPE");
 
   IElementType COMMENT = new ROSMsgTokenType("COMMENT");
   IElementType CONST_ASSIGNER = new ROSMsgTokenType("CONST_ASSIGNER");
   IElementType CRLF = new ROSMsgTokenType("CRLF");
+  IElementType CUSTOM_TYPE = new ROSMsgTokenType("CUSTOM_TYPE");
   IElementType KEYTYPE = new ROSMsgTokenType("KEYTYPE");
   IElementType LBRACKET = new ROSMsgTokenType("LBRACKET");
   IElementType NAME = new ROSMsgTokenType("NAME");
@@ -23,7 +26,6 @@ public interface ROSMsgTypes {
   IElementType RBRACKET = new ROSMsgTokenType("RBRACKET");
   IElementType SERVICE_SEPARATOR = new ROSMsgTokenType("SERVICE_SEPARATOR");
   IElementType STRING = new ROSMsgTokenType("STRING");
-  IElementType TYPE = new ROSMsgTokenType("TYPE");
 
   class Factory {
     public static PsiElement createElement(ASTNode node) {
@@ -31,11 +33,17 @@ public interface ROSMsgTypes {
        if (type == CONST) {
         return new ROSMsgConstImpl(node);
       }
+      else if (type == FIELD_NAME) {
+        return new ROSMsgFieldNameImpl(node);
+      }
       else if (type == PROPERTY) {
         return new ROSMsgPropertyImpl(node);
       }
       else if (type == SEPARATOR) {
         return new ROSMsgSeparatorImpl(node);
+      }
+      else if (type == TYPE) {
+        return new ROSMsgTypeImpl(node);
       }
       throw new AssertionError("Unknown element type: " + type);
     }

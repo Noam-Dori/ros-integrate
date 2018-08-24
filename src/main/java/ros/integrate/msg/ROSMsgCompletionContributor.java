@@ -3,16 +3,23 @@ package ros.integrate.msg;
 import com.intellij.codeInsight.completion.*;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.openapi.editor.CaretModel;
+import com.intellij.openapi.extensions.Extensions;
 import com.intellij.patterns.PlatformPatterns;
+import com.intellij.psi.PsiElement;
 import com.intellij.util.ProcessingContext;
-import ros.integrate.ROSIcons;
-import ros.integrate.msg.psi.ROSMsgTypes;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import ros.integrate.ROSIcons;
+import ros.integrate.msg.psi.ROSMsgProperty;
+import ros.integrate.msg.psi.ROSMsgTypes;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class ROSMsgCompletionContributor extends CompletionContributor {
     public ROSMsgCompletionContributor() {
         extend(CompletionType.BASIC,
-                PlatformPatterns.psiElement(ROSMsgTypes.TYPE).withLanguage(ROSMsgLanguage.INSTANCE),
+                PlatformPatterns.psiElement(ROSMsgTypes.CUSTOM_TYPE).withLanguage(ROSMsgLanguage.INSTANCE),
                 new CompletionProvider<CompletionParameters>() {
                     public void addCompletions(@NotNull CompletionParameters parameters,
                                                ProcessingContext context,
@@ -53,5 +60,33 @@ public class ROSMsgCompletionContributor extends CompletionContributor {
                     }
                 }
         );
+        extend(CompletionType.BASIC,PlatformPatterns.psiElement(ROSMsgTypes.NAME),
+                new CompletionProvider<CompletionParameters>() {
+                    public void addCompletions(@NotNull CompletionParameters parameters,
+                                               ProcessingContext context,
+                                               @NotNull CompletionResultSet resultSet) {
+                        ROSMsgNameSuggestionProvider provider = findProvider();
+                        PsiElement element = parameters.getPosition();
+                        Set<String> stringResults = new HashSet<>();
+                        if (provider != null) {
+                            provider.getSuggestedNames(element,((ROSMsgProperty)element.getParent().getParent()).getType(),stringResults);
+                        }
+
+                        stringResults.forEach(result -> resultSet.addElement(LookupElementBuilder.create(result)));
+                    }
+                }
+        );
+    }
+
+    @Nullable
+    private static ROSMsgNameSuggestionProvider findProvider() {
+        Object[] extensions = Extensions.getExtensions(ROSMsgNameSuggestionProvider.EP_NAME);
+
+        for (Object extension : extensions) {
+            if (extension instanceof ROSMsgNameSuggestionProvider) {
+                return (ROSMsgNameSuggestionProvider)extension;
+            }
+        }
+        return null;
     }
 }

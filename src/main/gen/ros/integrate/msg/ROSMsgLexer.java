@@ -572,7 +572,7 @@ class ROSMsgLexer implements FlexLexer {
       else {
         switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
           case 1: 
-            { yybegin(END_TYPE); return ROSMsgTypes.TYPE;
+            { yybegin(END_TYPE); return ROSMsgTypes.CUSTOM_TYPE;
             } 
             // fall through
           case 27: break;

@@ -11,11 +11,19 @@ public class ROSMsgVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitFieldName(@NotNull ROSMsgFieldName o) {
+    visitPsiElement(o);
+  }
+
   public void visitProperty(@NotNull ROSMsgProperty o) {
     visitPsiElement(o);
   }
 
   public void visitSeparator(@NotNull ROSMsgSeparator o) {
+    visitPsiElement(o);
+  }
+
+  public void visitType(@NotNull ROSMsgType o) {
     visitPsiElement(o);
   }
 

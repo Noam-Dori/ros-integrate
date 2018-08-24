@@ -23,6 +23,7 @@
         <lang.commenter language="RosMSG" implementationClass="ros.integrate.msg.ROSMsgCommenter"/>
         <annotator language="RosMSG" implementationClass="ros.integrate.msg.annotate.ROSMsgAnnotator"/>
         <gotoSymbolContributor implementation="ros.integrate.msg.ROSMsgChooseByNameContributor"/>
+        <nameSuggestionProvider implementation="ros.integrate.msg.ROSMsgNameSuggestionProvider" />
     </extensions>
 
     <actions>

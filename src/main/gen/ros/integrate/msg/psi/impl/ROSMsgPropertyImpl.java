@@ -33,23 +33,34 @@ public class ROSMsgPropertyImpl extends ASTWrapperPsiElement implements ROSMsgPr
     return findChildByClass(ROSMsgConst.class);
   }
 
-  @Nullable
-  public String getGeneralType() {
-    return ROSMsgPsiImplUtil.getGeneralType(this);
+  @Override
+  @NotNull
+  public ROSMsgFieldName getFieldName() {
+    return findNotNullChildByClass(ROSMsgFieldName.class);
+  }
+
+  @Override
+  @NotNull
+  public ROSMsgType getType() {
+    return findNotNullChildByClass(ROSMsgType.class);
   }
 
   @Nullable
-  public String getType() {
-    return ROSMsgPsiImplUtil.getType(this);
+  public String getCustomType() {
+    return ROSMsgPsiImplUtil.getCustomType(this);
+  }
+
+  @Nullable
+  public String getRawType() {
+    return ROSMsgPsiImplUtil.getRawType(this);
   }
 
   public PsiElement setType(String newName) {
     return ROSMsgPsiImplUtil.setType(this, newName);
   }
 
-  @Nullable
-  public String getName() {
-    return ROSMsgPsiImplUtil.getName(this);
+  public PsiElement setFieldName(String newName) {
+    return ROSMsgPsiImplUtil.setFieldName(this, newName);
   }
 
   public int getArraySize() {
@@ -58,11 +69,6 @@ public class ROSMsgPropertyImpl extends ASTWrapperPsiElement implements ROSMsgPr
 
   public PsiElement removeArray() {
     return ROSMsgPsiImplUtil.removeArray(this);
-  }
-
-  @Nullable
-  public String getCConst() {
-    return ROSMsgPsiImplUtil.getCConst(this);
   }
 
   @NotNull
