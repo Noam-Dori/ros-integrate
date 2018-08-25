@@ -6,7 +6,6 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.msg.ROSMsgUtil;
-import ros.integrate.msg.intention.RemoveFieldQuickFix;
 import ros.integrate.msg.intention.RenameElementQuickFix;
 import ros.integrate.msg.psi.ROSMsgProperty;
 import ros.integrate.msg.psi.ROSMsgTypes;
@@ -35,7 +34,7 @@ class ROSMsgNameAnnotator {
             TextRange range = new TextRange(name.getTextRange().getStartOffset(),
                     name.getTextRange().getEndOffset());
             Annotation ann = holder.createErrorAnnotation(range, "Field name '" + fieldName + "' is already used");
-            ann.registerFix(new RemoveFieldQuickFix(prop));
+            ann.registerFix(new RenameElementQuickFix(prop,name));
         }
     }
 

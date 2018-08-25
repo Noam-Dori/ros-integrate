@@ -43,7 +43,7 @@ class ROSMsgTypeAnnotator {
             TextRange range = new TextRange(prop.getTextRange().getStartOffset(),
                     prop.getTextRange().getStartOffset() + fieldType.length());
             holder.createErrorAnnotation(range, "A message cannot contain itself")
-                    .registerFix(new RemovePropertyQuickFix(prop));
+                    .registerFix(new RemoveFieldQuickFix(prop));
         }
     }
 

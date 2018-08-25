@@ -6,8 +6,6 @@ import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
-import com.intellij.util.IncorrectOperationException;
-import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.msg.psi.ROSMsgProperty;
 
@@ -36,7 +34,7 @@ public class RemoveFieldQuickFix extends BaseIntentionAction {
     }
 
     @Override
-    public void invoke(@NotNull Project project, Editor editor, PsiFile file) throws IncorrectOperationException {
+    public void invoke(@NotNull Project project, Editor editor, PsiFile file) {
         ApplicationManager.getApplication().invokeLater(() ->
                 WriteCommandAction.writeCommandAction(project).run(() -> rosMsg.delete()));
     }
