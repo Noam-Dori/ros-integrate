@@ -3,7 +3,6 @@ package ros.integrate.msg;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.codeStyle.SuggestedNameInfo;
 import com.intellij.refactoring.rename.PreferrableNameSuggestionProvider;
-import com.intellij.util.containers.HashSetQueue;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.msg.psi.ROSMsgType;
 

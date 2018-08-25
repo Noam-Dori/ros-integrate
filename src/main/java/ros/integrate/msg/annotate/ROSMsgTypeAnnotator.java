@@ -1,6 +1,7 @@
 package ros.integrate.msg.annotate;
 
 import com.intellij.codeInspection.ProblemHighlightType;
+import com.intellij.lang.ASTNode;
 import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.openapi.project.Project;
@@ -48,19 +49,14 @@ class ROSMsgTypeAnnotator {
 
     void annTypeNotDefined() {
         // type search
-        // TODO: Search outside project (include files) for 'slashed' msgs
-        // TODO: if catkin is defined, use it to search for msgs.
-        List<String> types = ROSMsgUtil.findProjectMsgNames(project, fieldType,
-                prop.getContainingFile().getVirtualFile());
-        if (types.size() == 0 && // if we need special annotation for headers, then sure.
-                !(fieldType.equals("Header") && prop.getNode()
-                        .equals(prop.getContainingFile().getNode().findChildByType(ROSMsgTypes.PROPERTY))) &&
-                !fieldType.contains("/") && !fieldType.equals(msgName)) {
+        // TODO: Search outside project (include files) for 'slashed' msgs <CLION>
+        // TODO: if catkin is defined, use it to search for msgs. <CLION>
+        if (unknownType()) {
             TextRange range = new TextRange(prop.getTextRange().getStartOffset(),
                     prop.getTextRange().getStartOffset() + fieldType.length());
             if(fieldType.equals("Header")) {
                 Annotation ann = holder.createErrorAnnotation(range,
-                        "Header types must be prefixed with 'std_msgs/' if they are not the first field");
+                        "Header types must be prefixed with \"std_msgs/\" if they are not the first field");
                 ann.setHighlightType(ProblemHighlightType.LIKE_UNKNOWN_SYMBOL);
                 ann.registerFix(new ChangeHeaderQuickFix(prop));
             } else {
@@ -71,6 +67,17 @@ class ROSMsgTypeAnnotator {
                 );
             }
         }
+    }
+
+    private boolean unknownType() {
+        List<String> types = ROSMsgUtil.findProjectMsgNames(project, fieldType, null);
+        return types.isEmpty() && // found no message within project matching this field type.
+                !(fieldType.equals("Header") && prop.getNode().equals(getFirstProperty())) && // field is the header
+                !fieldType.contains("/"); // message is defined outside project
+    }
+
+    private ASTNode getFirstProperty() {
+        return prop.getContainingFile().getNode().findChildByType(ROSMsgTypes.PROPERTY);
     }
 
     @SuppressWarnings("SameParameterValue")

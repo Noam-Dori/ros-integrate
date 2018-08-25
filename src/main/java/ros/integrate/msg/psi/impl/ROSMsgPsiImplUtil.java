@@ -19,7 +19,7 @@ import java.util.Objects;
 public class ROSMsgPsiImplUtil {
     @Nullable
     public static String getCustomType(@NotNull ROSMsgProperty element) {
-        ASTNode keyNode = element.getNode().findChildByType(ROSMsgTypes.CUSTOM_TYPE);
+        ASTNode keyNode = element.getType().getNode().findChildByType(ROSMsgTypes.CUSTOM_TYPE);
         if (keyNode != null) {
             return keyNode.getText();
         } else {
@@ -29,7 +29,7 @@ public class ROSMsgPsiImplUtil {
 
     @Nullable
     public static String getRawType(@NotNull ROSMsgProperty element) {
-        ASTNode keyNode = element.getNode().findChildByType(ROSMsgTypes.KEYTYPE);
+        ASTNode keyNode = element.getType().getNode().findChildByType(ROSMsgTypes.KEYTYPE);
         if (keyNode != null) {
             return keyNode.getText();
         } else {
