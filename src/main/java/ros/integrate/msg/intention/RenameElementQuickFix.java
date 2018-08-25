@@ -4,11 +4,7 @@ import com.intellij.codeInsight.intention.impl.BaseIntentionAction;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.codeInsight.lookup.LookupManager;
-import com.intellij.codeInspection.ProblemDescriptorBase;
 import com.intellij.ide.DataManager;
-import com.intellij.injected.editor.EditorWindow;
-import com.intellij.lang.injection.InjectedLanguageManager;
-import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.extensions.Extensions;
 import com.intellij.openapi.project.Project;
@@ -24,8 +20,6 @@ import ros.integrate.msg.psi.ROSMsgProperty;
 
 import java.util.HashSet;
 import java.util.Set;
-
-import static com.intellij.psi.impl.source.tree.injected.InjectedLanguageUtil.getInjectedEditorForInjectedFile;
 
 public class RenameElementQuickFix extends BaseIntentionAction {
     private final ROSMsgProperty parent;
