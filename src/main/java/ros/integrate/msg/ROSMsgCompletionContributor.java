@@ -60,7 +60,7 @@ public class ROSMsgCompletionContributor extends CompletionContributor {
                                         handleNumericalInserts(insertionContext,INTEGRAL_SIZES,INTEGRAL_SIZES[0])));
                         for (String projectMsg : ROSMsgUtil.findProjectMsgNames(parameters.getEditor().getProject(),
                                 null,parameters.getOriginalFile().getVirtualFile())) {
-                            resultSet.addElement(LookupElementBuilder.create(projectMsg).withIcon(ROSIcons.MSG_FILE));
+                            resultSet.addElement(LookupElementBuilder.create(projectMsg).withIcon(ROSIcons.MsgFile));
                         }
                     }
                 }

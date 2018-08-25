@@ -106,7 +106,7 @@ public class ROSMsgPsiImplUtil {
 
             @Override
             public Icon getIcon(boolean unused) {
-                return ROSIcons.MSG_FILE;
+                return ROSIcons.MsgFile;
             }
         };
     }

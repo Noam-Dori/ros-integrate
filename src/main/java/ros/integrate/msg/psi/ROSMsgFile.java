@@ -49,7 +49,7 @@ public class ROSMsgFile extends PsiFileBase {
 
             @Override
             public Icon getIcon(boolean unused) {
-                return ROSIcons.MSG_FILE;
+                return ROSIcons.MsgFile;
             }
         };
     }

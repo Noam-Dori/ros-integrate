@@ -26,7 +26,7 @@ public class ROSMsgColorSettings implements ColorSettingsPage {
     @Nullable
     @Override
     public Icon getIcon() {
-        return ROSIcons.MSG_FILE;
+        return ROSIcons.MsgFile;
     }
 
     @NotNull

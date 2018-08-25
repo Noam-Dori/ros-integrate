@@ -44,6 +44,6 @@ public class ROSMsgFileType extends LanguageFileType {
     @Nullable
     @Override
     public Icon getIcon() {
-        return ROSIcons.MSG_FILE;
+        return ROSIcons.MsgFile;
     }
 }
