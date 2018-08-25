@@ -11,15 +11,15 @@ import java.util.*;
 public class ROSMsgNameSuggestionProvider extends PreferrableNameSuggestionProvider {
     @Nullable
     @Override
-    public SuggestedNameInfo getSuggestedNames(PsiElement element, @Nullable PsiElement nameSuggestionContext, Set<String> result) {
+    public SuggestedNameInfo getSuggestedNames(PsiElement fieldName, @Nullable PsiElement fieldType, Set<String> result) {
         Stack<String> parts = new Stack<>();
         String list = null;
         // for type "ClassType" suggest "type" and "class_type"
         // for type "Type[]" suggest "type_list" or "types"
         // for type "type[?]" suggest "type_array" or "types"
         // all of these are unless one exists already as such.
-        if(nameSuggestionContext instanceof ROSMsgType) { // context should be the complete type
-            String fullType = nameSuggestionContext.getText();
+        if(fieldType instanceof ROSMsgType) { // context should be the complete type
+            String fullType = fieldType.getText();
             // extract array part
             if(fullType.matches(".*\\[]")) {
                 list = "list";

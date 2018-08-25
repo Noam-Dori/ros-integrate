@@ -1,31 +1,31 @@
 package ros.integrate.msg.intention;
 
 import com.intellij.codeInsight.intention.impl.BaseIntentionAction;
+import com.intellij.codeInsight.lookup.LookupElement;
+import com.intellij.codeInsight.lookup.LookupElementBuilder;
+import com.intellij.codeInsight.lookup.LookupManager;
+import com.intellij.codeInspection.ProblemDescriptorBase;
 import com.intellij.ide.DataManager;
 import com.intellij.injected.editor.EditorWindow;
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.lang.injection.InjectedLanguageManager;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
-import com.intellij.openapi.actionSystem.DataContext;
-import com.intellij.openapi.actionSystem.impl.SimpleDataContext;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.extensions.Extensions;
-import com.intellij.openapi.fileEditor.impl.text.TextEditorPsiDataProvider;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.TextRange;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.intellij.refactoring.actions.RenameElementAction;
-import com.intellij.refactoring.rename.NameSuggestionProvider;
-import com.intellij.refactoring.rename.RenameHandlerRegistry;
-import com.intellij.spellchecker.quickfixes.DictionarySuggestionProvider;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.msg.ROSMsgNameSuggestionProvider;
 import ros.integrate.msg.psi.ROSMsgProperty;
 
-import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
+
+import static com.intellij.psi.impl.source.tree.injected.InjectedLanguageUtil.getInjectedEditorForInjectedFile;
 
 public class RenameElementQuickFix extends BaseIntentionAction {
     private final ROSMsgProperty parent;
@@ -57,38 +57,30 @@ public class RenameElementQuickFix extends BaseIntentionAction {
     @Override
     public void invoke(@NotNull Project project, Editor editor, PsiFile file) {
         ROSMsgNameSuggestionProvider provider = findProvider();
-        if (provider != null) {
-            //provider.setActive(true);
-        }
+        if (badElement == null || provider == null) return;
+        DataManager.getInstance()
+                .getDataContextFromFocusAsync()
+                .onSuccess(context -> {
 
-        HashMap<String, Object> map = new HashMap<>();
-        if (badElement == null) return;
-        if (editor == null) return;
+                    final TextRange textRange = badElement.getTextRange();
+                    if (textRange == null) return;
+                    final int documentLength = editor.getDocument().getTextLength();
+                    final int endOffset = getDocumentOffset(textRange.getEndOffset(), documentLength);
+                    final int startOffset = getDocumentOffset(textRange.getStartOffset(), documentLength);
+                    editor.getSelectionModel().setSelection(startOffset, endOffset);
+                    final String word = editor.getSelectionModel().getSelectedText();
 
-        if (editor instanceof EditorWindow) {
-            map.put(CommonDataKeys.EDITOR.getName(), editor);
-            map.put(CommonDataKeys.PSI_ELEMENT.getName(), badElement);
-        } else if (ApplicationManager.getApplication().isUnitTestMode()) { // TextEditorComponent / FiledEditorManagerImpl give away the data in real life
-            map.put(
-                    CommonDataKeys.PSI_ELEMENT.getName(),
-                    new TextEditorPsiDataProvider().getData(CommonDataKeys.PSI_ELEMENT.getName(), editor, editor.getCaretModel().getCurrentCaret())
-            );
-        }
-
-        final Boolean selectAll = editor.getUserData(RenameHandlerRegistry.SELECT_ALL);
-        try {
-            editor.putUserData(RenameHandlerRegistry.SELECT_ALL, true);
-            DataContext dataContext = SimpleDataContext.getSimpleContext(map, DataManager.getInstance().getDataContext(editor.getComponent()));
-            AnAction action = new RenameElementAction();
-            AnActionEvent event = AnActionEvent.createFromAnAction(action, null, "", dataContext);
-            action.actionPerformed(event);
-            if (provider != null) {
-                //provider.setActive(false);
-            }
-        }
-        finally {
-            editor.putUserData(RenameHandlerRegistry.SELECT_ALL, selectAll);
-        }
+                    if (word == null || StringUtil.isEmpty(word)) {
+                        return;
+                    }
+                    Set<String> result = new HashSet<>();
+                    provider.getSuggestedNames(badElement,parent.getType(),result);
+                    final LookupElement[] items = result
+                            .stream()
+                            .map(LookupElementBuilder::create)
+                            .toArray(LookupElement[]::new);
+                    LookupManager.getInstance(project).showLookup(editor, items);
+                });
     }
 
     @Nullable
@@ -101,5 +93,9 @@ public class RenameElementQuickFix extends BaseIntentionAction {
             }
         }
         return null;
+    }
+
+    private static int getDocumentOffset(int offset, int documentLength) {
+        return offset >=0 && offset <= documentLength ? offset : documentLength;
     }
 }
