@@ -1,64 +1,12 @@
 <idea-plugin>
-    <id>com.perfetto.ros-integrate</id>
+    <id>ros-integrate</id>
     <name>ROS Support</name>
     <vendor email="TheNODO55@gmail.com">Noam Dori</vendor>
+    <version>0.0.1</version>
 
     <description>
         This plugin enables support for the ROS framework
     </description>
-
-    <change-notes>
-        <![CDATA[
-        <p>0.0.1</p>
-        <ul>
-            <li>Added the ROSMsg language - a language for ROS Messages</li>
-            <li>ROSMsg has its own highlighting which can be customised</li>
-            <li>*.msg has its own file icon (will be extended to *.srv in due time)</li>
-            <li>ROSMsg contains a commenter (default: Ctrl+/ like all other commentators)</li>
-            <li>ROSMsg Autocompletion:
-                <ul>
-                    <li>non-numerical key-types: string, time, duration appear when writing a field type</li>
-                    <li>Header std_msg type appears as well</li>
-                    <li>numerical key-types: float, uint, int appear without their data size.<br/>
-                        When selected, a data-size auto-completion list is shown and a default is auto-written
-                    </li>
-                    <li>IDE will search for other message types defined in-project, and will display them</li>
-                    <li>when writing a field name, IDE will use its respective type to suggest a variety of possible names</li>
-                </ul>
-            </li>
-            <li>ROSMsg Annotation:
-                <ul>
-                    <li>added check for service separators, raises error if there are too many (1 or more)</li>
-                    <li>added check for in-package custom field types,
-                        raises errors if IDE could not find needed message file in project
-                    </li>
-                    <li>added check for custom-types, raises error if the message uses itself (recursion is not allowed!)</li>
-                    <!--<li>added another check for custom-types, raises error if they use illegal characters</li>-->
-                    <li>added check for header fields, raises error if "Header" is found as a field type but not as the first one</li>
-                    <li>added check for constants, raises error if it finds an array with a constant</li>
-                    <li>added another check for constants, raises error if a custom-type, time, or duration have a constant</li>
-                    <li>added yet another check for constants, raises error if the field type cannot handle the provided constant</li>
-                    <li>added check for field names, raises error is a certain field name is used twice in a message</li>
-                    <li>added another check for field names, raises error if the name uses illegal characters</li>
-                </ul>
-            </li>
-            <li>ROSMsg Intention and Fixes:
-                <ul>
-                    <li>message-is-not-defined can be fixed by adding a new message file. This intention has its own dialog</li>
-                    <li>header-not-first-field can be fixed by adding a prefix to the type</li>
-                    <li>type-cannot-handle-const and illegal-const-type can be fixed by changing the keytype accordingly</li>
-                    <li>too-many-service-separators can be fixed by either removing that specific separator, or all of them if more than one are present</li>
-                    <li>array-with-constant can be fixed by removing the array part</li>
-                    <li>array-with-constant and illegal-const-type can be fixed by removing the constant</li>
-                    <li>self-containing-message can be fixed by removing the field</li>
-                    <li>duplicate-name and illegal-field-name can be fixed by renaming the field</li>
-                    <!--<li>illegal-field-type can be fixed by renaming the type</li>-->
-                    <!--<li>named fields and comments have a spellchecker running</li>-->
-                </ul>
-            </li>
-        </ul>
-        ]]>
-    </change-notes>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
          on how to target different products -->
@@ -67,14 +15,14 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <fileTypeFactory implementation="ros.integrate.msg.ROSMsgFileTypeFactory"/>
-        <lang.parserDefinition language="RosMSG" implementationClass="ros.integrate.msg.ROSMsgParserDefinition"/>
-        <lang.syntaxHighlighterFactory language="RosMSG" implementationClass="ros.integrate.msg.ROSMsgSyntaxHighlighterFactory"/>
+        <lang.parserDefinition language="ROSMsg" implementationClass="ros.integrate.msg.ROSMsgParserDefinition"/>
+        <lang.syntaxHighlighterFactory language="ROSMsg" implementationClass="ros.integrate.msg.ROSMsgSyntaxHighlighterFactory"/>
         <colorSettingsPage implementation="ros.integrate.msg.ROSMsgColorSettings"/>
         <!--<additionalTextAttributes scheme="Default" file="colorSchemes/ROSMsgDefault.xml"/>-->
         <!--<additionalTextAttributes scheme="Dracula" file="colorSchemes/ROSMsgDarkDefault.xml"/>-->
-        <completion.contributor language="RosMSG" implementationClass="ros.integrate.msg.ROSMsgCompletionContributor"/>
-        <lang.commenter language="RosMSG" implementationClass="ros.integrate.msg.ROSMsgCommenter"/>
-        <annotator language="RosMSG" implementationClass="ros.integrate.msg.annotate.ROSMsgAnnotator"/>
+        <completion.contributor language="ROSMsg" implementationClass="ros.integrate.msg.ROSMsgCompletionContributor"/>
+        <lang.commenter language="ROSMsg" implementationClass="ros.integrate.msg.ROSMsgCommenter"/>
+        <annotator language="ROSMsg" implementationClass="ros.integrate.msg.annotate.ROSMsgAnnotator"/>
         <gotoSymbolContributor implementation="ros.integrate.msg.ROSMsgChooseByNameContributor"/>
         <nameSuggestionProvider implementation="ros.integrate.msg.ROSMsgNameSuggestionProvider" />
     </extensions>

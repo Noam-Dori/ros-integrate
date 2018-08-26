@@ -6,6 +6,6 @@ public class ROSMsgLanguage extends Language {
     public static final ROSMsgLanguage INSTANCE = new ROSMsgLanguage();
 
     private ROSMsgLanguage() {
-        super("RosMSG");
+        super("ROSMsg");
     }
 }
