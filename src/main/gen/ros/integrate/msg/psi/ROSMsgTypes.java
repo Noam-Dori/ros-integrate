@@ -8,18 +8,19 @@ import ros.integrate.msg.psi.impl.*;
 
 public interface ROSMsgTypes {
 
+  IElementType COMMENT = new ROSMsgElementType("COMMENT");
   IElementType CONST = new ROSMsgElementType("CONST");
   IElementType FIELD_NAME = new ROSMsgElementType("FIELD_NAME");
   IElementType PROPERTY = new ROSMsgElementType("PROPERTY");
   IElementType SEPARATOR = new ROSMsgElementType("SEPARATOR");
   IElementType TYPE = new ROSMsgElementType("TYPE");
 
-  IElementType COMMENT = new ROSMsgTokenType("COMMENT");
   IElementType CONST_ASSIGNER = new ROSMsgTokenType("CONST_ASSIGNER");
   IElementType CRLF = new ROSMsgTokenType("CRLF");
   IElementType CUSTOM_TYPE = new ROSMsgTokenType("CUSTOM_TYPE");
   IElementType KEYTYPE = new ROSMsgTokenType("KEYTYPE");
   IElementType LBRACKET = new ROSMsgTokenType("LBRACKET");
+  IElementType LINE_COMMENT = new ROSMsgTokenType("LINE_COMMENT");
   IElementType NAME = new ROSMsgTokenType("NAME");
   IElementType NEG_OPERATOR = new ROSMsgTokenType("NEG_OPERATOR");
   IElementType NUMBER = new ROSMsgTokenType("NUMBER");
@@ -30,7 +31,10 @@ public interface ROSMsgTypes {
   class Factory {
     public static PsiElement createElement(ASTNode node) {
       IElementType type = node.getElementType();
-       if (type == CONST) {
+       if (type == COMMENT) {
+        return new ROSMsgCommentImpl(node);
+      }
+      else if (type == CONST) {
         return new ROSMsgConstImpl(node);
       }
       else if (type == FIELD_NAME) {

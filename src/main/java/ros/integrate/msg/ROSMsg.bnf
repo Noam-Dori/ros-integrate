@@ -17,7 +17,9 @@
 
 rosMsgFile ::= item_*
 
-private item_ ::= (separator|property|COMMENT|CRLF/*|fragment*/)
+private item_ ::= (separator|property|comment|CRLF/*|fragment*/)
+
+comment ::= LINE_COMMENT
 
 private type_ ::= (CUSTOM_TYPE|KEYTYPE)
 

@@ -587,7 +587,7 @@ class ROSMsgLexer implements FlexLexer {
             // fall through
           case 29: break;
           case 4: 
-            { yybegin(YYINITIAL); return ROSMsgTypes.COMMENT;
+            { yybegin(YYINITIAL); return ROSMsgTypes.LINE_COMMENT;
             } 
             // fall through
           case 30: break;

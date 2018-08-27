@@ -65,7 +65,7 @@ public class ROSMsgSyntaxHighlighter extends SyntaxHighlighterBase {
     @NotNull
     @Override
     public TextAttributesKey[] getTokenHighlights(IElementType tokenType) {
-        if (tokenType.equals(ROSMsgTypes.COMMENT)) {
+        if (tokenType.equals(ROSMsgTypes.LINE_COMMENT)) {
             return COMMENT_KEYS;
         } else if (tokenType.equals(TokenType.BAD_CHARACTER)) {
             return BAD_CHAR_KEYS;

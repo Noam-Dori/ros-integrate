@@ -23,7 +23,10 @@ public class ROSMsgParser implements PsiParser, LightPsiParser {
     boolean r;
     b = adapt_builder_(t, b, this, null);
     Marker m = enter_section_(b, 0, _COLLAPSE_, null);
-    if (t == CONST) {
+    if (t == COMMENT) {
+      r = comment(b, 0);
+    }
+    else if (t == CONST) {
       r = const_$(b, 0);
     }
     else if (t == FIELD_NAME) {
@@ -46,6 +49,18 @@ public class ROSMsgParser implements PsiParser, LightPsiParser {
 
   protected boolean parse_root_(IElementType t, PsiBuilder b, int l) {
     return rosMsgFile(b, l + 1);
+  }
+
+  /* ********************************************************** */
+  // LINE_COMMENT
+  public static boolean comment(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "comment")) return false;
+    if (!nextTokenIs(b, LINE_COMMENT)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, LINE_COMMENT);
+    exit_section_(b, m, COMMENT, r);
+    return r;
   }
 
   /* ********************************************************** */
@@ -91,13 +106,13 @@ public class ROSMsgParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // separator|property|COMMENT|CRLF
+  // separator|property|comment|CRLF
   static boolean item_(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "item_")) return false;
     boolean r;
     r = separator(b, l + 1);
     if (!r) r = property(b, l + 1);
-    if (!r) r = consumeToken(b, COMMENT);
+    if (!r) r = comment(b, l + 1);
     if (!r) r = consumeToken(b, CRLF);
     return r;
   }

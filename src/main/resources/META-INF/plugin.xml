@@ -25,6 +25,7 @@
         <annotator language="ROSMsg" implementationClass="ros.integrate.msg.annotate.ROSMsgAnnotator"/>
         <gotoSymbolContributor implementation="ros.integrate.msg.ROSMsgChooseByNameContributor"/>
         <nameSuggestionProvider implementation="ros.integrate.msg.ROSMsgNameSuggestionProvider" />
+        <spellchecker.support language="ROSMsg" implementationClass="ros.integrate.msg.ROSMsgSpellcheckingStrategy"/>
     </extensions>
 
     <actions>
