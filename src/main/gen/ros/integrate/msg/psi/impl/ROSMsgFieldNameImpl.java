@@ -8,10 +8,9 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static ros.integrate.msg.psi.ROSMsgTypes.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import ros.integrate.msg.psi.*;
 
-public class ROSMsgFieldNameImpl extends ASTWrapperPsiElement implements ROSMsgFieldName {
+public class ROSMsgFieldNameImpl extends ROSMsgIdentifierImpl implements ROSMsgFieldName {
 
   public ROSMsgFieldNameImpl(@NotNull ASTNode node) {
     super(node);

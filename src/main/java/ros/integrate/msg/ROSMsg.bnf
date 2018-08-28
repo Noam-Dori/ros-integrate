@@ -29,7 +29,10 @@ const ::= (NEG_OPERATOR? NUMBER | STRING)
 
 type ::= type_ (LBRACKET NUMBER? RBRACKET)?
 
-fieldName ::= NAME
+fieldName ::= NAME {
+    mixin="ros.integrate.msg.psi.impl.ROSMsgIdentifierImpl"
+    implements="ros.integrate.msg.psi.ROSMsgIdentifier"
+}
 
 property ::= type fieldName (CONST_ASSIGNER const)? {
 //    mixin="ros.integrate.msg.psi.impl.ROSMsgIdentifierImpl"
