@@ -18,14 +18,13 @@
         <lang.parserDefinition language="ROSMsg" implementationClass="ros.integrate.msg.ROSMsgParserDefinition"/>
         <lang.syntaxHighlighterFactory language="ROSMsg" implementationClass="ros.integrate.msg.ROSMsgSyntaxHighlighterFactory"/>
         <colorSettingsPage implementation="ros.integrate.msg.ROSMsgColorSettings"/>
-        <!--<additionalTextAttributes scheme="Default" file="colorSchemes/ROSMsgDefault.xml"/>-->
-        <!--<additionalTextAttributes scheme="Dracula" file="colorSchemes/ROSMsgDarkDefault.xml"/>-->
         <completion.contributor language="ROSMsg" implementationClass="ros.integrate.msg.ROSMsgCompletionContributor"/>
         <lang.commenter language="ROSMsg" implementationClass="ros.integrate.msg.ROSMsgCommenter"/>
         <annotator language="ROSMsg" implementationClass="ros.integrate.msg.annotate.ROSMsgAnnotator"/>
         <gotoSymbolContributor implementation="ros.integrate.msg.ROSMsgChooseByNameContributor"/>
         <nameSuggestionProvider implementation="ros.integrate.msg.ROSMsgNameSuggestionProvider" />
         <spellchecker.support language="ROSMsg" implementationClass="ros.integrate.msg.ROSMsgSpellcheckingStrategy"/>
+        <spellchecker.bundledDictionaryProvider implementation="ros.integrate.ROSBundledDictionaryProvider"/>
     </extensions>
 
     <actions>
