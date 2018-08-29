@@ -25,6 +25,7 @@
         <nameSuggestionProvider implementation="ros.integrate.msg.ROSMsgNameSuggestionProvider" />
         <spellchecker.support language="ROSMsg" implementationClass="ros.integrate.msg.ROSMsgSpellcheckingStrategy"/>
         <spellchecker.bundledDictionaryProvider implementation="ros.integrate.ROSBundledDictionaryProvider"/>
+        <lang.braceMatcher language="ROSMsg" implementationClass="ros.integrate.msg.ROSMsgBraceMatcher"/>
     </extensions>
 
     <actions>
