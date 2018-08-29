@@ -19,7 +19,7 @@ public class ROSMsgNameSuggestionProvider extends PreferrableNameSuggestionProvi
         // for type "type[?]" suggest "type_array" or "types"
         // all of these are unless one exists already as such.
         if(fieldType instanceof ROSMsgType) { // context should be the complete type
-            String fullType = fieldType.getText();
+            String fullType = fieldType.getText().replaceFirst(".*[\\\\/]","");
             // extract array part
             if(fullType.matches(".*\\[]")) {
                 list = "list";
