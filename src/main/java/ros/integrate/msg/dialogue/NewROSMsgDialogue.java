@@ -21,13 +21,18 @@ import com.intellij.refactoring.RefactoringBundle;
 import com.intellij.refactoring.copy.CopyFilesOrDirectoriesDialog;
 import com.intellij.refactoring.util.CommonRefactoringUtil;
 import com.intellij.ui.DocumentAdapter;
+import com.intellij.ui.JBColor;
 import com.intellij.ui.RecentsManager;
 import com.intellij.ui.TextFieldWithHistoryWithBrowseButton;
 import com.intellij.ui.components.JBLabel;
+import com.intellij.ui.components.JBTextField;
 import com.intellij.util.IncorrectOperationException;
 import com.intellij.util.ui.FormBuilder;
+import com.intellij.util.ui.JBUI;
+import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import ros.integrate.msg.annotate.ROSMsgTypeAnnotator;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -41,7 +46,8 @@ public class NewROSMsgDialogue extends DialogWrapper {
 
     private final String RECENT_KEYS = "NewMsg.RECENT_KEYS";
 
-    private final JTextField msgNameField = new MyTextField();
+    private final JBTextField msgNameField = new MyTextField();
+    private final JBLabel msgNameTooltip = createToolTip();
     private final JLabel msgNameLabel = new JLabel("Name:"),
             targetDirLabel = new JBLabel("Destination Folder:");
     private final TextFieldWithHistoryWithBrowseButton targetDirField = new TextFieldWithHistoryWithBrowseButton();
@@ -58,10 +64,15 @@ public class NewROSMsgDialogue extends DialogWrapper {
             targetDir = (PsiDirectory) prj.getBaseDir();
         }
 
+        msgNameField.setText(suggestedName);
+        msgNameField.getDocument().addDocumentListener(new DocumentAdapter() {
+            @Override
+            protected void textChanged(DocumentEvent e) { validateOKButton(); updateMsgNameTooltip();
+            }
+        });
+
         setTitle("Create ROS Message");
         init();
-
-        msgNameField.setText(suggestedName);
     }
 
     @Nullable
@@ -116,16 +127,43 @@ public class NewROSMsgDialogue extends DialogWrapper {
         String shortcutText = KeymapUtil.getFirstKeyboardShortcutText(
                 ActionManager.getInstance().getAction(IdeActions.ACTION_CODE_COMPLETION));
 
+        validateOKButton();
+        updateMsgNameTooltip();
         // grand return
         return FormBuilder.createFormBuilder()
                 .addLabeledComponent(msgNameLabel,msgNameField)
+                .addComponentToRightColumn(msgNameTooltip,1)
                 .addLabeledComponentFillVertically(targetDirLabel.getText(),targetDirField)
                 .addTooltip(RefactoringBundle.message("path.completion.shortcut", shortcutText))
                 .getPanel();
     }
 
+    private JBLabel createToolTip() {
+        final JBLabel label = new JBLabel("", UIUtil.ComponentStyle.SMALL);
+        label.setBorder(JBUI.Borders.emptyLeft(10));
+        return label;
+    }
+
     private void validateOKButton() {
-        setOKActionEnabled(targetDirField.getChildComponent().getText().length() > 0);
+        boolean nameValid = ROSMsgTypeAnnotator.getIllegalTypeMessage(msgNameField.getText(),true) == null;
+        boolean targetDirValid = targetDirField.getChildComponent().getText().length() > 0;
+        setOKActionEnabled(nameValid && targetDirValid);
+    }
+
+    private void updateMsgNameTooltip() {
+        String message = ROSMsgTypeAnnotator.getIllegalTypeMessage(msgNameField.getText(),true);
+        if (message == null) {
+            message = ROSMsgTypeAnnotator.getUnorthodoxTypeMessage(msgNameField.getText(),true);
+            if (message == null) {
+                msgNameTooltip.setText(" ");
+            } else {
+                msgNameTooltip.setForeground(new JBColor(0xC4A000,0xEFBF6A));
+                msgNameTooltip.setText(message);
+            }
+        } else {
+            msgNameTooltip.setForeground(JBColor.RED);
+            msgNameTooltip.setText(message);
+        }
     }
 
     @Override
@@ -170,7 +208,7 @@ public class NewROSMsgDialogue extends DialogWrapper {
         return targetDir;
     }
 
-    private static class MyTextField extends JTextField {
+    private static class MyTextField extends JBTextField {
         @Override
         public Dimension getPreferredSize() {
             Dimension size = super.getPreferredSize();

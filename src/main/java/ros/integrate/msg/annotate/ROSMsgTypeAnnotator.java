@@ -7,6 +7,7 @@ import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import ros.integrate.msg.ROSMsgUtil;
 import ros.integrate.msg.intention.*;
 import ros.integrate.msg.psi.ROSMsgConst;
@@ -16,7 +17,7 @@ import ros.integrate.msg.psi.ROSMsgTypes;
 import java.util.List;
 import java.util.Objects;
 
-class ROSMsgTypeAnnotator {
+public class ROSMsgTypeAnnotator {
     private final AnnotationHolder holder;
     private final Project project;
     private final ROSMsgProperty prop;
@@ -121,20 +122,39 @@ class ROSMsgTypeAnnotator {
     }
 
     void annIllegalType() {
-        String regex = "[a-zA-Z][a-zA-Z0-9_]*/?[a-zA-Z0-9_]*";
-        if(!fieldType.matches(regex)) {
+        String message = getIllegalTypeMessage(fieldType,false);
+        if (message != null) {
             TextRange range = new TextRange(prop.getType().getTextRange().getStartOffset(),
                     prop.getType().getTextRange().getEndOffset());
-            String message;
-            if(fieldType.substring(0,1).matches("[0-9/_]")) {
-                message = "Field types must start with a letter, not a number, underscore, or slash";
-            } else if(fieldType.matches(".*/.*/.*")) {
-                message = "Messages cannot have a sub-package, therefore field types may use only 1 slash";
-            } else {
-                message = "Field types may only contain alphanumeric characters or underscores";
-            }
             Annotation ann = holder.createErrorAnnotation(range, message);
             //ann.registerFix(new ChangeTypeQuickFix(prop,prop.getType()));
         }
+    }
+
+    @Nullable
+    public static String getIllegalTypeMessage(@NotNull String fieldType, boolean inProject) {
+        if(fieldType.equals("")) {return "Field types cannot be empty";}
+        if(!fieldType.matches("[a-zA-Z][a-zA-Z0-9_]*" + (inProject ? "" : "/?") + "[a-zA-Z0-9_]*")) {
+            if (fieldType.matches("[0-9/_].*")) {
+                return "Field types must start with a letter, not a number, underscore, or slash";
+            } else if (fieldType.matches(".*/.*"+ (inProject ? "" : "/" +".*"))) {
+                return inProject ? "Project messages cannot be placed within packages"
+                        : "Messages cannot have a sub-package, therefore field types may use only 1 slash";
+            } else {
+                return "Field types may only contain alphanumeric characters or underscores";
+            }
+        }
+        return null;
+    }
+
+    @Nullable
+    public static String getUnorthodoxTypeMessage(@NotNull String fieldType, boolean inProject) {
+        String camelCase = "([A-Za-z]|([0-9]([A-Z]|$)))*";
+        String regex = inProject ? "[A-Z]" + camelCase
+                : "[a-zA-Z][a-zA-Z0-9_]*/?[A-Z]" + camelCase;
+        if(!fieldType.matches(regex)) {
+            return "Field types should be written in CamelCase";
+        }
+        return null;
     }
 }
