@@ -37,6 +37,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class NewROSMsgDialogue extends DialogWrapper {
+    // TODO: 8/29/2018 add error annotation for illegal message types somehow. spelling would be nice too
 
     private final String RECENT_KEYS = "NewMsg.RECENT_KEYS";
 

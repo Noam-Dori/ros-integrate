@@ -6,7 +6,7 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.msg.ROSMsgUtil;
-import ros.integrate.msg.intention.RenameElementQuickFix;
+import ros.integrate.msg.intention.ChangeNameQuickFix;
 import ros.integrate.msg.psi.ROSMsgProperty;
 import ros.integrate.msg.psi.ROSMsgTypes;
 
@@ -34,11 +34,10 @@ class ROSMsgNameAnnotator {
             TextRange range = new TextRange(name.getTextRange().getStartOffset(),
                     name.getTextRange().getEndOffset());
             Annotation ann = holder.createErrorAnnotation(range, "Field name '" + fieldName + "' is already used");
-            ann.registerFix(new RenameElementQuickFix(prop,name));
+            ann.registerFix(new ChangeNameQuickFix(prop,name));
         }
     }
 
-    //TODO: fix: rename field (requires converting Psi element "name" to NamedPsiElement)
     void annIllegalName() {
         String regex = "[a-zA-Z][a-zA-Z0-9_]*";
         if(!fieldName.matches(regex)) {
@@ -51,7 +50,7 @@ class ROSMsgNameAnnotator {
                 message = "Field names may only contain alphanumeric characters or underscores";
             }
             Annotation ann = holder.createErrorAnnotation(range, message);
-            ann.registerFix(new RenameElementQuickFix(prop,name));
+            ann.registerFix(new ChangeNameQuickFix(prop,name));
         }
     }
 

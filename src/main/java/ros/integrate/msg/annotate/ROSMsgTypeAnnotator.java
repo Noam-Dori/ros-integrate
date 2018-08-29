@@ -120,8 +120,21 @@ class ROSMsgTypeAnnotator {
         }
     }
 
-    //TODO: msg types must follow the pattern [a-zA-Z][a-zA-Z0-9_]*/?[a-zA-Z0-9_]*
     void annIllegalType() {
-
+        String regex = "[a-zA-Z][a-zA-Z0-9_]*/?[a-zA-Z0-9_]*";
+        if(!fieldType.matches(regex)) {
+            TextRange range = new TextRange(prop.getType().getTextRange().getStartOffset(),
+                    prop.getType().getTextRange().getEndOffset());
+            String message;
+            if(fieldType.substring(0,1).matches("[0-9/_]")) {
+                message = "Field types must start with a letter, not a number, underscore, or slash";
+            } else if(fieldType.matches(".*/.*/.*")) {
+                message = "Messages cannot have a sub-package, therefore field types may use only 1 slash";
+            } else {
+                message = "Field types may only contain alphanumeric characters or underscores";
+            }
+            Annotation ann = holder.createErrorAnnotation(range, message);
+            //ann.registerFix(new ChangeTypeQuickFix(prop,prop.getType()));
+        }
     }
 }

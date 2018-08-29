@@ -21,11 +21,11 @@ import ros.integrate.msg.psi.ROSMsgProperty;
 import java.util.HashSet;
 import java.util.Set;
 
-public class RenameElementQuickFix extends BaseIntentionAction {
+public class ChangeNameQuickFix extends BaseIntentionAction {
     private final ROSMsgProperty parent;
     private final PsiElement badElement;
 
-    public RenameElementQuickFix(ROSMsgProperty prop, PsiElement element) {
+    public ChangeNameQuickFix(ROSMsgProperty prop, PsiElement element) {
         this.parent = prop;
         this.badElement = element;
     }
