@@ -7,4 +7,10 @@ import com.intellij.psi.PsiElement;
 
 public interface ROSMsgType extends PsiElement {
 
+  @Nullable
+  PsiElement raw();
+
+  @Nullable
+  PsiElement custom();
+
 }

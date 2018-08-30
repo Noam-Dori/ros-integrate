@@ -5,13 +5,10 @@ import com.intellij.lang.ASTNode;
 import com.intellij.navigation.ItemPresentation;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.Contract;
-import ros.integrate.ROSIcons;
-import ros.integrate.msg.psi.ROSMsgConst;
-import ros.integrate.msg.psi.ROSMsgElementFactory;
-import ros.integrate.msg.psi.ROSMsgProperty;
-import ros.integrate.msg.psi.ROSMsgTypes;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import ros.integrate.ROSIcons;
+import ros.integrate.msg.psi.*;
 
 import javax.swing.*;
 import java.util.Objects;
@@ -34,6 +31,26 @@ public class ROSMsgPsiImplUtil {
             return keyNode.getText();
         } else {
             return getCustomType(element);
+        }
+    }
+
+    @Nullable
+    public static PsiElement raw(@NotNull ROSMsgType type) {
+        ASTNode keyNode = type.getNode().findChildByType(ROSMsgTypes.KEYTYPE);
+        if (keyNode != null) {
+            return keyNode.getPsi();
+        } else {
+            return custom(type);
+        }
+    }
+
+    @Nullable
+    public static PsiElement custom(@NotNull ROSMsgType type) {
+        ASTNode keyNode = type.getNode().findChildByType(ROSMsgTypes.CUSTOM_TYPE);
+        if (keyNode != null) {
+            return keyNode.getPsi();
+        } else {
+            return null;
         }
     }
 

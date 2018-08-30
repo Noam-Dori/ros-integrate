@@ -4,6 +4,7 @@ import com.intellij.extapi.psi.PsiFileBase;
 import com.intellij.navigation.ItemPresentation;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.psi.FileViewProvider;
+import com.intellij.psi.util.PsiTreeUtil;
 import ros.integrate.ROSIcons;
 import ros.integrate.msg.ROSMsgFileType;
 import ros.integrate.msg.ROSMsgLanguage;
@@ -11,10 +12,23 @@ import ros.integrate.msg.ROSMsgUtil;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class ROSMsgFile extends PsiFileBase {
     public ROSMsgFile(@NotNull FileViewProvider viewProvider) {
         super(viewProvider, ROSMsgLanguage.INSTANCE);
+    }
+
+    @NotNull
+    public List<ROSMsgProperty> getProperties() {
+        List<ROSMsgProperty> result = new ArrayList<>();
+        ROSMsgProperty[] properties = PsiTreeUtil.getChildrenOfType(this, ROSMsgProperty.class);
+        if (properties != null) {
+            Collections.addAll(result, properties);
+        }
+        return result;
     }
 
     @NotNull

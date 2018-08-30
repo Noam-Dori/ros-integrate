@@ -6,6 +6,7 @@ import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.msg.ROSMsgUtil;
@@ -58,11 +59,11 @@ public class ROSMsgTypeAnnotator {
             if(fieldType.equals("Header")) {
                 Annotation ann = holder.createErrorAnnotation(range,
                         "Header types must be prefixed with \"std_msgs/\" if they are not the first field");
-                ann.setHighlightType(ProblemHighlightType.LIKE_UNKNOWN_SYMBOL);
+                ann.setHighlightType(ProblemHighlightType.ERROR);
                 ann.registerFix(new ChangeHeaderQuickFix(prop));
             } else {
                 Annotation ann = holder.createErrorAnnotation(range, "Unresolved message object");
-                ann.setHighlightType(ProblemHighlightType.LIKE_UNKNOWN_SYMBOL);
+                ann.setHighlightType(ProblemHighlightType.ERROR);
                 ann.registerFix(new AddROSMsgQuickFix(
                         Objects.requireNonNull(prop.getNode().findChildByType(ROSMsgTypes.TYPE)).getPsi())
                 );
@@ -143,17 +144,6 @@ public class ROSMsgTypeAnnotator {
             } else {
                 return "Field types may only contain alphanumeric characters or underscores";
             }
-        }
-        return null;
-    }
-
-    @Nullable
-    public static String getUnorthodoxTypeMessage(@NotNull String fieldType, boolean inProject) {
-        String camelCase = "([A-Za-z]|([0-9]([A-Z]|$)))*";
-        String regex = inProject ? "[A-Z]" + camelCase
-                : "[a-zA-Z][a-zA-Z0-9_]*/?[A-Z]" + camelCase;
-        if(!fieldType.matches(regex)) {
-            return "Field types should be written in CamelCase";
         }
         return null;
     }

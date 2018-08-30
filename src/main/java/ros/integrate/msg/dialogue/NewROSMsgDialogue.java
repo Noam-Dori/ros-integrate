@@ -33,6 +33,7 @@ import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.msg.annotate.ROSMsgTypeAnnotator;
+import ros.integrate.msg.inspection.CamelCaseInspection;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -153,7 +154,7 @@ public class NewROSMsgDialogue extends DialogWrapper {
     private void updateMsgNameTooltip() {
         String message = ROSMsgTypeAnnotator.getIllegalTypeMessage(msgNameField.getText(),true);
         if (message == null) {
-            message = ROSMsgTypeAnnotator.getUnorthodoxTypeMessage(msgNameField.getText(),true);
+            message = CamelCaseInspection.getUnorthodoxTypeMessage(msgNameField.getText(),true);
             if (message == null) {
                 msgNameTooltip.setText(" ");
             } else {
