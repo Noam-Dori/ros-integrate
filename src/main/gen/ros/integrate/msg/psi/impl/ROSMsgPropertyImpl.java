@@ -35,8 +35,8 @@ public class ROSMsgPropertyImpl extends ASTWrapperPsiElement implements ROSMsgPr
 
   @Override
   @NotNull
-  public ROSMsgFieldName getFieldName() {
-    return findNotNullChildByClass(ROSMsgFieldName.class);
+  public ROSMsgLabel getLabel() {
+    return findNotNullChildByClass(ROSMsgLabel.class);
   }
 
   @Override
@@ -45,39 +45,13 @@ public class ROSMsgPropertyImpl extends ASTWrapperPsiElement implements ROSMsgPr
     return findNotNullChildByClass(ROSMsgType.class);
   }
 
-  @Nullable
-  public String getCustomType() {
-    return ROSMsgPsiImplUtil.getCustomType(this);
-  }
-
-  @Nullable
-  public String getRawType() {
-    return ROSMsgPsiImplUtil.getRawType(this);
-  }
-
-  public PsiElement setType(String newName) {
-    return ROSMsgPsiImplUtil.setType(this, newName);
-  }
-
-  public PsiElement setFieldName(String newName) {
-    return ROSMsgPsiImplUtil.setFieldName(this, newName);
-  }
-
-  public int getArraySize() {
-    return ROSMsgPsiImplUtil.getArraySize(this);
-  }
-
-  public PsiElement removeArray() {
-    return ROSMsgPsiImplUtil.removeArray(this);
-  }
-
   @NotNull
   public ItemPresentation getPresentation() {
     return ROSMsgPsiImplUtil.getPresentation(this);
   }
 
-  public boolean canHandle(@NotNull ROSMsgConst msgConst) {
-    return ROSMsgPsiImplUtil.canHandle(this, msgConst);
+  public boolean isLegalConstant() {
+    return ROSMsgPsiImplUtil.isLegalConstant(this);
   }
 
 }

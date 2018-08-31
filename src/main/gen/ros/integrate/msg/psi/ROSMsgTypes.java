@@ -10,7 +10,7 @@ public interface ROSMsgTypes {
 
   IElementType COMMENT = new ROSMsgElementType("COMMENT");
   IElementType CONST = new ROSMsgElementType("CONST");
-  IElementType FIELD_NAME = new ROSMsgElementType("FIELD_NAME");
+  IElementType LABEL = new ROSMsgElementType("LABEL");
   IElementType PROPERTY = new ROSMsgElementType("PROPERTY");
   IElementType SEPARATOR = new ROSMsgElementType("SEPARATOR");
   IElementType TYPE = new ROSMsgElementType("TYPE");
@@ -37,8 +37,8 @@ public interface ROSMsgTypes {
       else if (type == CONST) {
         return new ROSMsgConstImpl(node);
       }
-      else if (type == FIELD_NAME) {
-        return new ROSMsgFieldNameImpl(node);
+      else if (type == LABEL) {
+        return new ROSMsgLabelImpl(node);
       }
       else if (type == PROPERTY) {
         return new ROSMsgPropertyImpl(node);

@@ -12,28 +12,14 @@ public interface ROSMsgProperty extends PsiElement {
   ROSMsgConst getConst();
 
   @NotNull
-  ROSMsgFieldName getFieldName();
+  ROSMsgLabel getLabel();
 
   @NotNull
   ROSMsgType getType();
 
-  @Nullable
-  String getCustomType();
-
-  @Nullable
-  String getRawType();
-
-  PsiElement setType(String newName);
-
-  PsiElement setFieldName(String newName);
-
-  int getArraySize();
-
-  PsiElement removeArray();
-
   @NotNull
   ItemPresentation getPresentation();
 
-  boolean canHandle(@NotNull ROSMsgConst msgConst);
+  boolean isLegalConstant();
 
 }

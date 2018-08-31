@@ -26,7 +26,7 @@ public class ROSMsgTypeImpl extends ASTWrapperPsiElement implements ROSMsgType {
     else super.accept(visitor);
   }
 
-  @Nullable
+  @NotNull
   public PsiElement raw() {
     return ROSMsgPsiImplUtil.raw(this);
   }
@@ -34,6 +34,18 @@ public class ROSMsgTypeImpl extends ASTWrapperPsiElement implements ROSMsgType {
   @Nullable
   public PsiElement custom() {
     return ROSMsgPsiImplUtil.custom(this);
+  }
+
+  public int size() {
+    return ROSMsgPsiImplUtil.size(this);
+  }
+
+  public PsiElement removeArray() {
+    return ROSMsgPsiImplUtil.removeArray(this);
+  }
+
+  public PsiElement set(String newFullType) {
+    return ROSMsgPsiImplUtil.set(this, newFullType);
   }
 
 }

@@ -10,7 +10,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.msg.ROSMsgUtil;
 import ros.integrate.msg.intention.*;
-import ros.integrate.msg.psi.ROSMsgConst;
 import ros.integrate.msg.psi.ROSMsgProperty;
 import ros.integrate.msg.psi.ROSMsgTypes;
 
@@ -85,7 +84,7 @@ public class ROSMsgTypeAnnotator {
 
     @SuppressWarnings("SameParameterValue")
     boolean annArrayConst(boolean isRemoveIntentionActive, @NotNull String constant) {
-        if(prop.getArraySize() != -1) {
+        if(prop.getType().size() != -1) {
             int start = Objects.requireNonNull(prop.getNode().findChildByType(ROSMsgTypes.CONST)).getStartOffset();
             TextRange range = new TextRange(start, start + constant.length());
             Annotation ann = holder.createErrorAnnotation(range, "Array fields cannot be assigned a constant.");
@@ -114,8 +113,7 @@ public class ROSMsgTypeAnnotator {
     }
 
     void annConstTooBig(boolean isBadType, @NotNull String constant) {
-        if(!isBadType && !prop.canHandle((ROSMsgConst)
-                Objects.requireNonNull(prop.getNode().findChildByType(ROSMsgTypes.CONST)).getPsi())) {
+        if(!isBadType && !prop.isLegalConstant()) {
             int start = Objects.requireNonNull(prop.getNode().findChildByType(ROSMsgTypes.CONST)).getStartOffset();
             TextRange range = new TextRange(start, start + constant.length());
             Annotation ann = holder.createErrorAnnotation(range, "The constant's value cannot fit within the given type.");

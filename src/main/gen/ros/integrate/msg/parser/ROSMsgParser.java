@@ -29,8 +29,8 @@ public class ROSMsgParser implements PsiParser, LightPsiParser {
     else if (t == CONST) {
       r = const_$(b, 0);
     }
-    else if (t == FIELD_NAME) {
-      r = fieldName(b, 0);
+    else if (t == LABEL) {
+      r = label(b, 0);
     }
     else if (t == PROPERTY) {
       r = property(b, 0);
@@ -94,18 +94,6 @@ public class ROSMsgParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // NAME
-  public static boolean fieldName(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "fieldName")) return false;
-    if (!nextTokenIs(b, NAME)) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, NAME);
-    exit_section_(b, m, FIELD_NAME, r);
-    return r;
-  }
-
-  /* ********************************************************** */
   // separator|property|comment|CRLF
   static boolean item_(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "item_")) return false;
@@ -118,14 +106,26 @@ public class ROSMsgParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // type fieldName (CONST_ASSIGNER const)?
+  // NAME
+  public static boolean label(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "label")) return false;
+    if (!nextTokenIs(b, NAME)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, NAME);
+    exit_section_(b, m, LABEL, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // type label (CONST_ASSIGNER const)?
   public static boolean property(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "property")) return false;
     if (!nextTokenIs(b, "<property>", CUSTOM_TYPE, KEYTYPE)) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, PROPERTY, "<property>");
     r = type(b, l + 1);
-    r = r && fieldName(b, l + 1);
+    r = r && label(b, l + 1);
     r = r && property_2(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;

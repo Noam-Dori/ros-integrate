@@ -7,10 +7,16 @@ import com.intellij.psi.PsiElement;
 
 public interface ROSMsgType extends PsiElement {
 
-  @Nullable
+  @NotNull
   PsiElement raw();
 
   @Nullable
   PsiElement custom();
+
+  int size();
+
+  PsiElement removeArray();
+
+  PsiElement set(String newFullType);
 
 }

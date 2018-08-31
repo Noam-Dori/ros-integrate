@@ -14,33 +14,14 @@ import javax.swing.*;
 import java.util.Objects;
 
 public class ROSMsgPsiImplUtil {
-    @Nullable
-    public static String getCustomType(@NotNull ROSMsgProperty element) {
-        ASTNode keyNode = element.getType().getNode().findChildByType(ROSMsgTypes.CUSTOM_TYPE);
-        if (keyNode != null) {
-            return keyNode.getText();
-        } else {
-            return null;
-        }
-    }
 
-    @Nullable
-    public static String getRawType(@NotNull ROSMsgProperty element) {
-        ASTNode keyNode = element.getType().getNode().findChildByType(ROSMsgTypes.KEYTYPE);
-        if (keyNode != null) {
-            return keyNode.getText();
-        } else {
-            return getCustomType(element);
-        }
-    }
-
-    @Nullable
+    @NotNull
     public static PsiElement raw(@NotNull ROSMsgType type) {
         ASTNode keyNode = type.getNode().findChildByType(ROSMsgTypes.KEYTYPE);
         if (keyNode != null) {
             return keyNode.getPsi();
         } else {
-            return custom(type);
+            return Objects.requireNonNull(custom(type));
         }
     }
 
@@ -61,7 +42,7 @@ public class ROSMsgPsiImplUtil {
      *         0 if the element has variable size (since size 0 should not be used)
      *         otherwise, the size of the array
      */
-    public static int getArraySize(@NotNull ROSMsgProperty element) {
+    public static int size(@NotNull ROSMsgType element) {
         if (element.getNode().findChildByType(ROSMsgTypes.LBRACKET) != null) {
             ASTNode arrSize = element.getNode().findChildByType(ROSMsgTypes.NUMBER);
             if (arrSize != null) {
@@ -74,31 +55,25 @@ public class ROSMsgPsiImplUtil {
     }
 
     @Contract("_, _ -> param1")
-    public static PsiElement setType(@NotNull ROSMsgProperty element, String newName) {
-        ASTNode typeNode = element.getNode().findChildByType(ROSMsgTypes.TYPE);
-        if (typeNode != null) {
-
-            ROSMsgProperty property = ROSMsgElementFactory.createProperty(element.getProject(), newName);
-            ASTNode newTypeNode = property.getFirstChild().getNode();
-            element.getNode().replaceChild(typeNode, newTypeNode);
+    public static PsiElement set(@NotNull ROSMsgType element, String newFullType) {
+        if (element.getNode() != null) {
+            ROSMsgProperty property = ROSMsgElementFactory.createProperty(element.getProject(),newFullType);
+            element.replace(property.getType());
         }
         return element;
     }
 
     @Contract("_, _ -> param1")
-    public static PsiElement setFieldName(@NotNull ROSMsgProperty element, String newName) {
-        ASTNode typeNode = element.getNode().findChildByType(ROSMsgTypes.NAME);
-        if (typeNode != null) {
-
+    public static PsiElement set(@NotNull ROSMsgLabel element, String newName) {
+        if (element.getNode() != null) {
             ROSMsgProperty property = ROSMsgElementFactory.createProperty(element.getProject(),"dummy " + newName);
-            ASTNode newTypeNode = Objects.requireNonNull(property.getNode().findChildByType(ROSMsgTypes.NAME));
-            element.getNode().replaceChild(typeNode, newTypeNode);
+            element.replace(property.getLabel());
         }
         return element;
     }
 
     @Contract("_ -> param1")
-    public static PsiElement removeArray(@NotNull ROSMsgProperty element) {
+    public static PsiElement removeArray(@NotNull ROSMsgType element) {
         ASTNode lbr = element.getNode().findChildByType(ROSMsgTypes.LBRACKET);
         ASTNode rbr = element.getNode().findChildByType(ROSMsgTypes.RBRACKET);
         if (rbr != null && lbr != null) {
@@ -128,9 +103,11 @@ public class ROSMsgPsiImplUtil {
         };
     }
 
-    public static boolean canHandle(@NotNull ROSMsgProperty element, @NotNull ROSMsgConst msgConst) {
+    public static boolean isLegalConstant(@NotNull ROSMsgProperty element) {
+        ROSMsgConst msgConst = element.getConst();
+        if (msgConst == null) { return false; }
         String num = msgConst.getText();
-        String type = element.getRawType();
+        String type = element.getType().raw().getText();
         boolean f64 = "float64".equals(type),
                 f32 = "float32".equals(type),
                 i64 = "int64".equals(type),

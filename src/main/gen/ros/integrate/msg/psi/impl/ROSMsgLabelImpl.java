@@ -10,19 +10,23 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static ros.integrate.msg.psi.ROSMsgTypes.*;
 import ros.integrate.msg.psi.*;
 
-public class ROSMsgFieldNameImpl extends ROSMsgIdentifierImpl implements ROSMsgFieldName {
+public class ROSMsgLabelImpl extends ROSMsgIdentifierImpl implements ROSMsgLabel {
 
-  public ROSMsgFieldNameImpl(@NotNull ASTNode node) {
+  public ROSMsgLabelImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull ROSMsgVisitor visitor) {
-    visitor.visitFieldName(this);
+    visitor.visitLabel(this);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof ROSMsgVisitor) accept((ROSMsgVisitor)visitor);
     else super.accept(visitor);
+  }
+
+  public PsiElement set(String newName) {
+    return ROSMsgPsiImplUtil.set(this, newName);
   }
 
 }

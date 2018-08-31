@@ -37,7 +37,7 @@ public class ROSMsgUtil {
             ROSMsgProperty[] properties = PsiTreeUtil.getChildrenOfType(rosMsgFile, ROSMsgProperty.class);
             if (properties != null) {
                 for (ROSMsgProperty prop : properties) {
-                    if (name.equals(prop.getFieldName().getText())) {
+                    if (name.equals(prop.getLabel().getText())) {
                         count++;
                     }
                 }
@@ -48,8 +48,8 @@ public class ROSMsgUtil {
 
 
     public static boolean isFirstDefinition(PsiFile file, @NotNull ROSMsgProperty prop) {
-        PsiElement name = Objects.requireNonNull(prop.getNode().findChildByType(ROSMsgTypes.FIELD_NAME)).getPsi();
-        return name.equals(Objects.requireNonNull(getFirstNameInFile(file, Objects.requireNonNull(prop.getFieldName().getText()))));
+        ROSMsgLabel name = prop.getLabel();
+        return name.equals(Objects.requireNonNull(getFirstNameInFile(file, name.getText())));
     }
 
     @Nullable
@@ -57,8 +57,8 @@ public class ROSMsgUtil {
         ROSMsgProperty[] properties = PsiTreeUtil.getChildrenOfType(file, ROSMsgProperty.class);
         if (properties != null) {
             for (ROSMsgProperty property : properties) {
-                if (name.equals(property.getFieldName().getText())) {
-                    return Objects.requireNonNull(property.getNode().findChildByType(ROSMsgTypes.FIELD_NAME)).getPsi();
+                if (name.equals(property.getLabel().getText())) {
+                    property.getLabel();
                 }
             }
         }

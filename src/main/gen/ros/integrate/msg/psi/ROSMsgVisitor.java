@@ -15,7 +15,7 @@ public class ROSMsgVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-  public void visitFieldName(@NotNull ROSMsgFieldName o) {
+  public void visitLabel(@NotNull ROSMsgLabel o) {
     visitIdentifier(o);
   }
 

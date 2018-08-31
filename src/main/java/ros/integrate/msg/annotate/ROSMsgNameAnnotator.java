@@ -8,9 +8,6 @@ import org.jetbrains.annotations.NotNull;
 import ros.integrate.msg.ROSMsgUtil;
 import ros.integrate.msg.intention.ChangeNameQuickFix;
 import ros.integrate.msg.psi.ROSMsgProperty;
-import ros.integrate.msg.psi.ROSMsgTypes;
-
-import java.util.Objects;
 
 class ROSMsgNameAnnotator {
 
@@ -25,7 +22,7 @@ class ROSMsgNameAnnotator {
         this.holder = holder;
         this.prop = prop;
         this.fieldName = fieldName;
-        name = Objects.requireNonNull(prop.getNode().findChildByType(ROSMsgTypes.FIELD_NAME)).getPsi();
+        name = prop.getLabel();
     }
 
     void annDuplicateName() {

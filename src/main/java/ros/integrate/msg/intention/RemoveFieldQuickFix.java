@@ -25,7 +25,7 @@ public class RemoveFieldQuickFix extends BaseIntentionAction {
     @NotNull
     @Override
     public String getText() {
-        return "Remove field '" + rosMsg.getFieldName().getText() + "'";
+        return "Remove field '" + rosMsg.getLabel().getText() + "'";
     }
 
     @Override

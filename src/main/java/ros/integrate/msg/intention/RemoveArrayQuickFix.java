@@ -41,6 +41,6 @@ public class RemoveArrayQuickFix extends BaseIntentionAction {
     public void invoke(@NotNull Project project, Editor editor, PsiFile file)
             throws IncorrectOperationException {
         ApplicationManager.getApplication().invokeLater(() ->
-                WriteCommandAction.writeCommandAction(project).run(() -> rosMsg.removeArray()));
+                WriteCommandAction.writeCommandAction(project).run(() -> rosMsg.getType().removeArray()));
     }
 }
