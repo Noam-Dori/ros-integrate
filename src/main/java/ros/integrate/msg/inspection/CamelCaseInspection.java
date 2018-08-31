@@ -11,6 +11,7 @@ import com.intellij.util.SmartList;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import ros.integrate.msg.annotate.ROSMsgTypeAnnotator;
 import ros.integrate.msg.psi.ROSMsgFile;
 import ros.integrate.msg.psi.ROSMsgProperty;
 
@@ -37,7 +38,7 @@ public class CamelCaseInspection extends LocalInspectionTool {
         for (ROSMsgProperty property : properties) {
             ProgressManager.checkCanceled();
             PsiElement custom = property.getType().custom();
-            if (custom != null) {
+            if (custom != null && ROSMsgTypeAnnotator.getIllegalTypeMessage(custom.getText(),false) == null) {
                 String message = getUnorthodoxTypeMessage(custom.getText(),false);
                 if (message != null) {
                     descriptors.add(manager.createProblemDescriptor(custom, custom, message,

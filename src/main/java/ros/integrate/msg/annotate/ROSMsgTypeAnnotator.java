@@ -6,7 +6,6 @@ import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.msg.ROSMsgUtil;
@@ -49,7 +48,7 @@ public class ROSMsgTypeAnnotator {
         }
     }
 
-    void annTypeNotDefined() {
+    boolean annTypeNotDefined() {
         // type search
         // TODO: Search outside project (include files) for 'slashed' msgs <CLION>
         // TODO: if catkin is defined, use it to search for msgs. <CLION>
@@ -68,7 +67,9 @@ public class ROSMsgTypeAnnotator {
                         Objects.requireNonNull(prop.getNode().findChildByType(ROSMsgTypes.TYPE)).getPsi())
                 );
             }
+            return true;
         }
+        return false;
     }
 
     private boolean unknownType() {
