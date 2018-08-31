@@ -6,6 +6,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.msg.ROSMsgUtil;
+import ros.integrate.msg.psi.ROSMsgConst;
 import ros.integrate.msg.psi.ROSMsgProperty;
 import ros.integrate.msg.psi.ROSMsgSeparator;
 
@@ -17,37 +18,27 @@ public class ROSMsgAnnotator implements Annotator {
 
         if (element instanceof ROSMsgProperty) {
             ROSMsgProperty prop = (ROSMsgProperty) element;
-            ROSMsgTypeAnnotator annotator = new ROSMsgTypeAnnotator(holder, project, prop, msgName);
+            ROSMsgTypeAnnotator annotator = new ROSMsgTypeAnnotator(holder, project, prop.getType(), msgName);
 
-            PsiElement fieldType = prop.getType().custom();
-            if (fieldType != null) {
-                annotator.setFieldType(fieldType.getText());
+
+            if (prop.getType().custom() != null) {
                 annotator.annSelfContaining();
-                if(!annotator.annTypeNotDefined()) {
+                if (!annotator.annTypeNotDefined()) {
                     annotator.annIllegalType();
                 }
             }
 
-            fieldType = prop.getType().raw();
-            //noinspection ConstantConditions
-            if(fieldType != null) {
-                annotator.setFieldType(fieldType.getText());
-
-                // constant inspection:
-                String constant = null;
-                if (prop.getConst() != null) {
-                    constant = prop.getConst().getText();
-                }
-                if(constant != null) {
-                    boolean removeIntention = annotator.annArrayConst(false, constant), // only int,uint,float may use integer consts
-                            badTypeActivated = annotator.annBadTypeConst(removeIntention,constant);
-                    annotator.annConstTooBig(badTypeActivated,constant);
-                }
+            // constant inspection:
+            ROSMsgConst constant = prop.getConst();
+            if (constant != null) {
+                boolean removeIntention = annotator.annArrayConst(false, constant), // only int,uint,float may use integer consts
+                        badTypeActivated = annotator.annBadTypeConst(removeIntention, constant);
+                annotator.annConstTooBig(badTypeActivated, constant);
             }
 
             String fieldName = prop.getLabel().getText();
-            if(fieldName != null) {
-                ROSMsgNameAnnotator nameAnnotator = new ROSMsgNameAnnotator(holder, prop, fieldName);
+            if (fieldName != null) {
+                ROSMsgNameAnnotator nameAnnotator = new ROSMsgNameAnnotator(holder, prop.getLabel(), fieldName);
                 nameAnnotator.annDuplicateName();
                 nameAnnotator.annIllegalName();
             }

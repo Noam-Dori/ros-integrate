@@ -54,10 +54,11 @@ public class ROSMsgPsiImplUtil {
         }
     }
 
-    @Contract("_, _ -> param1")
-    public static PsiElement set(@NotNull ROSMsgType element, String newFullType) {
+    @Contract("_, _, _ -> param1")
+    public static PsiElement set(@NotNull ROSMsgType element, String rawType, int size) {
         if (element.getNode() != null) {
-            ROSMsgProperty property = ROSMsgElementFactory.createProperty(element.getProject(),newFullType);
+            String array = size == -1 ? "" : size == 0 ? "[]" : "[" + size + "]";
+            ROSMsgProperty property = ROSMsgElementFactory.createProperty(element.getProject(),rawType + array);
             element.replace(property.getType());
         }
         return element;

@@ -1,7 +1,6 @@
 package ros.integrate.msg.intention;
 
 import com.intellij.codeInsight.intention.impl.BaseIntentionAction;
-import com.intellij.lang.ASTNode;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Caret;
@@ -10,21 +9,20 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.IncorrectOperationException;
+import org.jetbrains.annotations.NotNull;
 import ros.integrate.msg.ROSMsgUtil;
 import ros.integrate.msg.psi.ROSMsgConst;
-import ros.integrate.msg.psi.ROSMsgProperty;
-import ros.integrate.msg.psi.ROSMsgTypes;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.Objects;
+import ros.integrate.msg.psi.ROSMsgType;
 
 public class ChangeKeytypeQuickFix extends BaseIntentionAction {
 
-    public ChangeKeytypeQuickFix(ROSMsgProperty field) {
-        rosMsg = field;
-    }
+    private final @NotNull ROSMsgType type;
+    private final @NotNull ROSMsgConst constant;
 
-    private ROSMsgProperty rosMsg;
+    public ChangeKeytypeQuickFix(@NotNull ROSMsgType type,@NotNull ROSMsgConst constant) {
+        this.type = type;
+        this.constant = constant;
+    }
 
     @NotNull
     @Override
@@ -48,18 +46,11 @@ public class ChangeKeytypeQuickFix extends BaseIntentionAction {
             throws IncorrectOperationException {
         ApplicationManager.getApplication().invokeLater(() ->
                 WriteCommandAction.writeCommandAction(project).run(() -> {
-                    ASTNode type = rosMsg.getNode().findChildByType(ROSMsgTypes.TYPE);
-                    type = type == null ? rosMsg.getNode().findChildByType(ROSMsgTypes.KEYTYPE) : type;
-                    PsiElement value = ROSMsgUtil.getBestFit(
-                            (ROSMsgConst) Objects.requireNonNull(rosMsg.getNode().findChildByType(ROSMsgTypes.CONST)).getPsi()
-                    );
-                    if (value != null && type != null) {
-                        type.getPsi().replace(value);
-                        int offset = rosMsg.getTextOffset();
-                        Caret caret = editor.getCaretModel().getCurrentCaret();
-                        caret.moveToOffset(offset);
-                        caret.moveCaretRelatively(value.getTextLength(),0,true,false);
-                    }
+                    PsiElement value = ROSMsgUtil.getBestFit(constant);
+                    type.raw().replace(value);
+                    Caret caret = editor.getCaretModel().getCurrentCaret();
+                    caret.moveToOffset(type.getTextOffset());
+                    caret.moveCaretRelatively(value.getTextLength(), 0, true, false);
                 }));
     }
 }

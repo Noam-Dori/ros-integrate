@@ -7,31 +7,30 @@ import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.msg.ROSMsgUtil;
 import ros.integrate.msg.intention.ChangeNameQuickFix;
+import ros.integrate.msg.psi.ROSMsgLabel;
 import ros.integrate.msg.psi.ROSMsgProperty;
 
 class ROSMsgNameAnnotator {
 
     private final @NotNull AnnotationHolder holder;
-    private final @NotNull ROSMsgProperty prop;
     private final @NotNull String fieldName;
     private final @NotNull PsiElement name;
 
     ROSMsgNameAnnotator(@NotNull AnnotationHolder holder,
-                        @NotNull ROSMsgProperty prop,
+                        @NotNull ROSMsgLabel name,
                         @NotNull String fieldName) {
         this.holder = holder;
-        this.prop = prop;
         this.fieldName = fieldName;
-        name = prop.getLabel();
+        this.name = name;
     }
 
     void annDuplicateName() {
-        int separatorCount = ROSMsgUtil.countNameInFile(prop.getContainingFile(),fieldName);
-        if (separatorCount > 1 && !ROSMsgUtil.isFirstDefinition(prop.getContainingFile(),prop)) {
+        int separatorCount = ROSMsgUtil.countNameInFile(name.getContainingFile(),fieldName);
+        if (separatorCount > 1 && !ROSMsgUtil.isFirstDefinition(name.getContainingFile(),(ROSMsgProperty) name.getParent())) {
             TextRange range = new TextRange(name.getTextRange().getStartOffset(),
                     name.getTextRange().getEndOffset());
             Annotation ann = holder.createErrorAnnotation(range, "Field name '" + fieldName + "' is already used");
-            ann.registerFix(new ChangeNameQuickFix(prop,name));
+            ann.registerFix(new ChangeNameQuickFix((ROSMsgProperty) name.getParent(),name));
         }
     }
 
@@ -47,7 +46,7 @@ class ROSMsgNameAnnotator {
                 message = "Field names may only contain alphanumeric characters or underscores";
             }
             Annotation ann = holder.createErrorAnnotation(range, message);
-            ann.registerFix(new ChangeNameQuickFix(prop,name));
+            ann.registerFix(new ChangeNameQuickFix((ROSMsgProperty) name.getParent(),name));
         }
     }
 

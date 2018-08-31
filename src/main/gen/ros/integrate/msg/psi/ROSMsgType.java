@@ -17,6 +17,6 @@ public interface ROSMsgType extends PsiElement {
 
   PsiElement removeArray();
 
-  PsiElement set(String newFullType);
+  PsiElement set(String rawType, int size);
 
 }
