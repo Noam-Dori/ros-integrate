@@ -66,8 +66,8 @@ FLOATING_POINT={NUMBER}+(\.)?{NUMBER}*|{NUMBER}*(\.)?{NUMBER}+
 <IN_ARRAY> {ARRAY_END}                                      { yybegin(END_ARRAY); return ROSMsgTypes.RBRACKET; }
 <IN_INT_ARRAY> {ARRAY_END}                                  { yybegin(END_INT_ARRAY); return ROSMsgTypes.RBRACKET; }
 
-<END_ARRAY,END_TYPE> {WHITE_SPACE}                          { yybegin(START_NAME); return TokenType.WHITE_SPACE; }
-<END_INT_ARRAY,END_INT_TYPE> {WHITE_SPACE}                  { yybegin(START_INT_NAME); return TokenType.WHITE_SPACE; }
+<END_ARRAY,END_TYPE> {WHITE_SPACE}+                         { yybegin(START_NAME); return TokenType.WHITE_SPACE; }
+<END_INT_ARRAY,END_INT_TYPE> {WHITE_SPACE}+                 { yybegin(START_INT_NAME); return TokenType.WHITE_SPACE; }
 
 <START_NAME> {NAME_CHARACTER}+                              { yybegin(END_NAME); return ROSMsgTypes.NAME; }
 <START_INT_NAME> {NAME_CHARACTER}+                          { yybegin(END_INT_NAME); return ROSMsgTypes.NAME; }
