@@ -26,4 +26,9 @@ public class ROSMsgCommentImpl extends ASTWrapperPsiElement implements ROSMsgCom
     else super.accept(visitor);
   }
 
+  @Nullable
+  public String getAnnotationIds() {
+    return ROSMsgPsiImplUtil.getAnnotationIds(this);
+  }
+
 }

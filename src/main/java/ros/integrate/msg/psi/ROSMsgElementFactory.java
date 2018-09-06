@@ -7,6 +7,13 @@ import com.intellij.psi.PsiFileFactory;
 import ros.integrate.msg.ROSMsgFileType;
 
 public class ROSMsgElementFactory {
+    public static final String ANNOTATION_PREFIX = "# noinspection ";
+
+    public static ROSMsgComment createAnnotation(Project project, String annotationText) {
+        final ROSMsgFile file = createFile(project, ANNOTATION_PREFIX + annotationText);
+        return (ROSMsgComment) file.getFirstChild();
+    }
+
     public static ROSMsgProperty createProperty(Project project, String name, String value) {
         final ROSMsgFile file = createFile(project, name + " " + value);
         return (ROSMsgProperty) file.getFirstChild();

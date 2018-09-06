@@ -19,7 +19,9 @@ rosMsgFile ::= item_*
 
 private item_ ::= (separator|property|comment|CRLF/*|fragment*/)
 
-comment ::= LINE_COMMENT
+comment ::= LINE_COMMENT {
+    methods=[getAnnotationIds]
+}
 
 private type_ ::= (CUSTOM_TYPE|KEYTYPE)
 

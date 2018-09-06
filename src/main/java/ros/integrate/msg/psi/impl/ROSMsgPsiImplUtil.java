@@ -8,12 +8,22 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.ROSIcons;
+import ros.integrate.msg.ROSMsgUtil;
 import ros.integrate.msg.psi.*;
 
 import javax.swing.*;
 import java.util.Objects;
 
+import static ros.integrate.msg.psi.ROSMsgElementFactory.ANNOTATION_PREFIX;
+
 public class ROSMsgPsiImplUtil {
+    @Nullable
+    public static String getAnnotationIds(@NotNull ROSMsgComment comment) {
+        if(ROSMsgUtil.checkAnnotation(comment) != null) {
+            return comment.getText().substring(ANNOTATION_PREFIX.length());
+        }
+        return null;
+    }
 
     @NotNull
     public static PsiElement raw(@NotNull ROSMsgType type) {

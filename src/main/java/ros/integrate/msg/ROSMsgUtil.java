@@ -18,6 +18,13 @@ import javax.annotation.Nullable;
 import java.util.*;
 
 public class ROSMsgUtil {
+    @Contract("null -> null")
+    public static ROSMsgComment checkAnnotation(PsiElement field) {
+        if(field instanceof ROSMsgComment && field.getText().startsWith(ROSMsgElementFactory.ANNOTATION_PREFIX)) {
+            return (ROSMsgComment) field;
+        }
+        return null;
+    }
 
     public static int countServiceSeparators(PsiFile file) {
         ROSMsgFile rosMsgFile = (ROSMsgFile) file;

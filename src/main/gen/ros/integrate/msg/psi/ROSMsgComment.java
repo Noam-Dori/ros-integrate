@@ -7,4 +7,7 @@ import com.intellij.psi.PsiElement;
 
 public interface ROSMsgComment extends PsiElement {
 
+  @Nullable
+  String getAnnotationIds();
+
 }

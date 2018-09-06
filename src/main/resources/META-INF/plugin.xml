@@ -27,8 +27,8 @@
         <spellchecker.bundledDictionaryProvider implementation="ros.integrate.ROSBundledDictionaryProvider"/>
         <lang.braceMatcher language="ROSMsg" implementationClass="ros.integrate.msg.ROSMsgBraceMatcher"/>
         <localInspection language="ROSMsg" implementationClass="ros.integrate.msg.inspection.CamelCaseInspection"
-                         level="WARNING" enabledByDefault="true" shortName="TypeNotCamelCase"
-                         groupName="ROS Messages/Services" displayName="Type in CamelCase"/>
+                         level="WARNING" enabledByDefault="true" shortName="type-not-camelcase"
+                         groupName="ROS" displayName="Type not in CamelCase"/>
     </extensions>
 
     <actions>

@@ -1,7 +1,6 @@
 package ros.integrate.msg.inspection;
 
 import com.intellij.codeInspection.InspectionManager;
-import com.intellij.codeInspection.LocalInspectionTool;
 import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.openapi.progress.ProgressManager;
@@ -17,7 +16,7 @@ import ros.integrate.msg.psi.ROSMsgProperty;
 
 import java.util.List;
 
-public class CamelCaseInspection extends LocalInspectionTool {
+public class CamelCaseInspection extends AbstractROSMsgInspection {
 
     @Contract(pure = true)
     @Nullable
@@ -36,18 +35,35 @@ public class CamelCaseInspection extends LocalInspectionTool {
         final List<ROSMsgProperty> properties = ((ROSMsgFile)file).getProperties();
         final List<ProblemDescriptor> descriptors = new SmartList<>();
         for (ROSMsgProperty property : properties) {
+            if(isSuppressedFor(property)) {continue;}
             ProgressManager.checkCanceled();
             PsiElement custom = property.getType().custom();
             if (custom != null && ROSMsgTypeAnnotator.getIllegalTypeMessage(custom.getText(),false) == null) {
                 String message = getUnorthodoxTypeMessage(custom.getText(),false);
                 if (message != null) {
-                    descriptors.add(manager.createProblemDescriptor(custom, custom, message,
-                            ProblemHighlightType.GENERIC_ERROR_OR_WARNING, isOnTheFly)); // TODO add CamelCaser
+                    ProblemDescriptor descriptor = manager.createProblemDescriptor(custom, custom, message,
+                            ProblemHighlightType.GENERIC_ERROR_OR_WARNING, isOnTheFly);
+                    descriptors.add(descriptor); // TODO add CamelCaser
                 }
             }
         }
         return descriptors.toArray(new ProblemDescriptor[0]);
     }
+
+//    private static class DerpQuickFix implements LocalQuickFix {
+//
+//        @Nls(capitalization = Nls.Capitalization.Sentence)
+//        @NotNull
+//        @Override
+//        public String getFamilyName() {
+//            return "Derp";
+//        }
+//
+//        @Override
+//        public void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor) {
+//
+//        }
+//    }
 
     /*private static class RemoveTrailingSpacesFix implements LocalQuickFix {
         private final boolean myIgnoreVisibleSpaces;
