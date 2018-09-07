@@ -1,9 +1,7 @@
 package ros.integrate.msg;
 
 import com.intellij.codeInsight.completion.*;
-import com.intellij.codeInsight.lookup.LookupElement;
-import com.intellij.codeInsight.lookup.LookupElementBuilder;
-import com.intellij.codeInsight.lookup.LookupManager;
+import com.intellij.codeInsight.lookup.*;
 import com.intellij.openapi.editor.CaretModel;
 import com.intellij.openapi.extensions.Extensions;
 import com.intellij.patterns.PlatformPatterns;
@@ -23,9 +21,11 @@ import java.util.Set;
 public class ROSMsgCompletionContributor extends CompletionContributor {
     private static LookupElement[] INTEGRAL_SIZES = Arrays.stream(new String[] {"8", "16", "32", "64"})
             .map(LookupElementBuilder::create)
+            .map(LookupElementBuilder::bold)
             .toArray(LookupElement[]::new);
     private static LookupElement[] FLOAT_SIZES = Arrays.stream(new String[] {"32", "64"})
             .map(LookupElementBuilder::create)
+            .map(LookupElementBuilder::bold)
             .toArray(LookupElement[]::new);
 
     public ROSMsgCompletionContributor() {
@@ -85,9 +85,9 @@ public class ROSMsgCompletionContributor extends CompletionContributor {
         );
     }
 
-    private void handleNumericalInserts(InsertionContext insertionContext,
-                                        LookupElement[] nextLookup,
-                                        @Nullable LookupElement currentSelection) {
+    private static void handleNumericalInserts(InsertionContext insertionContext,
+                                               LookupElement[] nextLookup,
+                                               @Nullable LookupElement currentSelection) {
         if (currentSelection != null) {
             String defaultSelection = currentSelection.getLookupString();
             CaretModel model = insertionContext.getEditor().getCaretModel();
