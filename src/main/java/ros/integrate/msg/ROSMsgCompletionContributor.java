@@ -36,8 +36,7 @@ public class ROSMsgCompletionContributor extends CompletionContributor {
                                                ProcessingContext context,
                                                @NotNull CompletionResultSet resultSet) {
                         resultSet.addElement(LookupElementBuilder.create("Header")
-                                .withTypeText("std_msgs/Header data-type")
-                                .withCaseSensitivity(false));
+                                .withTypeText("std_msgs/Header data-type"));
                         resultSet.addElement(LookupElementBuilder.create("string").bold()
                                 .withTypeText("string of characters"));
                         resultSet.addElement(LookupElementBuilder.create("time").bold()
@@ -61,8 +60,7 @@ public class ROSMsgCompletionContributor extends CompletionContributor {
                         for (String projectMsg : ROSMsgUtil.findProjectMsgNames(parameters.getEditor().getProject(),
                                 null,parameters.getOriginalFile().getVirtualFile())) {
                             resultSet.addElement(LookupElementBuilder.create(projectMsg)
-                                    .withIcon(ROSIcons.MsgFile)
-                                    .withCaseSensitivity(false));
+                                    .withIcon(ROSIcons.MsgFile));
                         }
                     }
                 }
