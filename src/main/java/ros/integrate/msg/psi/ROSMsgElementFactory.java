@@ -14,19 +14,19 @@ public class ROSMsgElementFactory {
         return (ROSMsgComment) file.getFirstChild();
     }
 
-    public static ROSMsgProperty createProperty(Project project, String name, String value) {
+    public static ROSMsgField createField(Project project, String name, String value) {
         final ROSMsgFile file = createFile(project, name + " " + value);
-        return (ROSMsgProperty) file.getFirstChild();
+        return (ROSMsgField) file.getFirstChild();
     }
 
-    public static ROSMsgProperty createProperty(Project project, String name) {
+    public static ROSMsgField createField(Project project, String name) {
         final ROSMsgFile file = createFile(project, name);
-        return (ROSMsgProperty) file.getFirstChild();
+        return (ROSMsgField) file.getFirstChild();
     }
 
-    public static ROSMsgProperty createSeperator(Project project) {
+    public static ROSMsgField createSeperator(Project project) {
         final ROSMsgFile file = createFile(project, "---");
-        return (ROSMsgProperty) file.getFirstChild();
+        return (ROSMsgField) file.getFirstChild();
     }
 
     public static PsiElement createCRLF(Project project) {

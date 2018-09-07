@@ -7,14 +7,14 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
-import ros.integrate.msg.psi.ROSMsgProperty;
+import ros.integrate.msg.psi.ROSMsgField;
 
 public class RemoveFieldQuickFix extends BaseIntentionAction {
-    public RemoveFieldQuickFix(ROSMsgProperty field) {
+    public RemoveFieldQuickFix(ROSMsgField field) {
         rosMsg = field;
     }
 
-    private ROSMsgProperty rosMsg;
+    private ROSMsgField rosMsg;
 
     @NotNull
     @Override

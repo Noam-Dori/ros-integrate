@@ -10,7 +10,7 @@ import com.intellij.util.ProcessingContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.ROSIcons;
-import ros.integrate.msg.psi.ROSMsgProperty;
+import ros.integrate.msg.psi.ROSMsgField;
 import ros.integrate.msg.psi.ROSMsgTypes;
 
 import java.util.Arrays;
@@ -76,7 +76,7 @@ public class ROSMsgCompletionContributor extends CompletionContributor {
                         PsiElement element = parameters.getPosition();
                         Set<String> stringResults = new HashSet<>();
                         if (provider != null) {
-                            provider.getSuggestedNames(element,((ROSMsgProperty)element.getParent().getParent()).getType(),stringResults);
+                            provider.getSuggestedNames(element,((ROSMsgField)element.getParent().getParent()).getType(),stringResults);
                         }
 
                         stringResults.forEach(result -> resultSet.addElement(LookupElementBuilder.create(result)));

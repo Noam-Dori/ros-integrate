@@ -5,7 +5,7 @@ import com.intellij.codeInspection.*;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.msg.psi.ROSMsgComment;
-import ros.integrate.msg.psi.ROSMsgProperty;
+import ros.integrate.msg.psi.ROSMsgField;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -27,8 +27,8 @@ public abstract class AbstractROSMsgInspection extends LocalInspectionTool imple
         return SuppressIntentionActionFromFix.convertBatchToSuppressIntentionActions(batchSuppressActions);
     }
 
-    protected boolean isSuppressedFor(ROSMsgProperty property) {
-        ROSMsgComment annotation = ROSMsgSuppressionUtil.findAnnotation(property);
+    protected boolean isSuppressedFor(ROSMsgField field) {
+        ROSMsgComment annotation = ROSMsgSuppressionUtil.findAnnotation(field);
         if(annotation == null) {return false;}
         return Arrays.asList(Objects.requireNonNull(annotation.getAnnotationIds()).split(",")).contains(getShortName());
     }

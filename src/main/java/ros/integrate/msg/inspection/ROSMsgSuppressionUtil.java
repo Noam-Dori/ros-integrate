@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import ros.integrate.msg.ROSMsgUtil;
 import ros.integrate.msg.psi.ROSMsgComment;
 import ros.integrate.msg.psi.ROSMsgElementFactory;
-import ros.integrate.msg.psi.ROSMsgProperty;
+import ros.integrate.msg.psi.ROSMsgField;
 
 public class ROSMsgSuppressionUtil {
 
@@ -67,7 +67,7 @@ public class ROSMsgSuppressionUtil {
     @Contract(value = "null -> null", pure = true)
     @Nullable
     public static PsiElement getElementToAnnotate(PsiElement container) {
-        if (container instanceof ROSMsgProperty) {
+        if (container instanceof ROSMsgField) {
             return container;
         }
         return null;

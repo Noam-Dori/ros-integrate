@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.msg.annotate.ROSMsgTypeAnnotator;
 import ros.integrate.msg.psi.ROSMsgFile;
-import ros.integrate.msg.psi.ROSMsgProperty;
+import ros.integrate.msg.psi.ROSMsgField;
 
 import java.util.List;
 
@@ -32,12 +32,12 @@ public class CamelCaseInspection extends AbstractROSMsgInspection {
 
     public ProblemDescriptor[] checkFile(@NotNull PsiFile file, @NotNull final InspectionManager manager, final boolean isOnTheFly) {
         if (!(file instanceof ROSMsgFile)) return null;
-        final List<ROSMsgProperty> properties = ((ROSMsgFile)file).getProperties();
+        final List<ROSMsgField> fields = ((ROSMsgFile)file).getFields();
         final List<ProblemDescriptor> descriptors = new SmartList<>();
-        for (ROSMsgProperty property : properties) {
-            if(isSuppressedFor(property)) {continue;}
+        for (ROSMsgField field : fields) {
+            if(isSuppressedFor(field)) {continue;}
             ProgressManager.checkCanceled();
-            PsiElement custom = property.getType().custom();
+            PsiElement custom = field.getType().custom();
             if (custom != null && ROSMsgTypeAnnotator.getIllegalTypeMessage(custom.getText(),false) == null) {
                 String message = getUnorthodoxTypeMessage(custom.getText(),false);
                 if (message != null) {
@@ -80,7 +80,7 @@ public class CamelCaseInspection extends AbstractROSMsgInspection {
         public void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor) {
             PsiElement element = descriptor.getPsiElement();
             PsiElement parent = element == null ? null : element.getParent();
-            if (!(parent instanceof PropertyImpl)) return;
+            if (!(parent instanceof FieldImpl)) return;
             TextRange textRange = getTrailingSpaces(element, myIgnoreVisibleSpaces);
             if (textRange != null) {
                 Document document = PsiDocumentManager.getInstance(project).getDocument(element.getContainingFile());

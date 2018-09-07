@@ -17,7 +17,7 @@
 
 rosMsgFile ::= item_*
 
-private item_ ::= (separator|property|comment|CRLF/*|fragment*/)
+private item_ ::= (separator|field|comment|CRLF/*|fragment*/)
 
 comment ::= LINE_COMMENT {
     methods=[getAnnotationIds]
@@ -39,7 +39,7 @@ label ::= NAME {
     methods=[set]
 }
 
-property ::= type label (CONST_ASSIGNER const)? {
+field ::= type label (CONST_ASSIGNER const)? {
     methods=[getPresentation isLegalConstant]
 }
 

@@ -29,11 +29,11 @@ public class ROSMsgParser implements PsiParser, LightPsiParser {
     else if (t == CONST) {
       r = const_$(b, 0);
     }
+    else if (t == FIELD) {
+      r = field(b, 0);
+    }
     else if (t == LABEL) {
       r = label(b, 0);
-    }
-    else if (t == PROPERTY) {
-      r = property(b, 0);
     }
     else if (t == SEPARATOR) {
       r = separator(b, 0);
@@ -94,12 +94,44 @@ public class ROSMsgParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // separator|property|comment|CRLF
+  // type label (CONST_ASSIGNER const)?
+  public static boolean field(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "field")) return false;
+    if (!nextTokenIs(b, "<field>", CUSTOM_TYPE, KEYTYPE)) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, FIELD, "<field>");
+    r = type(b, l + 1);
+    r = r && label(b, l + 1);
+    r = r && field_2(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // (CONST_ASSIGNER const)?
+  private static boolean field_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "field_2")) return false;
+    field_2_0(b, l + 1);
+    return true;
+  }
+
+  // CONST_ASSIGNER const
+  private static boolean field_2_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "field_2_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, CONST_ASSIGNER);
+    r = r && const_$(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // separator|field|comment|CRLF
   static boolean item_(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "item_")) return false;
     boolean r;
     r = separator(b, l + 1);
-    if (!r) r = property(b, l + 1);
+    if (!r) r = field(b, l + 1);
     if (!r) r = comment(b, l + 1);
     if (!r) r = consumeToken(b, CRLF);
     return r;
@@ -114,38 +146,6 @@ public class ROSMsgParser implements PsiParser, LightPsiParser {
     Marker m = enter_section_(b);
     r = consumeToken(b, NAME);
     exit_section_(b, m, LABEL, r);
-    return r;
-  }
-
-  /* ********************************************************** */
-  // type label (CONST_ASSIGNER const)?
-  public static boolean property(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "property")) return false;
-    if (!nextTokenIs(b, "<property>", CUSTOM_TYPE, KEYTYPE)) return false;
-    boolean r;
-    Marker m = enter_section_(b, l, _NONE_, PROPERTY, "<property>");
-    r = type(b, l + 1);
-    r = r && label(b, l + 1);
-    r = r && property_2(b, l + 1);
-    exit_section_(b, l, m, r, false, null);
-    return r;
-  }
-
-  // (CONST_ASSIGNER const)?
-  private static boolean property_2(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "property_2")) return false;
-    property_2_0(b, l + 1);
-    return true;
-  }
-
-  // CONST_ASSIGNER const
-  private static boolean property_2_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "property_2_0")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, CONST_ASSIGNER);
-    r = r && const_$(b, l + 1);
-    exit_section_(b, m, null, r);
     return r;
   }
 

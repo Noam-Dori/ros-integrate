@@ -7,7 +7,7 @@ import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.msg.ROSMsgUtil;
 import ros.integrate.msg.psi.ROSMsgConst;
-import ros.integrate.msg.psi.ROSMsgProperty;
+import ros.integrate.msg.psi.ROSMsgField;
 import ros.integrate.msg.psi.ROSMsgSeparator;
 
 public class ROSMsgAnnotator implements Annotator {
@@ -16,12 +16,12 @@ public class ROSMsgAnnotator implements Annotator {
         Project project = element.getProject();
         String msgName = ROSMsgUtil.trimMsgFileName(element.getContainingFile().getName());
 
-        if (element instanceof ROSMsgProperty) {
-            ROSMsgProperty prop = (ROSMsgProperty) element;
-            ROSMsgTypeAnnotator annotator = new ROSMsgTypeAnnotator(holder, project, prop.getType(), msgName);
+        if (element instanceof ROSMsgField) {
+            ROSMsgField field = (ROSMsgField) element;
+            ROSMsgTypeAnnotator annotator = new ROSMsgTypeAnnotator(holder, project, field.getType(), msgName);
 
 
-            if (prop.getType().custom() != null) {
+            if (field.getType().custom() != null) {
                 annotator.annSelfContaining();
                 if (!annotator.annTypeNotDefined()) {
                     annotator.annIllegalType();
@@ -29,16 +29,16 @@ public class ROSMsgAnnotator implements Annotator {
             }
 
             // constant inspection:
-            ROSMsgConst constant = prop.getConst();
+            ROSMsgConst constant = field.getConst();
             if (constant != null) {
                 boolean removeIntention = annotator.annArrayConst(false, constant), // only int,uint,float may use integer consts
                         badTypeActivated = annotator.annBadTypeConst(removeIntention, constant);
                 annotator.annConstTooBig(badTypeActivated, constant);
             }
 
-            String fieldName = prop.getLabel().getText();
+            String fieldName = field.getLabel().getText();
             if (fieldName != null) {
-                ROSMsgNameAnnotator nameAnnotator = new ROSMsgNameAnnotator(holder, prop.getLabel(), fieldName);
+                ROSMsgNameAnnotator nameAnnotator = new ROSMsgNameAnnotator(holder, field.getLabel(), fieldName);
                 nameAnnotator.annDuplicateName();
                 nameAnnotator.annIllegalName();
             }

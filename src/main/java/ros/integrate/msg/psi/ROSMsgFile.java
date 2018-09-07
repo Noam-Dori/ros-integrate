@@ -22,11 +22,11 @@ public class ROSMsgFile extends PsiFileBase {
     }
 
     @NotNull
-    public List<ROSMsgProperty> getProperties() {
-        List<ROSMsgProperty> result = new ArrayList<>();
-        ROSMsgProperty[] properties = PsiTreeUtil.getChildrenOfType(this, ROSMsgProperty.class);
-        if (properties != null) {
-            Collections.addAll(result, properties);
+    public List<ROSMsgField> getFields() {
+        List<ROSMsgField> result = new ArrayList<>();
+        ROSMsgField[] fields = PsiTreeUtil.getChildrenOfType(this, ROSMsgField.class);
+        if (fields != null) {
+            Collections.addAll(result, fields);
         }
         return result;
     }

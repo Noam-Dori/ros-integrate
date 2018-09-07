@@ -20,8 +20,8 @@ public class ROSMsgChooseByNameContributor implements ChooseByNameContributor {
     @Override
     public NavigationItem[] getItemsByName(String name, String pattern, Project project, boolean includeNonProjectItems) {
         //TODO: include non project items
-        List<ROSMsgFile> properties = ROSMsgUtil.findProjectMsgLocations(project, name, null);
+        List<ROSMsgFile> fields = ROSMsgUtil.findProjectMsgLocations(project, name, null);
         //noinspection SuspiciousToArrayCall
-        return properties.toArray(new NavigationItem[0]);
+        return fields.toArray(new NavigationItem[0]);
     }
 }

@@ -15,12 +15,12 @@ public class ROSMsgVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-  public void visitLabel(@NotNull ROSMsgLabel o) {
-    visitIdentifier(o);
+  public void visitField(@NotNull ROSMsgField o) {
+    visitPsiElement(o);
   }
 
-  public void visitProperty(@NotNull ROSMsgProperty o) {
-    visitPsiElement(o);
+  public void visitLabel(@NotNull ROSMsgLabel o) {
+    visitIdentifier(o);
   }
 
   public void visitSeparator(@NotNull ROSMsgSeparator o) {

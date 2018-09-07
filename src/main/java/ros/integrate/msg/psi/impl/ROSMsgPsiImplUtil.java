@@ -46,7 +46,7 @@ public class ROSMsgPsiImplUtil {
     }
 
     /**
-     * gets the array size of the property, if its even an array
+     * gets the array size of the field, if its even an array
      * @param element the element to test
      * @return -1 if the element is not an array,
      *         0 if the element has variable size (since size 0 should not be used)
@@ -68,8 +68,8 @@ public class ROSMsgPsiImplUtil {
     public static PsiElement set(@NotNull ROSMsgType element, String rawType, int size) {
         if (element.getNode() != null) {
             String array = size == -1 ? "" : size == 0 ? "[]" : "[" + size + "]";
-            ROSMsgProperty property = ROSMsgElementFactory.createProperty(element.getProject(),rawType + array);
-            element.replace(property.getType());
+            ROSMsgField field = ROSMsgElementFactory.createField(element.getProject(),rawType + array);
+            element.replace(field.getType());
         }
         return element;
     }
@@ -77,8 +77,8 @@ public class ROSMsgPsiImplUtil {
     @Contract("_, _ -> param1")
     public static PsiElement set(@NotNull ROSMsgLabel element, String newName) {
         if (element.getNode() != null) {
-            ROSMsgProperty property = ROSMsgElementFactory.createProperty(element.getProject(),"dummy " + newName);
-            element.replace(property.getLabel());
+            ROSMsgField field = ROSMsgElementFactory.createField(element.getProject(),"dummy " + newName);
+            element.replace(field.getLabel());
         }
         return element;
     }
@@ -95,7 +95,7 @@ public class ROSMsgPsiImplUtil {
 
     @NotNull
     @Contract(value = "_ -> new", pure = true)
-    public static ItemPresentation getPresentation(final ROSMsgProperty element) { return new ItemPresentation() {
+    public static ItemPresentation getPresentation(final ROSMsgField element) { return new ItemPresentation() {
             @Nullable
             @Override
             public String getPresentableText() {
@@ -114,7 +114,7 @@ public class ROSMsgPsiImplUtil {
         };
     }
 
-    public static boolean isLegalConstant(@NotNull ROSMsgProperty element) {
+    public static boolean isLegalConstant(@NotNull ROSMsgField element) {
         ROSMsgConst msgConst = element.getConst();
         if (msgConst == null) { return false; }
         String num = msgConst.getText();

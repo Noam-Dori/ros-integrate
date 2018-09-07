@@ -6,7 +6,7 @@ import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 import com.intellij.navigation.ItemPresentation;
 
-public interface ROSMsgProperty extends PsiElement {
+public interface ROSMsgField extends PsiElement {
 
   @Nullable
   ROSMsgConst getConst();

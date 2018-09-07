@@ -29,9 +29,9 @@ public class ROSMsgUtil {
     public static int countServiceSeparators(PsiFile file) {
         ROSMsgFile rosMsgFile = (ROSMsgFile) file;
         if (rosMsgFile != null) {
-            ROSMsgSeparator[] properties = PsiTreeUtil.getChildrenOfType(rosMsgFile, ROSMsgSeparator.class);
-            if (properties != null) {
-                return properties.length;
+            ROSMsgSeparator[] fields = PsiTreeUtil.getChildrenOfType(rosMsgFile, ROSMsgSeparator.class);
+            if (fields != null) {
+                return fields.length;
             }
         }
         return 0;
@@ -41,10 +41,10 @@ public class ROSMsgUtil {
         ROSMsgFile rosMsgFile = (ROSMsgFile) file;
         int count = 0;
         if (rosMsgFile != null) {
-            ROSMsgProperty[] properties = PsiTreeUtil.getChildrenOfType(rosMsgFile, ROSMsgProperty.class);
-            if (properties != null) {
-                for (ROSMsgProperty prop : properties) {
-                    if (name.equals(prop.getLabel().getText())) {
+            ROSMsgField[] fields = PsiTreeUtil.getChildrenOfType(rosMsgFile, ROSMsgField.class);
+            if (fields != null) {
+                for (ROSMsgField field : fields) {
+                    if (name.equals(field.getLabel().getText())) {
                         count++;
                     }
                 }
@@ -54,18 +54,18 @@ public class ROSMsgUtil {
     }
 
 
-    public static boolean isFirstDefinition(PsiFile file, @NotNull ROSMsgProperty prop) {
-        ROSMsgLabel name = prop.getLabel();
+    public static boolean isFirstDefinition(PsiFile file, @NotNull ROSMsgField field) {
+        ROSMsgLabel name = field.getLabel();
         return name.equals(Objects.requireNonNull(getFirstNameInFile(file, name.getText())));
     }
 
     @Nullable
     private static PsiElement getFirstNameInFile(PsiFile file, String name) {
-        ROSMsgProperty[] properties = PsiTreeUtil.getChildrenOfType(file, ROSMsgProperty.class);
-        if (properties != null) {
-            for (ROSMsgProperty property : properties) {
-                if (name.equals(property.getLabel().getText())) {
-                    property.getLabel();
+        ROSMsgField[] fields = PsiTreeUtil.getChildrenOfType(file, ROSMsgField.class);
+        if (fields != null) {
+            for (ROSMsgField field : fields) {
+                if (name.equals(field.getLabel().getText())) {
+                    field.getLabel();
                 }
             }
         }
@@ -111,22 +111,22 @@ public class ROSMsgUtil {
         return name.substring(0,name.length() - 4);
     }
 
-    public static List<ROSMsgProperty> findProperties(Project project, String key) {
-        List<ROSMsgProperty> result = null;
+    public static List<ROSMsgField> findFields(Project project, String key) {
+        List<ROSMsgField> result = null;
         Collection<VirtualFile> virtualFiles =
                 FileBasedIndex.getInstance().getContainingFiles(FileTypeIndex.NAME, ROSMsgFileType.INSTANCE,
                         GlobalSearchScope.allScope(project));
         for (VirtualFile virtualFile : virtualFiles) {
             ROSMsgFile rosMsgFile = (ROSMsgFile) PsiManager.getInstance(project).findFile(virtualFile);
             if (rosMsgFile != null) {
-                ROSMsgProperty[] properties = PsiTreeUtil.getChildrenOfType(rosMsgFile, ROSMsgProperty.class);
-                if (properties != null) {
-                    for (ROSMsgProperty property : properties) {
-                        if (key.equals(property.getText())) {
+                ROSMsgField[] fields = PsiTreeUtil.getChildrenOfType(rosMsgFile, ROSMsgField.class);
+                if (fields != null) {
+                    for (ROSMsgField field : fields) {
+                        if (key.equals(field.getText())) {
                             if (result == null) {
                                 result = new ArrayList<>();
                             }
-                            result.add(property);
+                            result.add(field);
                         }
                     }
                 }
@@ -135,17 +135,17 @@ public class ROSMsgUtil {
         return result != null ? result : Collections.emptyList();
     }
 
-    public static List<ROSMsgProperty> findProperties(Project project) {
-        List<ROSMsgProperty> result = new ArrayList<>();
+    public static List<ROSMsgField> findFields(Project project) {
+        List<ROSMsgField> result = new ArrayList<>();
         Collection<VirtualFile> virtualFiles =
                 FileBasedIndex.getInstance().getContainingFiles(FileTypeIndex.NAME, ROSMsgFileType.INSTANCE,
                         GlobalSearchScope.allScope(project));
         for (VirtualFile virtualFile : virtualFiles) {
             ROSMsgFile rosMsgFile = (ROSMsgFile) PsiManager.getInstance(project).findFile(virtualFile);
             if (rosMsgFile != null) {
-                ROSMsgProperty[] properties = PsiTreeUtil.getChildrenOfType(rosMsgFile, ROSMsgProperty.class);
-                if (properties != null) {
-                    Collections.addAll(result, properties);
+                ROSMsgField[] fields = PsiTreeUtil.getChildrenOfType(rosMsgFile, ROSMsgField.class);
+                if (fields != null) {
+                    Collections.addAll(result, fields);
                 }
             }
         }

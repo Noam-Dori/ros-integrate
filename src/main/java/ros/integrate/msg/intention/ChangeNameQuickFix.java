@@ -16,17 +16,17 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.msg.ROSMsgNameSuggestionProvider;
-import ros.integrate.msg.psi.ROSMsgProperty;
+import ros.integrate.msg.psi.ROSMsgField;
 
 import java.util.HashSet;
 import java.util.Set;
 
 public class ChangeNameQuickFix extends BaseIntentionAction {
-    private final ROSMsgProperty parent;
+    private final ROSMsgField parent;
     private final PsiElement badElement;
 
-    public ChangeNameQuickFix(ROSMsgProperty prop, PsiElement element) {
-        this.parent = prop;
+    public ChangeNameQuickFix(ROSMsgField field, PsiElement element) {
+        this.parent = field;
         this.badElement = element;
     }
 

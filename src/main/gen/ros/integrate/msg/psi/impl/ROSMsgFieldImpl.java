@@ -12,14 +12,14 @@ import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import ros.integrate.msg.psi.*;
 import com.intellij.navigation.ItemPresentation;
 
-public class ROSMsgPropertyImpl extends ASTWrapperPsiElement implements ROSMsgProperty {
+public class ROSMsgFieldImpl extends ASTWrapperPsiElement implements ROSMsgField {
 
-  public ROSMsgPropertyImpl(@NotNull ASTNode node) {
+  public ROSMsgFieldImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull ROSMsgVisitor visitor) {
-    visitor.visitProperty(this);
+    visitor.visitField(this);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {

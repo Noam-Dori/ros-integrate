@@ -10,7 +10,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.msg.ROSMsgLanguage;
-import ros.integrate.msg.psi.ROSMsgProperty;
+import ros.integrate.msg.psi.ROSMsgField;
 
 public class SuppressFieldByCommentFix extends SuppressByCommentFix {
     public SuppressFieldByCommentFix(@NotNull HighlightDisplayKey key) {
@@ -24,7 +24,7 @@ public class SuppressFieldByCommentFix extends SuppressByCommentFix {
     @Override
     @Nullable
     public PsiElement getContainer(PsiElement context) {
-        ROSMsgProperty field = PsiTreeUtil.getParentOfType(context, ROSMsgProperty.class, false);
+        ROSMsgField field = PsiTreeUtil.getParentOfType(context, ROSMsgField.class, false);
         return field != null && ROSMsgLanguage.INSTANCE.equals(field.getLanguage()) ? field : null;
     }
 

@@ -8,17 +8,17 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.IncorrectOperationException;
-import ros.integrate.msg.psi.ROSMsgProperty;
+import ros.integrate.msg.psi.ROSMsgField;
 import ros.integrate.msg.psi.ROSMsgTypes;
 import org.jetbrains.annotations.NotNull;
 
 public class RemoveConstQuickFix extends BaseIntentionAction {
 
-    public RemoveConstQuickFix(ROSMsgProperty field) {
+    public RemoveConstQuickFix(ROSMsgField field) {
         rosMsg = field;
     }
 
-    private ROSMsgProperty rosMsg;
+    private ROSMsgField rosMsg;
 
     @NotNull
     @Override

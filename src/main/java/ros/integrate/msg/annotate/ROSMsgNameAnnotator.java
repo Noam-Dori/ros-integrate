@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import ros.integrate.msg.ROSMsgUtil;
 import ros.integrate.msg.intention.ChangeNameQuickFix;
 import ros.integrate.msg.psi.ROSMsgLabel;
-import ros.integrate.msg.psi.ROSMsgProperty;
+import ros.integrate.msg.psi.ROSMsgField;
 
 class ROSMsgNameAnnotator {
 
@@ -26,11 +26,11 @@ class ROSMsgNameAnnotator {
 
     void annDuplicateName() {
         int separatorCount = ROSMsgUtil.countNameInFile(name.getContainingFile(),fieldName);
-        if (separatorCount > 1 && !ROSMsgUtil.isFirstDefinition(name.getContainingFile(),(ROSMsgProperty) name.getParent())) {
+        if (separatorCount > 1 && !ROSMsgUtil.isFirstDefinition(name.getContainingFile(),(ROSMsgField) name.getParent())) {
             TextRange range = new TextRange(name.getTextRange().getStartOffset(),
                     name.getTextRange().getEndOffset());
             Annotation ann = holder.createErrorAnnotation(range, "Field name '" + fieldName + "' is already used");
-            ann.registerFix(new ChangeNameQuickFix((ROSMsgProperty) name.getParent(),name));
+            ann.registerFix(new ChangeNameQuickFix((ROSMsgField) name.getParent(),name));
         }
     }
 
@@ -46,7 +46,7 @@ class ROSMsgNameAnnotator {
                 message = "Field names may only contain alphanumeric characters or underscores";
             }
             Annotation ann = holder.createErrorAnnotation(range, message);
-            ann.registerFix(new ChangeNameQuickFix((ROSMsgProperty) name.getParent(),name));
+            ann.registerFix(new ChangeNameQuickFix((ROSMsgField) name.getParent(),name));
         }
     }
 

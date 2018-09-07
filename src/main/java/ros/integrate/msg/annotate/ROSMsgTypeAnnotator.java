@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 import ros.integrate.msg.ROSMsgUtil;
 import ros.integrate.msg.intention.*;
 import ros.integrate.msg.psi.ROSMsgConst;
-import ros.integrate.msg.psi.ROSMsgProperty;
+import ros.integrate.msg.psi.ROSMsgField;
 import ros.integrate.msg.psi.ROSMsgType;
 import ros.integrate.msg.psi.ROSMsgTypes;
 
@@ -37,7 +37,7 @@ public class ROSMsgTypeAnnotator {
         // self containing msg inspection
         if(type.raw().getText().equals(msgName)) {
             holder.createErrorAnnotation(type.raw().getTextRange(), "A message cannot contain itself")
-                    .registerFix(new RemoveFieldQuickFix((ROSMsgProperty) type.getParent()));
+                    .registerFix(new RemoveFieldQuickFix((ROSMsgField) type.getParent()));
         }
     }
 
@@ -64,12 +64,12 @@ public class ROSMsgTypeAnnotator {
     private boolean unknownType() {
         List<String> types = ROSMsgUtil.findProjectMsgNames(project, type.raw().getText(), null);
         return types.isEmpty() && // found no message within project matching this field type.
-                !(type.raw().getText().equals("Header") && type.getParent().getNode().equals(getFirstProperty())) && // field is the header
+                !(type.raw().getText().equals("Header") && type.getParent().getNode().equals(getFirstField())) && // field is the header
                 !type.raw().getText().contains("/"); // message is defined outside project
     }
 
-    private ASTNode getFirstProperty() {
-        return type.getContainingFile().getNode().findChildByType(ROSMsgTypes.PROPERTY);
+    private ASTNode getFirstField() {
+        return type.getContainingFile().getNode().findChildByType(ROSMsgTypes.FIELD);
     }
 
     @SuppressWarnings("SameParameterValue")
@@ -78,7 +78,7 @@ public class ROSMsgTypeAnnotator {
             TextRange range = constant.getTextRange();
             Annotation ann = holder.createErrorAnnotation(range, "Array fields cannot be assigned a constant.");
             if(!isRemoveIntentionActive) {
-                ann.registerFix(new RemoveConstQuickFix((ROSMsgProperty) type.getParent())); // remove const
+                ann.registerFix(new RemoveConstQuickFix((ROSMsgField) type.getParent())); // remove const
             }
             ann.registerFix(new RemoveArrayQuickFix(type)); // remove arr
             return true;
@@ -92,7 +92,7 @@ public class ROSMsgTypeAnnotator {
             TextRange range = constant.getTextRange();
             Annotation ann = holder.createErrorAnnotation(range, "Only the built-in string and numerical types may be assigned a constant.");
             if (!isRemoveIntentionActive) {
-                ann.registerFix(new RemoveConstQuickFix((ROSMsgProperty) type.getParent())); // remove const
+                ann.registerFix(new RemoveConstQuickFix((ROSMsgField) type.getParent())); // remove const
             }
             ann.registerFix(new ChangeKeytypeQuickFix(type, constant)); // change type
             return true;
@@ -101,7 +101,7 @@ public class ROSMsgTypeAnnotator {
     }
 
     void annConstTooBig(boolean isBadType, @NotNull ROSMsgConst constant) {
-        if(!isBadType && !((ROSMsgProperty) type.getParent()).isLegalConstant()) {
+        if(!isBadType && !((ROSMsgField) type.getParent()).isLegalConstant()) {
             TextRange range = constant.getTextRange();
             Annotation ann = holder.createErrorAnnotation(range, "The constant's value cannot fit within the given type.");
             ann.registerFix(new ChangeKeytypeQuickFix(type,constant)); // change type
@@ -112,7 +112,7 @@ public class ROSMsgTypeAnnotator {
         String message = getIllegalTypeMessage(type.raw().getText(),false);
         if (message != null) {
             Annotation ann = holder.createErrorAnnotation(type.raw().getTextRange(), message);
-            //ann.registerFix(new ChangeTypeQuickFix(prop,prop.getType()));
+            //ann.registerFix(new ChangeTypeQuickFix(field,field.getType()));
         }
     }
 
