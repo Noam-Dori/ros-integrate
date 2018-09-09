@@ -30,13 +30,13 @@ separator ::= SERVICE_SEPARATOR
 const ::= (NEG_OPERATOR? NUMBER | STRING)
 
 type ::= type_ (LBRACKET NUMBER? RBRACKET)? {
-    methods=[raw custom size removeArray set]
+    methods=[raw custom size removeArray set getName]
 }
 
 label ::= NAME {
     mixin="ros.integrate.msg.psi.impl.ROSMsgIdentifierImpl"
     implements="ros.integrate.msg.psi.ROSMsgIdentifier"
-    methods=[set]
+    methods=[set getName]
 }
 
 field ::= type label (CONST_ASSIGNER const)? {

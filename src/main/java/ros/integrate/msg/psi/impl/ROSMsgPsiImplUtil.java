@@ -64,23 +64,33 @@ public class ROSMsgPsiImplUtil {
         }
     }
 
-    @Contract("_, _, _ -> param1")
     public static PsiElement set(@NotNull ROSMsgType element, String rawType, int size) {
-        if (element.getNode() != null) {
-            String array = size == -1 ? "" : size == 0 ? "[]" : "[" + size + "]";
+        String array = size == -1 ? "" : size == 0 ? "[]" : "[" + size + "]";
+        if (element.getNode() != null && !element.getText().equals(rawType + array)) {
             ROSMsgField field = ROSMsgElementFactory.createField(element.getProject(),rawType + array);
             element.replace(field.getType());
+            return field.getType();
         }
         return element;
     }
 
-    @Contract("_, _ -> param1")
     public static PsiElement set(@NotNull ROSMsgLabel element, String newName) {
-        if (element.getNode() != null) {
+        if (element.getNode() != null && !element.getText().equals(newName)) {
             ROSMsgField field = ROSMsgElementFactory.createField(element.getProject(),"dummy " + newName);
             element.replace(field.getLabel());
+            return field.getLabel();
         }
         return element;
+    }
+
+    @Contract(pure = true)
+    public static String getName(@NotNull ROSMsgLabel element) {
+        return element.getText();
+    }
+
+    @Contract(pure = true)
+    public static String getName(@NotNull ROSMsgType element) {
+        return element.raw().getText();
     }
 
     @Contract("_ -> param1")

@@ -48,4 +48,8 @@ public class ROSMsgTypeImpl extends ASTWrapperPsiElement implements ROSMsgType {
     return ROSMsgPsiImplUtil.set(this, rawType, size);
   }
 
+  public String getName() {
+    return ROSMsgPsiImplUtil.getName(this);
+  }
+
 }

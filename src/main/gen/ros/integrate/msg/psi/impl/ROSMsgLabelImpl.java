@@ -29,4 +29,8 @@ public class ROSMsgLabelImpl extends ROSMsgIdentifierImpl implements ROSMsgLabel
     return ROSMsgPsiImplUtil.set(this, newName);
   }
 
+  public String getName() {
+    return ROSMsgPsiImplUtil.getName(this);
+  }
+
 }

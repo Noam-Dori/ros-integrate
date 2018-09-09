@@ -19,4 +19,6 @@ public interface ROSMsgType extends PsiElement {
 
   PsiElement set(String rawType, int size);
 
+  String getName();
+
 }

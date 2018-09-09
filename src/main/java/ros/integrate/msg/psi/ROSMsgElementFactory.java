@@ -4,6 +4,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFileFactory;
+import org.jetbrains.annotations.NotNull;
 import ros.integrate.msg.ROSMsgFileType;
 
 public class ROSMsgElementFactory {
@@ -34,18 +35,25 @@ public class ROSMsgElementFactory {
         return file.getFirstChild();
     }
 
-    public static ROSMsgFile createFile(Project project, String text) {
+    @NotNull
+    private static ROSMsgFile createFile(Project project, String text) {
         String name = "dummy.msg";
         return (ROSMsgFile) PsiFileFactory.getInstance(project).
                 createFileFromText(name, ROSMsgFileType.INSTANCE, text);
     }
 
-    public static PsiElement createType(Project project, String typeName) {
+    public static ROSMsgType createType(Project project, String typeName) {
         final ROSMsgFile file = createFile(project, typeName + " dummyName");
-        return file.getFirstChild().getFirstChild();
+        return (ROSMsgType) file.getFirstChild().getFirstChild();
     }
 
+    @NotNull
     public static ROSMsgFile createFile(String fileName, PsiDirectory directory) {
         return (ROSMsgFile) directory.createFile(fileName + ".msg");
+    }
+
+    public static ROSMsgLabel createName(Project project, String labelName) {
+        final ROSMsgFile file = createFile(project, "dummyName " + labelName);
+        return (ROSMsgLabel) file.getFirstChild().getLastChild();
     }
 }

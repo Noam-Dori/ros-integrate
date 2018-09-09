@@ -9,4 +9,6 @@ public interface ROSMsgLabel extends ROSMsgIdentifier {
 
   PsiElement set(String newName);
 
+  String getName();
+
 }
