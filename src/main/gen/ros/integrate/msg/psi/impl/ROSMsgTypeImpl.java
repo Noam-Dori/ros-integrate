@@ -55,4 +55,8 @@ public class ROSMsgTypeImpl extends ROSMsgIdentifierImpl implements ROSMsgType {
     return ROSMsgPsiImplUtil.getName(this);
   }
 
+  public PsiElement getNameIdentifier() {
+    return ROSMsgPsiImplUtil.getNameIdentifier(this);
+  }
+
 }
