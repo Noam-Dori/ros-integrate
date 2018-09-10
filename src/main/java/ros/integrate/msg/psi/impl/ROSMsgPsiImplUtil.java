@@ -4,6 +4,7 @@ import com.google.common.primitives.UnsignedLong;
 import com.intellij.lang.ASTNode;
 import com.intellij.navigation.ItemPresentation;
 import com.intellij.psi.PsiElement;
+import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -75,7 +76,10 @@ public class ROSMsgPsiImplUtil {
     }
 
     @Contract("_, _ -> param1")
-    public static PsiElement set(@NotNull ROSMsgType element, String rawType) {
+    public static PsiElement set(@NotNull ROSMsgType element, String rawType) throws IncorrectOperationException {
+        if(element.custom() == null) {
+            throw new IncorrectOperationException("key-types cannot be refactored");
+        }
         if (element.getNode() != null && !element.raw().getText().equals(rawType)) {
             ROSMsgType type = ROSMsgElementFactory.createType(element.getProject(),rawType);
             element.raw().replace(type.raw());
@@ -110,6 +114,10 @@ public class ROSMsgPsiImplUtil {
             element.deleteChildRange(lbr.getPsi(),rbr.getPsi()); // this also deletes whats inside the array.
         }
         return element;
+    }
+
+    public static PsiElement getNameIdentifier(@NotNull ROSMsgType element) {
+        return element.custom();
     }
 
     @NotNull
