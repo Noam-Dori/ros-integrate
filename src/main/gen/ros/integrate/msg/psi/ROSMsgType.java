@@ -23,4 +23,7 @@ public interface ROSMsgType extends ROSMsgIdentifier {
 
   String getName();
 
+  @Nullable
+  PsiElement getNameIdentifier();
+
 }
