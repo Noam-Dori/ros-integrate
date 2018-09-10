@@ -67,9 +67,18 @@ public class ROSMsgPsiImplUtil {
     public static PsiElement set(@NotNull ROSMsgType element, String rawType, int size) {
         String array = size == -1 ? "" : size == 0 ? "[]" : "[" + size + "]";
         if (element.getNode() != null && !element.getText().equals(rawType + array)) {
-            ROSMsgField field = ROSMsgElementFactory.createField(element.getProject(),rawType + array);
-            element.replace(field.getType());
-            return field.getType();
+            ROSMsgType type = ROSMsgElementFactory.createType(element.getProject(),rawType + array);
+            element.replace(type);
+            return type;
+        }
+        return element;
+    }
+
+    @Contract("_, _ -> param1")
+    public static PsiElement set(@NotNull ROSMsgType element, String rawType) {
+        if (element.getNode() != null && !element.raw().getText().equals(rawType)) {
+            ROSMsgType type = ROSMsgElementFactory.createType(element.getProject(),rawType);
+            element.raw().replace(type.raw());
         }
         return element;
     }

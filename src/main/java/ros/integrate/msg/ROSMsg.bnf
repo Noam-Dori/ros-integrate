@@ -30,6 +30,8 @@ separator ::= SERVICE_SEPARATOR
 const ::= (NEG_OPERATOR? NUMBER | STRING)
 
 type ::= type_ (LBRACKET NUMBER? RBRACKET)? {
+    mixin="ros.integrate.msg.psi.impl.ROSMsgIdentifierImpl"
+    implements="ros.integrate.msg.psi.ROSMsgIdentifier"
     methods=[raw custom size removeArray set getName]
 }
 

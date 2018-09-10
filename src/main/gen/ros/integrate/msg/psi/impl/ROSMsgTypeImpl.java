@@ -8,10 +8,9 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static ros.integrate.msg.psi.ROSMsgTypes.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import ros.integrate.msg.psi.*;
 
-public class ROSMsgTypeImpl extends ASTWrapperPsiElement implements ROSMsgType {
+public class ROSMsgTypeImpl extends ROSMsgIdentifierImpl implements ROSMsgType {
 
   public ROSMsgTypeImpl(@NotNull ASTNode node) {
     super(node);
@@ -46,6 +45,10 @@ public class ROSMsgTypeImpl extends ASTWrapperPsiElement implements ROSMsgType {
 
   public PsiElement set(String rawType, int size) {
     return ROSMsgPsiImplUtil.set(this, rawType, size);
+  }
+
+  public PsiElement set(String rawType) {
+    return ROSMsgPsiImplUtil.set(this, rawType);
   }
 
   public String getName() {

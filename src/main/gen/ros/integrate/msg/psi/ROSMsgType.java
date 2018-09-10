@@ -5,7 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface ROSMsgType extends PsiElement {
+public interface ROSMsgType extends ROSMsgIdentifier {
 
   @NotNull
   PsiElement raw();
@@ -18,6 +18,8 @@ public interface ROSMsgType extends PsiElement {
   PsiElement removeArray();
 
   PsiElement set(String rawType, int size);
+
+  PsiElement set(String rawType);
 
   String getName();
 
