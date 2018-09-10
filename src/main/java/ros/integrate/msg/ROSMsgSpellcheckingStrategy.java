@@ -9,6 +9,7 @@ import com.intellij.spellchecker.tokenizer.TokenConsumer;
 import com.intellij.spellchecker.tokenizer.Tokenizer;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.msg.psi.ROSMsgComment;
+import ros.integrate.msg.psi.ROSMsgType;
 
 public class ROSMsgSpellcheckingStrategy extends SpellcheckingStrategy {
     protected final Tokenizer<ROSMsgComment> myROSCommentTokenizer = new ROSCommentTokenizer();
@@ -16,6 +17,9 @@ public class ROSMsgSpellcheckingStrategy extends SpellcheckingStrategy {
     @NotNull
     @Override
     public Tokenizer getTokenizer(PsiElement element) {
+        if(element instanceof ROSMsgType) {
+            return EMPTY_TOKENIZER;
+        }
         if (element instanceof ROSMsgComment) {
             if (SuppressionUtil.isSuppressionComment(element)) {
                 return EMPTY_TOKENIZER;
