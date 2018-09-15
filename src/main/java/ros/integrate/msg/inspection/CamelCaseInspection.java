@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.msg.annotate.ROSMsgTypeAnnotator;
+import ros.integrate.msg.intention.RenameTypeQuickFix;
 import ros.integrate.msg.psi.ROSMsgFile;
 import ros.integrate.msg.psi.ROSMsgField;
 
@@ -21,7 +22,7 @@ public class CamelCaseInspection extends AbstractROSMsgInspection {
     @Contract(pure = true)
     @Nullable
     public static String getUnorthodoxTypeMessage(@NotNull String fieldType, boolean inProject) {
-        String camelCase = "([A-Za-z]|([0-9]([A-Z]|$)))*";
+        String camelCase = "([A-Za-z]|([0-9]+([A-Z]|$)))*";
         String regex = inProject ? "[A-Z]" + camelCase
                 : "([a-zA-Z][a-zA-Z0-9_]*/)?[A-Z]" + camelCase;
         if(!fieldType.matches(regex)) {
@@ -42,51 +43,33 @@ public class CamelCaseInspection extends AbstractROSMsgInspection {
                 String message = getUnorthodoxTypeMessage(custom.getText(),false);
                 if (message != null) {
                     ProblemDescriptor descriptor = manager.createProblemDescriptor(custom, custom, message,
-                            ProblemHighlightType.GENERIC_ERROR_OR_WARNING, isOnTheFly);
-                    descriptors.add(descriptor); // TODO add CamelCaser
+                            ProblemHighlightType.GENERIC_ERROR_OR_WARNING, isOnTheFly,
+                            new RenameTypeQuickFix(camelCase(custom.getText())));
+                    descriptors.add(descriptor);
                 }
             }
         }
         return descriptors.toArray(new ProblemDescriptor[0]);
     }
 
-//    private static class DerpQuickFix implements LocalQuickFix {
-//
-//        @Nls(capitalization = Nls.Capitalization.Sentence)
-//        @NotNull
-//        @Override
-//        public String getFamilyName() {
-//            return "Derp";
-//        }
-//
-//        @Override
-//        public void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor) {
-//
-//        }
-//    }
-
-    /*private static class RemoveTrailingSpacesFix implements LocalQuickFix {
-        private final boolean myIgnoreVisibleSpaces;
-
-        private RemoveTrailingSpacesFix(boolean ignoreVisibleSpaces) {
-            myIgnoreVisibleSpaces = ignoreVisibleSpaces;
+    @Contract("null -> null")
+    private static String camelCase(String text) { //TODO: add grammar processing to improve fix
+        if(text == null) { return null;}
+        if(Character.isLowerCase(text.charAt(0))) {
+            text = Character.toUpperCase(text.charAt(0)) + (text.length() > 1 ? text.substring(1) : "");
         }
-
-        @NotNull
-        public String getFamilyName() {
-            return "Remove Trailing Spaces";
-        }
-
-        public void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor) {
-            PsiElement element = descriptor.getPsiElement();
-            PsiElement parent = element == null ? null : element.getParent();
-            if (!(parent instanceof FieldImpl)) return;
-            TextRange textRange = getTrailingSpaces(element, myIgnoreVisibleSpaces);
-            if (textRange != null) {
-                Document document = PsiDocumentManager.getInstance(project).getDocument(element.getContainingFile());
-                TextRange docRange = textRange.shiftRight(element.getTextRange().getStartOffset());
-                document.deleteString(docRange.getStartOffset(), docRange.getEndOffset());
+        for(int i = 0; i < text.length() - 1; i++) {
+            if(text.charAt(i) == '_') {
+                String newText = text.substring(0,i - 1) + Character.toUpperCase(text.charAt(i + 1));
+                if (i < text.length() - 2) {text = newText + text.substring(i + 2);}
+                else {text = newText;}
+            }
+            if(Character.isDigit(text.charAt(i)) && Character.isLowerCase(text.charAt(i + 1))) {
+                String newText = text.substring(0,i) + Character.toUpperCase(text.charAt(i + 1));
+                if (i < text.length() - 2) {text = newText + text.substring(i + 2);}
+                else {text = newText;}
             }
         }
-    }*/
+        return text;
+    }
 }

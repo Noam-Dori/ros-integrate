@@ -112,7 +112,7 @@ public class ROSMsgTypeAnnotator {
         String message = getIllegalTypeMessage(type.raw().getText(),false);
         if (message != null) {
             Annotation ann = holder.createErrorAnnotation(type.raw().getTextRange(), message);
-            //ann.registerFix(new ChangeTypeQuickFix(field,field.getType()));
+            ann.registerFix(new RenameTypeQuickFix.RenameTypeIntention(type,message));
         }
     }
 
