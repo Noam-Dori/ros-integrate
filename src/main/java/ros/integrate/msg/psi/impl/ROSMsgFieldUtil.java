@@ -49,13 +49,13 @@ class ROSMsgFieldUtil {
                     if (integral.byteValue() == 0 || integral.byteValue() == 1) {
                         ret = "bool".equals(type);
                     }
-                    ret = appendBoolIfSmaller(integral,MaxValue.INT8,ret,i8);
-                    ret = appendBoolIfSmaller(integral,MaxValue.UINT8,ret,ui8);
-                    ret = appendBoolIfSmaller(integral,MaxValue.INT16,ret,i16);
-                    ret = appendBoolIfSmaller(integral,MaxValue.UINT16,ret,ui16);
-                    ret = appendBoolIfSmaller(integral,MaxValue.INT32,ret,i32);
-                    ret = appendBoolIfSmaller(integral,MaxValue.UINT32,ret,ui32);
-                    ret = appendBoolIfSmaller(integral,MaxValue.INT64,ret,i64);
+                    ret |= isNotBigger(integral, MaxValue.INT8) && i8;
+                    ret |= isNotBigger(integral, MaxValue.UINT8) && ui8;
+                    ret |= isNotBigger(integral, MaxValue.INT16) && i16;
+                    ret |= isNotBigger(integral, MaxValue.UINT16) && ui16;
+                    ret |= isNotBigger(integral, MaxValue.INT32) && i32;
+                    ret |= isNotBigger(integral, MaxValue.UINT32) && ui32;
+                    ret |= isNotBigger(integral, MaxValue.INT64) && i64;
                     ret |= ui64;
                 }
                 ret |= f32; // f32 is certainly in the range, but precision is damaged (doesnt matter in integrals)
@@ -89,10 +89,7 @@ class ROSMsgFieldUtil {
         }
     }
 
-    private static boolean appendBoolIfSmaller(@NotNull UnsignedLong unsignedLong, @NotNull MaxValue value, boolean prevBool, boolean newBool) {
-        if (unsignedLong.compareTo(value.get()) <= 0) {
-            return prevBool && newBool;
-        }
-        return prevBool;
+    private static boolean isNotBigger(@NotNull UnsignedLong unsignedLong, @NotNull MaxValue value) {
+        return unsignedLong.compareTo(value.get()) <= 0;
     }
 }
