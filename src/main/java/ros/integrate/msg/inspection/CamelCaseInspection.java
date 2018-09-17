@@ -60,12 +60,12 @@ public class CamelCaseInspection extends AbstractROSMsgInspection {
         }
         for(int i = 0; i < text.length() - 1; i++) {
             if(text.charAt(i) == '_') {
-                String newText = text.substring(0,i - 1) + Character.toUpperCase(text.charAt(i + 1));
+                String newText = text.substring(0,i) + Character.toUpperCase(text.charAt(i + 1));
                 if (i < text.length() - 2) {text = newText + text.substring(i + 2);}
                 else {text = newText;}
             }
             if(Character.isDigit(text.charAt(i)) && Character.isLowerCase(text.charAt(i + 1))) {
-                String newText = text.substring(0,i) + Character.toUpperCase(text.charAt(i + 1));
+                String newText = text.substring(0,i + 1) + Character.toUpperCase(text.charAt(i + 1));
                 if (i < text.length() - 2) {text = newText + text.substring(i + 2);}
                 else {text = newText;}
             }

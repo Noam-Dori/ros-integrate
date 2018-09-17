@@ -5,7 +5,6 @@ import com.intellij.codeInsight.daemon.impl.actions.SuppressByCommentFix;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiStatement;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -14,11 +13,11 @@ import ros.integrate.msg.psi.ROSMsgField;
 
 public class SuppressFieldByCommentFix extends SuppressByCommentFix {
     public SuppressFieldByCommentFix(@NotNull HighlightDisplayKey key) {
-        super(key, PsiStatement.class);
+        super(key, ROSMsgField.class);
     }
 
     public SuppressFieldByCommentFix(@NotNull String toolId) {
-        super(toolId, PsiStatement.class);
+        super(toolId, ROSMsgField.class);
     }
 
     @Override
