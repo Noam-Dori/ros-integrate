@@ -9,13 +9,15 @@ import com.intellij.psi.PsiManager;
 import com.intellij.psi.search.FileTypeIndex;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
-import com.intellij.util.indexing.FileBasedIndex;
 import ros.integrate.msg.psi.*;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 public class ROSMsgUtil {
     @Contract("null -> null")
@@ -56,7 +58,7 @@ public class ROSMsgUtil {
 
     public static boolean isFirstDefinition(PsiFile file, @NotNull ROSMsgField field) {
         ROSMsgLabel name = field.getLabel();
-        return name.equals(Objects.requireNonNull(getFirstNameInFile(file, name.getText())));
+        return name.equals(getFirstNameInFile(file, name.getText()));
     }
 
     @Nullable
@@ -80,15 +82,14 @@ public class ROSMsgUtil {
         return result.isEmpty() ? Collections.emptyList() : result;
     }
 
-    public static List<String> findProjectMsgNames(Project project) {
+    static List<String> findProjectMsgNames(Project project) {
         return findProjectMsgNames(project,null,null);
     }
 
-    public static List<ROSMsgFile> findProjectMsgLocations(Project project, @Nullable String key, @Nullable VirtualFile file) {
+    static List<ROSMsgFile> findProjectMsgLocations(Project project, @Nullable String key, @Nullable VirtualFile file) {
         List<ROSMsgFile> result = null;
         Collection<VirtualFile> virtualFiles =
-                FileBasedIndex.getInstance().getContainingFiles(FileTypeIndex.NAME, ROSMsgFileType.INSTANCE,
-                        GlobalSearchScope.allScope(project));
+                FileTypeIndex.getFiles(ROSMsgFileType.INSTANCE, GlobalSearchScope.allScope(project));
         if( file != null) {
             virtualFiles.remove(file);
         }
@@ -114,8 +115,7 @@ public class ROSMsgUtil {
     public static List<ROSMsgField> findFields(Project project, String key) {
         List<ROSMsgField> result = null;
         Collection<VirtualFile> virtualFiles =
-                FileBasedIndex.getInstance().getContainingFiles(FileTypeIndex.NAME, ROSMsgFileType.INSTANCE,
-                        GlobalSearchScope.allScope(project));
+                FileTypeIndex.getFiles(ROSMsgFileType.INSTANCE, GlobalSearchScope.allScope(project));
         for (VirtualFile virtualFile : virtualFiles) {
             ROSMsgFile rosMsgFile = (ROSMsgFile) PsiManager.getInstance(project).findFile(virtualFile);
             if (rosMsgFile != null) {
@@ -138,8 +138,7 @@ public class ROSMsgUtil {
     public static List<ROSMsgField> findFields(Project project) {
         List<ROSMsgField> result = new ArrayList<>();
         Collection<VirtualFile> virtualFiles =
-                FileBasedIndex.getInstance().getContainingFiles(FileTypeIndex.NAME, ROSMsgFileType.INSTANCE,
-                        GlobalSearchScope.allScope(project));
+                FileTypeIndex.getFiles(ROSMsgFileType.INSTANCE, GlobalSearchScope.allScope(project));
         for (VirtualFile virtualFile : virtualFiles) {
             ROSMsgFile rosMsgFile = (ROSMsgFile) PsiManager.getInstance(project).findFile(virtualFile);
             if (rosMsgFile != null) {
