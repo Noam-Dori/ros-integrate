@@ -2,7 +2,6 @@
     <id>ros-integrate</id>
     <name>ROS Support</name>
     <vendor email="TheNODO55@gmail.com">Noam Dori</vendor>
-    <version>0.0.1</version>
 
     <description>
         This plugin enables support for the ROS framework
