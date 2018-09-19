@@ -15,7 +15,7 @@
   psiImplUtilClass="ros.integrate.msg.psi.impl.ROSMsgPsiImplUtil"
 }
 
-rosMsgFile ::= item_*
+rosMsgFile ::= item_* {methods=[getName setName]}
 
 private item_ ::= (separator|field|comment|CRLF/*|fragment*/)
 
@@ -32,7 +32,7 @@ const ::= (NEG_OPERATOR? NUMBER | STRING)
 type ::= type_ (LBRACKET NUMBER? RBRACKET)? {
     mixin="ros.integrate.msg.psi.impl.ROSMsgIdentifierImpl"
     implements="ros.integrate.msg.psi.ROSMsgIdentifier"
-    methods=[raw custom size removeArray set getName getNameIdentifier]
+    methods=[raw custom size removeArray set getName getNameIdentifier getReference getReferences]
 }
 
 label ::= NAME {

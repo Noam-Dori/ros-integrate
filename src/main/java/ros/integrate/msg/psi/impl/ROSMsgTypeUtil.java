@@ -1,11 +1,15 @@
 package ros.integrate.msg.psi.impl;
 
 import com.intellij.lang.ASTNode;
+import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiReference;
+import com.intellij.psi.impl.source.resolve.reference.ReferenceProvidersRegistry;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import ros.integrate.msg.ROSMsgTypeReference;
 import ros.integrate.msg.psi.ROSMsgElementFactory;
 import ros.integrate.msg.psi.ROSMsgType;
 import ros.integrate.msg.psi.ROSMsgTypes;
@@ -45,6 +49,7 @@ class ROSMsgTypeUtil {
         }
     }
 
+    @NotNull
     static PsiElement set(@NotNull ROSMsgType type, String rawType, int size) {
         String array = size == -1 ? "" : size == 0 ? "[]" : "[" + size + "]";
         if (type.getNode() != null && !type.getText().equals(rawType + array)) {
@@ -55,6 +60,7 @@ class ROSMsgTypeUtil {
         return type;
     }
 
+    @NotNull
     @Contract("_, _ -> param1")
     static PsiElement set(@NotNull ROSMsgType type, String rawType) throws IncorrectOperationException {
         if(type.custom() == null) {
@@ -82,7 +88,27 @@ class ROSMsgTypeUtil {
         return type;
     }
 
+    @Nullable
     static PsiElement getNameIdentifier(@NotNull ROSMsgType type) {
         return type.custom();
+    }
+
+    @NotNull
+    @Contract("_ -> new")
+    static PsiReference getReference(@NotNull ROSMsgType type) {
+        PsiElement raw = type.raw();
+        int location = raw.getText().indexOf('/');
+        TextRange range;
+        if (location == -1) {
+            range = new TextRange(0, raw.getText().length());
+        } else {
+            range = new TextRange(location, raw.getText().length());
+        }
+        return new ROSMsgTypeReference(type, range);
+    }
+
+    @NotNull
+    static PsiReference[] getReferences(@NotNull ROSMsgType type) {
+        return ReferenceProvidersRegistry.getReferencesFromProviders(type);
     }
 }

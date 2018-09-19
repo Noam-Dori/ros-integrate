@@ -4,12 +4,14 @@ import com.intellij.extapi.psi.PsiFileBase;
 import com.intellij.navigation.ItemPresentation;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.psi.FileViewProvider;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.util.IncorrectOperationException;
+import org.jetbrains.annotations.NotNull;
 import ros.integrate.ROSIcons;
 import ros.integrate.msg.ROSMsgFileType;
 import ros.integrate.msg.ROSMsgLanguage;
 import ros.integrate.msg.ROSMsgUtil;
-import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -66,5 +68,18 @@ public class ROSMsgFile extends PsiFileBase {
                 return ROSIcons.MsgFile;
             }
         };
+    }
+
+    @NotNull
+    @Override
+    public String getName() {
+        return ROSMsgUtil.trimMsgFileName(super.getName());
+    }
+
+
+    @NotNull
+    @Override
+    public PsiElement setName(@NotNull String name) throws IncorrectOperationException {
+        return super.setName(name + "." + ROSMsgFileType.DEFAULT_EXTENSION);
     }
 }

@@ -2,6 +2,7 @@ package ros.integrate.msg.psi.impl;
 
 import com.intellij.navigation.ItemPresentation;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiReference;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -80,6 +81,7 @@ public class ROSMsgPsiImplUtil {
      *                      otherwise, the size of the array
      * @return the new (or current) psi element put in place of the provided type.
      */
+    @NotNull
     public static PsiElement set(@NotNull ROSMsgType type, String rawType, int size) {
         return ROSMsgTypeUtil.set(type, rawType, size);
     }
@@ -90,6 +92,7 @@ public class ROSMsgPsiImplUtil {
      * @param rawType the new raw type used
      * @return type, but changed.
      */
+    @NotNull
     @Contract("_, _ -> param1")
     public static PsiElement set(@NotNull ROSMsgType type, String rawType) throws IncorrectOperationException {
         return ROSMsgTypeUtil.set(type, rawType);
@@ -112,8 +115,29 @@ public class ROSMsgPsiImplUtil {
     }
 
     // utility function, do not use
+    @Nullable
     public static PsiElement getNameIdentifier(@NotNull ROSMsgType type) {
         return ROSMsgTypeUtil.getNameIdentifier(type);
+    }
+
+    /**
+     * implementation of {@link PsiElement#getReference()} for type psi-elements
+     * @param type the type to get the reference of
+     * @return the reference from this psi type to something else
+     */
+    @NotNull
+    public static PsiReference getReference(@NotNull ROSMsgType type) {
+        return ROSMsgTypeUtil.getReference(type);
+    }
+
+    /**
+     * implementation of {@link PsiElement#getReferences()} for type psi-elements
+     * @param type the type to get the reference of
+     * @return the references from this psi type to something else
+     */
+    @NotNull
+    public static PsiReference[] getReferences(@NotNull ROSMsgType type) {
+        return ROSMsgTypeUtil.getReferences(type);
     }
 
     /**

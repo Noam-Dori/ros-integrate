@@ -9,6 +9,7 @@ import ros.integrate.msg.psi.ROSMsgType;
 public class ROSMsgRefactoringSupportProvider extends RefactoringSupportProvider {
     @Override
     public boolean isMemberInplaceRenameAvailable(@NotNull PsiElement element, PsiElement context) {
-        return element instanceof ROSMsgLabel && element instanceof ROSMsgType;
+        return element instanceof ROSMsgLabel ||
+                element instanceof ROSMsgType;
     }
 }
