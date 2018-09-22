@@ -42,6 +42,7 @@ public class ROSMsgElementFactory {
                 createFileFromText(name, ROSMsgFileType.INSTANCE, text);
     }
 
+    @NotNull
     public static ROSMsgType createType(Project project, String typeName) {
         final ROSMsgFile file = createFile(project, typeName + " dummyName");
         return (ROSMsgType) file.getFirstChild().getFirstChild();

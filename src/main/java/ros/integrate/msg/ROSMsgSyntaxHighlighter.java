@@ -38,7 +38,7 @@ public class ROSMsgSyntaxHighlighter extends SyntaxHighlighterBase {
     public static final TextAttributesKey BAD_CHARACTER =
             createTextAttributesKey("ROSMSG_BAD_CHARACTER", HighlighterColors.BAD_CHARACTER);
     public static final JBColor SEPARATOR = new JBColor(new Color(0x006666),new Color(0x0F9795));
-    @SuppressWarnings("deprecation") // I get it, but there is no default for separators...
+    @SuppressWarnings("deprecation") // I getValue it, but there is no default for separators...
     public static final TextAttributesKey SERVICE =
             createTextAttributesKey("ROSMSG_SERVICE_SEPARATOR",
                     new TextAttributes(SEPARATOR, null, null, EffectType.STRIKEOUT, Font.BOLD));

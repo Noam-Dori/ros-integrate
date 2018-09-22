@@ -9,10 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.ROSIcons;
 import ros.integrate.msg.ROSMsgUtil;
-import ros.integrate.msg.psi.ROSMsgComment;
-import ros.integrate.msg.psi.ROSMsgField;
-import ros.integrate.msg.psi.ROSMsgLabel;
-import ros.integrate.msg.psi.ROSMsgType;
+import ros.integrate.msg.psi.*;
 
 import javax.swing.*;
 
@@ -122,7 +119,7 @@ public class ROSMsgPsiImplUtil {
 
     /**
      * implementation of {@link PsiElement#getReference()} for type psi-elements
-     * @param type the type to get the reference of
+     * @param type the type to getValue the reference of
      * @return the reference from this psi type to something else
      */
     @NotNull
@@ -132,7 +129,7 @@ public class ROSMsgPsiImplUtil {
 
     /**
      * implementation of {@link PsiElement#getReferences()} for type psi-elements
-     * @param type the type to get the reference of
+     * @param type the type to getValue the reference of
      * @return the references from this psi type to something else
      */
     @NotNull
@@ -190,5 +187,17 @@ public class ROSMsgPsiImplUtil {
     @Contract("null -> false")
     public static boolean isLegalConstant(@NotNull ROSMsgField field) {
         return ROSMsgFieldUtil.isLegalConstant(field);
+    }
+
+    /**
+     * provided that this field is a constant holding field, find the optimal data-type to hold the constant within it.
+     * @param constant the constant to optimise
+     * @return <code>null</code> iff the field is not a constant,
+     * otherwise a non-empty key-type holding the best data-type to use for the constant with respect to memory and actual size.
+     */
+
+    @NotNull
+    public static ROSMsgType getBestFit(@NotNull ROSMsgConst constant) {
+        return ROSMsgFieldUtil.getBestFit(constant);
     }
 }

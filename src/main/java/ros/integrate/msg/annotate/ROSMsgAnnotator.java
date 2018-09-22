@@ -5,7 +5,6 @@ import com.intellij.lang.annotation.Annotator;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
-import ros.integrate.msg.ROSMsgUtil;
 import ros.integrate.msg.psi.ROSMsgConst;
 import ros.integrate.msg.psi.ROSMsgField;
 import ros.integrate.msg.psi.ROSMsgSeparator;
@@ -14,7 +13,7 @@ public class ROSMsgAnnotator implements Annotator {
     @Override
     public void annotate(@NotNull final PsiElement element, @NotNull AnnotationHolder holder) {
         Project project = element.getProject();
-        String msgName = ROSMsgUtil.trimMsgFileName(element.getContainingFile().getName());
+        String msgName = element.getContainingFile().getName();
 
         if (element instanceof ROSMsgField) {
             ROSMsgField field = (ROSMsgField) element;

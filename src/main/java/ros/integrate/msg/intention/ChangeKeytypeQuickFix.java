@@ -6,11 +6,9 @@ import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Caret;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
-import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
-import ros.integrate.msg.ROSMsgUtil;
 import ros.integrate.msg.psi.ROSMsgConst;
 import ros.integrate.msg.psi.ROSMsgType;
 
@@ -46,7 +44,7 @@ public class ChangeKeytypeQuickFix extends BaseIntentionAction {
             throws IncorrectOperationException {
         ApplicationManager.getApplication().invokeLater(() ->
                 WriteCommandAction.writeCommandAction(project).run(() -> {
-                    PsiElement value = ROSMsgUtil.getBestFit(constant);
+                    ROSMsgType value = constant.getBestFit();
                     type.raw().replace(value);
                     Caret caret = editor.getCaretModel().getCurrentCaret();
                     caret.moveToOffset(type.getTextOffset());

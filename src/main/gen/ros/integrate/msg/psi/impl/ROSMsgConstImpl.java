@@ -26,4 +26,9 @@ public class ROSMsgConstImpl extends ASTWrapperPsiElement implements ROSMsgConst
     else super.accept(visitor);
   }
 
+  @NotNull
+  public ROSMsgType getBestFit() {
+    return ROSMsgPsiImplUtil.getBestFit(this);
+  }
+
 }

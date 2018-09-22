@@ -53,7 +53,7 @@ public class ROSMsgTypeReference extends PsiReferenceBase<PsiElement> implements
         final List<ROSMsgFile> files = ROSMsgUtil.findProjectMsgLocations(project, null, null);
         List<LookupElement> variants = new ArrayList<>();
         for (final ROSMsgFile file : files) {
-            String fileName = ROSMsgUtil.trimMsgFileName(file.getVirtualFile().getName());
+            String fileName = file.getName();
             if (fileName.length() > 0) {
                 variants.add(LookupElementBuilder.create(file).
                         withIcon(ROSIcons.MsgFile).

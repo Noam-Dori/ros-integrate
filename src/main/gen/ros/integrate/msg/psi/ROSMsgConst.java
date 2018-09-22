@@ -7,4 +7,7 @@ import com.intellij.psi.PsiElement;
 
 public interface ROSMsgConst extends PsiElement {
 
+  @NotNull
+  ROSMsgType getBestFit();
+
 }

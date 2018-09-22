@@ -15,7 +15,7 @@
   psiImplUtilClass="ros.integrate.msg.psi.impl.ROSMsgPsiImplUtil"
 }
 
-rosMsgFile ::= item_* {methods=[getName setName]}
+rosMsgFile ::= item_*
 
 private item_ ::= (separator|field|comment|CRLF/*|fragment*/)
 
@@ -27,7 +27,9 @@ private type_ ::= (CUSTOM_TYPE|KEYTYPE)
 
 separator ::= SERVICE_SEPARATOR
 
-const ::= (NEG_OPERATOR? NUMBER | STRING)
+const ::= (NEG_OPERATOR? NUMBER | STRING) {
+    methods=[getBestFit]
+}
 
 type ::= type_ (LBRACKET NUMBER? RBRACKET)? {
     mixin="ros.integrate.msg.psi.impl.ROSMsgIdentifierImpl"

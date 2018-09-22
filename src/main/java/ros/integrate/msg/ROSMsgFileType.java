@@ -14,7 +14,7 @@ import javax.swing.*;
 public class ROSMsgFileType extends LanguageFileType {
     public static final LanguageFileType INSTANCE = new ROSMsgFileType();
     @NonNls public static final String DEFAULT_EXTENSION = "msg";
-    @NonNls public static final String DOT_DEFAULT_EXTENSION = "."+DEFAULT_EXTENSION;
+    @NonNls public static final String DOT_DEFAULT_EXTENSION = "." + DEFAULT_EXTENSION;
 
     /**
      * Creates a language file type for the specified language.
