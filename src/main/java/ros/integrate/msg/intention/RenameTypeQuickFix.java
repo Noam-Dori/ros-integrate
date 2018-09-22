@@ -5,14 +5,16 @@ import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.ide.DataManager;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.ActionPlaces;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.extensions.Extensions;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.intellij.refactoring.rename.RenameHandler;
+import com.intellij.refactoring.actions.RenameElementAction;
 import com.intellij.refactoring.rename.RenameProcessor;
-import com.intellij.refactoring.rename.inplace.MemberInplaceRenameHandler;
 import com.intellij.testFramework.MockProblemDescriptor;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.Nls;
@@ -47,9 +49,10 @@ public class RenameTypeQuickFix implements LocalQuickFix {
         PsiElement elementToRename = descriptor.getPsiElement();
 
         if (forcedRename == null) {
-            MemberInplaceRenameHandler handler = findHandler();
-            if (editor != null && handler != null) {
-                handler.doRename(elementToRename,editor, DataManager.getInstance().getDataContext(editor.getComponent())); // context might need to not be null
+            if (editor != null) {
+                new RenameElementAction().actionPerformed(new AnActionEvent(
+                        null,DataManager.getInstance().getDataContext(editor.getComponent()),
+                        ActionPlaces.UNKNOWN,new Presentation(),ActionManager.getInstance(),0));
             }
         } else {
             // TODO: the booleans in here should be toggleable via intention settings
@@ -57,18 +60,6 @@ public class RenameTypeQuickFix implements LocalQuickFix {
                     false, false);
             processor.doRun();
         }
-    }
-
-    @Nullable
-    private static MemberInplaceRenameHandler findHandler() {
-        Object[] extensions = Extensions.getExtensions(RenameHandler.EP_NAME);
-
-        for (Object extension : extensions) {
-            if (extension instanceof MemberInplaceRenameHandler) {
-                return (MemberInplaceRenameHandler)extension;
-            }
-        }
-        return null;
     }
 
     @Override

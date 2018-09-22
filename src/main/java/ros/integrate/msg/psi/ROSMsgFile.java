@@ -5,6 +5,7 @@ import com.intellij.navigation.ItemPresentation;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.psi.FileViewProvider;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiNameIdentifierOwner;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
@@ -19,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ROSMsgFile extends PsiFileBase {
+public class ROSMsgFile extends PsiFileBase implements PsiNameIdentifierOwner {
     public ROSMsgFile(@NotNull FileViewProvider viewProvider) {
         super(viewProvider, ROSMsgLanguage.INSTANCE);
     }
@@ -140,6 +141,12 @@ public class ROSMsgFile extends PsiFileBase {
                 }
             }
         }
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public PsiElement getNameIdentifier() {
         return null;
     }
 }
