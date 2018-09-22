@@ -81,7 +81,7 @@ public class ROSMsgFile extends PsiFileBase {
     @NotNull
     @Override
     public PsiElement setName(@NotNull String name) throws IncorrectOperationException {
-        return super.setName(name + "." + ROSMsgFileType.DOT_DEFAULT_EXTENSION);
+        return super.setName(name + ROSMsgFileType.DOT_DEFAULT_EXTENSION);
     }
 
     /**
