@@ -62,7 +62,7 @@ public class ROSMsgTypeAnnotator {
     }
 
     private boolean unknownType() {
-        List<String> types = ROSMsgUtil.findProjectMsgNames(project, type.raw().getText(), null);
+        List<String> types = ROSMsgUtil.findMessageNames(project, type.raw().getText(), null);
         return types.isEmpty() && // found no message within project matching this field type.
                 !(type.raw().getText().equals("Header") && type.getParent().getNode().equals(getFirstField())) && // field is the header
                 !type.raw().getText().contains("/"); // message is defined outside project

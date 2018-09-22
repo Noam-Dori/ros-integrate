@@ -4,6 +4,7 @@ import com.intellij.codeInsight.completion.*;
 import com.intellij.codeInsight.lookup.*;
 import com.intellij.openapi.editor.CaretModel;
 import com.intellij.openapi.extensions.Extensions;
+import com.intellij.openapi.project.Project;
 import com.intellij.patterns.PlatformPatterns;
 import com.intellij.psi.PsiElement;
 import com.intellij.util.ProcessingContext;
@@ -57,10 +58,13 @@ public class ROSMsgCompletionContributor extends CompletionContributor {
                                 .withTypeText("unsigned integral number")
                                 .withInsertHandler((insertionContext, item) ->
                                         handleNumericalInserts(insertionContext,INTEGRAL_SIZES,INTEGRAL_SIZES[0])));
-                        for (String projectMsg : ROSMsgUtil.findProjectMsgNames(parameters.getEditor().getProject(),
-                                null,parameters.getOriginalFile().getVirtualFile())) {
-                            resultSet.addElement(LookupElementBuilder.create(projectMsg)
-                                    .withIcon(ROSIcons.MsgFile));
+                        Project project = parameters.getEditor().getProject();
+                        if(project != null) {
+                            for (String projectMsg : ROSMsgUtil.findMessageNames(project,
+                                    null, parameters.getOriginalFile().getVirtualFile())) {
+                                resultSet.addElement(LookupElementBuilder.create(projectMsg)
+                                        .withIcon(ROSIcons.MsgFile));
+                            }
                         }
                     }
                 }

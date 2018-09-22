@@ -3,18 +3,18 @@ package ros.integrate.msg.annotate;
 import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.openapi.util.TextRange;
-import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
-import ros.integrate.msg.ROSMsgUtil;
 import ros.integrate.msg.intention.ChangeNameQuickFix;
-import ros.integrate.msg.psi.ROSMsgLabel;
 import ros.integrate.msg.psi.ROSMsgField;
+import ros.integrate.msg.psi.ROSMsgFile;
+import ros.integrate.msg.psi.ROSMsgLabel;
 
 class ROSMsgNameAnnotator {
 
     private final @NotNull AnnotationHolder holder;
     private final @NotNull String fieldName;
-    private final @NotNull PsiElement name;
+    private final @NotNull ROSMsgLabel name;
+    private final @NotNull ROSMsgFile file;
 
     ROSMsgNameAnnotator(@NotNull AnnotationHolder holder,
                         @NotNull ROSMsgLabel name,
@@ -22,11 +22,12 @@ class ROSMsgNameAnnotator {
         this.holder = holder;
         this.fieldName = fieldName;
         this.name = name;
+        this.file = (ROSMsgFile) name.getContainingFile();
     }
 
     void annDuplicateName() {
-        int separatorCount = ROSMsgUtil.countNameInFile(name.getContainingFile(),fieldName);
-        if (separatorCount > 1 && !ROSMsgUtil.isFirstDefinition(name.getContainingFile(),(ROSMsgField) name.getParent())) {
+        int nameCount = file.countNameInFile(fieldName);
+        if (nameCount > 1 && !file.isFirstDefinition(name)) {
             TextRange range = new TextRange(name.getTextRange().getStartOffset(),
                     name.getTextRange().getEndOffset());
             Annotation ann = holder.createErrorAnnotation(range, "Field name '" + fieldName + "' is already used");

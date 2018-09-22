@@ -12,7 +12,7 @@ public class ROSMsgChooseByNameContributor implements ChooseByNameContributor {
     @NotNull
     @Override
     public String[] getNames(Project project, boolean includeNonProjectItems) {
-        List<String> names = ROSMsgUtil.findProjectMsgNames(project);
+        List<String> names = ROSMsgUtil.findMessageNames(project,null,null);
         return names.toArray(new String[0]);
     }
 
@@ -20,7 +20,7 @@ public class ROSMsgChooseByNameContributor implements ChooseByNameContributor {
     @Override
     public NavigationItem[] getItemsByName(String name, String pattern, Project project, boolean includeNonProjectItems) {
         //TODO: include non project items
-        List<ROSMsgFile> fields = ROSMsgUtil.findProjectMsgLocations(project, name, null);
+        List<ROSMsgFile> fields = ROSMsgUtil.findMessages(project, name, null);
         //noinspection SuspiciousToArrayCall
         return fields.toArray(new NavigationItem[0]);
     }

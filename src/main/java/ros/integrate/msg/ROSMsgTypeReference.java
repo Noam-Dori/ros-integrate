@@ -31,7 +31,7 @@ public class ROSMsgTypeReference extends PsiReferenceBase<PsiElement> implements
     @Override
     public ResolveResult[] multiResolve(boolean incompleteCode) {
         Project project = myElement.getProject();
-        final List<ROSMsgFile> files = ROSMsgUtil.findProjectMsgLocations(project, key, myElement.getContainingFile().getVirtualFile());
+        final List<ROSMsgFile> files = ROSMsgUtil.findMessages(project, key, myElement.getContainingFile().getVirtualFile());
         List<ResolveResult> results = new ArrayList<>();
         for (ROSMsgFile file : files) {
             results.add(new PsiElementResolveResult(file));
@@ -50,7 +50,7 @@ public class ROSMsgTypeReference extends PsiReferenceBase<PsiElement> implements
     @Override
     public Object[] getVariants() {
         Project project = myElement.getProject();
-        final List<ROSMsgFile> files = ROSMsgUtil.findProjectMsgLocations(project, null, null);
+        final List<ROSMsgFile> files = ROSMsgUtil.findMessages(project, null, null);
         List<LookupElement> variants = new ArrayList<>();
         for (final ROSMsgFile file : files) {
             String fileName = file.getName();
