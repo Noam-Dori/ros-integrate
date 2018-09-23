@@ -10,11 +10,10 @@ import com.intellij.openapi.actionSystem.ActionPlaces;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.project.Project;
-import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.refactoring.actions.RenameElementAction;
-import com.intellij.refactoring.rename.RenameProcessor;
 import com.intellij.testFramework.MockProblemDescriptor;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.Nls;
@@ -22,14 +21,17 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.msg.psi.ROSMsgType;
 
+import javax.swing.*;
+import java.util.Objects;
+
 public class RenameTypeQuickFix implements LocalQuickFix {
     @Nullable
-    private String forcedRename;
+    private Editor editor; // compliment of fileEditor, available only in annotation fixes.
     @Nullable
-    private Editor editor;
+    private FileEditor fileEditor; // compliment of editor, available only in inspection fixes.
 
-    public RenameTypeQuickFix(@Nullable String forcedRename) {
-        this.forcedRename = forcedRename;
+    public RenameTypeQuickFix(@Nullable FileEditor editor) {
+        this.fileEditor = editor;
     }
 
     public void setEditor(@Nullable Editor editor) {
@@ -45,21 +47,10 @@ public class RenameTypeQuickFix implements LocalQuickFix {
 
     @Override
     public void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor) {
-        // activate refactoring on provided PSI element
-        PsiElement elementToRename = descriptor.getPsiElement();
-
-        if (forcedRename == null) {
-            if (editor != null) {
-                new RenameElementAction().actionPerformed(new AnActionEvent(
-                        null,DataManager.getInstance().getDataContext(editor.getComponent()),
-                        ActionPlaces.UNKNOWN,new Presentation(),ActionManager.getInstance(),0));
-            }
-        } else {
-            // TODO: the booleans in here should be toggleable via intention settings
-            RenameProcessor processor = new RenameProcessor(project, elementToRename.getParent(), forcedRename,
-                    false, false);
-            processor.doRun();
-        }
+        JComponent component = editor == null ? Objects.requireNonNull(fileEditor).getComponent() : editor.getComponent();
+        new RenameElementAction().actionPerformed(new AnActionEvent(
+                null, DataManager.getInstance().getDataContext(component),
+                ActionPlaces.UNKNOWN, new Presentation(), ActionManager.getInstance(), 0));
     }
 
     @Override

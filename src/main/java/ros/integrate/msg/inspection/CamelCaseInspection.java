@@ -3,6 +3,7 @@ package ros.integrate.msg.inspection;
 import com.intellij.codeInspection.InspectionManager;
 import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.codeInspection.ProblemHighlightType;
+import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
@@ -44,7 +45,8 @@ public class CamelCaseInspection extends AbstractROSMsgInspection {
                 if (message != null) {
                     ProblemDescriptor descriptor = manager.createProblemDescriptor(custom, custom, message,
                             ProblemHighlightType.GENERIC_ERROR_OR_WARNING, isOnTheFly,
-                            new RenameTypeQuickFix(camelCase(custom.getText())));
+                            new RenameTypeQuickFix(FileEditorManager.getInstance(
+                                    file.getProject()).getSelectedEditor()));
                     descriptors.add(descriptor);
                 }
             }
@@ -52,8 +54,9 @@ public class CamelCaseInspection extends AbstractROSMsgInspection {
         return descriptors.toArray(new ProblemDescriptor[0]);
     }
 
+    /* // if forced rename ever becomes available, here is some starting code to camelcase a string
     @Contract("null -> null")
-    private static String camelCase(String text) { //TODO: add grammar processing to improve fix
+    private static String camelCase(String text) { //notTODO: add grammar processing to improve fix
         if(text == null) { return null;}
         if(Character.isLowerCase(text.charAt(0))) {
             text = Character.toUpperCase(text.charAt(0)) + (text.length() > 1 ? text.substring(1) : "");
@@ -72,4 +75,5 @@ public class CamelCaseInspection extends AbstractROSMsgInspection {
         }
         return text;
     }
+    */
 }
