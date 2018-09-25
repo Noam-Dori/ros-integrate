@@ -15,6 +15,10 @@ import javax.swing.*;
 
 import static ros.integrate.msg.psi.ROSMsgElementFactory.ANNOTATION_PREFIX;
 
+/**
+ * a utility class implementing all of the ROSMsg PSI objects' methods.
+ * Also hold all documentation for them since it just passes them to the sub-utilities.
+ */
 public class ROSMsgPsiImplUtil {
     /**
      * fetches all annotation IDS if any

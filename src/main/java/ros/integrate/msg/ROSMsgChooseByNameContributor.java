@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+// unused for now.
 public class ROSMsgChooseByNameContributor implements ChooseByNameContributor {
     @NotNull
     @Override

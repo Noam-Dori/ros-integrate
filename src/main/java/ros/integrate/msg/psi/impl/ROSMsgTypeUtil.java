@@ -16,6 +16,9 @@ import ros.integrate.msg.psi.ROSMsgTypes;
 
 import java.util.Objects;
 
+/**
+ * a utility class holding {@link ROSMsgType} implementations
+ */
 class ROSMsgTypeUtil {
     @NotNull
     static PsiElement raw(@NotNull ROSMsgType type) {

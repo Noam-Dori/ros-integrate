@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.msg.psi.ROSMsgType;
 
+//unused for now
 public class ROSMsgTypeElementManipulator extends AbstractElementManipulator<ROSMsgType> {
     @Nullable
     @Override

@@ -17,6 +17,9 @@ import ros.integrate.msg.psi.ROSMsgFile;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * a class defining the references of {@link ros.integrate.msg.psi.ROSMsgType} to {@link ROSMsgFile}
+ */
 public class ROSMsgTypeReference extends PsiReferenceBase<PsiElement> implements PsiFileReference {
     // note: myElement is the referencing element, and the result of resolve() is the original element (the file).
 

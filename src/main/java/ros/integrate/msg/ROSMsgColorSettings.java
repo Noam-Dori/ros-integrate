@@ -12,6 +12,9 @@ import ros.integrate.ROSIcons;
 import javax.swing.*;
 import java.util.Map;
 
+/**
+ * creates the settings page for the code colors of ROS messages and services.
+ */
 public class ROSMsgColorSettings implements ColorSettingsPage {
     private static final AttributesDescriptor[] DESCRIPTORS = new AttributesDescriptor[]{
             new AttributesDescriptor("Builtin Types", ROSMsgSyntaxHighlighter.KEYTYPE),

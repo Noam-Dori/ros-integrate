@@ -17,6 +17,9 @@ import ros.integrate.msg.psi.ROSMsgElementFactory;
 import ros.integrate.msg.psi.ROSMsgFile;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * a fix used to add new ROS messages when needed.
+ */
 public class AddROSMsgQuickFix extends BaseIntentionAction {
 
     public AddROSMsgQuickFix(PsiElement fieldType) {

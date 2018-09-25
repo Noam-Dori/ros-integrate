@@ -3,6 +3,9 @@ package ros.integrate.msg;
 import com.intellij.lang.Commenter;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * a class enabling using a commenter in ROS messages and services.
+ */
 public class ROSMsgCommenter implements Commenter {
     @Nullable
     @Override

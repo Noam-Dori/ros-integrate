@@ -3,7 +3,6 @@ package ros.integrate.msg.inspection;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
-import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -12,11 +11,20 @@ import ros.integrate.msg.psi.ROSMsgComment;
 import ros.integrate.msg.psi.ROSMsgElementFactory;
 import ros.integrate.msg.psi.ROSMsgField;
 
-public class ROSMsgSuppressionUtil {
+/**
+ * a collection of utility functions regarding suppressing ROS inspections.
+ */
+class ROSMsgSuppressionUtil {
 
-    public static void addSuppressAnnotation(@NotNull Project project,
-                                             final PsiElement container,
-                                             @NotNull String id) throws IncorrectOperationException {
+    /**
+     * add a suppression annotation
+     * @param project the project this is present in.
+     * @param container the element containing the supposed annotation
+     * @param id the string ID of the inspection
+     */
+    static void addSuppressAnnotation(@NotNull Project project,
+                                      final @NotNull PsiElement container,
+                                      @NotNull String id) {
         final ROSMsgComment annotation = findAnnotation(container);
         final ROSMsgComment newAnnotation = createNewAnnotation(project, annotation, id);
         if (newAnnotation != null) {
@@ -29,6 +37,12 @@ public class ROSMsgSuppressionUtil {
         }
     }
 
+    /**
+     * fetches the annotation for the element if it exists.
+     * @param container the element containing the supposed annotation
+     * @return null if no annotation is available for this PSI element,
+     *         otherwise an annotation in the form of a {@link ROSMsgComment}
+     */
     @Nullable
     static ROSMsgComment findAnnotation(@NotNull PsiElement container) {
         PsiElement[] fields = container.getContainingFile().getChildren();
@@ -46,13 +60,26 @@ public class ROSMsgSuppressionUtil {
         return null;
     }
 
+    /**
+     * adds an annotation to the element provided
+     * @param project the project this object is present in.
+     * @param newAnnotation the new annotation to add.
+     * @param container the PSI element to add an annotation to.
+     */
     private static void appendAnnotation(@NotNull Project project, @NotNull ROSMsgComment newAnnotation, @NotNull PsiElement container) {
         container.getContainingFile().addBefore(newAnnotation,container);
         container.getContainingFile().addBefore(ROSMsgElementFactory.createCRLF(project),container);
     }
 
+    /**
+     * generate a new suppression annotation.
+     * @param project project the project this object is present in.
+     * @param annotation null if the container has no previous annotation, otherwise the previous annotation.
+     * @param id the id this annotation suppresses.
+     * @return the new annotation to replace or append for the element provided
+     */
     @Nullable
-    private static ROSMsgComment createNewAnnotation(@NotNull Project project, ROSMsgComment annotation, @NotNull String id) {
+    private static ROSMsgComment createNewAnnotation(@NotNull Project project, @Nullable ROSMsgComment annotation, @NotNull String id) {
         if (annotation == null || annotation.getAnnotationIds() == null || annotation.getAnnotationIds().equals("")) {
             return ROSMsgElementFactory.createAnnotation(project, id);
         }
@@ -64,9 +91,13 @@ public class ROSMsgSuppressionUtil {
         return null;
     }
 
+    /**
+     * fetches the element to annotate.
+     * @param container the PSI element to add an annotation to.
+     * @return null if the element provided cannot be annotated, otherwise returns itself.
+     */
     @Contract(value = "null -> null", pure = true)
-    @Nullable
-    public static PsiElement getElementToAnnotate(PsiElement container) {
+    static PsiElement getElementToAnnotate(@Nullable PsiElement container) {
         if (container instanceof ROSMsgField) {
             return container;
         }

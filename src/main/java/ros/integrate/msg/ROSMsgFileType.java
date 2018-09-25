@@ -9,7 +9,8 @@ import ros.integrate.ROSIcons;
 import javax.swing.*;
 
 /**
- * @author max
+ * @author Noam Dori
+ * a class defining the ROS Msg file type (and perhaps the service one as well)
  */
 public class ROSMsgFileType extends LanguageFileType {
     public static final LanguageFileType INSTANCE = new ROSMsgFileType();

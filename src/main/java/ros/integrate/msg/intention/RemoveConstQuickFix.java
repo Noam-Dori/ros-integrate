@@ -12,6 +12,9 @@ import ros.integrate.msg.psi.ROSMsgField;
 import ros.integrate.msg.psi.ROSMsgTypes;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * a fix used to remove the constant from a field
+ */
 public class RemoveConstQuickFix extends BaseIntentionAction {
 
     public RemoveConstQuickFix(ROSMsgField field) {

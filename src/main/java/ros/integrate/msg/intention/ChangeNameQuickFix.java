@@ -12,6 +12,7 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -21,6 +22,9 @@ import ros.integrate.msg.psi.ROSMsgField;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * a fix used to change duplicate names without triggering a refactor.
+ */
 public class ChangeNameQuickFix extends BaseIntentionAction {
     private final ROSMsgField parent;
     private final PsiElement badElement;
@@ -77,6 +81,10 @@ public class ChangeNameQuickFix extends BaseIntentionAction {
                 });
     }
 
+    /**
+     * a utility function used to get the provider needed.
+     * @return null if the provider does not exist, otherwise the provider itself.
+     */
     @Nullable
     private static ROSMsgNameSuggestionProvider findProvider() {
         Object[] extensions = Extensions.getExtensions(ROSMsgNameSuggestionProvider.EP_NAME);
@@ -89,6 +97,13 @@ public class ChangeNameQuickFix extends BaseIntentionAction {
         return null;
     }
 
+    /**
+     * checks the range of the provided offset based on the document length.
+     * @param offset the offset to check
+     * @param documentLength the max length of the document to check against.
+     * @return the provided offset if it within within allowable range, otherwise the document length.
+     */
+    @Contract(pure = true)
     private static int getDocumentOffset(int offset, int documentLength) {
         return offset >=0 && offset <= documentLength ? offset : documentLength;
     }

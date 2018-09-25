@@ -6,6 +6,9 @@ import com.intellij.util.ProcessingContext;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.msg.psi.ROSMsgType;
 
+/**
+ * a class enabling references in ROS messages.
+ */
 public class ROSMsgTypeReferenceContributor extends PsiReferenceContributor {
     @Override
     public void registerReferenceProviders(@NotNull PsiReferenceRegistrar registrar) {

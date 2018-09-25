@@ -24,6 +24,9 @@ import ros.integrate.msg.psi.ROSMsgType;
 import javax.swing.*;
 import java.util.Objects;
 
+/**
+ * a fix used to trigger refactoring for a certain type.
+ */
 public class RenameTypeQuickFix implements LocalQuickFix {
     @Nullable
     private Editor editor; // compliment of fileEditor, available only in annotation fixes.

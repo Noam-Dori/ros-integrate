@@ -9,6 +9,9 @@ import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.msg.psi.ROSMsgField;
 
+/**
+ * a fix used to remove an entire field from the file.
+ */
 public class RemoveFieldQuickFix extends BaseIntentionAction {
     public RemoveFieldQuickFix(ROSMsgField field) {
         rosMsg = field;

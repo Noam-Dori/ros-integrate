@@ -9,6 +9,9 @@ import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.msg.psi.ROSMsgType;
 
+/**
+ * a fix used to change the header type as necessary.
+ */
 public class ChangeHeaderQuickFix extends BaseIntentionAction {
 
     public ChangeHeaderQuickFix(ROSMsgType field) {

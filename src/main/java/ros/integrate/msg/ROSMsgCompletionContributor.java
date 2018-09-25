@@ -19,6 +19,9 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+/**
+ * a class enabling and defining auto-completion within ROS messages
+ */
 public class ROSMsgCompletionContributor extends CompletionContributor {
     private static LookupElement[] INTEGRAL_SIZES = Arrays.stream(new String[] {"8", "16", "32", "64"})
             .map(LookupElementBuilder::create)

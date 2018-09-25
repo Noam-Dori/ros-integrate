@@ -16,6 +16,9 @@ import java.awt.*;
 
 import static com.intellij.openapi.editor.colors.TextAttributesKey.createTextAttributesKey;
 
+/**
+ * a highlighter for ROS messages and services.
+ */
 public class ROSMsgSyntaxHighlighter extends SyntaxHighlighterBase {
     public static final TextAttributesKey ASSIGNER =
             createTextAttributesKey("ROSMSG_CONST_ASSIGNER", DefaultLanguageHighlighterColors.OPERATION_SIGN);
@@ -81,7 +84,7 @@ public class ROSMsgSyntaxHighlighter extends SyntaxHighlighterBase {
             return NAME_KEYS;
         } else if (tokenType.equals(ROSMsgTypes.KEYTYPE)) {
             return KEYTYPE_KEYS;
-        } else if (tokenType.equals(ROSMsgTypes.TYPE)) {
+        } else if (tokenType.equals(ROSMsgTypes.CUSTOM_TYPE)) {
             return TYPE_KEYS;
         } else if (tokenType.equals(ROSMsgTypes.CONST_ASSIGNER)) {
             return ASSIGNER_KEYS;

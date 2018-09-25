@@ -10,6 +10,9 @@ import ros.integrate.msg.psi.ROSMsgElementFactory;
 import ros.integrate.msg.psi.ROSMsgField;
 import ros.integrate.msg.psi.ROSMsgType;
 
+/**
+ * a utility class holding {@link ROSMsgField} implementations
+ */
 class ROSMsgFieldUtil {
     @Contract("null -> false")
     static boolean isLegalConstant(@NotNull ROSMsgField field) {

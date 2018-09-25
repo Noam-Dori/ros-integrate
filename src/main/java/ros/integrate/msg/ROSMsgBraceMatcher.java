@@ -8,6 +8,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.msg.psi.ROSMsgTypes;
 
+/**
+ * an extension enabling bracket support in ROS messages.
+ */
 public class ROSMsgBraceMatcher implements PairedBraceMatcher {
     @NotNull
     @Override

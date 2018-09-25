@@ -11,6 +11,9 @@ import com.intellij.util.IncorrectOperationException;
 import ros.integrate.msg.psi.ROSMsgSeparator;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * a fix used to delete all service lines in a file
+ */
 public class RemoveAllSrvLinesQuickFix extends BaseIntentionAction {
 
     @NotNull

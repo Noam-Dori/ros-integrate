@@ -7,17 +7,19 @@ import com.intellij.openapi.editor.Caret;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
-import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.msg.psi.ROSMsgConst;
 import ros.integrate.msg.psi.ROSMsgType;
 
+/**
+ * a fix used to change the key-type according to the {@link ROSMsgConst} provided.
+ */
 public class ChangeKeytypeQuickFix extends BaseIntentionAction {
 
     private final @NotNull ROSMsgType type;
     private final @NotNull ROSMsgConst constant;
 
-    public ChangeKeytypeQuickFix(@NotNull ROSMsgType type,@NotNull ROSMsgConst constant) {
+    public ChangeKeytypeQuickFix(@NotNull ROSMsgType type, @NotNull ROSMsgConst constant) {
         this.type = type;
         this.constant = constant;
     }
@@ -40,8 +42,7 @@ public class ChangeKeytypeQuickFix extends BaseIntentionAction {
     }
 
     @Override
-    public void invoke(@NotNull Project project, Editor editor, PsiFile file)
-            throws IncorrectOperationException {
+    public void invoke(@NotNull Project project, Editor editor, PsiFile file) {
         ApplicationManager.getApplication().invokeLater(() ->
                 WriteCommandAction.writeCommandAction(project).run(() -> {
                     ROSMsgType value = constant.getBestFit();

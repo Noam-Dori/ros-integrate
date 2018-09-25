@@ -3,21 +3,24 @@ package ros.integrate.msg;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.search.FileTypeIndex;
 import com.intellij.psi.search.GlobalSearchScope;
-import com.intellij.psi.util.PsiTreeUtil;
-import org.jetbrains.annotations.Nullable;
-import ros.integrate.msg.psi.*;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import ros.integrate.msg.psi.ROSMsgComment;
+import ros.integrate.msg.psi.ROSMsgElementFactory;
+import ros.integrate.msg.psi.ROSMsgFile;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * a generic utility class regarding ROS messages and services.
+ */
 public class ROSMsgUtil {
     /**
      * checks of this is an annotation comment.

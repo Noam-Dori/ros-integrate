@@ -7,6 +7,9 @@ import ros.integrate.msg.psi.ROSMsgFile;
 import ros.integrate.msg.psi.ROSMsgLabel;
 import ros.integrate.msg.psi.ROSMsgType;
 
+/**
+ * a class enabling in-place refactoring support in ROS messages.
+ */
 public class ROSMsgRefactoringSupportProvider extends RefactoringSupportProvider {
     @Override
     public boolean isMemberInplaceRenameAvailable(@NotNull PsiElement element, PsiElement context) {

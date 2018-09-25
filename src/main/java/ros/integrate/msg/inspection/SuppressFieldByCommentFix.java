@@ -6,18 +6,18 @@ import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.msg.ROSMsgLanguage;
 import ros.integrate.msg.psi.ROSMsgField;
 
+/**
+ * a fix intended to suppress inspections via a comment.
+ */
 public class SuppressFieldByCommentFix extends SuppressByCommentFix {
-    public SuppressFieldByCommentFix(@NotNull HighlightDisplayKey key) {
+    SuppressFieldByCommentFix(@NotNull HighlightDisplayKey key) {
         super(key, ROSMsgField.class);
-    }
-
-    public SuppressFieldByCommentFix(@NotNull String toolId) {
-        super(toolId, ROSMsgField.class);
     }
 
     @Override
@@ -46,7 +46,7 @@ public class SuppressFieldByCommentFix extends SuppressByCommentFix {
     }
 
     @Override
-    protected boolean replaceSuppressionComments(PsiElement container) {
+    protected boolean replaceSuppressionComments(@Nullable PsiElement container) {
         if (getElementToAnnotate(container) != null) return false;
         return super.replaceSuppressionComments(container);
     }
@@ -57,12 +57,18 @@ public class SuppressFieldByCommentFix extends SuppressByCommentFix {
         return "Suppress for field";
     }
 
-    @Nullable
-    protected PsiElement getElementToAnnotate(PsiElement container) {
+    /**
+     * see {@link ROSMsgSuppressionUtil#getElementToAnnotate(PsiElement)}
+     */
+    @Contract(value = "null -> null", pure = true)
+    private PsiElement getElementToAnnotate(@Nullable PsiElement container) {
         return ROSMsgSuppressionUtil.getElementToAnnotate(container);
     }
 
-    protected void suppressWithComment(Project project, PsiElement element, PsiElement container) {
+    /**
+     * see {@link SuppressByCommentFix#createSuppression(Project, PsiElement, PsiElement)}
+     */
+    private void suppressWithComment(@NotNull Project project,@NotNull PsiElement element,@NotNull PsiElement container) {
         super.createSuppression(project, element, container);
     }
 }

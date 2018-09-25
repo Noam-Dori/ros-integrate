@@ -10,6 +10,9 @@ import com.intellij.util.IncorrectOperationException;
 import ros.integrate.msg.psi.ROSMsgSeparator;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * a fix used to remove one service separator from the file.
+ */
 public class RemoveSrvLineQuickFix extends BaseIntentionAction {
 
     private ROSMsgSeparator separator;

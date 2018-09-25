@@ -42,6 +42,9 @@ import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * the message dialog when creating a new message type.
+ */
 public class NewROSMsgDialogue extends DialogWrapper {
     // TODO: 8/29/2018 add error annotation for illegal message types somehow. spelling would be nice too
 

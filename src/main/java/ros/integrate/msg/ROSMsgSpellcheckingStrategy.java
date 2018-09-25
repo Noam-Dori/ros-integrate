@@ -11,6 +11,9 @@ import org.jetbrains.annotations.NotNull;
 import ros.integrate.msg.psi.ROSMsgComment;
 import ros.integrate.msg.psi.ROSMsgType;
 
+/**
+ * a class enabling the spellchecker in ROS messages.
+ */
 public class ROSMsgSpellcheckingStrategy extends SpellcheckingStrategy {
     protected final Tokenizer<ROSMsgComment> myROSCommentTokenizer = new ROSCommentTokenizer();
 

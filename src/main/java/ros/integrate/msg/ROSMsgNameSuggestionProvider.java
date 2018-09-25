@@ -8,6 +8,9 @@ import ros.integrate.msg.psi.ROSMsgType;
 
 import java.util.*;
 
+/**
+ * a class used to suggest names for things in ROS messages.
+ */
 public class ROSMsgNameSuggestionProvider extends PreferrableNameSuggestionProvider {
     @Nullable
     @Override
