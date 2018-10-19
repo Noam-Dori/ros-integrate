@@ -20,7 +20,8 @@ dependencies {
 }
 
 intellij {
-    version '182.3684.2'
+    version '183.3647.12'
+    updateSinceUntilBuild false
 }
 
 sourceSets {
@@ -33,12 +34,9 @@ sourceSets {
 }
 
 patchPluginXml {
-    version '0.0.1'
-    description """
-        <p>This plugin enables support for the ROS framework</p>
-    """
+    version '0.1'
     changeNotes """
-        <p>0.0.1</p>
+        <p>0.1</p>
         <ul>
             <li>Added the ROSMsg language - a language for ROS Messages</li>
             <li>ROSMsg has its own highlighting which can be customised</li>
@@ -102,4 +100,4 @@ publishPlugin {
 }
 
 group 'ros-integrate'
-version '0.0.1'
+version '0.1'
