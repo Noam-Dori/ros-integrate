@@ -1,0 +1,50 @@
+{
+  parserClass="ros.integrate.pkt.parser.ROSPktParser"
+
+  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  psiClassPrefix="ROSPkt"
+  psiImplClassSuffix="Impl"
+  psiPackage="ros.integrate.pkt.psi"
+  psiImplPackage="ros.integrate.pkt.psi.impl"
+
+  elementTypeHolderClass="ros.integrate.pkt.psi.ROSPktTypes"
+  elementTypeClass="ros.integrate.pkt.psi.ROSPktElementType"
+  tokenTypeClass="ros.integrate.pkt.psi.ROSPktTokenType"
+
+  psiImplUtilClass="ros.integrate.pkt.psi.impl.ROSPktPsiImplUtil"
+}
+
+rosMsgFile ::= item_*
+
+private item_ ::= (separator|field|comment|CRLF/*|fragment*/)
+
+comment ::= LINE_COMMENT {
+    methods=[getAnnotationIds]
+}
+
+private type_ ::= (CUSTOM_TYPE|KEYTYPE)
+
+separator ::= SERVICE_SEPARATOR
+
+const ::= (NEG_OPERATOR? NUMBER | STRING) {
+    methods=[getBestFit]
+}
+
+type ::= type_ (LBRACKET NUMBER? RBRACKET)? {
+    mixin="ros.integrate.pkt.psi.impl.ROSPktIdentifierImpl"
+    implements="ros.integrate.pkt.psi.ROSPktIdentifier"
+    methods=[raw custom size removeArray set getName getNameIdentifier getReference getReferences]
+}
+
+label ::= NAME {
+    mixin="ros.integrate.pkt.psi.impl.ROSPktIdentifierImpl"
+    implements="ros.integrate.pkt.psi.ROSPktIdentifier"
+    methods=[set getName]
+}
+
+field ::= type label (CONST_ASSIGNER const)? {
+    methods=[getPresentation isLegalConstant]
+}
+
+//fragment ::= type? fieldName? CONST_ASSIGNER? const?

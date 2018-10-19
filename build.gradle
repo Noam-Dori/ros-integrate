@@ -44,10 +44,10 @@ patchPluginXml {
         <ul>
             <li>Added the ROSMsg language - a language for ROS Messages</li>
             <li>ROSMsg has its own highlighting which can be customised</li>
-            <li>*.msg has its own file icon (will be extended to *.srv in due time)</li>
+            <li>*.pkt has its own file icon (will be extended to *.srv in due time)</li>
             <li>ROSMsg contains a commenter (default: Ctrl+/ like all other commentators)</li>
             <li>Basic refactoring support for field names</li>
-            <li>Refactoring support for msg types</li>
+            <li>Refactoring support for pkt types</li>
             <li>Jump-to-definition action by Ctrl clicking on the field type</li>
             <li>ROSMsg Autocompletion:
                 <ul>
