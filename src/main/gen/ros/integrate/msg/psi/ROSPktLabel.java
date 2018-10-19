@@ -1,10 +1,12 @@
 // This is a generated file. Not intended for manual editing.
 package ros.integrate.msg.psi;
 
-import java.util.List;
-import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface ROSMsgSeparator extends PsiElement {
+public interface ROSPktLabel extends ROSPktIdentifier {
+
+  PsiElement set(String newName);
+
+  String getName();
 
 }

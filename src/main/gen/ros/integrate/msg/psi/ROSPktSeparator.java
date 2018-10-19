@@ -5,10 +5,6 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface ROSMsgLabel extends ROSMsgIdentifier {
-
-  PsiElement set(String newName);
-
-  String getName();
+public interface ROSPktSeparator extends PsiElement {
 
 }

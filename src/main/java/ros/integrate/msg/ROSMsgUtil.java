@@ -10,8 +10,8 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.msg.file.ROSMsgFileType;
-import ros.integrate.msg.psi.ROSMsgComment;
-import ros.integrate.msg.psi.ROSMsgElementFactory;
+import ros.integrate.msg.psi.ROSPktComment;
+import ros.integrate.msg.psi.ROSPktElementFactory;
 import ros.integrate.msg.psi.ROSMsgFile;
 
 import java.util.ArrayList;
@@ -26,13 +26,13 @@ public class ROSMsgUtil {
     /**
      * checks of this is an annotation comment.
      * @param comment the psi-element to check
-     * @return {@param comment} in {@link ROSMsgComment} form if it is an annotation, <code>null</code> otherwise.
+     * @return {@param comment} in {@link ROSPktComment} form if it is an annotation, <code>null</code> otherwise.
      */
     @Nullable
     @Contract("null -> null")
-    public static ROSMsgComment checkAnnotation(@Nullable PsiElement comment) {
-        if(comment instanceof ROSMsgComment && comment.getText().startsWith(ROSMsgElementFactory.ANNOTATION_PREFIX)) {
-            return (ROSMsgComment) comment;
+    public static ROSPktComment checkAnnotation(@Nullable PsiElement comment) {
+        if(comment instanceof ROSPktComment && comment.getText().startsWith(ROSPktElementFactory.ANNOTATION_PREFIX)) {
+            return (ROSPktComment) comment;
         }
         return null;
     }

@@ -5,33 +5,33 @@ import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.PsiElement;
 
-public class ROSMsgVisitor extends PsiElementVisitor {
+public class ROSPktVisitor extends PsiElementVisitor {
 
-  public void visitComment(@NotNull ROSMsgComment o) {
+  public void visitComment(@NotNull ROSPktComment o) {
     visitPsiElement(o);
   }
 
-  public void visitConst(@NotNull ROSMsgConst o) {
+  public void visitConst(@NotNull ROSPktConst o) {
     visitPsiElement(o);
   }
 
-  public void visitField(@NotNull ROSMsgField o) {
+  public void visitField(@NotNull ROSPktField o) {
     visitPsiElement(o);
   }
 
-  public void visitLabel(@NotNull ROSMsgLabel o) {
+  public void visitLabel(@NotNull ROSPktLabel o) {
     visitIdentifier(o);
   }
 
-  public void visitSeparator(@NotNull ROSMsgSeparator o) {
+  public void visitSeparator(@NotNull ROSPktSeparator o) {
     visitPsiElement(o);
   }
 
-  public void visitType(@NotNull ROSMsgType o) {
+  public void visitType(@NotNull ROSPktType o) {
     visitIdentifier(o);
   }
 
-  public void visitIdentifier(@NotNull ROSMsgIdentifier o) {
+  public void visitIdentifier(@NotNull ROSPktIdentifier o) {
     visitPsiElement(o);
   }
 

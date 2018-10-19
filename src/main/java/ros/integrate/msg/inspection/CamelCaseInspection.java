@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import ros.integrate.msg.annotate.ROSMsgTypeAnnotator;
 import ros.integrate.msg.intention.RenameTypeQuickFix;
 import ros.integrate.msg.psi.ROSMsgFile;
-import ros.integrate.msg.psi.ROSMsgField;
+import ros.integrate.msg.psi.ROSPktField;
 
 import java.util.List;
 
@@ -42,9 +42,9 @@ public class CamelCaseInspection extends AbstractROSMsgInspection {
 
     public ProblemDescriptor[] checkFile(@NotNull PsiFile file, @NotNull final InspectionManager manager, final boolean isOnTheFly) {
         if (!(file instanceof ROSMsgFile)) return null;
-        final List<ROSMsgField> fields = ((ROSMsgFile)file).getFields();
+        final List<ROSPktField> fields = ((ROSMsgFile)file).getFields();
         final List<ProblemDescriptor> descriptors = new SmartList<>();
-        for (ROSMsgField field : fields) {
+        for (ROSPktField field : fields) {
             if(isSuppressedFor(field)) {continue;}
             ProgressManager.checkCanceled();
             PsiElement custom = field.getType().custom();

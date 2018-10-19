@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.ROSIcons;
 import ros.integrate.msg.file.ROSSrvFileType;
-import ros.integrate.msg.ROSMsgLanguage;
+import ros.integrate.msg.ROSPktLanguage;
 import ros.integrate.msg.ROSMsgUtil;
 
 import javax.swing.*;
@@ -16,9 +16,9 @@ import javax.swing.*;
 /**
  * a ROS message, a one-directional message sent between (and within) executables.
  */
-public class ROSSrvFile extends ROSFile {
+public class ROSSrvFile extends ROSPktFile {
     public ROSSrvFile(@NotNull FileViewProvider viewProvider) {
-        super(viewProvider, ROSMsgLanguage.INSTANCE);
+        super(viewProvider, ROSPktLanguage.INSTANCE);
     }
 
     @NotNull

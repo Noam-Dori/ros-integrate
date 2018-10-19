@@ -21,22 +21,22 @@
         <fileTypeFactory implementation="ros.integrate.msg.file.ROSSrvFileTypeFactory"/>
 
         <!-- ROS packet Language -->
-        <lang.parserDefinition language="ROSMsg" implementationClass="ros.integrate.msg.ROSMsgParserDefinition"/>
-        <lang.syntaxHighlighterFactory language="ROSMsg" implementationClass="ros.integrate.msg.ROSMsgSyntaxHighlighterFactory"/>
-        <lang.commenter language="ROSMsg" implementationClass="ros.integrate.msg.ROSMsgCommenter"/>
-        <lang.refactoringSupport language="ROSMsg" implementationClass="ros.integrate.msg.ROSMsgRefactoringSupportProvider"/>
-        <lang.braceMatcher language="ROSMsg" implementationClass="ros.integrate.msg.ROSMsgBraceMatcher"/>
-        <lang.elementManipulator forClass="ros.integrate.msg.psi.ROSMsgType"
+        <lang.parserDefinition language="ROSPkt" implementationClass="ros.integrate.msg.ROSPktParserDefinition"/>
+        <lang.syntaxHighlighterFactory language="ROSPkt" implementationClass="ros.integrate.msg.ROSMsgSyntaxHighlighterFactory"/>
+        <lang.commenter language="ROSPkt" implementationClass="ros.integrate.msg.ROSMsgCommenter"/>
+        <lang.refactoringSupport language="ROSPkt" implementationClass="ros.integrate.msg.ROSMsgRefactoringSupportProvider"/>
+        <lang.braceMatcher language="ROSPkt" implementationClass="ros.integrate.msg.ROSMsgBraceMatcher"/>
+        <lang.elementManipulator forClass="ros.integrate.msg.psi.ROSPktType"
                                  implementationClass="ros.integrate.msg.ROSMsgTypeElementManipulator"/>
         <colorSettingsPage implementation="ros.integrate.msg.ROSMsgColorSettings"/>
-        <completion.contributor language="ROSMsg" implementationClass="ros.integrate.msg.ROSMsgCompletionContributor"/>
-        <annotator language="ROSMsg" implementationClass="ros.integrate.msg.annotate.ROSMsgAnnotator"/>
+        <completion.contributor language="ROSPkt" implementationClass="ros.integrate.msg.ROSMsgCompletionContributor"/>
+        <annotator language="ROSPkt" implementationClass="ros.integrate.msg.annotate.ROSMsgAnnotator"/>
         <gotoSymbolContributor implementation="ros.integrate.msg.ROSMsgChooseByNameContributor"/>
         <nameSuggestionProvider implementation="ros.integrate.msg.ROSMsgNameSuggestionProvider" />
-        <psi.referenceContributor language="ROSMsg" implementation="ros.integrate.msg.ROSMsgTypeReferenceContributor"/>
-        <spellchecker.support language="ROSMsg" implementationClass="ros.integrate.msg.ROSMsgSpellcheckingStrategy"/>
+        <psi.referenceContributor language="ROSPkt" implementation="ros.integrate.msg.ROSMsgTypeReferenceContributor"/>
+        <spellchecker.support language="ROSPkt" implementationClass="ros.integrate.msg.ROSMsgSpellcheckingStrategy"/>
 
-        <localInspection language="ROSMsg" implementationClass="ros.integrate.msg.inspection.CamelCaseInspection"
+        <localInspection language="ROSPkt" implementationClass="ros.integrate.msg.inspection.CamelCaseInspection"
                          level="WARNING" enabledByDefault="true" shortName="type-not-camelcase"
                          groupName="ROS" displayName="Type not in CamelCase"/>
     </extensions>

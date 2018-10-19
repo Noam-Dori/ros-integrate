@@ -6,35 +6,37 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFileFactory;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.msg.file.ROSMsgFileType;
+import ros.integrate.msg.file.ROSPktFileType;
 
 /**
  * a utility factory class to generate PSI objects within ROS messages.
  */
-public class ROSMsgElementFactory {
+public class ROSPktElementFactory {
     public static final String ANNOTATION_PREFIX = "# noinspection ";
 
     /**
-     * creates a dummy msg file
+     * creates a dummy packet file
      * @param project the project the field/file belongs to
      * @param text text to parse into PSI
      * @return a msg file containing the provided text
      */
     @NotNull
     private static ROSMsgFile createFile(Project project, String text) {
-        String name = "dummy.msg";
+        String name = "dummy." + ROSMsgFileType.INSTANCE.getDefaultExtension();
         return (ROSMsgFile) PsiFileFactory.getInstance(project).
                 createFileFromText(name, ROSMsgFileType.INSTANCE, text);
     }
 
     /**
-     * creates an actual message file
+     * creates an actual packet file
      * @param fileName the name of the file without extension
      * @param directory the directory this file should be placed in
+     * @param fileType the file type to use. If it does not matter, use {@link ROSMsgFileType#INSTANCE}
      * @return the instance of the file created.
      */
     @NotNull
-    public static ROSMsgFile createFile(String fileName, @NotNull PsiDirectory directory) {
-        return (ROSMsgFile) directory.createFile(fileName + ".msg");
+    public static ROSPktFile createFile(String fileName, @NotNull PsiDirectory directory, @NotNull ROSPktFileType fileType) {
+        return (ROSPktFile) directory.createFile(fileName + "." + fileType.getDefaultExtension());
     }
 
     /**
@@ -43,9 +45,9 @@ public class ROSMsgElementFactory {
      * @param annotationText the text included within the annotation.
      * @return an annotation type comment.
      */
-    public static ROSMsgComment createAnnotation(Project project, String annotationText) {
+    public static ROSPktComment createAnnotation(Project project, String annotationText) {
         final ROSMsgFile file = createFile(project, ANNOTATION_PREFIX + annotationText);
-        return (ROSMsgComment) file.getFirstChild();
+        return (ROSPktComment) file.getFirstChild();
     }
 
     /**
@@ -65,13 +67,13 @@ public class ROSMsgElementFactory {
      * @return a psi element holding the properties and name of the type provided.
      */
     @NotNull
-    public static ROSMsgType createType(Project project, String typeName) {
+    public static ROSPktType createType(Project project, String typeName) {
         final ROSMsgFile file = createFile(project, typeName + " dummyName");
-        return (ROSMsgType) file.getFirstChild().getFirstChild();
+        return (ROSPktType) file.getFirstChild().getFirstChild();
     }
 
-    public static ROSMsgLabel createLabel(Project project, String labelName) {
+    public static ROSPktLabel createLabel(Project project, String labelName) {
         final ROSMsgFile file = createFile(project, "dummyName " + labelName);
-        return (ROSMsgLabel) file.getFirstChild().getLastChild();
+        return (ROSPktLabel) file.getFirstChild().getLastChild();
     }
 }

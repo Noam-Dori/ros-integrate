@@ -1,15 +1,15 @@
 package ros.integrate.msg.psi;
 
 import com.intellij.psi.tree.IElementType;
-import ros.integrate.msg.ROSMsgLanguage;
+import ros.integrate.msg.ROSPktLanguage;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * generic representation of a token type in ros messages.
  */
-public class ROSMsgTokenType extends IElementType {
-    public ROSMsgTokenType(@NotNull String debugName) {
-        super(debugName, ROSMsgLanguage.INSTANCE);
+public class ROSPktTokenType extends IElementType {
+    ROSPktTokenType(@NotNull String debugName) {
+        super(debugName, ROSPktLanguage.INSTANCE);
     }
 
     @Override

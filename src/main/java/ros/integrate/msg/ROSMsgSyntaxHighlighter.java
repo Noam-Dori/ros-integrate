@@ -9,7 +9,7 @@ import com.intellij.openapi.fileTypes.SyntaxHighlighterBase;
 import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.ui.JBColor;
-import ros.integrate.msg.psi.ROSMsgTypes;
+import ros.integrate.msg.psi.ROSPktTypes;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
@@ -20,29 +20,29 @@ import static com.intellij.openapi.editor.colors.TextAttributesKey.createTextAtt
  * a highlighter for ROS messages and services.
  */
 public class ROSMsgSyntaxHighlighter extends SyntaxHighlighterBase {
-    public static final TextAttributesKey ASSIGNER =
+    private static final TextAttributesKey ASSIGNER =
             createTextAttributesKey("ROSMSG_CONST_ASSIGNER", DefaultLanguageHighlighterColors.OPERATION_SIGN);
-    public static final TextAttributesKey NEG_NUMBER =
+    private static final TextAttributesKey NEG_NUMBER =
             createTextAttributesKey("ROSMSG_CONST_ASSIGNER", DefaultLanguageHighlighterColors.OPERATION_SIGN);
-    public static final TextAttributesKey BRACKET =
+    private static final TextAttributesKey BRACKET =
             createTextAttributesKey("ROSMSG_BRACKET", DefaultLanguageHighlighterColors.BRACKETS);
-    public static final TextAttributesKey NUMBER =
+    static final TextAttributesKey NUMBER =
             createTextAttributesKey("ROSMSG_NUMBER", DefaultLanguageHighlighterColors.NUMBER);
-    public static final TextAttributesKey STRING =
+    static final TextAttributesKey STRING =
             createTextAttributesKey("ROSMSG_STRING", DefaultLanguageHighlighterColors.STRING);
-    public static final TextAttributesKey TYPE =
+    static final TextAttributesKey TYPE =
             createTextAttributesKey("ROSMSG_TYPE", DefaultLanguageHighlighterColors.CLASS_NAME);
-    public static final TextAttributesKey KEYTYPE =
+    static final TextAttributesKey KEYTYPE =
             createTextAttributesKey("ROSMSG_KEYTYPE", DefaultLanguageHighlighterColors.KEYWORD);
-    public static final TextAttributesKey NAME =
+    static final TextAttributesKey NAME =
             createTextAttributesKey("ROSMSG_NAME", DefaultLanguageHighlighterColors.INSTANCE_FIELD);
-    public static final TextAttributesKey COMMENT =
+    static final TextAttributesKey COMMENT =
             createTextAttributesKey("ROSMSG_COMMENT", DefaultLanguageHighlighterColors.LINE_COMMENT);
-    public static final TextAttributesKey BAD_CHARACTER =
+    private static final TextAttributesKey BAD_CHARACTER =
             createTextAttributesKey("ROSMSG_BAD_CHARACTER", HighlighterColors.BAD_CHARACTER);
-    public static final JBColor SEPARATOR = new JBColor(new Color(0x006666),new Color(0x0F9795));
+    private static final JBColor SEPARATOR = new JBColor(new Color(0x006666),new Color(0x0F9795));
     @SuppressWarnings("deprecation") // I getValue it, but there is no default for separators...
-    public static final TextAttributesKey SERVICE =
+    static final TextAttributesKey SERVICE =
             createTextAttributesKey("ROSMSG_SERVICE_SEPARATOR",
                     new TextAttributes(SEPARATOR, null, null, EffectType.STRIKEOUT, Font.BOLD));
 
@@ -62,35 +62,35 @@ public class ROSMsgSyntaxHighlighter extends SyntaxHighlighterBase {
     @NotNull
     @Override
     public Lexer getHighlightingLexer() {
-        return new ROSMsgLexerAdapter();
+        return new ROSPktLexerAdapter();
     }
 
     @NotNull
     @Override
     public TextAttributesKey[] getTokenHighlights(IElementType tokenType) {
-        if (tokenType.equals(ROSMsgTypes.LINE_COMMENT)) {
+        if (tokenType.equals(ROSPktTypes.LINE_COMMENT)) {
             return COMMENT_KEYS;
         } else if (tokenType.equals(TokenType.BAD_CHARACTER)) {
             return BAD_CHAR_KEYS;
-        } else if (tokenType.equals(ROSMsgTypes.LBRACKET)) {
+        } else if (tokenType.equals(ROSPktTypes.LBRACKET)) {
             return BRACKET_KEYS;
-        } else if (tokenType.equals(ROSMsgTypes.RBRACKET)) {
+        } else if (tokenType.equals(ROSPktTypes.RBRACKET)) {
             return BRACKET_KEYS;
-        } else if (tokenType.equals(ROSMsgTypes.STRING)) {
+        } else if (tokenType.equals(ROSPktTypes.STRING)) {
             return STRING_KEYS;
-        } else if (tokenType.equals(ROSMsgTypes.NUMBER)) {
+        } else if (tokenType.equals(ROSPktTypes.NUMBER)) {
             return NUMBER_KEYS;
-        } else if (tokenType.equals(ROSMsgTypes.NAME)) {
+        } else if (tokenType.equals(ROSPktTypes.NAME)) {
             return NAME_KEYS;
-        } else if (tokenType.equals(ROSMsgTypes.KEYTYPE)) {
+        } else if (tokenType.equals(ROSPktTypes.KEYTYPE)) {
             return KEYTYPE_KEYS;
-        } else if (tokenType.equals(ROSMsgTypes.CUSTOM_TYPE)) {
+        } else if (tokenType.equals(ROSPktTypes.CUSTOM_TYPE)) {
             return TYPE_KEYS;
-        } else if (tokenType.equals(ROSMsgTypes.CONST_ASSIGNER)) {
+        } else if (tokenType.equals(ROSPktTypes.CONST_ASSIGNER)) {
             return ASSIGNER_KEYS;
-        } else if (tokenType.equals(ROSMsgTypes.NEG_OPERATOR)) {
+        } else if (tokenType.equals(ROSPktTypes.NEG_OPERATOR)) {
             return NEG_NUM_KEYS;
-        } else if (tokenType.equals(ROSMsgTypes.SERVICE_SEPARATOR)) {
+        } else if (tokenType.equals(ROSPktTypes.SERVICE_SEPARATOR)) {
             return SERVICE_KEYS;
         } else {
             return EMPTY_KEYS;

@@ -8,18 +8,20 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
-import ros.integrate.msg.psi.ROSMsgConst;
-import ros.integrate.msg.psi.ROSMsgType;
+import ros.integrate.msg.psi.ROSPktConst;
+import ros.integrate.msg.psi.ROSPktType;
 
 /**
- * a fix used to change the key-type according to the {@link ROSMsgConst} provided.
+ * a fix used to change the key-type according to the {@link ROSPktConst} provided.
  */
 public class ChangeKeytypeQuickFix extends BaseIntentionAction {
 
-    private final @NotNull ROSMsgType type;
-    private final @NotNull ROSMsgConst constant;
+    private final @NotNull
+    ROSPktType type;
+    private final @NotNull
+    ROSPktConst constant;
 
-    public ChangeKeytypeQuickFix(@NotNull ROSMsgType type, @NotNull ROSMsgConst constant) {
+    public ChangeKeytypeQuickFix(@NotNull ROSPktType type, @NotNull ROSPktConst constant) {
         this.type = type;
         this.constant = constant;
     }
@@ -45,7 +47,7 @@ public class ChangeKeytypeQuickFix extends BaseIntentionAction {
     public void invoke(@NotNull Project project, Editor editor, PsiFile file) {
         ApplicationManager.getApplication().invokeLater(() ->
                 WriteCommandAction.writeCommandAction(project).run(() -> {
-                    ROSMsgType value = constant.getBestFit();
+                    ROSPktType value = constant.getBestFit();
                     type.raw().replace(value);
                     Caret caret = editor.getCaretModel().getCurrentCaret();
                     caret.moveToOffset(type.getTextOffset());

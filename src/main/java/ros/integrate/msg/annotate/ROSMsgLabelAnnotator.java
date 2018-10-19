@@ -5,20 +5,21 @@ import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.openapi.util.TextRange;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.msg.intention.ChangeNameQuickFix;
-import ros.integrate.msg.psi.ROSFile;
-import ros.integrate.msg.psi.ROSMsgField;
-import ros.integrate.msg.psi.ROSMsgLabel;
+import ros.integrate.msg.psi.ROSPktFile;
+import ros.integrate.msg.psi.ROSPktField;
+import ros.integrate.msg.psi.ROSPktLabel;
 
 /**
- * An annotator dedicated to {@link ROSMsgLabel}
+ * An annotator dedicated to {@link ROSPktLabel}
  */
 class ROSMsgLabelAnnotator extends ROSMsgAnnotatorBase {
 
     private final @NotNull String fieldName;
-    private final @NotNull ROSMsgLabel label;
+    private final @NotNull
+    ROSPktLabel label;
 
     ROSMsgLabelAnnotator(@NotNull AnnotationHolder holder,
-                         @NotNull ROSMsgLabel label,
+                         @NotNull ROSPktLabel label,
                          @NotNull String fieldName) {
         super(holder);
         this.fieldName = fieldName;
@@ -29,13 +30,13 @@ class ROSMsgLabelAnnotator extends ROSMsgAnnotatorBase {
      * annotates if this label being used for two separate fields?
      */
     void annDuplicateLabel() {
-        ROSFile file = (ROSFile) label.getContainingFile();
+        ROSPktFile file = (ROSPktFile) label.getContainingFile();
         int nameCount = file.countNameInFile(fieldName);
         if (nameCount > 1 && !file.isFirstDefinition(label)) {
             TextRange range = new TextRange(label.getTextRange().getStartOffset(),
                     label.getTextRange().getEndOffset());
             Annotation ann = holder.createErrorAnnotation(range, "Field label '" + fieldName + "' is already used");
-            ann.registerFix(new ChangeNameQuickFix((ROSMsgField) label.getParent(), label));
+            ann.registerFix(new ChangeNameQuickFix((ROSPktField) label.getParent(), label));
         }
     }
 
@@ -54,7 +55,7 @@ class ROSMsgLabelAnnotator extends ROSMsgAnnotatorBase {
                 message = "Field names may only contain alphanumeric characters or underscores";
             }
             Annotation ann = holder.createErrorAnnotation(range, message);
-            ann.registerFix(new ChangeNameQuickFix((ROSMsgField) label.getParent(), label));
+            ann.registerFix(new ChangeNameQuickFix((ROSPktField) label.getParent(), label));
         }
     }
 

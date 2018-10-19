@@ -1,21 +1,20 @@
 // This is a generated file. Not intended for manual editing.
 package ros.integrate.msg.psi;
 
-import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 import com.intellij.navigation.ItemPresentation;
 
-public interface ROSMsgField extends PsiElement {
+public interface ROSPktField extends PsiElement {
 
   @Nullable
-  ROSMsgConst getConst();
+  ROSPktConst getConst();
 
   @NotNull
-  ROSMsgLabel getLabel();
+  ROSPktLabel getLabel();
 
   @NotNull
-  ROSMsgType getType();
+  ROSPktType getType();
 
   @NotNull
   ItemPresentation getPresentation();

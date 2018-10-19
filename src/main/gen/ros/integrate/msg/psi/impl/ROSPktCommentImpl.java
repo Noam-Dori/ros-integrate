@@ -1,34 +1,30 @@
 // This is a generated file. Not intended for manual editing.
 package ros.integrate.msg.psi.impl;
 
-import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.lang.ASTNode;
-import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
-import com.intellij.psi.util.PsiTreeUtil;
-import static ros.integrate.msg.psi.ROSMsgTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import ros.integrate.msg.psi.*;
 
-public class ROSMsgCommentImpl extends ASTWrapperPsiElement implements ROSMsgComment {
+public class ROSPktCommentImpl extends ASTWrapperPsiElement implements ROSPktComment {
 
-  public ROSMsgCommentImpl(@NotNull ASTNode node) {
+  public ROSPktCommentImpl(@NotNull ASTNode node) {
     super(node);
   }
 
-  public void accept(@NotNull ROSMsgVisitor visitor) {
+  public void accept(@NotNull ROSPktVisitor visitor) {
     visitor.visitComment(this);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof ROSMsgVisitor) accept((ROSMsgVisitor)visitor);
+    if (visitor instanceof ROSPktVisitor) accept((ROSPktVisitor)visitor);
     else super.accept(visitor);
   }
 
   @Nullable
   public String getAnnotationIds() {
-    return ROSMsgPsiImplUtil.getAnnotationIds(this);
+    return ROSPktPsiImplUtil.getAnnotationIds(this);
   }
 
 }

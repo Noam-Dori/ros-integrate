@@ -7,7 +7,7 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.IncorrectOperationException;
-import ros.integrate.msg.psi.ROSMsgSeparator;
+import ros.integrate.msg.psi.ROSPktSeparator;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -15,9 +15,9 @@ import org.jetbrains.annotations.NotNull;
  */
 public class RemoveSrvLineQuickFix extends BaseIntentionAction {
 
-    private ROSMsgSeparator separator;
+    private ROSPktSeparator separator;
 
-    public RemoveSrvLineQuickFix(ROSMsgSeparator separator) {
+    public RemoveSrvLineQuickFix(ROSPktSeparator separator) {
         this.separator = separator;
     }
 

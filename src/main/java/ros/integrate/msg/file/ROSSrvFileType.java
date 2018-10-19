@@ -1,11 +1,12 @@
 package ros.integrate.msg.file;
 
-import com.intellij.openapi.fileTypes.LanguageFileType;
+import com.intellij.psi.FileViewProvider;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.ROSIcons;
-import ros.integrate.msg.ROSMsgLanguage;
+import ros.integrate.msg.psi.ROSPktFile;
+import ros.integrate.msg.psi.ROSSrvFile;
 
 import javax.swing.*;
 
@@ -13,16 +14,18 @@ import javax.swing.*;
  * @author Noam Dori
  * a class defining the ROS Msg file type (and perhaps the service one as well)
  */
-public class ROSSrvFileType extends LanguageFileType {
-    public static final LanguageFileType INSTANCE = new ROSSrvFileType();
+public class ROSSrvFileType extends ROSPktFileType {
+    public static final ROSPktFileType INSTANCE = new ROSSrvFileType();
     @NonNls private static final String DEFAULT_EXTENSION = "srv";
     @NonNls public static final String DOT_DEFAULT_EXTENSION = "." + DEFAULT_EXTENSION;
 
-    /**
-     * Creates a language file type for the specified language.
-     */
     private ROSSrvFileType() {
-        super(ROSMsgLanguage.INSTANCE);
+        super();
+    }
+
+    @Override
+    public ROSPktFile newPktFile(FileViewProvider viewProvider) {
+        return new ROSSrvFile(viewProvider);
     }
 
     @NotNull

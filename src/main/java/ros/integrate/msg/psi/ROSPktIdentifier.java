@@ -6,6 +6,6 @@ import com.intellij.psi.PsiNameIdentifierOwner;
 /**
  * a generic inline identifier in ROS messages.
  */
-public interface ROSMsgIdentifier extends PsiNameIdentifierOwner {
+public interface ROSPktIdentifier extends PsiNameIdentifierOwner {
     PsiElement set(String newName);
 }

@@ -1,36 +1,33 @@
 // This is a generated file. Not intended for manual editing.
 package ros.integrate.msg.psi.impl;
 
-import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
-import com.intellij.psi.util.PsiTreeUtil;
-import static ros.integrate.msg.psi.ROSMsgTypes.*;
 import ros.integrate.msg.psi.*;
 
-public class ROSMsgLabelImpl extends ROSMsgIdentifierImpl implements ROSMsgLabel {
+public class ROSPktLabelImpl extends ROSPktIdentifierImpl implements ROSPktLabel {
 
-  public ROSMsgLabelImpl(@NotNull ASTNode node) {
+  public ROSPktLabelImpl(@NotNull ASTNode node) {
     super(node);
   }
 
-  public void accept(@NotNull ROSMsgVisitor visitor) {
+  public void accept(@NotNull ROSPktVisitor visitor) {
     visitor.visitLabel(this);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof ROSMsgVisitor) accept((ROSMsgVisitor)visitor);
+    if (visitor instanceof ROSPktVisitor) accept((ROSPktVisitor)visitor);
     else super.accept(visitor);
   }
 
   public PsiElement set(String newName) {
-    return ROSMsgPsiImplUtil.set(this, newName);
+    return ROSPktPsiImplUtil.set(this, newName);
   }
 
   public String getName() {
-    return ROSMsgPsiImplUtil.getName(this);
+    return ROSPktPsiImplUtil.getName(this);
   }
 
 }

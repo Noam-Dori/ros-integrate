@@ -8,7 +8,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.IncorrectOperationException;
-import ros.integrate.msg.psi.ROSMsgSeparator;
+import ros.integrate.msg.psi.ROSPktSeparator;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -39,7 +39,7 @@ public class RemoveAllSrvLinesQuickFix extends BaseIntentionAction {
         ApplicationManager.getApplication().invokeLater(() ->
                 WriteCommandAction.writeCommandAction(project).run(() -> {
                     for (PsiElement element : file.getChildren()) {
-                        if(element instanceof ROSMsgSeparator) {
+                        if(element instanceof ROSPktSeparator) {
                             element.delete();
                     }
                     }

@@ -5,10 +5,10 @@ import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import ros.integrate.msg.psi.ROSMsgIdentifier;
+import ros.integrate.msg.psi.ROSPktIdentifier;
 
-public abstract class ROSMsgIdentifierImpl extends ASTWrapperPsiElement implements ROSMsgIdentifier {
-    ROSMsgIdentifierImpl(@NotNull ASTNode node) {
+public abstract class ROSPktIdentifierImpl extends ASTWrapperPsiElement implements ROSPktIdentifier {
+    ROSPktIdentifierImpl(@NotNull ASTNode node) {
         super(node);
     }
 

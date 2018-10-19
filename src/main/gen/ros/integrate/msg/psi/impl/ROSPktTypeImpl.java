@@ -1,76 +1,73 @@
 // This is a generated file. Not intended for manual editing.
 package ros.integrate.msg.psi.impl;
 
-import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
-import com.intellij.psi.util.PsiTreeUtil;
-import static ros.integrate.msg.psi.ROSMsgTypes.*;
 import ros.integrate.msg.psi.*;
 import com.intellij.psi.PsiReference;
 
-public class ROSMsgTypeImpl extends ROSMsgIdentifierImpl implements ROSMsgType {
+public class ROSPktTypeImpl extends ROSPktIdentifierImpl implements ROSPktType {
 
-  public ROSMsgTypeImpl(@NotNull ASTNode node) {
+  public ROSPktTypeImpl(@NotNull ASTNode node) {
     super(node);
   }
 
-  public void accept(@NotNull ROSMsgVisitor visitor) {
+  public void accept(@NotNull ROSPktVisitor visitor) {
     visitor.visitType(this);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof ROSMsgVisitor) accept((ROSMsgVisitor)visitor);
+    if (visitor instanceof ROSPktVisitor) accept((ROSPktVisitor)visitor);
     else super.accept(visitor);
   }
 
   @NotNull
   public PsiElement raw() {
-    return ROSMsgPsiImplUtil.raw(this);
+    return ROSPktPsiImplUtil.raw(this);
   }
 
   @Nullable
   public PsiElement custom() {
-    return ROSMsgPsiImplUtil.custom(this);
+    return ROSPktPsiImplUtil.custom(this);
   }
 
   public int size() {
-    return ROSMsgPsiImplUtil.size(this);
+    return ROSPktPsiImplUtil.size(this);
   }
 
   public PsiElement removeArray() {
-    return ROSMsgPsiImplUtil.removeArray(this);
+    return ROSPktPsiImplUtil.removeArray(this);
   }
 
   @NotNull
   public PsiElement set(String rawType, int size) {
-    return ROSMsgPsiImplUtil.set(this, rawType, size);
+    return ROSPktPsiImplUtil.set(this, rawType, size);
   }
 
   @NotNull
   public PsiElement set(String rawType) {
-    return ROSMsgPsiImplUtil.set(this, rawType);
+    return ROSPktPsiImplUtil.set(this, rawType);
   }
 
   public String getName() {
-    return ROSMsgPsiImplUtil.getName(this);
+    return ROSPktPsiImplUtil.getName(this);
   }
 
   @Nullable
   public PsiElement getNameIdentifier() {
-    return ROSMsgPsiImplUtil.getNameIdentifier(this);
+    return ROSPktPsiImplUtil.getNameIdentifier(this);
   }
 
   @NotNull
   public PsiReference getReference() {
-    return ROSMsgPsiImplUtil.getReference(this);
+    return ROSPktPsiImplUtil.getReference(this);
   }
 
   @NotNull
   public PsiReference[] getReferences() {
-    return ROSMsgPsiImplUtil.getReferences(this);
+    return ROSPktPsiImplUtil.getReferences(this);
   }
 
 }

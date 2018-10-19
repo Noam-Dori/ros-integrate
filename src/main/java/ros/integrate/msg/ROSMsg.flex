@@ -1,13 +1,12 @@
 package ros.integrate.msg;
 
-import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.tree.IElementType;
-import ros.integrate.msg.psi.ROSMsgTypes;
+import ros.integrate.msg.psi.ROSPktTypes;
 import com.intellij.psi.TokenType;
 
 %%
 
-%class ROSMsgLexer
+%class ROSPktLexer
 %implements FlexLexer
 %unicode
 %function advance
@@ -49,41 +48,41 @@ FLOATING_POINT={NUMBER}+(\.)?{NUMBER}*|{NUMBER}*(\.)?{NUMBER}+
 
 %%
 
-<YYINITIAL> ---                                             { yybegin(END_LINE); return ROSMsgTypes.SERVICE_SEPARATOR; }
+<YYINITIAL> ---                                             { yybegin(END_LINE); return ROSPktTypes.SERVICE_SEPARATOR; }
 
-<YYINITIAL,END_NAME,END_INT_NAME> {END_OF_LINE_COMMENT}     { yybegin(YYINITIAL); return ROSMsgTypes.LINE_COMMENT; }
+<YYINITIAL,END_NAME,END_INT_NAME> {END_OF_LINE_COMMENT}     { yybegin(YYINITIAL); return ROSPktTypes.LINE_COMMENT; }
 
-<YYINITIAL> {KEYTYPE_NUM}                                   { yybegin(END_INT_TYPE); return ROSMsgTypes.KEYTYPE; }
-<YYINITIAL> {KEYTYPE_OTHER}                                 { yybegin(END_TYPE); return ROSMsgTypes.KEYTYPE; }
-<YYINITIAL> {TYPE_CHARACTER}+                               { yybegin(END_TYPE); return ROSMsgTypes.CUSTOM_TYPE; }
+<YYINITIAL> {KEYTYPE_NUM}                                   { yybegin(END_INT_TYPE); return ROSPktTypes.KEYTYPE; }
+<YYINITIAL> {KEYTYPE_OTHER}                                 { yybegin(END_TYPE); return ROSPktTypes.KEYTYPE; }
+<YYINITIAL> {TYPE_CHARACTER}+                               { yybegin(END_TYPE); return ROSPktTypes.CUSTOM_TYPE; }
 
-<END_TYPE> {ARRAY_LEAD}                                     { yybegin(IN_ARRAY); return ROSMsgTypes.LBRACKET; }
-<END_INT_TYPE> {ARRAY_LEAD}                                 { yybegin(IN_INT_ARRAY); return ROSMsgTypes.LBRACKET; }
+<END_TYPE> {ARRAY_LEAD}                                     { yybegin(IN_ARRAY); return ROSPktTypes.LBRACKET; }
+<END_INT_TYPE> {ARRAY_LEAD}                                 { yybegin(IN_INT_ARRAY); return ROSPktTypes.LBRACKET; }
 
-<IN_ARRAY> {NUMBER}+                                        { yybegin(IN_ARRAY); return ROSMsgTypes.NUMBER; }
-<IN_INT_ARRAY> {NUMBER}+                                    { yybegin(IN_INT_ARRAY); return ROSMsgTypes.NUMBER; }
+<IN_ARRAY> {NUMBER}+                                        { yybegin(IN_ARRAY); return ROSPktTypes.NUMBER; }
+<IN_INT_ARRAY> {NUMBER}+                                    { yybegin(IN_INT_ARRAY); return ROSPktTypes.NUMBER; }
 
-<IN_ARRAY> {ARRAY_END}                                      { yybegin(END_ARRAY); return ROSMsgTypes.RBRACKET; }
-<IN_INT_ARRAY> {ARRAY_END}                                  { yybegin(END_INT_ARRAY); return ROSMsgTypes.RBRACKET; }
+<IN_ARRAY> {ARRAY_END}                                      { yybegin(END_ARRAY); return ROSPktTypes.RBRACKET; }
+<IN_INT_ARRAY> {ARRAY_END}                                  { yybegin(END_INT_ARRAY); return ROSPktTypes.RBRACKET; }
 
 <END_ARRAY,END_TYPE> {WHITE_SPACE}+                         { yybegin(START_NAME); return TokenType.WHITE_SPACE; }
 <END_INT_ARRAY,END_INT_TYPE> {WHITE_SPACE}+                 { yybegin(START_INT_NAME); return TokenType.WHITE_SPACE; }
 
-<START_NAME> {NAME_CHARACTER}+                              { yybegin(END_NAME); return ROSMsgTypes.NAME; }
-<START_INT_NAME> {NAME_CHARACTER}+                          { yybegin(END_INT_NAME); return ROSMsgTypes.NAME; }
+<START_NAME> {NAME_CHARACTER}+                              { yybegin(END_NAME); return ROSPktTypes.NAME; }
+<START_INT_NAME> {NAME_CHARACTER}+                          { yybegin(END_INT_NAME); return ROSPktTypes.NAME; }
 
-<END_NAME> {CONST_ASSIGNER}                                 { yybegin(START_CONST); return ROSMsgTypes.CONST_ASSIGNER; }
-<END_INT_NAME> {CONST_ASSIGNER}                             { yybegin(START_INT_CONST); return ROSMsgTypes.CONST_ASSIGNER; }
+<END_NAME> {CONST_ASSIGNER}                                 { yybegin(START_CONST); return ROSPktTypes.CONST_ASSIGNER; }
+<END_INT_NAME> {CONST_ASSIGNER}                             { yybegin(START_INT_CONST); return ROSPktTypes.CONST_ASSIGNER; }
 
 <START_CONST> {WHITE_SPACE}+                                { yybegin(START_CONST); return TokenType.WHITE_SPACE; }
 <START_INT_CONST> {WHITE_SPACE}+                            { yybegin(START_INT_CONST); return TokenType.WHITE_SPACE; }
 
-<START_INT_CONST> -                                         { yybegin(NEG_NUM); return ROSMsgTypes.NEG_OPERATOR; }
-<NEG_NUM,START_INT_CONST> {FLOATING_POINT}                  { yybegin(END_LINE); return ROSMsgTypes.NUMBER;}
+<START_INT_CONST> -                                         { yybegin(NEG_NUM); return ROSPktTypes.NEG_OPERATOR; }
+<NEG_NUM,START_INT_CONST> {FLOATING_POINT}                  { yybegin(END_LINE); return ROSPktTypes.NUMBER;}
 
-<START_INT_CONST> {STR_CONST}                               { yybegin(END_LINE); return ROSMsgTypes.STRING;}
+<START_INT_CONST> {STR_CONST}                               { yybegin(END_LINE); return ROSPktTypes.STRING;}
 
-<START_CONST> {FIRST_STRING}{END_STR_SEQ}?                  { yybegin(END_LINE); return ROSMsgTypes.STRING;}
+<START_CONST> {FIRST_STRING}{END_STR_SEQ}?                  { yybegin(END_LINE); return ROSPktTypes.STRING;}
 
 <END_NAME> {WHITE_SPACE}+                                   { yybegin(END_NAME); return TokenType.WHITE_SPACE; }
 <END_INT_NAME> {WHITE_SPACE}+                               { yybegin(END_INT_NAME); return TokenType.WHITE_SPACE; }

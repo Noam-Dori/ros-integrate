@@ -5,8 +5,8 @@ import com.intellij.codeInspection.*;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import ros.integrate.msg.psi.ROSMsgComment;
-import ros.integrate.msg.psi.ROSMsgField;
+import ros.integrate.msg.psi.ROSPktComment;
+import ros.integrate.msg.psi.ROSPktField;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -42,8 +42,8 @@ public abstract class AbstractROSMsgInspection extends LocalInspectionTool imple
      * @param field the field to check
      * @return true if this field has a suppression annotation for this inspection
      */
-    boolean isSuppressedFor(@NotNull ROSMsgField field) {
-        ROSMsgComment annotation = ROSMsgSuppressionUtil.findAnnotation(field);
+    boolean isSuppressedFor(@NotNull ROSPktField field) {
+        ROSPktComment annotation = ROSMsgSuppressionUtil.findAnnotation(field);
         if(annotation == null) {return false;}
         return Arrays.asList(Objects.requireNonNull(annotation.getAnnotationIds()).split(",")).contains(getShortName());
     }

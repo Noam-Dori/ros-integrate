@@ -8,22 +8,22 @@ import com.intellij.spellchecker.tokenizer.SpellcheckingStrategy;
 import com.intellij.spellchecker.tokenizer.TokenConsumer;
 import com.intellij.spellchecker.tokenizer.Tokenizer;
 import org.jetbrains.annotations.NotNull;
-import ros.integrate.msg.psi.ROSMsgComment;
-import ros.integrate.msg.psi.ROSMsgType;
+import ros.integrate.msg.psi.ROSPktComment;
+import ros.integrate.msg.psi.ROSPktType;
 
 /**
  * a class enabling the spellchecker in ROS messages.
  */
 public class ROSMsgSpellcheckingStrategy extends SpellcheckingStrategy {
-    protected final Tokenizer<ROSMsgComment> myROSCommentTokenizer = new ROSCommentTokenizer();
+    private final Tokenizer<ROSPktComment> myROSCommentTokenizer = new ROSCommentTokenizer();
 
     @NotNull
     @Override
     public Tokenizer getTokenizer(PsiElement element) {
-        if(element instanceof ROSMsgType) {
+        if(element instanceof ROSPktType) {
             return EMPTY_TOKENIZER;
         }
-        if (element instanceof ROSMsgComment) {
+        if (element instanceof ROSPktComment) {
             if (SuppressionUtil.isSuppressionComment(element)) {
                 return EMPTY_TOKENIZER;
             }
@@ -32,12 +32,12 @@ public class ROSMsgSpellcheckingStrategy extends SpellcheckingStrategy {
         return super.getTokenizer(element);
     }
 
-    public static class ROSCommentTokenizer extends Tokenizer<ROSMsgComment> {
+    public static class ROSCommentTokenizer extends Tokenizer<ROSPktComment> {
 
         @Override
-        public void tokenize(@NotNull ROSMsgComment element, TokenConsumer consumer) {
+        public void tokenize(@NotNull ROSPktComment element, TokenConsumer consumer) {
             // doc-comment chameleon expands as PsiComment inside PsiComment, avoid duplication
-            if (element.getParent() instanceof ROSMsgComment) return;
+            if (element.getParent() instanceof ROSPktComment) return;
 
             // remove commenting part
             ROSMsgCommenter commenter = new ROSMsgCommenter();

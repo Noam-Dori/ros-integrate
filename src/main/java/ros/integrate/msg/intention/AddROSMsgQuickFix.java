@@ -13,7 +13,8 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.IncorrectOperationException;
 import ros.integrate.msg.dialogue.NewROSMsgDialogue;
-import ros.integrate.msg.psi.ROSMsgElementFactory;
+import ros.integrate.msg.file.ROSMsgFileType;
+import ros.integrate.msg.psi.ROSPktElementFactory;
 import ros.integrate.msg.psi.ROSMsgFile;
 import org.jetbrains.annotations.NotNull;
 
@@ -57,12 +58,12 @@ public class AddROSMsgQuickFix extends BaseIntentionAction {
         }
         ApplicationManager.getApplication().runWriteAction(() -> {
 
-            ROSMsgFile rosMsgFile = ROSMsgElementFactory.createFile(dialogue.getFileName(), dialogue.getDirectory());
+            ROSMsgFile rosMsgFile = (ROSMsgFile) ROSPktElementFactory.createFile(dialogue.getFileName(), dialogue.getDirectory(), ROSMsgFileType.INSTANCE);
 
             IdeDocumentHistory.getInstance(project).includeCurrentPlaceAsChangePlace();
 
             if (!type.getText().equals(dialogue.getFileName())) {
-                type.replace(ROSMsgElementFactory.createType(project, dialogue.getFileName()));
+                type.replace(ROSPktElementFactory.createType(project, dialogue.getFileName()));
             }
 
             OpenFileDescriptor descriptor = new OpenFileDescriptor(rosMsgFile.getProject(), rosMsgFile.getVirtualFile());

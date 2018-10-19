@@ -7,17 +7,17 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
-import ros.integrate.msg.psi.ROSMsgField;
+import ros.integrate.msg.psi.ROSPktField;
 
 /**
  * a fix used to remove an entire field from the file.
  */
 public class RemoveFieldQuickFix extends BaseIntentionAction {
-    public RemoveFieldQuickFix(ROSMsgField field) {
+    public RemoveFieldQuickFix(ROSPktField field) {
         rosMsg = field;
     }
 
-    private ROSMsgField rosMsg;
+    private ROSPktField rosMsg;
 
     @NotNull
     @Override

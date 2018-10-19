@@ -5,18 +5,18 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import ros.integrate.msg.psi.ROSMsgConst;
-import ros.integrate.msg.psi.ROSMsgElementFactory;
-import ros.integrate.msg.psi.ROSMsgField;
-import ros.integrate.msg.psi.ROSMsgType;
+import ros.integrate.msg.psi.ROSPktConst;
+import ros.integrate.msg.psi.ROSPktElementFactory;
+import ros.integrate.msg.psi.ROSPktField;
+import ros.integrate.msg.psi.ROSPktType;
 
 /**
- * a utility class holding {@link ROSMsgField} implementations
+ * a utility class holding {@link ROSPktField} implementations
  */
-class ROSMsgFieldUtil {
+class ROSPktFieldUtil {
     @Contract("null -> false")
-    static boolean isLegalConstant(@NotNull ROSMsgField field) {
-        ROSMsgConst msgConst = field.getConst();
+    static boolean isLegalConstant(@NotNull ROSPktField field) {
+        ROSPktConst msgConst = field.getConst();
         if (msgConst == null) { return false; }
         String num = msgConst.getText();
         String type = field.getType().raw().getText();
@@ -74,16 +74,16 @@ class ROSMsgFieldUtil {
     }
 
     @NotNull
-    static ROSMsgType getBestFit(@NotNull ROSMsgConst constant) {
+    static ROSPktType getBestFit(@NotNull ROSPktConst constant) {
         String num = constant.getText();
         Project project = constant.getProject();
         try {
             if (num.contains(".")) { // floating-point
                 double floaty = Double.parseDouble(num);
                 if ((double) (float) floaty == floaty) {
-                    return ROSMsgElementFactory.createType(project, "float32");
+                    return ROSPktElementFactory.createType(project, "float32");
                 } else {
-                    return ROSMsgElementFactory.createType(project, "float64");
+                    return ROSPktElementFactory.createType(project, "float64");
                 }
             } else { // integral
                 if (num.contains("-")) { // int
@@ -101,7 +101,7 @@ class ROSMsgFieldUtil {
                 } else { // uint
                     UnsignedLong integral = UnsignedLong.valueOf(num);
                     if (integral.byteValue() == 0 || integral.byteValue() == 1) {
-                        return ROSMsgElementFactory.createType(project, "bool");
+                        return ROSPktElementFactory.createType(project, "bool");
                     }
                     if (isNotBigger(integral, MaxValue.UINT8)) {
                         return MaxValue.UINT8.createType(project);
@@ -112,11 +112,11 @@ class ROSMsgFieldUtil {
                     if (isNotBigger(integral, MaxValue.UINT32)) {
                         return MaxValue.UINT32.createType(project);
                     }
-                    return ROSMsgElementFactory.createType(project, "uint64");
+                    return ROSPktElementFactory.createType(project, "uint64");
                 }
             }
         } catch (NumberFormatException e) {
-            return ROSMsgElementFactory.createType(project,"string");
+            return ROSPktElementFactory.createType(project,"string");
         }
     }
 
@@ -145,8 +145,8 @@ class ROSMsgFieldUtil {
 
         @NotNull
         @Contract(pure = true)
-        public ROSMsgType createType(@NotNull Project project) {
-            return ROSMsgElementFactory.createType(project, name);
+        public ROSPktType createType(@NotNull Project project) {
+            return ROSPktElementFactory.createType(project, name);
         }
 
         @Contract(value = "null -> false", pure = true)

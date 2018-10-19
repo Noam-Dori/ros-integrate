@@ -5,23 +5,24 @@ import com.intellij.lexer.Lexer;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.*;
 import com.intellij.psi.tree.*;
-import ros.integrate.msg.parser.ROSMsgParser;
+import ros.integrate.msg.file.ROSPktFileType;
+import ros.integrate.msg.parser.ROSPktParser;
 import ros.integrate.msg.psi.*;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * a class used to define the PSI parser for ROS messages.
  */
-public class ROSMsgParserDefinition implements ParserDefinition {
-    public static final TokenSet WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE);
-    public static final TokenSet COMMENTS = TokenSet.create(ROSMsgTypes.COMMENT);
+public class ROSPktParserDefinition implements ParserDefinition {
+    private static final TokenSet WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE);
+    private static final TokenSet COMMENTS = TokenSet.create(ROSPktTypes.COMMENT);
 
-    public static final IFileElementType FILE = new IFileElementType(ROSMsgLanguage.INSTANCE);
+    private static final IFileElementType FILE = new IFileElementType(ROSPktLanguage.INSTANCE);
 
     @NotNull
     @Override
     public Lexer createLexer(Project project) {
-        return new ROSMsgLexerAdapter();
+        return new ROSPktLexerAdapter();
     }
 
     @NotNull
@@ -41,7 +42,7 @@ public class ROSMsgParserDefinition implements ParserDefinition {
 
     @NotNull
     public PsiParser createParser(final Project project) {
-        return new ROSMsgParser();
+        return new ROSPktParser();
     }
 
     @Override
@@ -50,11 +51,14 @@ public class ROSMsgParserDefinition implements ParserDefinition {
     }
 
     public PsiFile createFile(FileViewProvider viewProvider) {
-        return new ROSMsgFile(viewProvider);
+        if (viewProvider.getFileType() instanceof ROSPktFileType) { // should take care of all ROS pkt view providers
+            return ((ROSPktFileType) viewProvider.getFileType()).newPktFile(viewProvider);
+        }
+        return new ROSMsgFile(viewProvider); // a default is always nice
     }
 
     @NotNull
     public PsiElement createElement(ASTNode node) {
-        return ROSMsgTypes.Factory.createElement(node);
+        return ROSPktTypes.Factory.createElement(node);
     }
 }

@@ -9,22 +9,22 @@ import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import ros.integrate.msg.ROSMsgLanguage;
-import ros.integrate.msg.psi.ROSMsgField;
+import ros.integrate.msg.ROSPktLanguage;
+import ros.integrate.msg.psi.ROSPktField;
 
 /**
  * a fix intended to suppress inspections via a comment.
  */
 public class SuppressFieldByCommentFix extends SuppressByCommentFix {
     SuppressFieldByCommentFix(@NotNull HighlightDisplayKey key) {
-        super(key, ROSMsgField.class);
+        super(key, ROSPktField.class);
     }
 
     @Override
     @Nullable
     public PsiElement getContainer(PsiElement context) {
-        ROSMsgField field = PsiTreeUtil.getParentOfType(context, ROSMsgField.class, false);
-        return field != null && ROSMsgLanguage.INSTANCE.equals(field.getLanguage()) ? field : null;
+        ROSPktField field = PsiTreeUtil.getParentOfType(context, ROSPktField.class, false);
+        return field != null && ROSPktLanguage.INSTANCE.equals(field.getLanguage()) ? field : null;
     }
 
     @Override

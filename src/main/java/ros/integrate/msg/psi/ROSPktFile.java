@@ -17,10 +17,11 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * an instance of a message containing template file, sent by the ROS framework.
+ * an instance of a packet containing template file, sent by the ROS framework.
+ * the class name is short for "ROS Packet File", which will be used throughout the language.
  */
-public abstract class ROSFile extends PsiFileBase implements PsiNameIdentifierOwner {
-    ROSFile(@NotNull FileViewProvider viewProvider, @NotNull Language language) {
+public abstract class ROSPktFile extends PsiFileBase implements PsiNameIdentifierOwner {
+    ROSPktFile(@NotNull FileViewProvider viewProvider, @NotNull Language language) {
         super(viewProvider, language);
     }
 
@@ -56,7 +57,7 @@ public abstract class ROSFile extends PsiFileBase implements PsiNameIdentifierOw
      * @return the number of valid service separators in this file
      */
     public int countServiceSeparators() {
-        ROSMsgSeparator[] fields = PsiTreeUtil.getChildrenOfType(this, ROSMsgSeparator.class);
+        ROSPktSeparator[] fields = PsiTreeUtil.getChildrenOfType(this, ROSPktSeparator.class);
         if (fields != null) {
             return fields.length;
         }
@@ -68,9 +69,9 @@ public abstract class ROSFile extends PsiFileBase implements PsiNameIdentifierOw
      * @return a list of all available fields in this file in textual order.
      */
     @NotNull
-    public List<ROSMsgField> getFields() {
-        List<ROSMsgField> result = new ArrayList<>();
-        ROSMsgField[] fields = PsiTreeUtil.getChildrenOfType(this, ROSMsgField.class);
+    public List<ROSPktField> getFields() {
+        List<ROSPktField> result = new ArrayList<>();
+        ROSPktField[] fields = PsiTreeUtil.getChildrenOfType(this, ROSPktField.class);
         if (fields != null) {
             Collections.addAll(result, fields);
         }
@@ -84,9 +85,9 @@ public abstract class ROSFile extends PsiFileBase implements PsiNameIdentifierOw
      */
     public int countNameInFile(@NotNull String name) {
         int count = 0;
-        ROSMsgField[] fields = PsiTreeUtil.getChildrenOfType(this, ROSMsgField.class);
+        ROSPktField[] fields = PsiTreeUtil.getChildrenOfType(this, ROSPktField.class);
         if (fields != null) {
-            for (ROSMsgField field : fields) {
+            for (ROSPktField field : fields) {
                 if (name.equals(field.getLabel().getText())) {
                     count++;
                 }
@@ -101,7 +102,7 @@ public abstract class ROSFile extends PsiFileBase implements PsiNameIdentifierOw
      * @return <code>true</code> if {@param field} is the first first defined label with the provided name in this file,
      *         <code>false</code> otherwise.
      */
-    public boolean isFirstDefinition(@NotNull ROSMsgLabel name) {
+    public boolean isFirstDefinition(@NotNull ROSPktLabel name) {
         return name.equals(getFirstNameInFile(name.getText()));
     }
 
@@ -112,10 +113,10 @@ public abstract class ROSFile extends PsiFileBase implements PsiNameIdentifierOw
      *         the first psi label in the file holding that name.
      */
     @Nullable
-    private ROSMsgLabel getFirstNameInFile(@NotNull String name) {
-        ROSMsgField[] fields = PsiTreeUtil.getChildrenOfType(this, ROSMsgField.class);
+    private ROSPktLabel getFirstNameInFile(@NotNull String name) {
+        ROSPktField[] fields = PsiTreeUtil.getChildrenOfType(this, ROSPktField.class);
         if (fields != null) {
-            for (ROSMsgField field : fields) {
+            for (ROSPktField field : fields) {
                 if (name.equals(field.getLabel().getText())) {
                     return field.getLabel();
                 }

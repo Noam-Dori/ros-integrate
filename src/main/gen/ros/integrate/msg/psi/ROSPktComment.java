@@ -5,7 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface ROSMsgComment extends PsiElement {
+public interface ROSPktComment extends PsiElement {
 
   @Nullable
   String getAnnotationIds();

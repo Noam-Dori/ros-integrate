@@ -7,18 +7,18 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
-import ros.integrate.msg.psi.ROSMsgType;
+import ros.integrate.msg.psi.ROSPktType;
 
 /**
  * a fix used to change the header type as necessary.
  */
 public class ChangeHeaderQuickFix extends BaseIntentionAction {
 
-    public ChangeHeaderQuickFix(ROSMsgType field) {
+    public ChangeHeaderQuickFix(ROSPktType field) {
         header = field;
     }
 
-    private ROSMsgType header;
+    private ROSPktType header;
 
     @NotNull
     @Override

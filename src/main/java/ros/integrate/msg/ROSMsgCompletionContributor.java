@@ -11,8 +11,8 @@ import com.intellij.util.ProcessingContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.ROSIcons;
-import ros.integrate.msg.psi.ROSMsgField;
-import ros.integrate.msg.psi.ROSMsgTypes;
+import ros.integrate.msg.psi.ROSPktField;
+import ros.integrate.msg.psi.ROSPktTypes;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -34,7 +34,7 @@ public class ROSMsgCompletionContributor extends CompletionContributor {
 
     public ROSMsgCompletionContributor() {
         extend(CompletionType.BASIC,
-                PlatformPatterns.psiElement(ROSMsgTypes.CUSTOM_TYPE).withLanguage(ROSMsgLanguage.INSTANCE),
+                PlatformPatterns.psiElement(ROSPktTypes.CUSTOM_TYPE).withLanguage(ROSPktLanguage.INSTANCE),
                 new CompletionProvider<CompletionParameters>() {
                     public void addCompletions(@NotNull CompletionParameters parameters,
                                                ProcessingContext context,
@@ -72,7 +72,7 @@ public class ROSMsgCompletionContributor extends CompletionContributor {
                     }
                 }
         );
-        extend(CompletionType.BASIC,PlatformPatterns.psiElement(ROSMsgTypes.NAME),
+        extend(CompletionType.BASIC,PlatformPatterns.psiElement(ROSPktTypes.NAME),
                 new CompletionProvider<CompletionParameters>() {
                     public void addCompletions(@NotNull CompletionParameters parameters,
                                                ProcessingContext context,
@@ -81,7 +81,7 @@ public class ROSMsgCompletionContributor extends CompletionContributor {
                         PsiElement element = parameters.getPosition();
                         Set<String> stringResults = new HashSet<>();
                         if (provider != null) {
-                            provider.getSuggestedNames(element,((ROSMsgField)element.getParent().getParent()).getType(),stringResults);
+                            provider.getSuggestedNames(element,((ROSPktField)element.getParent().getParent()).getType(),stringResults);
                         }
 
                         stringResults.forEach(result -> resultSet.addElement(LookupElementBuilder.create(result)));

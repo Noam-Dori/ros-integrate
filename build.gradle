@@ -34,8 +34,12 @@ sourceSets {
 }
 
 patchPluginXml {
-    version '0.1'
+    version '0.2'
     changeNotes """
+        <p>0.2</p>
+        <ul>
+            <li>renamed the ROSMsg language to ROSPkt - short for ROS Packet</li>
+        </ul>
         <p>0.1</p>
         <ul>
             <li>Added the ROSMsg language - a language for ROS Messages</li>
@@ -100,4 +104,4 @@ publishPlugin {
 }
 
 group 'ros-integrate'
-version '0.1'
+version '0.2'

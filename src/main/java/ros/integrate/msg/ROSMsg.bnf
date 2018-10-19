@@ -1,18 +1,18 @@
 {
-  parserClass="ros.integrate.msg.parser.ROSMsgParser"
+  parserClass="ros.integrate.msg.parser.ROSPktParser"
 
   extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
 
-  psiClassPrefix="ROSMsg"
+  psiClassPrefix="ROSPkt"
   psiImplClassSuffix="Impl"
   psiPackage="ros.integrate.msg.psi"
   psiImplPackage="ros.integrate.msg.psi.impl"
 
-  elementTypeHolderClass="ros.integrate.msg.psi.ROSMsgTypes"
-  elementTypeClass="ros.integrate.msg.psi.ROSMsgElementType"
-  tokenTypeClass="ros.integrate.msg.psi.ROSMsgTokenType"
+  elementTypeHolderClass="ros.integrate.msg.psi.ROSPktTypes"
+  elementTypeClass="ros.integrate.msg.psi.ROSPktElementType"
+  tokenTypeClass="ros.integrate.msg.psi.ROSPktTokenType"
 
-  psiImplUtilClass="ros.integrate.msg.psi.impl.ROSMsgPsiImplUtil"
+  psiImplUtilClass="ros.integrate.msg.psi.impl.ROSPktPsiImplUtil"
 }
 
 rosMsgFile ::= item_*
@@ -32,14 +32,14 @@ const ::= (NEG_OPERATOR? NUMBER | STRING) {
 }
 
 type ::= type_ (LBRACKET NUMBER? RBRACKET)? {
-    mixin="ros.integrate.msg.psi.impl.ROSMsgIdentifierImpl"
-    implements="ros.integrate.msg.psi.ROSMsgIdentifier"
+    mixin="ros.integrate.msg.psi.impl.ROSPktIdentifierImpl"
+    implements="ros.integrate.msg.psi.ROSPktIdentifier"
     methods=[raw custom size removeArray set getName getNameIdentifier getReference getReferences]
 }
 
 label ::= NAME {
-    mixin="ros.integrate.msg.psi.impl.ROSMsgIdentifierImpl"
-    implements="ros.integrate.msg.psi.ROSMsgIdentifier"
+    mixin="ros.integrate.msg.psi.impl.ROSPktIdentifierImpl"
+    implements="ros.integrate.msg.psi.ROSPktIdentifier"
     methods=[set getName]
 }
 

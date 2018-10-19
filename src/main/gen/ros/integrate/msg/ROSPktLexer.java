@@ -4,7 +4,7 @@ package ros.integrate.msg;
 
 import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.tree.IElementType;
-import ros.integrate.msg.psi.ROSMsgTypes;
+import ros.integrate.msg.psi.ROSPktTypes;
 import com.intellij.psi.TokenType;
 
 
@@ -13,7 +13,7 @@ import com.intellij.psi.TokenType;
  * <a href="http://www.jflex.de/">JFlex</a> 1.7.0
  * from the specification file <tt>ROSMsg.flex</tt>
  */
-class ROSMsgLexer implements FlexLexer {
+class ROSPktLexer implements FlexLexer {
 
   /** This character denotes the end of file */
   public static final int YYEOF = -1;
@@ -321,7 +321,7 @@ class ROSMsgLexer implements FlexLexer {
    *
    * @param   in  the java.io.Reader to read input from.
    */
-  ROSMsgLexer(java.io.Reader in) {
+  ROSPktLexer(java.io.Reader in) {
     this.zzReader = in;
   }
 
@@ -574,7 +574,7 @@ class ROSMsgLexer implements FlexLexer {
       else {
         switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
           case 1: 
-            { yybegin(END_TYPE); return ROSMsgTypes.CUSTOM_TYPE;
+            { yybegin(END_TYPE); return ROSPktTypes.CUSTOM_TYPE;
             } 
             // fall through
           case 27: break;
@@ -589,7 +589,7 @@ class ROSMsgLexer implements FlexLexer {
             // fall through
           case 29: break;
           case 4: 
-            { yybegin(YYINITIAL); return ROSMsgTypes.LINE_COMMENT;
+            { yybegin(YYINITIAL); return ROSPktTypes.LINE_COMMENT;
             } 
             // fall through
           case 30: break;
@@ -599,22 +599,22 @@ class ROSMsgLexer implements FlexLexer {
             // fall through
           case 31: break;
           case 6: 
-            { yybegin(IN_ARRAY); return ROSMsgTypes.LBRACKET;
+            { yybegin(IN_ARRAY); return ROSPktTypes.LBRACKET;
             } 
             // fall through
           case 32: break;
           case 7: 
-            { yybegin(IN_ARRAY); return ROSMsgTypes.NUMBER;
+            { yybegin(IN_ARRAY); return ROSPktTypes.NUMBER;
             } 
             // fall through
           case 33: break;
           case 8: 
-            { yybegin(END_ARRAY); return ROSMsgTypes.RBRACKET;
+            { yybegin(END_ARRAY); return ROSPktTypes.RBRACKET;
             } 
             // fall through
           case 34: break;
           case 9: 
-            { yybegin(END_NAME); return ROSMsgTypes.NAME;
+            { yybegin(END_NAME); return ROSPktTypes.NAME;
             } 
             // fall through
           case 35: break;
@@ -624,12 +624,12 @@ class ROSMsgLexer implements FlexLexer {
             // fall through
           case 36: break;
           case 11: 
-            { yybegin(START_CONST); return ROSMsgTypes.CONST_ASSIGNER;
+            { yybegin(START_CONST); return ROSPktTypes.CONST_ASSIGNER;
             } 
             // fall through
           case 37: break;
           case 12: 
-            { yybegin(END_LINE); return ROSMsgTypes.STRING;
+            { yybegin(END_LINE); return ROSPktTypes.STRING;
             } 
             // fall through
           case 38: break;
@@ -644,22 +644,22 @@ class ROSMsgLexer implements FlexLexer {
             // fall through
           case 40: break;
           case 15: 
-            { yybegin(IN_INT_ARRAY); return ROSMsgTypes.LBRACKET;
+            { yybegin(IN_INT_ARRAY); return ROSPktTypes.LBRACKET;
             } 
             // fall through
           case 41: break;
           case 16: 
-            { yybegin(IN_INT_ARRAY); return ROSMsgTypes.NUMBER;
+            { yybegin(IN_INT_ARRAY); return ROSPktTypes.NUMBER;
             } 
             // fall through
           case 42: break;
           case 17: 
-            { yybegin(END_INT_ARRAY); return ROSMsgTypes.RBRACKET;
+            { yybegin(END_INT_ARRAY); return ROSPktTypes.RBRACKET;
             } 
             // fall through
           case 43: break;
           case 18: 
-            { yybegin(END_INT_NAME); return ROSMsgTypes.NAME;
+            { yybegin(END_INT_NAME); return ROSPktTypes.NAME;
             } 
             // fall through
           case 44: break;
@@ -669,7 +669,7 @@ class ROSMsgLexer implements FlexLexer {
             // fall through
           case 45: break;
           case 20: 
-            { yybegin(START_INT_CONST); return ROSMsgTypes.CONST_ASSIGNER;
+            { yybegin(START_INT_CONST); return ROSPktTypes.CONST_ASSIGNER;
             } 
             // fall through
           case 46: break;
@@ -679,27 +679,27 @@ class ROSMsgLexer implements FlexLexer {
             // fall through
           case 47: break;
           case 22: 
-            { yybegin(END_LINE); return ROSMsgTypes.NUMBER;
+            { yybegin(END_LINE); return ROSPktTypes.NUMBER;
             } 
             // fall through
           case 48: break;
           case 23: 
-            { yybegin(NEG_NUM); return ROSMsgTypes.NEG_OPERATOR;
+            { yybegin(NEG_NUM); return ROSPktTypes.NEG_OPERATOR;
             } 
             // fall through
           case 49: break;
           case 24: 
-            { yybegin(END_LINE); return ROSMsgTypes.SERVICE_SEPARATOR;
+            { yybegin(END_LINE); return ROSPktTypes.SERVICE_SEPARATOR;
             } 
             // fall through
           case 50: break;
           case 25: 
-            { yybegin(END_INT_TYPE); return ROSMsgTypes.KEYTYPE;
+            { yybegin(END_INT_TYPE); return ROSPktTypes.KEYTYPE;
             } 
             // fall through
           case 51: break;
           case 26: 
-            { yybegin(END_TYPE); return ROSMsgTypes.KEYTYPE;
+            { yybegin(END_TYPE); return ROSPktTypes.KEYTYPE;
             } 
             // fall through
           case 52: break;

@@ -7,9 +7,9 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.msg.ROSMsgUtil;
-import ros.integrate.msg.psi.ROSMsgComment;
-import ros.integrate.msg.psi.ROSMsgElementFactory;
-import ros.integrate.msg.psi.ROSMsgField;
+import ros.integrate.msg.psi.ROSPktComment;
+import ros.integrate.msg.psi.ROSPktElementFactory;
+import ros.integrate.msg.psi.ROSPktField;
 
 /**
  * a collection of utility functions regarding suppressing ROS inspections.
@@ -25,8 +25,8 @@ class ROSMsgSuppressionUtil {
     static void addSuppressAnnotation(@NotNull Project project,
                                       final @NotNull PsiElement container,
                                       @NotNull String id) {
-        final ROSMsgComment annotation = findAnnotation(container);
-        final ROSMsgComment newAnnotation = createNewAnnotation(project, annotation, id);
+        final ROSPktComment annotation = findAnnotation(container);
+        final ROSPktComment newAnnotation = createNewAnnotation(project, annotation, id);
         if (newAnnotation != null) {
             if (annotation != null && annotation.isPhysical()) {
                 WriteCommandAction.runWriteCommandAction(project, null, null, () -> annotation.replace(newAnnotation), annotation.getContainingFile());
@@ -41,10 +41,10 @@ class ROSMsgSuppressionUtil {
      * fetches the annotation for the element if it exists.
      * @param container the element containing the supposed annotation
      * @return null if no annotation is available for this PSI element,
-     *         otherwise an annotation in the form of a {@link ROSMsgComment}
+     *         otherwise an annotation in the form of a {@link ROSPktComment}
      */
     @Nullable
-    static ROSMsgComment findAnnotation(@NotNull PsiElement container) {
+    static ROSPktComment findAnnotation(@NotNull PsiElement container) {
         PsiElement[] fields = container.getContainingFile().getChildren();
         int i = fields.length - 1;
         for (; i > 0; i--) {
@@ -53,7 +53,7 @@ class ROSMsgSuppressionUtil {
             }
         }
         for (i--; i >= 0; i--) {
-            if (fields[i] instanceof ROSMsgComment) {
+            if (fields[i] instanceof ROSPktComment) {
                 return ROSMsgUtil.checkAnnotation(fields[i]);
             }
         }
@@ -66,9 +66,9 @@ class ROSMsgSuppressionUtil {
      * @param newAnnotation the new annotation to add.
      * @param container the PSI element to add an annotation to.
      */
-    private static void appendAnnotation(@NotNull Project project, @NotNull ROSMsgComment newAnnotation, @NotNull PsiElement container) {
+    private static void appendAnnotation(@NotNull Project project, @NotNull ROSPktComment newAnnotation, @NotNull PsiElement container) {
         container.getContainingFile().addBefore(newAnnotation,container);
-        container.getContainingFile().addBefore(ROSMsgElementFactory.createCRLF(project),container);
+        container.getContainingFile().addBefore(ROSPktElementFactory.createCRLF(project),container);
     }
 
     /**
@@ -79,14 +79,14 @@ class ROSMsgSuppressionUtil {
      * @return the new annotation to replace or append for the element provided
      */
     @Nullable
-    private static ROSMsgComment createNewAnnotation(@NotNull Project project, @Nullable ROSMsgComment annotation, @NotNull String id) {
+    private static ROSPktComment createNewAnnotation(@NotNull Project project, @Nullable ROSPktComment annotation, @NotNull String id) {
         if (annotation == null || annotation.getAnnotationIds() == null || annotation.getAnnotationIds().equals("")) {
-            return ROSMsgElementFactory.createAnnotation(project, id);
+            return ROSPktElementFactory.createAnnotation(project, id);
         }
         final String prevIds = annotation.getAnnotationIds();
         if (prevIds != null) {
             if (prevIds.contains(id)) return null;
-            return ROSMsgElementFactory.createAnnotation(project,prevIds + "," + id);
+            return ROSPktElementFactory.createAnnotation(project,prevIds + "," + id);
         }
         return null;
     }
@@ -98,7 +98,7 @@ class ROSMsgSuppressionUtil {
      */
     @Contract(value = "null -> null", pure = true)
     static PsiElement getElementToAnnotate(@Nullable PsiElement container) {
-        if (container instanceof ROSMsgField) {
+        if (container instanceof ROSPktField) {
             return container;
         }
         return null;

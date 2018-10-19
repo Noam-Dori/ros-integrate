@@ -6,16 +6,16 @@ import com.intellij.openapi.util.TextRange;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.msg.intention.RemoveAllSrvLinesQuickFix;
 import ros.integrate.msg.intention.RemoveSrvLineQuickFix;
-import ros.integrate.msg.psi.ROSFile;
-import ros.integrate.msg.psi.ROSMsgSeparator;
+import ros.integrate.msg.psi.ROSPktFile;
+import ros.integrate.msg.psi.ROSPktSeparator;
 
 /**
- * an annotator dedicated to {@link ROSMsgSeparator}
+ * an annotator dedicated to {@link ROSPktSeparator}
  */
 class ROSMsgSeparatorAnnotator extends ROSMsgAnnotatorBase {
-    private final ROSMsgSeparator sep;
+    private final ROSPktSeparator sep;
 
-    ROSMsgSeparatorAnnotator(@NotNull AnnotationHolder holder, @NotNull ROSMsgSeparator sep) {
+    ROSMsgSeparatorAnnotator(@NotNull AnnotationHolder holder, @NotNull ROSPktSeparator sep) {
         super(holder);
         this.sep = sep;
     }
@@ -24,7 +24,7 @@ class ROSMsgSeparatorAnnotator extends ROSMsgAnnotatorBase {
      * annotators if there are too many separators in the file provided.
      */
     void annTooManySeparators() {
-        ROSFile file = (ROSFile) sep.getContainingFile();
+        ROSPktFile file = (ROSPktFile) sep.getContainingFile();
         int separatorCount = file.countServiceSeparators();
         if (separatorCount > file.getMaxSeparators()) {
             TextRange range = new TextRange(sep.getTextRange().getStartOffset(),

@@ -13,13 +13,13 @@ import ros.integrate.msg.psi.*;
 
 import javax.swing.*;
 
-import static ros.integrate.msg.psi.ROSMsgElementFactory.ANNOTATION_PREFIX;
+import static ros.integrate.msg.psi.ROSPktElementFactory.ANNOTATION_PREFIX;
 
 /**
  * a utility class implementing all of the ROSMsg PSI objects' methods.
  * Also hold all documentation for them since it just passes them to the sub-utilities.
  */
-public class ROSMsgPsiImplUtil {
+public class ROSPktPsiImplUtil {
     /**
      * fetches all annotation IDS if any
      * @param comment the comment to search (this)
@@ -27,7 +27,7 @@ public class ROSMsgPsiImplUtil {
      *         otherwise a string of IDS, concatenated with commas.
      */
     @Nullable
-    public static String getAnnotationIds(@NotNull ROSMsgComment comment) {
+    public static String getAnnotationIds(@NotNull ROSPktComment comment) {
         if(ROSMsgUtil.checkAnnotation(comment) != null) {
             return comment.getText().substring(ANNOTATION_PREFIX.length());
         }
@@ -44,8 +44,8 @@ public class ROSMsgPsiImplUtil {
      *         the array portion is never included in the returned psi element.
      */
     @NotNull
-    public static PsiElement raw(@NotNull ROSMsgType type) {
-        return ROSMsgTypeUtil.raw(type);
+    public static PsiElement raw(@NotNull ROSPktType type) {
+        return ROSPktTypeUtil.raw(type);
     }
 
     /**
@@ -57,8 +57,8 @@ public class ROSMsgPsiImplUtil {
      *         the array portion is never included in the returned psi element.
      */
     @Nullable
-    public static PsiElement custom(@NotNull ROSMsgType type) {
-        return ROSMsgTypeUtil.custom(type);
+    public static PsiElement custom(@NotNull ROSPktType type) {
+        return ROSPktTypeUtil.custom(type);
     }
 
     /**
@@ -68,8 +68,8 @@ public class ROSMsgPsiImplUtil {
      *         0 if the element has variable size (since size 0 should not be used)
      *         otherwise, the size of the array
      */
-    public static int size(@NotNull ROSMsgType type) {
-        return ROSMsgTypeUtil.size(type);
+    public static int size(@NotNull ROSPktType type) {
+        return ROSPktTypeUtil.size(type);
     }
 
     /**
@@ -83,8 +83,8 @@ public class ROSMsgPsiImplUtil {
      * @return the new (or current) psi element put in place of the provided type.
      */
     @NotNull
-    public static PsiElement set(@NotNull ROSMsgType type, String rawType, int size) {
-        return ROSMsgTypeUtil.set(type, rawType, size);
+    public static PsiElement set(@NotNull ROSPktType type, String rawType, int size) {
+        return ROSPktTypeUtil.set(type, rawType, size);
     }
 
     /**
@@ -95,14 +95,14 @@ public class ROSMsgPsiImplUtil {
      */
     @NotNull
     @Contract("_, _ -> param1")
-    public static PsiElement set(@NotNull ROSMsgType type, String rawType) throws IncorrectOperationException {
-        return ROSMsgTypeUtil.set(type, rawType);
+    public static PsiElement set(@NotNull ROSPktType type, String rawType) throws IncorrectOperationException {
+        return ROSPktTypeUtil.set(type, rawType);
     }
 
     // utility function, do not use.
     @Contract(pure = true)
-    public static String getName(@NotNull ROSMsgType type) {
-        return ROSMsgTypeUtil.getName(type);
+    public static String getName(@NotNull ROSPktType type) {
+        return ROSPktTypeUtil.getName(type);
     }
 
     /**
@@ -111,14 +111,14 @@ public class ROSMsgPsiImplUtil {
      * @return type, but changed (or not)
      */
     @Contract("_ -> param1")
-    public static PsiElement removeArray(@NotNull ROSMsgType type) {
-        return ROSMsgTypeUtil.removeArray(type);
+    public static PsiElement removeArray(@NotNull ROSPktType type) {
+        return ROSPktTypeUtil.removeArray(type);
     }
 
     // utility function, do not use
     @Nullable
-    public static PsiElement getNameIdentifier(@NotNull ROSMsgType type) {
-        return ROSMsgTypeUtil.getNameIdentifier(type);
+    public static PsiElement getNameIdentifier(@NotNull ROSPktType type) {
+        return ROSPktTypeUtil.getNameIdentifier(type);
     }
 
     /**
@@ -127,8 +127,8 @@ public class ROSMsgPsiImplUtil {
      * @return the reference from this psi type to something else
      */
     @NotNull
-    public static PsiReference getReference(@NotNull ROSMsgType type) {
-        return ROSMsgTypeUtil.getReference(type);
+    public static PsiReference getReference(@NotNull ROSPktType type) {
+        return ROSPktTypeUtil.getReference(type);
     }
 
     /**
@@ -137,8 +137,8 @@ public class ROSMsgPsiImplUtil {
      * @return the references from this psi type to something else
      */
     @NotNull
-    public static PsiReference[] getReferences(@NotNull ROSMsgType type) {
-        return ROSMsgTypeUtil.getReferences(type);
+    public static PsiReference[] getReferences(@NotNull ROSPktType type) {
+        return ROSPktTypeUtil.getReferences(type);
     }
 
     /**
@@ -147,19 +147,19 @@ public class ROSMsgPsiImplUtil {
      * @param newName the new name used for the field
      * @return the new (or current) psi element put in place of the provided field label.
      */
-    public static PsiElement set(@NotNull ROSMsgLabel label, String newName) {
-        return ROSMsgLabelUtil.set(label, newName);
+    public static PsiElement set(@NotNull ROSPktLabel label, String newName) {
+        return ROSPktLabelUtil.set(label, newName);
     }
 
     // utility function, do not use
     @Contract(pure = true)
-    public static String getName(@NotNull ROSMsgLabel label) {
-        return ROSMsgLabelUtil.getName(label);
+    public static String getName(@NotNull ROSPktLabel label) {
+        return ROSPktLabelUtil.getName(label);
     }
 
     @NotNull
     @Contract(value = "_ -> new", pure = true)
-    public static ItemPresentation getPresentation(final ROSMsgField field) { return new ItemPresentation() {
+    public static ItemPresentation getPresentation(final ROSPktField field) { return new ItemPresentation() {
             @Nullable
             @Override
             public String getPresentableText() {
@@ -189,8 +189,8 @@ public class ROSMsgPsiImplUtil {
      *         otherwise, returns true.
      */
     @Contract("null -> false")
-    public static boolean isLegalConstant(@NotNull ROSMsgField field) {
-        return ROSMsgFieldUtil.isLegalConstant(field);
+    public static boolean isLegalConstant(@NotNull ROSPktField field) {
+        return ROSPktFieldUtil.isLegalConstant(field);
     }
 
     /**
@@ -201,7 +201,7 @@ public class ROSMsgPsiImplUtil {
      */
 
     @NotNull
-    public static ROSMsgType getBestFit(@NotNull ROSMsgConst constant) {
-        return ROSMsgFieldUtil.getBestFit(constant);
+    public static ROSPktType getBestFit(@NotNull ROSPktConst constant) {
+        return ROSPktFieldUtil.getBestFit(constant);
     }
 }
