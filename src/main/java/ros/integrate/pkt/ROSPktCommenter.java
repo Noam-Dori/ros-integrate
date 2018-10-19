@@ -6,7 +6,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * a class enabling using a commenter in ROS messages and services.
  */
-public class ROSMsgCommenter implements Commenter {
+public class ROSPktCommenter implements Commenter {
     @Nullable
     @Override
     public String getLineCommentPrefix() {

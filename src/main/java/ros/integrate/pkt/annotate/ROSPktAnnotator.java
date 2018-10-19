@@ -12,14 +12,14 @@ import ros.integrate.pkt.psi.ROSPktSeparator;
  * This class is responsible for adding annotations to .pkt (and .srv) files,
  * and directing results to specific annotators.
  */
-public class ROSMsgAnnotator implements Annotator {
+public class ROSPktAnnotator implements Annotator {
     @Override
     public void annotate(@NotNull final PsiElement element, @NotNull AnnotationHolder holder) {
         String msgName = element.getContainingFile().getName();
 
         if (element instanceof ROSPktField) {
             ROSPktField field = (ROSPktField) element;
-            ROSMsgTypeAnnotator annotator = new ROSMsgTypeAnnotator(holder, field.getType(), msgName);
+            ROSPktTypeAnnotator annotator = new ROSPktTypeAnnotator(holder, field.getType(), msgName);
 
 
             if (field.getType().custom() != null) {
@@ -39,13 +39,13 @@ public class ROSMsgAnnotator implements Annotator {
 
             String fieldName = field.getLabel().getText();
             if (fieldName != null) {
-                ROSMsgLabelAnnotator nameAnnotator = new ROSMsgLabelAnnotator(holder, field.getLabel(), fieldName);
+                ROSPktLabelAnnotator nameAnnotator = new ROSPktLabelAnnotator(holder, field.getLabel(), fieldName);
                 nameAnnotator.annDuplicateLabel();
                 nameAnnotator.annIllegalLabel();
             }
 
         } else if (element instanceof ROSPktSeparator) {
-            ROSMsgSeparatorAnnotator annotator = new ROSMsgSeparatorAnnotator(holder,(ROSPktSeparator)element);
+            ROSPktSeparatorAnnotator annotator = new ROSPktSeparatorAnnotator(holder,(ROSPktSeparator)element);
             annotator.annTooManySeparators();
         }
     }

@@ -11,7 +11,7 @@ import java.util.*;
 /**
  * a class used to suggest names for things in ROS messages.
  */
-public class ROSMsgNameSuggestionProvider extends PreferrableNameSuggestionProvider {
+public class ROSPktNameSuggestionProvider extends PreferrableNameSuggestionProvider {
     @Nullable
     @Override
     public SuggestedNameInfo getSuggestedNames(PsiElement fieldName, @Nullable PsiElement fieldType, Set<String> result) {

@@ -21,12 +21,12 @@ import java.util.List;
 /**
  * a class defining the references of {@link ROSPktType} to {@link ROSMsgFile}
  */
-public class ROSMsgTypeReference extends PsiReferenceBase<PsiElement> implements PsiFileReference {
+public class ROSPktTypeReference extends PsiReferenceBase<PsiElement> implements PsiFileReference {
     // note: myElement is the referencing element, and the result of resolve() is the original element (the file).
 
     private String key;
 
-    public ROSMsgTypeReference(@NotNull PsiElement element, @NotNull TextRange textRange) { //TODO: namespace support
+    public ROSPktTypeReference(@NotNull PsiElement element, @NotNull TextRange textRange) { //TODO: namespace support
         super(element, textRange);
         key = element.getText().substring(textRange.getStartOffset(), textRange.getEndOffset());
     }
@@ -35,7 +35,7 @@ public class ROSMsgTypeReference extends PsiReferenceBase<PsiElement> implements
     @Override
     public ResolveResult[] multiResolve(boolean incompleteCode) {
         Project project = myElement.getProject();
-        final List<ROSMsgFile> files = ROSMsgUtil.findMessages(project, key, myElement.getContainingFile().getVirtualFile());
+        final List<ROSMsgFile> files = ROSPktUtil.findMessages(project, key, myElement.getContainingFile().getVirtualFile());
         List<ResolveResult> results = new ArrayList<>();
         for (ROSMsgFile file : files) {
             results.add(new PsiElementResolveResult(file));
@@ -54,7 +54,7 @@ public class ROSMsgTypeReference extends PsiReferenceBase<PsiElement> implements
     @Override
     public Object[] getVariants() {
         Project project = myElement.getProject();
-        final List<ROSMsgFile> files = ROSMsgUtil.findMessages(project, null, null);
+        final List<ROSMsgFile> files = ROSPktUtil.findMessages(project, null, null);
         List<LookupElement> variants = new ArrayList<>();
         for (final ROSMsgFile file : files) {
             String fileName = file.getName();

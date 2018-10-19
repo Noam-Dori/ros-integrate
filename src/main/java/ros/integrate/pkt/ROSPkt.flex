@@ -1,4 +1,4 @@
-package ros.integrate.pkt;
+package ros.integrate.pkt.lang;
 
 import com.intellij.psi.tree.IElementType;
 import ros.integrate.pkt.psi.ROSPktTypes;

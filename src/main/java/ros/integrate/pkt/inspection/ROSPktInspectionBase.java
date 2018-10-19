@@ -14,7 +14,7 @@ import java.util.Objects;
 /**
  * the generic inspection within ROS message and service files.
  */
-public abstract class AbstractROSMsgInspection extends LocalInspectionTool implements CustomSuppressableInspectionTool {
+public abstract class ROSPktInspectionBase extends LocalInspectionTool implements CustomSuppressableInspectionTool {
     @Nullable
     @Override
     public SuppressIntentionAction[] getSuppressActions(@Nullable PsiElement element) {
@@ -28,7 +28,7 @@ public abstract class AbstractROSMsgInspection extends LocalInspectionTool imple
 
     /**
      * creates a suppression action for this inspection
-     * @param key I dunno, check out {@link AbstractROSMsgInspection#getSuppressActions(PsiElement)} to understand.
+     * @param key I dunno, check out {@link ROSPktInspectionBase#getSuppressActions(PsiElement)} to understand.
      * @return an array of possible suppression actions for this inspection.
      */
     @NotNull
@@ -43,7 +43,7 @@ public abstract class AbstractROSMsgInspection extends LocalInspectionTool imple
      * @return true if this field has a suppression annotation for this inspection
      */
     boolean isSuppressedFor(@NotNull ROSPktField field) {
-        ROSPktComment annotation = ROSMsgSuppressionUtil.findAnnotation(field);
+        ROSPktComment annotation = ROSPktSuppressionUtil.findAnnotation(field);
         if(annotation == null) {return false;}
         return Arrays.asList(Objects.requireNonNull(annotation.getAnnotationIds()).split(",")).contains(getShortName());
     }

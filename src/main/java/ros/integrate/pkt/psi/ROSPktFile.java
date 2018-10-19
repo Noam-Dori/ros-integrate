@@ -9,7 +9,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import ros.integrate.pkt.ROSMsgUtil;
+import ros.integrate.pkt.ROSPktUtil;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -128,7 +128,7 @@ public abstract class ROSPktFile extends PsiFileBase implements PsiNameIdentifie
     @NotNull
     @Override
     public String getName() {
-        return ROSMsgUtil.trimMsgFileName(super.getName());
+        return ROSPktUtil.trimPktFileName(super.getName());
     }
 
     @NotNull

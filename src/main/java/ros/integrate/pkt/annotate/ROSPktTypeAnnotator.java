@@ -7,7 +7,7 @@ import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.openapi.util.TextRange;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import ros.integrate.pkt.ROSMsgUtil;
+import ros.integrate.pkt.ROSPktUtil;
 import ros.integrate.pkt.intention.*;
 import ros.integrate.pkt.psi.ROSPktConst;
 import ros.integrate.pkt.psi.ROSPktField;
@@ -19,11 +19,11 @@ import java.util.List;
 /**
  * an annotator dedicated to {@link ROSPktType}
  */
-public class ROSMsgTypeAnnotator extends ROSMsgAnnotatorBase {
+public class ROSPktTypeAnnotator extends ROSPktAnnotatorBase {
     private final String msgName;
     private ROSPktType type;
 
-    ROSMsgTypeAnnotator(@NotNull AnnotationHolder holder,
+    ROSPktTypeAnnotator(@NotNull AnnotationHolder holder,
                         @NotNull ROSPktType type,
                         @NotNull String msgName) {
         super(holder);
@@ -65,11 +65,11 @@ public class ROSMsgTypeAnnotator extends ROSMsgAnnotatorBase {
     }
 
     /**
-     * does the test for {@link ROSMsgTypeAnnotator#annTypeNotDefined()}
+     * does the test for {@link ROSPktTypeAnnotator#annTypeNotDefined()}
      * @return true if the type is not defined anywhere, false otherwise.
      */
     private boolean unknownType() {
-        List<String> types = ROSMsgUtil.findMessageNames(type.getProject(), type.raw().getText(), null);
+        List<String> types = ROSPktUtil.findMessageNames(type.getProject(), type.raw().getText(), null);
         return types.isEmpty() && // found no message within project matching this field type.
                 !(type.raw().getText().equals("Header") && type.getParent().getNode().equals(getFirstField())) && // field is the header
                 !type.raw().getText().contains("/"); // message is defined outside project

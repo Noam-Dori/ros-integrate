@@ -9,7 +9,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import ros.integrate.pkt.ROSPktLanguage;
+import ros.integrate.pkt.lang.ROSPktLanguage;
 import ros.integrate.pkt.psi.ROSPktField;
 
 /**
@@ -41,7 +41,7 @@ public class SuppressFieldByCommentFix extends SuppressByCommentFix {
             WriteCommandAction.runWriteCommandAction(project, null, null, () -> suppressWithComment(project, element, container), container.getContainingFile());
         }
         else {
-            ROSMsgSuppressionUtil.addSuppressAnnotation(project, container, myID);
+            ROSPktSuppressionUtil.addSuppressAnnotation(project, container, myID);
         }
     }
 
@@ -58,11 +58,11 @@ public class SuppressFieldByCommentFix extends SuppressByCommentFix {
     }
 
     /**
-     * see {@link ROSMsgSuppressionUtil#getElementToAnnotate(PsiElement)}
+     * see {@link ROSPktSuppressionUtil#getElementToAnnotate(PsiElement)}
      */
     @Contract(value = "null -> null", pure = true)
     private PsiElement getElementToAnnotate(@Nullable PsiElement container) {
-        return ROSMsgSuppressionUtil.getElementToAnnotate(container);
+        return ROSPktSuppressionUtil.getElementToAnnotate(container);
     }
 
     /**

@@ -11,7 +11,7 @@ import com.intellij.util.SmartList;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import ros.integrate.pkt.annotate.ROSMsgTypeAnnotator;
+import ros.integrate.pkt.annotate.ROSPktTypeAnnotator;
 import ros.integrate.pkt.intention.RenameTypeQuickFix;
 import ros.integrate.pkt.psi.ROSMsgFile;
 import ros.integrate.pkt.psi.ROSPktField;
@@ -21,7 +21,7 @@ import java.util.List;
 /**
  * An inspection checking that all message types are written according to the ROS standards, in CamelCase form.
  */
-public class CamelCaseInspection extends AbstractROSMsgInspection {
+public class CamelCaseInspection extends ROSPktInspectionBase {
     /**
      * fetches the message for the unorthodox type if available.
      * @param fieldType the name of the type to check.
@@ -48,7 +48,7 @@ public class CamelCaseInspection extends AbstractROSMsgInspection {
             if(isSuppressedFor(field)) {continue;}
             ProgressManager.checkCanceled();
             PsiElement custom = field.getType().custom();
-            if (custom != null && ROSMsgTypeAnnotator.getIllegalTypeMessage(custom.getText(),false) == null) {
+            if (custom != null && ROSPktTypeAnnotator.getIllegalTypeMessage(custom.getText(),false) == null) {
                 String message = getUnorthodoxTypeMessage(custom.getText(),false);
                 if (message != null) {
                     ProblemDescriptor descriptor = manager.createProblemDescriptor(custom, custom, message,

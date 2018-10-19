@@ -11,6 +11,7 @@ import com.intellij.util.ProcessingContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.ROSIcons;
+import ros.integrate.pkt.lang.ROSPktLanguage;
 import ros.integrate.pkt.psi.ROSPktField;
 import ros.integrate.pkt.psi.ROSPktTypes;
 
@@ -22,7 +23,7 @@ import java.util.Set;
 /**
  * a class enabling and defining auto-completion within ROS messages
  */
-public class ROSMsgCompletionContributor extends CompletionContributor {
+public class ROSPktCompletionContributor extends CompletionContributor {
     private static LookupElement[] INTEGRAL_SIZES = Arrays.stream(new String[] {"8", "16", "32", "64"})
             .map(LookupElementBuilder::create)
             .map(LookupElementBuilder::bold)
@@ -32,7 +33,7 @@ public class ROSMsgCompletionContributor extends CompletionContributor {
             .map(LookupElementBuilder::bold)
             .toArray(LookupElement[]::new);
 
-    public ROSMsgCompletionContributor() {
+    public ROSPktCompletionContributor() {
         extend(CompletionType.BASIC,
                 PlatformPatterns.psiElement(ROSPktTypes.CUSTOM_TYPE).withLanguage(ROSPktLanguage.INSTANCE),
                 new CompletionProvider<CompletionParameters>() {
@@ -63,7 +64,7 @@ public class ROSMsgCompletionContributor extends CompletionContributor {
                                         handleNumericalInserts(insertionContext,INTEGRAL_SIZES,INTEGRAL_SIZES[0])));
                         Project project = parameters.getEditor().getProject();
                         if(project != null) {
-                            for (String projectMsg : ROSMsgUtil.findMessageNames(project,
+                            for (String projectMsg : ROSPktUtil.findMessageNames(project,
                                     null, parameters.getOriginalFile().getVirtualFile())) {
                                 resultSet.addElement(LookupElementBuilder.create(projectMsg)
                                         .withIcon(ROSIcons.MsgFile));
@@ -77,7 +78,7 @@ public class ROSMsgCompletionContributor extends CompletionContributor {
                     public void addCompletions(@NotNull CompletionParameters parameters,
                                                ProcessingContext context,
                                                @NotNull CompletionResultSet resultSet) {
-                        ROSMsgNameSuggestionProvider provider = findProvider();
+                        ROSPktNameSuggestionProvider provider = findProvider();
                         PsiElement element = parameters.getPosition();
                         Set<String> stringResults = new HashSet<>();
                         if (provider != null) {
@@ -106,12 +107,12 @@ public class ROSMsgCompletionContributor extends CompletionContributor {
     }
 
     @Nullable
-    private static ROSMsgNameSuggestionProvider findProvider() {
-        Object[] extensions = Extensions.getExtensions(ROSMsgNameSuggestionProvider.EP_NAME);
+    private static ROSPktNameSuggestionProvider findProvider() {
+        Object[] extensions = Extensions.getExtensions(ROSPktNameSuggestionProvider.EP_NAME);
 
         for (Object extension : extensions) {
-            if (extension instanceof ROSMsgNameSuggestionProvider) {
-                return (ROSMsgNameSuggestionProvider)extension;
+            if (extension instanceof ROSPktNameSuggestionProvider) {
+                return (ROSPktNameSuggestionProvider)extension;
             }
         }
         return null;

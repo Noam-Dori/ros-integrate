@@ -22,7 +22,7 @@ import java.util.List;
 /**
  * a generic utility class regarding ROS messages and services.
  */
-public class ROSMsgUtil {
+public class ROSPktUtil {
     /**
      * checks of this is an annotation comment.
      * @param comment the psi-element to check
@@ -81,12 +81,12 @@ public class ROSMsgUtil {
     }
 
     /**
-     * a useful utility function for trimming the .pkt or .srv from the message file name.
+     * a useful utility function for trimming the .msg or .srv from the message file name.
      * @param name the string holding the message/service file name.
      * @return the trimmed version of the provided string.
      */
     @NotNull
-    public static String trimMsgFileName(@NotNull String name) {
+    public static String trimPktFileName(@NotNull String name) {
         return name.substring(0,name.length() - 4);
     }
 }

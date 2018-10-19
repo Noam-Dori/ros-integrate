@@ -1,4 +1,4 @@
-package ros.integrate.pkt;
+package ros.integrate.pkt.highlight;
 
 import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.fileTypes.SyntaxHighlighter;
@@ -15,15 +15,15 @@ import java.util.Map;
 /**
  * creates the settings page for the code colors of ROS messages and services.
  */
-public class ROSMsgColorSettings implements ColorSettingsPage {
+public class ROSPktColorSettings implements ColorSettingsPage {
     private static final AttributesDescriptor[] DESCRIPTORS = new AttributesDescriptor[]{
-            new AttributesDescriptor("Builtin Types", ROSMsgSyntaxHighlighter.KEYTYPE),
-            new AttributesDescriptor("Custom Types", ROSMsgSyntaxHighlighter.TYPE),
-            new AttributesDescriptor("Field Names", ROSMsgSyntaxHighlighter.NAME),
-            new AttributesDescriptor("Numbers", ROSMsgSyntaxHighlighter.NUMBER),
-            new AttributesDescriptor("Strings", ROSMsgSyntaxHighlighter.STRING),
-            new AttributesDescriptor("Comments", ROSMsgSyntaxHighlighter.COMMENT),
-            new AttributesDescriptor("Service Separator", ROSMsgSyntaxHighlighter.SERVICE),
+            new AttributesDescriptor("Builtin Types", ROSPktSyntaxHighlighter.KEYTYPE),
+            new AttributesDescriptor("Custom Types", ROSPktSyntaxHighlighter.TYPE),
+            new AttributesDescriptor("Field Names", ROSPktSyntaxHighlighter.NAME),
+            new AttributesDescriptor("Numbers", ROSPktSyntaxHighlighter.NUMBER),
+            new AttributesDescriptor("Strings", ROSPktSyntaxHighlighter.STRING),
+            new AttributesDescriptor("Comments", ROSPktSyntaxHighlighter.COMMENT),
+            new AttributesDescriptor("Service Separator", ROSPktSyntaxHighlighter.SERVICE),
     };
 
     @Nullable
@@ -35,7 +35,7 @@ public class ROSMsgColorSettings implements ColorSettingsPage {
     @NotNull
     @Override
     public SyntaxHighlighter getHighlighter() {
-        return new ROSMsgSyntaxHighlighter();
+        return new ROSPktSyntaxHighlighter();
     }
 
     @NotNull
@@ -75,6 +75,6 @@ public class ROSMsgColorSettings implements ColorSettingsPage {
     @NotNull
     @Override
     public String getDisplayName() {
-        return "ROS Message / Service";
+        return "ROS Packet";
     }
 }

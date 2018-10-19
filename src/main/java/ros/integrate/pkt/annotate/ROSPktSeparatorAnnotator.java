@@ -12,10 +12,10 @@ import ros.integrate.pkt.psi.ROSPktSeparator;
 /**
  * an annotator dedicated to {@link ROSPktSeparator}
  */
-class ROSMsgSeparatorAnnotator extends ROSMsgAnnotatorBase {
+class ROSPktSeparatorAnnotator extends ROSPktAnnotatorBase {
     private final ROSPktSeparator sep;
 
-    ROSMsgSeparatorAnnotator(@NotNull AnnotationHolder holder, @NotNull ROSPktSeparator sep) {
+    ROSPktSeparatorAnnotator(@NotNull AnnotationHolder holder, @NotNull ROSPktSeparator sep) {
         super(holder);
         this.sep = sep;
     }

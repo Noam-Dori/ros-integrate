@@ -21,20 +21,20 @@
         <fileTypeFactory implementation="ros.integrate.pkt.file.ROSSrvFileTypeFactory"/>
 
         <!-- ROS packet Language -->
-        <lang.parserDefinition language="ROSPkt" implementationClass="ros.integrate.pkt.ROSPktParserDefinition"/>
-        <lang.syntaxHighlighterFactory language="ROSPkt" implementationClass="ros.integrate.pkt.ROSMsgSyntaxHighlighterFactory"/>
-        <lang.commenter language="ROSPkt" implementationClass="ros.integrate.pkt.ROSMsgCommenter"/>
-        <lang.refactoringSupport language="ROSPkt" implementationClass="ros.integrate.pkt.ROSMsgRefactoringSupportProvider"/>
-        <lang.braceMatcher language="ROSPkt" implementationClass="ros.integrate.pkt.ROSMsgBraceMatcher"/>
+        <lang.parserDefinition language="ROSPkt" implementationClass="ros.integrate.pkt.lang.ROSPktParserDefinition"/>
+        <lang.syntaxHighlighterFactory language="ROSPkt" implementationClass="ros.integrate.pkt.highlight.ROSPktSyntaxHighlighterFactory"/>
+        <lang.commenter language="ROSPkt" implementationClass="ros.integrate.pkt.ROSPktCommenter"/>
+        <lang.refactoringSupport language="ROSPkt" implementationClass="ros.integrate.pkt.ROSPktRefactoringSupportProvider"/>
+        <lang.braceMatcher language="ROSPkt" implementationClass="ros.integrate.pkt.ROSPktBraceMatcher"/>
         <lang.elementManipulator forClass="ros.integrate.pkt.psi.ROSPktType"
-                                 implementationClass="ros.integrate.pkt.ROSMsgTypeElementManipulator"/>
-        <colorSettingsPage implementation="ros.integrate.pkt.ROSMsgColorSettings"/>
-        <completion.contributor language="ROSPkt" implementationClass="ros.integrate.pkt.ROSMsgCompletionContributor"/>
-        <annotator language="ROSPkt" implementationClass="ros.integrate.pkt.annotate.ROSMsgAnnotator"/>
-        <gotoSymbolContributor implementation="ros.integrate.pkt.ROSMsgChooseByNameContributor"/>
-        <nameSuggestionProvider implementation="ros.integrate.pkt.ROSMsgNameSuggestionProvider" />
-        <psi.referenceContributor language="ROSPkt" implementation="ros.integrate.pkt.ROSMsgTypeReferenceContributor"/>
-        <spellchecker.support language="ROSPkt" implementationClass="ros.integrate.pkt.ROSMsgSpellcheckingStrategy"/>
+                                 implementationClass="ros.integrate.pkt.ROSPktTypeElementManipulator"/>
+        <colorSettingsPage implementation="ros.integrate.pkt.highlight.ROSPktColorSettings"/>
+        <completion.contributor language="ROSPkt" implementationClass="ros.integrate.pkt.ROSPktCompletionContributor"/>
+        <annotator language="ROSPkt" implementationClass="ros.integrate.pkt.annotate.ROSPktAnnotator"/>
+        <gotoSymbolContributor implementation="ros.integrate.pkt.ROSPktChooseByNameContributor"/>
+        <nameSuggestionProvider implementation="ros.integrate.pkt.ROSPktNameSuggestionProvider" />
+        <psi.referenceContributor language="ROSPkt" implementation="ros.integrate.pkt.ROSPktTypeReferenceContributor"/>
+        <spellchecker.support language="ROSPkt" implementationClass="ros.integrate.pkt.ROSPktSpellcheckingStrategy"/>
 
         <localInspection language="ROSPkt" implementationClass="ros.integrate.pkt.inspection.CamelCaseInspection"
                          level="WARNING" enabledByDefault="true" shortName="type-not-camelcase"

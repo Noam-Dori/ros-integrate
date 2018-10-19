@@ -14,7 +14,7 @@ import ros.integrate.pkt.psi.ROSPktType;
 /**
  * a class enabling the spellchecker in ROS messages.
  */
-public class ROSMsgSpellcheckingStrategy extends SpellcheckingStrategy {
+public class ROSPktSpellcheckingStrategy extends SpellcheckingStrategy {
     private final Tokenizer<ROSPktComment> myROSCommentTokenizer = new ROSCommentTokenizer();
 
     @NotNull
@@ -40,7 +40,7 @@ public class ROSMsgSpellcheckingStrategy extends SpellcheckingStrategy {
             if (element.getParent() instanceof ROSPktComment) return;
 
             // remove commenting part
-            ROSMsgCommenter commenter = new ROSMsgCommenter();
+            ROSPktCommenter commenter = new ROSPktCommenter();
             String commentPrefix = commenter.getLineCommentPrefix();
             String textToCheck = element.getText();
             int offset = 0;

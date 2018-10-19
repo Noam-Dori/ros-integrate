@@ -11,7 +11,7 @@ import ros.integrate.pkt.psi.ROSPktTypes;
 /**
  * an extension enabling bracket support in ROS messages.
  */
-public class ROSMsgBraceMatcher implements PairedBraceMatcher {
+public class ROSPktBraceMatcher implements PairedBraceMatcher {
     @NotNull
     @Override
     public BracePair[] getPairs() {

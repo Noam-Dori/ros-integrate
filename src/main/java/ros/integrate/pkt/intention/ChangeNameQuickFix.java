@@ -16,7 +16,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import ros.integrate.pkt.ROSMsgNameSuggestionProvider;
+import ros.integrate.pkt.ROSPktNameSuggestionProvider;
 import ros.integrate.pkt.psi.ROSPktField;
 
 import java.util.HashSet;
@@ -54,7 +54,7 @@ public class ChangeNameQuickFix extends BaseIntentionAction {
 
     @Override
     public void invoke(@NotNull Project project, Editor editor, PsiFile file) {
-        ROSMsgNameSuggestionProvider provider = findProvider();
+        ROSPktNameSuggestionProvider provider = findProvider();
         if (badElement == null || provider == null) return;
         DataManager.getInstance()
                 .getDataContextFromFocusAsync()
@@ -86,12 +86,12 @@ public class ChangeNameQuickFix extends BaseIntentionAction {
      * @return null if the provider does not exist, otherwise the provider itself.
      */
     @Nullable
-    private static ROSMsgNameSuggestionProvider findProvider() {
-        Object[] extensions = Extensions.getExtensions(ROSMsgNameSuggestionProvider.EP_NAME);
+    private static ROSPktNameSuggestionProvider findProvider() {
+        Object[] extensions = Extensions.getExtensions(ROSPktNameSuggestionProvider.EP_NAME);
 
         for (Object extension : extensions) {
-            if (extension instanceof ROSMsgNameSuggestionProvider) {
-                return (ROSMsgNameSuggestionProvider)extension;
+            if (extension instanceof ROSPktNameSuggestionProvider) {
+                return (ROSPktNameSuggestionProvider)extension;
             }
         }
         return null;

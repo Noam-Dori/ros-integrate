@@ -12,13 +12,13 @@ import ros.integrate.pkt.psi.ROSPktLabel;
 /**
  * An annotator dedicated to {@link ROSPktLabel}
  */
-class ROSMsgLabelAnnotator extends ROSMsgAnnotatorBase {
+class ROSPktLabelAnnotator extends ROSPktAnnotatorBase {
 
     private final @NotNull String fieldName;
     private final @NotNull
     ROSPktLabel label;
 
-    ROSMsgLabelAnnotator(@NotNull AnnotationHolder holder,
+    ROSPktLabelAnnotator(@NotNull AnnotationHolder holder,
                          @NotNull ROSPktLabel label,
                          @NotNull String fieldName) {
         super(holder);

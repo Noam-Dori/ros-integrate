@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.ROSIcons;
-import ros.integrate.pkt.ROSMsgUtil;
+import ros.integrate.pkt.ROSPktUtil;
 import ros.integrate.pkt.psi.*;
 
 import javax.swing.*;
@@ -28,7 +28,7 @@ public class ROSPktPsiImplUtil {
      */
     @Nullable
     public static String getAnnotationIds(@NotNull ROSPktComment comment) {
-        if(ROSMsgUtil.checkAnnotation(comment) != null) {
+        if(ROSPktUtil.checkAnnotation(comment) != null) {
             return comment.getText().substring(ANNOTATION_PREFIX.length());
         }
         return null;

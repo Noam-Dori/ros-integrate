@@ -2,7 +2,7 @@ package ros.integrate.pkt.file;
 
 import com.intellij.openapi.fileTypes.LanguageFileType;
 import com.intellij.psi.FileViewProvider;
-import ros.integrate.pkt.ROSPktLanguage;
+import ros.integrate.pkt.lang.ROSPktLanguage;
 import ros.integrate.pkt.psi.ROSPktFile;
 
 public abstract class ROSPktFileType extends LanguageFileType {

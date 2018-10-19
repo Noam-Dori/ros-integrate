@@ -1,4 +1,4 @@
-package ros.integrate.pkt;
+package ros.integrate.pkt.highlight;
 
 import com.intellij.openapi.fileTypes.SyntaxHighlighter;
 import com.intellij.openapi.fileTypes.SyntaxHighlighterFactory;
@@ -10,10 +10,10 @@ import org.jetbrains.annotations.Nullable;
 /**
  * a class that generates highlighters for ROS messages.
  */
-public class ROSMsgSyntaxHighlighterFactory extends SyntaxHighlighterFactory {
+public class ROSPktSyntaxHighlighterFactory extends SyntaxHighlighterFactory {
     @NotNull
     @Override
     public SyntaxHighlighter getSyntaxHighlighter(@Nullable Project project, @Nullable VirtualFile virtualFile) {
-        return new ROSMsgSyntaxHighlighter();
+        return new ROSPktSyntaxHighlighter();
     }
 }

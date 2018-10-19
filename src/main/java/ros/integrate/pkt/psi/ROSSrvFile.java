@@ -8,8 +8,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.ROSIcons;
 import ros.integrate.pkt.file.ROSSrvFileType;
-import ros.integrate.pkt.ROSPktLanguage;
-import ros.integrate.pkt.ROSMsgUtil;
+import ros.integrate.pkt.lang.ROSPktLanguage;
+import ros.integrate.pkt.ROSPktUtil;
 
 import javax.swing.*;
 
@@ -38,7 +38,7 @@ public class ROSSrvFile extends ROSPktFile {
             @NotNull
             @Override
             public String getPresentableText() {
-                return ROSMsgUtil.trimMsgFileName(getContainingFile().getName());
+                return ROSPktUtil.trimPktFileName(getContainingFile().getName());
             }
 
             @Override

@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkt.psi.ROSPktType;
 
 //unused for now
-public class ROSMsgTypeElementManipulator extends AbstractElementManipulator<ROSPktType> {
+public class ROSPktTypeElementManipulator extends AbstractElementManipulator<ROSPktType> {
     @Nullable
     @Override
     public ROSPktType handleContentChange(@NotNull ROSPktType element, @NotNull TextRange range, String newContent) throws IncorrectOperationException {

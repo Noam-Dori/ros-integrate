@@ -9,10 +9,10 @@ import org.jetbrains.annotations.NotNull;
  * Annotators are split based on what element they mark if something goes wrong.
  * The object created by annotators is known as an annotation.
  */
-abstract class ROSMsgAnnotatorBase {
+abstract class ROSPktAnnotatorBase {
     final @NotNull AnnotationHolder holder;
 
-    ROSMsgAnnotatorBase(@NotNull AnnotationHolder holder) {
+    ROSPktAnnotatorBase(@NotNull AnnotationHolder holder) {
         this.holder = holder;
     }
 }

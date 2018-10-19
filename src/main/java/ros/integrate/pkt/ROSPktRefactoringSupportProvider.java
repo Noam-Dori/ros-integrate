@@ -10,7 +10,7 @@ import ros.integrate.pkt.psi.ROSPktType;
 /**
  * a class enabling in-place refactoring support in ROS messages.
  */
-public class ROSMsgRefactoringSupportProvider extends RefactoringSupportProvider {
+public class ROSPktRefactoringSupportProvider extends RefactoringSupportProvider {
     @Override
     public boolean isMemberInplaceRenameAvailable(@NotNull PsiElement element, PsiElement context) {
         return element instanceof ROSPktLabel ||

@@ -6,7 +6,7 @@ import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import ros.integrate.pkt.ROSMsgUtil;
+import ros.integrate.pkt.ROSPktUtil;
 import ros.integrate.pkt.psi.ROSPktComment;
 import ros.integrate.pkt.psi.ROSPktElementFactory;
 import ros.integrate.pkt.psi.ROSPktField;
@@ -14,7 +14,7 @@ import ros.integrate.pkt.psi.ROSPktField;
 /**
  * a collection of utility functions regarding suppressing ROS inspections.
  */
-class ROSMsgSuppressionUtil {
+class ROSPktSuppressionUtil {
 
     /**
      * add a suppression annotation
@@ -54,7 +54,7 @@ class ROSMsgSuppressionUtil {
         }
         for (i--; i >= 0; i--) {
             if (fields[i] instanceof ROSPktComment) {
-                return ROSMsgUtil.checkAnnotation(fields[i]);
+                return ROSPktUtil.checkAnnotation(fields[i]);
             }
         }
         return null;

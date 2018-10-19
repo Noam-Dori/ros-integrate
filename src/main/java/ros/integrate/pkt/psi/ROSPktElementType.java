@@ -1,7 +1,7 @@
 package ros.integrate.pkt.psi;
 
 import com.intellij.psi.tree.IElementType;
-import ros.integrate.pkt.ROSPktLanguage;
+import ros.integrate.pkt.lang.ROSPktLanguage;
 import org.jetbrains.annotations.NotNull;
 
 /**

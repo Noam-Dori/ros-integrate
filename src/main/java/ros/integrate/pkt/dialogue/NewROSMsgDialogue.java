@@ -32,7 +32,7 @@ import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import ros.integrate.pkt.annotate.ROSMsgTypeAnnotator;
+import ros.integrate.pkt.annotate.ROSPktTypeAnnotator;
 import ros.integrate.pkt.inspection.CamelCaseInspection;
 
 import javax.swing.*;
@@ -149,13 +149,13 @@ public class NewROSMsgDialogue extends DialogWrapper {
     }
 
     private void validateOKButton() {
-        boolean nameValid = ROSMsgTypeAnnotator.getIllegalTypeMessage(msgNameField.getText(),true) == null;
+        boolean nameValid = ROSPktTypeAnnotator.getIllegalTypeMessage(msgNameField.getText(),true) == null;
         boolean targetDirValid = targetDirField.getChildComponent().getText().length() > 0;
         setOKActionEnabled(nameValid && targetDirValid);
     }
 
     private void updateMsgNameTooltip() {
-        String message = ROSMsgTypeAnnotator.getIllegalTypeMessage(msgNameField.getText(),true);
+        String message = ROSPktTypeAnnotator.getIllegalTypeMessage(msgNameField.getText(),true);
         if (message == null) {
             message = CamelCaseInspection.getUnorthodoxTypeMessage(msgNameField.getText(),true);
             if (message == null) {
