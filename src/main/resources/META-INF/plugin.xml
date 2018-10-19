@@ -16,7 +16,11 @@
     <extensions defaultExtensionNs="com.intellij">
         <spellchecker.bundledDictionaryProvider implementation="ros.integrate.ROSBundledDictionaryProvider"/>
 
-        <!-- ROS .msg Language -->
+        <!-- ROS packet files -->
+        <fileTypeFactory implementation="ros.integrate.msg.file.ROSMsgFileTypeFactory"/>
+        <fileTypeFactory implementation="ros.integrate.msg.file.ROSSrvFileTypeFactory"/>
+
+        <!-- ROS packet Language -->
         <lang.parserDefinition language="ROSMsg" implementationClass="ros.integrate.msg.ROSMsgParserDefinition"/>
         <lang.syntaxHighlighterFactory language="ROSMsg" implementationClass="ros.integrate.msg.ROSMsgSyntaxHighlighterFactory"/>
         <lang.commenter language="ROSMsg" implementationClass="ros.integrate.msg.ROSMsgCommenter"/>
@@ -24,7 +28,6 @@
         <lang.braceMatcher language="ROSMsg" implementationClass="ros.integrate.msg.ROSMsgBraceMatcher"/>
         <lang.elementManipulator forClass="ros.integrate.msg.psi.ROSMsgType"
                                  implementationClass="ros.integrate.msg.ROSMsgTypeElementManipulator"/>
-        <fileTypeFactory implementation="ros.integrate.msg.ROSMsgFileTypeFactory"/>
         <colorSettingsPage implementation="ros.integrate.msg.ROSMsgColorSettings"/>
         <completion.contributor language="ROSMsg" implementationClass="ros.integrate.msg.ROSMsgCompletionContributor"/>
         <annotator language="ROSMsg" implementationClass="ros.integrate.msg.annotate.ROSMsgAnnotator"/>

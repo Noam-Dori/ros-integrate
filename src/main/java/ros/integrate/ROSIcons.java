@@ -9,4 +9,5 @@ import javax.swing.*;
  */
 public class ROSIcons {
     public static final Icon MsgFile = IconLoader.getIcon("/icons/msgFile.png");
+    public static final Icon SrvFile = IconLoader.getIcon("/icons/srvFile.png");
 }

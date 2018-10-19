@@ -1,10 +1,11 @@
-package ros.integrate.msg;
+package ros.integrate.msg.file;
 
 import com.intellij.openapi.fileTypes.LanguageFileType;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.ROSIcons;
+import ros.integrate.msg.ROSMsgLanguage;
 
 import javax.swing.*;
 
@@ -14,13 +15,13 @@ import javax.swing.*;
  */
 public class ROSMsgFileType extends LanguageFileType {
     public static final LanguageFileType INSTANCE = new ROSMsgFileType();
-    @NonNls public static final String DEFAULT_EXTENSION = "msg";
+    @NonNls private static final String DEFAULT_EXTENSION = "msg";
     @NonNls public static final String DOT_DEFAULT_EXTENSION = "." + DEFAULT_EXTENSION;
 
     /**
      * Creates a language file type for the specified language.
      */
-    public ROSMsgFileType() {
+    private ROSMsgFileType() {
         super(ROSMsgLanguage.INSTANCE);
     }
 

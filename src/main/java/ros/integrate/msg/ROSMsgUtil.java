@@ -9,6 +9,7 @@ import com.intellij.psi.search.GlobalSearchScope;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import ros.integrate.msg.file.ROSMsgFileType;
 import ros.integrate.msg.psi.ROSMsgComment;
 import ros.integrate.msg.psi.ROSMsgElementFactory;
 import ros.integrate.msg.psi.ROSMsgFile;

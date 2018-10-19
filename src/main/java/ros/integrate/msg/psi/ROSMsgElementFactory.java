@@ -5,7 +5,7 @@ import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFileFactory;
 import org.jetbrains.annotations.NotNull;
-import ros.integrate.msg.ROSMsgFileType;
+import ros.integrate.msg.file.ROSMsgFileType;
 
 /**
  * a utility factory class to generate PSI objects within ROS messages.

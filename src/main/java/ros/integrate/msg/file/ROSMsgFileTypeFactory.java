@@ -1,4 +1,4 @@
-package ros.integrate.msg;
+package ros.integrate.msg.file;
 
 import com.intellij.openapi.fileTypes.FileTypeConsumer;
 import com.intellij.openapi.fileTypes.FileTypeFactory;
