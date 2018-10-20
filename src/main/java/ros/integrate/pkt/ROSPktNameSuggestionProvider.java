@@ -4,7 +4,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.codeStyle.SuggestedNameInfo;
 import com.intellij.refactoring.rename.PreferrableNameSuggestionProvider;
 import org.jetbrains.annotations.Nullable;
-import ros.integrate.pkt.psi.ROSPktType;
+import ros.integrate.pkt.psi.ROSPktTypeBase;
 
 import java.util.*;
 
@@ -21,7 +21,7 @@ public class ROSPktNameSuggestionProvider extends PreferrableNameSuggestionProvi
         // for type "Type[]" suggest "type_list" or "types"
         // for type "type[?]" suggest "type_array" or "types"
         // all of these are unless one exists already as such.
-        if(fieldType instanceof ROSPktType) { // context should be the complete type
+        if(fieldType instanceof ROSPktTypeBase) { // context should be the complete type
             String fullType = fieldType.getText().replaceFirst(".*/","");
             // extract array part
             if(fullType.matches(".*\\[]")) {

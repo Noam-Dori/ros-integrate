@@ -6,7 +6,7 @@ import com.intellij.openapi.util.TextRange;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkt.intention.ChangeNameQuickFix;
 import ros.integrate.pkt.psi.ROSPktFile;
-import ros.integrate.pkt.psi.ROSPktField;
+import ros.integrate.pkt.psi.ROSPktFieldBase;
 import ros.integrate.pkt.psi.ROSPktLabel;
 
 /**
@@ -35,7 +35,7 @@ class ROSPktLabelAnnotator extends ROSPktAnnotatorBase {
             TextRange range = new TextRange(label.getTextRange().getStartOffset(),
                     label.getTextRange().getEndOffset());
             Annotation ann = holder.createErrorAnnotation(range, "Field label '" + fieldName + "' is already used");
-            ann.registerFix(new ChangeNameQuickFix((ROSPktField) label.getParent(), label));
+            ann.registerFix(new ChangeNameQuickFix((ROSPktFieldBase) label.getParent(), label));
         }
     }
 
@@ -54,7 +54,7 @@ class ROSPktLabelAnnotator extends ROSPktAnnotatorBase {
                 message = "Field names may only contain alphanumeric characters or underscores";
             }
             Annotation ann = holder.createErrorAnnotation(range, message);
-            ann.registerFix(new ChangeNameQuickFix((ROSPktField) label.getParent(), label));
+            ann.registerFix(new ChangeNameQuickFix((ROSPktFieldBase) label.getParent(), label));
         }
     }
 

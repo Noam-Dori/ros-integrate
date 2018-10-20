@@ -60,7 +60,7 @@ public class ROSPktTypeReference extends PsiReferenceBase<PsiElement> implements
             if (fileName.length() > 0) {
                 variants.add(LookupElementBuilder.create(file).
                         withIcon(ROSIcons.MsgFile).
-                        withTypeText(fileName)
+                        withTypeText("/" + fileName) //TODO add package in here
                 );
             }
         }

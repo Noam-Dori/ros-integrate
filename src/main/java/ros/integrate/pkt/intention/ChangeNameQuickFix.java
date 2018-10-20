@@ -17,7 +17,7 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkt.ROSPktNameSuggestionProvider;
-import ros.integrate.pkt.psi.ROSPktField;
+import ros.integrate.pkt.psi.ROSPktFieldBase;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -26,10 +26,10 @@ import java.util.Set;
  * a fix used to change duplicate names without triggering a refactor.
  */
 public class ChangeNameQuickFix extends BaseIntentionAction {
-    private final ROSPktField parent;
+    private final ROSPktFieldBase parent;
     private final PsiElement badElement;
 
-    public ChangeNameQuickFix(ROSPktField field, PsiElement element) {
+    public ChangeNameQuickFix(ROSPktFieldBase field, PsiElement element) {
         this.parent = field;
         this.badElement = element;
     }
@@ -72,7 +72,7 @@ public class ChangeNameQuickFix extends BaseIntentionAction {
                         return;
                     }
                     Set<String> result = new HashSet<>();
-                    provider.getSuggestedNames(badElement,parent.getType(),result);
+                    provider.getSuggestedNames(badElement,parent.getTypeBase(),result);
                     final LookupElement[] items = result
                             .stream()
                             .map(LookupElementBuilder::create)

@@ -1,18 +1,18 @@
 package ros.integrate.pkt;
 
 import com.intellij.codeInsight.completion.*;
-import com.intellij.codeInsight.lookup.*;
+import com.intellij.codeInsight.lookup.LookupElement;
+import com.intellij.codeInsight.lookup.LookupElementBuilder;
+import com.intellij.codeInsight.lookup.LookupManager;
 import com.intellij.openapi.editor.CaretModel;
 import com.intellij.openapi.extensions.Extensions;
-import com.intellij.openapi.project.Project;
 import com.intellij.patterns.PlatformPatterns;
 import com.intellij.psi.PsiElement;
 import com.intellij.util.ProcessingContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import ros.integrate.ROSIcons;
 import ros.integrate.pkt.lang.ROSPktLanguage;
-import ros.integrate.pkt.psi.ROSPktField;
+import ros.integrate.pkt.psi.ROSPktFieldBase;
 import ros.integrate.pkt.psi.ROSPktTypes;
 
 import java.util.Arrays;
@@ -62,14 +62,6 @@ public class ROSPktCompletionContributor extends CompletionContributor {
                                 .withTypeText("unsigned integral number")
                                 .withInsertHandler((insertionContext, item) ->
                                         handleNumericalInserts(insertionContext,INTEGRAL_SIZES,INTEGRAL_SIZES[0])));
-                        Project project = parameters.getEditor().getProject();
-                        if(project != null) {
-                            for (String projectMsg : ROSPktUtil.findMessageNames(project,
-                                    null, parameters.getOriginalFile().getVirtualFile())) {
-                                resultSet.addElement(LookupElementBuilder.create(projectMsg)
-                                        .withIcon(ROSIcons.MsgFile));
-                            }
-                        }
                     }
                 }
         );
@@ -82,7 +74,7 @@ public class ROSPktCompletionContributor extends CompletionContributor {
                         PsiElement element = parameters.getPosition();
                         Set<String> stringResults = new HashSet<>();
                         if (provider != null) {
-                            provider.getSuggestedNames(element,((ROSPktField)element.getParent().getParent()).getType(),stringResults);
+                            provider.getSuggestedNames(element,((ROSPktFieldBase)element.getParent().getParent()).getTypeBase(),stringResults);
                         }
 
                         stringResults.forEach(result -> resultSet.addElement(LookupElementBuilder.create(result)));
