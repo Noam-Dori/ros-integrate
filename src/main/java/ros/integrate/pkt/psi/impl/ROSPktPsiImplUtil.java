@@ -1,17 +1,13 @@
 package ros.integrate.pkt.psi.impl;
 
-import com.intellij.navigation.ItemPresentation;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import ros.integrate.ROSIcons;
 import ros.integrate.pkt.ROSPktUtil;
 import ros.integrate.pkt.psi.*;
-
-import javax.swing.*;
 
 import static ros.integrate.pkt.psi.ROSPktElementFactory.ANNOTATION_PREFIX;
 
@@ -44,7 +40,7 @@ public class ROSPktPsiImplUtil {
      *         the array portion is never included in the returned psi element.
      */
     @NotNull
-    public static PsiElement raw(@NotNull ROSPktType type) {
+    static PsiElement raw(@NotNull ROSPktTypeBase type) {
         return ROSPktTypeUtil.raw(type);
     }
 
@@ -57,7 +53,7 @@ public class ROSPktPsiImplUtil {
      *         the array portion is never included in the returned psi element.
      */
     @Nullable
-    public static PsiElement custom(@NotNull ROSPktType type) {
+    static PsiElement custom(@NotNull ROSPktTypeBase type) {
         return ROSPktTypeUtil.custom(type);
     }
 
@@ -68,7 +64,7 @@ public class ROSPktPsiImplUtil {
      *         0 if the element has variable size (since size 0 should not be used)
      *         otherwise, the size of the array
      */
-    public static int size(@NotNull ROSPktType type) {
+    static int size(@NotNull ROSPktTypeBase type) {
         return ROSPktTypeUtil.size(type);
     }
 
@@ -83,7 +79,7 @@ public class ROSPktPsiImplUtil {
      * @return the new (or current) psi element put in place of the provided type.
      */
     @NotNull
-    public static PsiElement set(@NotNull ROSPktType type, String rawType, int size) {
+    static PsiElement set(@NotNull ROSPktTypeBase type, String rawType, int size) {
         return ROSPktTypeUtil.set(type, rawType, size);
     }
 
@@ -95,13 +91,13 @@ public class ROSPktPsiImplUtil {
      */
     @NotNull
     @Contract("_, _ -> param1")
-    public static PsiElement set(@NotNull ROSPktType type, String rawType) throws IncorrectOperationException {
+    static PsiElement set(@NotNull ROSPktTypeBase type, String rawType) throws IncorrectOperationException {
         return ROSPktTypeUtil.set(type, rawType);
     }
 
     // utility function, do not use.
     @Contract(pure = true)
-    public static String getName(@NotNull ROSPktType type) {
+    static String getName(@NotNull ROSPktTypeBase type) {
         return ROSPktTypeUtil.getName(type);
     }
 
@@ -111,13 +107,13 @@ public class ROSPktPsiImplUtil {
      * @return type, but changed (or not)
      */
     @Contract("_ -> param1")
-    public static PsiElement removeArray(@NotNull ROSPktType type) {
+    static PsiElement removeArray(@NotNull ROSPktTypeBase type) {
         return ROSPktTypeUtil.removeArray(type);
     }
 
     // utility function, do not use
     @Nullable
-    public static PsiElement getNameIdentifier(@NotNull ROSPktType type) {
+    static PsiElement getNameIdentifier(@NotNull ROSPktTypeBase type) {
         return ROSPktTypeUtil.getNameIdentifier(type);
     }
 
@@ -127,7 +123,7 @@ public class ROSPktPsiImplUtil {
      * @return the reference from this psi type to something else
      */
     @NotNull
-    public static PsiReference getReference(@NotNull ROSPktType type) {
+    static PsiReference getReference(@NotNull ROSPktTypeBase type) {
         return ROSPktTypeUtil.getReference(type);
     }
 
@@ -137,8 +133,13 @@ public class ROSPktPsiImplUtil {
      * @return the references from this psi type to something else
      */
     @NotNull
-    public static PsiReference[] getReferences(@NotNull ROSPktType type) {
+    static PsiReference[] getReferences(@NotNull ROSPktTypeBase type) {
         return ROSPktTypeUtil.getReferences(type);
+    }
+
+    @Contract(pure = true)
+    static boolean isComplete(@NotNull ROSPktType type) {
+        return ROSPktTypeUtil.isComplete(type);
     }
 
     /**
@@ -147,6 +148,7 @@ public class ROSPktPsiImplUtil {
      * @param newName the new name used for the field
      * @return the new (or current) psi element put in place of the provided field label.
      */
+    @Contract("_, _ -> param1")
     public static PsiElement set(@NotNull ROSPktLabel label, String newName) {
         return ROSPktLabelUtil.set(label, newName);
     }
@@ -155,27 +157,6 @@ public class ROSPktPsiImplUtil {
     @Contract(pure = true)
     public static String getName(@NotNull ROSPktLabel label) {
         return ROSPktLabelUtil.getName(label);
-    }
-
-    @NotNull
-    @Contract(value = "_ -> new", pure = true)
-    public static ItemPresentation getPresentation(final ROSPktField field) { return new ItemPresentation() {
-            @Nullable
-            @Override
-            public String getPresentableText() {
-                return field.getType().getText();
-            }
-
-            @Override
-            public String getLocationString() {
-                return field.getContainingFile().getName();
-            }
-
-            @Override
-            public Icon getIcon(boolean unused) {
-                return ROSIcons.MsgFile;
-            }
-        };
     }
 
     /**
@@ -189,8 +170,32 @@ public class ROSPktPsiImplUtil {
      *         otherwise, returns true.
      */
     @Contract("null -> false")
-    public static boolean isLegalConstant(@NotNull ROSPktField field) {
+    static boolean isLegalConstant(@NotNull ROSPktFieldBase field) {
         return ROSPktFieldUtil.isLegalConstant(field);
+    }
+
+    /**
+     * fetches the base type of this field, even if it is a fragment or the field itself is a fragment.
+     * @param field the field/field fragment to use
+     * @return a non-null base type
+     */
+    @NotNull
+    static ROSPktType getTypeBase(@NotNull ROSPktField field) {
+        return ROSPktFieldUtil.getTypeBase(field);
+    }
+
+    /**
+     * @see ROSPktPsiImplUtil#getTypeBase(ROSPktField)
+     * this is an individual implementation for field fragments which can return either a complete type, or a fragment.
+     */
+    @NotNull
+    static ROSPktTypeBase getTypeBase(@NotNull ROSPktFieldFrag field) {
+        return ROSPktFieldUtil.getTypeBase(field);
+    }
+
+    @Contract(pure = true)
+    static boolean isComplete(@NotNull ROSPktField field) {
+        return ROSPktFieldUtil.isComplete(field);
     }
 
     /**
@@ -199,7 +204,6 @@ public class ROSPktPsiImplUtil {
      * @return <code>null</code> iff the field is not a constant,
      * otherwise a non-empty key-type holding the best data-type to use for the constant with respect to memory and actual size.
      */
-
     @NotNull
     public static ROSPktType getBestFit(@NotNull ROSPktConst constant) {
         return ROSPktFieldUtil.getBestFit(constant);

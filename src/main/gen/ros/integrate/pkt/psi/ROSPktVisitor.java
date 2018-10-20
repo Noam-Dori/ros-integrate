@@ -16,7 +16,11 @@ public class ROSPktVisitor extends PsiElementVisitor {
   }
 
   public void visitField(@NotNull ROSPktField o) {
-    visitPsiElement(o);
+    visitFieldBase(o);
+  }
+
+  public void visitFieldFrag(@NotNull ROSPktFieldFrag o) {
+    visitFieldBase(o);
   }
 
   public void visitLabel(@NotNull ROSPktLabel o) {
@@ -28,10 +32,22 @@ public class ROSPktVisitor extends PsiElementVisitor {
   }
 
   public void visitType(@NotNull ROSPktType o) {
-    visitIdentifier(o);
+    visitTypeBase(o);
+  }
+
+  public void visitTypeFrag(@NotNull ROSPktTypeFrag o) {
+    visitTypeBase(o);
+  }
+
+  public void visitFieldBase(@NotNull ROSPktFieldBase o) {
+    visitPsiElement(o);
   }
 
   public void visitIdentifier(@NotNull ROSPktIdentifier o) {
+    visitPsiElement(o);
+  }
+
+  public void visitTypeBase(@NotNull ROSPktTypeBase o) {
     visitPsiElement(o);
   }
 

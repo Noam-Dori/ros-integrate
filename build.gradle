@@ -39,12 +39,13 @@ patchPluginXml {
         <p>0.2</p>
         <ul>
             <li>renamed the ROSMsg language to ROSPkt - short for ROS Packet</li>
+            <li>added support for *.srv files - equipped with all inspection for ROS messages and with its own file icon</li>
         </ul>
         <p>0.1</p>
         <ul>
             <li>Added the ROSMsg language - a language for ROS Messages</li>
             <li>ROSMsg has its own highlighting which can be customised</li>
-            <li>*.pkt has its own file icon (will be extended to *.srv in due time)</li>
+            <li>*.msg has its own file icon (will be extended to *.srv in due time)</li>
             <li>ROSMsg contains a commenter (default: Ctrl+/ like all other commentators)</li>
             <li>Basic refactoring support for field names</li>
             <li>Refactoring support for pkt types</li>

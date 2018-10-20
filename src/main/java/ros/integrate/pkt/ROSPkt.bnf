@@ -13,11 +13,13 @@
   tokenTypeClass="ros.integrate.pkt.psi.ROSPktTokenType"
 
   psiImplUtilClass="ros.integrate.pkt.psi.impl.ROSPktPsiImplUtil"
+
+
 }
 
-rosMsgFile ::= item_*
+rosPktFile ::= item_*
 
-private item_ ::= (separator|field|comment|CRLF/*|fragment*/)
+private item_ ::= (separator|field_component_|comment|CRLF)
 
 comment ::= LINE_COMMENT {
     methods=[getAnnotationIds]
@@ -32,9 +34,15 @@ const ::= (NEG_OPERATOR? NUMBER | STRING) {
 }
 
 type ::= type_ (LBRACKET NUMBER? RBRACKET)? {
-    mixin="ros.integrate.pkt.psi.impl.ROSPktIdentifierImpl"
-    implements="ros.integrate.pkt.psi.ROSPktIdentifier"
-    methods=[raw custom size removeArray set getName getNameIdentifier getReference getReferences]
+    mixin="ros.integrate.pkt.psi.impl.ROSPktTypeBaseImpl"
+    implements="ros.integrate.pkt.psi.ROSPktTypeBase"
+    methods=[isComplete]
+}
+
+// fragments are like their parallels, but they are missing certain things from them, and therefore cannot be complete.
+type_frag ::= type_ (LBRACKET NUMBER? RBRACKET?)? {
+    mixin="ros.integrate.pkt.psi.impl.ROSPktTypeBaseImpl"
+    implements="ros.integrate.pkt.psi.ROSPktTypeBase"
 }
 
 label ::= NAME {
@@ -43,8 +51,33 @@ label ::= NAME {
     methods=[set getName]
 }
 
-field ::= type label (CONST_ASSIGNER const)? {
-    methods=[getPresentation isLegalConstant]
+private field_component_ ::= (field_const|field_frag_const|field|field_frag)
+
+field ::= type label {
+    mixin="ros.integrate.pkt.psi.impl.ROSPktFieldBaseImpl"
+    implements="ros.integrate.pkt.psi.ROSPktFieldBase"
+    methods=[getTypeBase isComplete]
 }
 
-//fragment ::= type? fieldName? CONST_ASSIGNER? const?
+field_const ::= type label CONST_ASSIGNER const {
+    elementType="field"
+}
+
+field_frag ::= (type|type_frag) {
+    mixin="ros.integrate.pkt.psi.impl.ROSPktFieldBaseImpl"
+    implements="ros.integrate.pkt.psi.ROSPktFieldBase"
+    methods=[getTypeBase]
+}
+
+/*
+    long fragment. Note the (CONST_ASSIGNER | const) part.
+    why isn't it "CONST_ASSIGNER? const?"?
+    in the above scenario, if both are present, we get a valid long field, which is already covered.
+    also, its not a fragment then...
+    if both are missing, we again get a valid field, this time short. If we allow this one to cover it,
+    it will hide the valid field type.
+    Thus, we get sort of an XOR left, which is what we have left.
+ */
+field_frag_const ::= (type|type_frag) label (CONST_ASSIGNER | const) {
+    elementType="field_frag"
+}

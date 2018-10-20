@@ -8,17 +8,16 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static ros.integrate.pkt.psi.ROSPktTypes.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import ros.integrate.pkt.psi.*;
 
-public class ROSPktConstImpl extends ASTWrapperPsiElement implements ROSPktConst {
+public class ROSPktFieldFragImpl extends ROSPktFieldBaseImpl implements ROSPktFieldFrag {
 
-  public ROSPktConstImpl(@NotNull ASTNode node) {
+  public ROSPktFieldFragImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull ROSPktVisitor visitor) {
-    visitor.visitConst(this);
+    visitor.visitFieldFrag(this);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
@@ -26,9 +25,21 @@ public class ROSPktConstImpl extends ASTWrapperPsiElement implements ROSPktConst
     else super.accept(visitor);
   }
 
+  @Override
+  @Nullable
+  public ROSPktType getType() {
+    return findChildByClass(ROSPktType.class);
+  }
+
+  @Override
+  @Nullable
+  public ROSPktTypeFrag getTypeFrag() {
+    return findChildByClass(ROSPktTypeFrag.class);
+  }
+
   @NotNull
-  public ROSPktType getBestFit() {
-    return ROSPktPsiImplUtil.getBestFit(this);
+  public ROSPktTypeBase getTypeBase() {
+    return ROSPktPsiImplUtil.getTypeBase(this);
   }
 
 }

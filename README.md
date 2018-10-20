@@ -5,6 +5,7 @@ A plugin for IntelliJ based IDEs with the purpose of allowing easy use of the RO
 * *.srv support
 * CMake code generation when adding new messages/services
 * *.msg linking outside project
+* fragment support in messages
 
 **plans for version 1.0:**
 * *.launch support

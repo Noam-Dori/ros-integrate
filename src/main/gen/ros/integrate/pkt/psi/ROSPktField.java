@@ -1,14 +1,11 @@
 // This is a generated file. Not intended for manual editing.
 package ros.integrate.pkt.psi;
 
+import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
-import com.intellij.navigation.ItemPresentation;
 
-public interface ROSPktField extends PsiElement {
-
-  @Nullable
-  ROSPktConst getConst();
+public interface ROSPktField extends ROSPktFieldBase {
 
   @NotNull
   ROSPktLabel getLabel();
@@ -17,8 +14,6 @@ public interface ROSPktField extends PsiElement {
   ROSPktType getType();
 
   @NotNull
-  ItemPresentation getPresentation();
-
-  boolean isLegalConstant();
+  ROSPktType getTypeBase();
 
 }

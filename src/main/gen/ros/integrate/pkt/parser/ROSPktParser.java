@@ -7,6 +7,7 @@ import static ros.integrate.pkt.psi.ROSPktTypes.*;
 import static com.intellij.lang.parser.GeneratedParserUtilBase.*;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.lang.ASTNode;
+import com.intellij.psi.tree.TokenSet;
 import com.intellij.lang.PsiParser;
 import com.intellij.lang.LightPsiParser;
 
@@ -31,6 +32,9 @@ public class ROSPktParser implements PsiParser, LightPsiParser {
     else if (t == FIELD) {
       r = field(b, 0);
     }
+    else if (t == FIELD_FRAG) {
+      r = field_frag(b, 0);
+    }
     else if (t == LABEL) {
       r = label(b, 0);
     }
@@ -40,6 +44,9 @@ public class ROSPktParser implements PsiParser, LightPsiParser {
     else if (t == TYPE) {
       r = type(b, 0);
     }
+    else if (t == TYPE_FRAG) {
+      r = type_frag(b, 0);
+    }
     else {
       r = parse_root_(t, b, 0);
     }
@@ -47,7 +54,7 @@ public class ROSPktParser implements PsiParser, LightPsiParser {
   }
 
   protected boolean parse_root_(IElementType t, PsiBuilder b, int l) {
-    return rosMsgFile(b, l + 1);
+    return rosPktFile(b, l + 1);
   }
 
   /* ********************************************************** */
@@ -93,7 +100,7 @@ public class ROSPktParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // type label (CONST_ASSIGNER const)?
+  // type label
   public static boolean field(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "field")) return false;
     if (!nextTokenIs(b, "<field>", CUSTOM_TYPE, KEYTYPE)) return false;
@@ -101,36 +108,90 @@ public class ROSPktParser implements PsiParser, LightPsiParser {
     Marker m = enter_section_(b, l, _NONE_, FIELD, "<field>");
     r = type(b, l + 1);
     r = r && label(b, l + 1);
-    r = r && field_2(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
 
-  // (CONST_ASSIGNER const)?
-  private static boolean field_2(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "field_2")) return false;
-    field_2_0(b, l + 1);
-    return true;
-  }
-
-  // CONST_ASSIGNER const
-  private static boolean field_2_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "field_2_0")) return false;
+  /* ********************************************************** */
+  // field_const|field_frag_const|field|field_frag
+  static boolean field_component_(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "field_component_")) return false;
+    if (!nextTokenIs(b, "", CUSTOM_TYPE, KEYTYPE)) return false;
     boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, CONST_ASSIGNER);
-    r = r && const_$(b, l + 1);
-    exit_section_(b, m, null, r);
+    r = field_const(b, l + 1);
+    if (!r) r = field_frag_const(b, l + 1);
+    if (!r) r = field(b, l + 1);
+    if (!r) r = field_frag(b, l + 1);
     return r;
   }
 
   /* ********************************************************** */
-  // separator|field|comment|CRLF
+  // type label CONST_ASSIGNER const
+  public static boolean field_const(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "field_const")) return false;
+    if (!nextTokenIs(b, "<field const>", CUSTOM_TYPE, KEYTYPE)) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, FIELD, "<field const>");
+    r = type(b, l + 1);
+    r = r && label(b, l + 1);
+    r = r && consumeToken(b, CONST_ASSIGNER);
+    r = r && const_$(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // type|type_frag
+  public static boolean field_frag(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "field_frag")) return false;
+    if (!nextTokenIs(b, "<field frag>", CUSTOM_TYPE, KEYTYPE)) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, FIELD_FRAG, "<field frag>");
+    r = type(b, l + 1);
+    if (!r) r = type_frag(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // (type|type_frag) label (CONST_ASSIGNER | const)
+  public static boolean field_frag_const(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "field_frag_const")) return false;
+    if (!nextTokenIs(b, "<field frag const>", CUSTOM_TYPE, KEYTYPE)) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, FIELD_FRAG, "<field frag const>");
+    r = field_frag_const_0(b, l + 1);
+    r = r && label(b, l + 1);
+    r = r && field_frag_const_2(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // type|type_frag
+  private static boolean field_frag_const_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "field_frag_const_0")) return false;
+    boolean r;
+    r = type(b, l + 1);
+    if (!r) r = type_frag(b, l + 1);
+    return r;
+  }
+
+  // CONST_ASSIGNER | const
+  private static boolean field_frag_const_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "field_frag_const_2")) return false;
+    boolean r;
+    r = consumeToken(b, CONST_ASSIGNER);
+    if (!r) r = const_$(b, l + 1);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // separator|field_component_|comment|CRLF
   static boolean item_(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "item_")) return false;
     boolean r;
     r = separator(b, l + 1);
-    if (!r) r = field(b, l + 1);
+    if (!r) r = field_component_(b, l + 1);
     if (!r) r = comment(b, l + 1);
     if (!r) r = consumeToken(b, CRLF);
     return r;
@@ -150,12 +211,12 @@ public class ROSPktParser implements PsiParser, LightPsiParser {
 
   /* ********************************************************** */
   // item_*
-  static boolean rosMsgFile(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "rosMsgFile")) return false;
+  static boolean rosPktFile(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "rosPktFile")) return false;
     while (true) {
       int c = current_position_(b);
       if (!item_(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "rosMsgFile", c)) break;
+      if (!empty_element_parsed_guard_(b, "rosPktFile", c)) break;
     }
     return true;
   }
@@ -220,6 +281,52 @@ public class ROSPktParser implements PsiParser, LightPsiParser {
     r = consumeToken(b, CUSTOM_TYPE);
     if (!r) r = consumeToken(b, KEYTYPE);
     return r;
+  }
+
+  /* ********************************************************** */
+  // type_ (LBRACKET NUMBER? RBRACKET?)?
+  public static boolean type_frag(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "type_frag")) return false;
+    if (!nextTokenIs(b, "<type frag>", CUSTOM_TYPE, KEYTYPE)) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, TYPE_FRAG, "<type frag>");
+    r = type_(b, l + 1);
+    r = r && type_frag_1(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // (LBRACKET NUMBER? RBRACKET?)?
+  private static boolean type_frag_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "type_frag_1")) return false;
+    type_frag_1_0(b, l + 1);
+    return true;
+  }
+
+  // LBRACKET NUMBER? RBRACKET?
+  private static boolean type_frag_1_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "type_frag_1_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, LBRACKET);
+    r = r && type_frag_1_0_1(b, l + 1);
+    r = r && type_frag_1_0_2(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // NUMBER?
+  private static boolean type_frag_1_0_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "type_frag_1_0_1")) return false;
+    consumeToken(b, NUMBER);
+    return true;
+  }
+
+  // RBRACKET?
+  private static boolean type_frag_1_0_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "type_frag_1_0_2")) return false;
+    consumeToken(b, RBRACKET);
+    return true;
   }
 
 }

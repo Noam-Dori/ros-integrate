@@ -1,14 +1,16 @@
 // This is a generated file. Not intended for manual editing.
 package ros.integrate.pkt.psi.impl;
 
+import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
+import com.intellij.psi.util.PsiTreeUtil;
+import static ros.integrate.pkt.psi.ROSPktTypes.*;
 import ros.integrate.pkt.psi.*;
-import com.intellij.psi.PsiReference;
 
-public class ROSPktTypeImpl extends ROSPktIdentifierImpl implements ROSPktType {
+public class ROSPktTypeImpl extends ROSPktTypeBaseImpl implements ROSPktType {
 
   public ROSPktTypeImpl(@NotNull ASTNode node) {
     super(node);
@@ -23,51 +25,8 @@ public class ROSPktTypeImpl extends ROSPktIdentifierImpl implements ROSPktType {
     else super.accept(visitor);
   }
 
-  @NotNull
-  public PsiElement raw() {
-    return ROSPktPsiImplUtil.raw(this);
-  }
-
-  @Nullable
-  public PsiElement custom() {
-    return ROSPktPsiImplUtil.custom(this);
-  }
-
-  public int size() {
-    return ROSPktPsiImplUtil.size(this);
-  }
-
-  public PsiElement removeArray() {
-    return ROSPktPsiImplUtil.removeArray(this);
-  }
-
-  @NotNull
-  public PsiElement set(String rawType, int size) {
-    return ROSPktPsiImplUtil.set(this, rawType, size);
-  }
-
-  @NotNull
-  public PsiElement set(String rawType) {
-    return ROSPktPsiImplUtil.set(this, rawType);
-  }
-
-  public String getName() {
-    return ROSPktPsiImplUtil.getName(this);
-  }
-
-  @Nullable
-  public PsiElement getNameIdentifier() {
-    return ROSPktPsiImplUtil.getNameIdentifier(this);
-  }
-
-  @NotNull
-  public PsiReference getReference() {
-    return ROSPktPsiImplUtil.getReference(this);
-  }
-
-  @NotNull
-  public PsiReference[] getReferences() {
-    return ROSPktPsiImplUtil.getReferences(this);
+  public boolean isComplete() {
+    return ROSPktPsiImplUtil.isComplete(this);
   }
 
 }

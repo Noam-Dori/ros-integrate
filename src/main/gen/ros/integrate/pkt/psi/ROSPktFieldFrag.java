@@ -5,6 +5,15 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface ROSPktSeparator extends PsiElement {
+public interface ROSPktFieldFrag extends ROSPktFieldBase {
+
+  @Nullable
+  ROSPktType getType();
+
+  @Nullable
+  ROSPktTypeFrag getTypeFrag();
+
+  @NotNull
+  ROSPktTypeBase getTypeBase();
 
 }

@@ -5,21 +5,32 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import ros.integrate.pkt.psi.ROSPktConst;
-import ros.integrate.pkt.psi.ROSPktElementFactory;
-import ros.integrate.pkt.psi.ROSPktField;
-import ros.integrate.pkt.psi.ROSPktType;
+import ros.integrate.pkt.psi.*;
+
+import java.util.Objects;
 
 /**
- * a utility class holding {@link ROSPktField} implementations
+ * a utility class holding {@link ROSPktFieldBase} implementations
  */
 class ROSPktFieldUtil {
+
+    @NotNull
+    static ROSPktTypeBase getTypeBase(@NotNull ROSPktFieldFrag field) {
+        ROSPktType type = field.getType();
+        return type != null ? type : Objects.requireNonNull(field.getTypeFrag());
+    }
+
+    @NotNull
+    static ROSPktType getTypeBase(@NotNull ROSPktField field) {
+        return field.getType();
+    }
+
     @Contract("null -> false")
-    static boolean isLegalConstant(@NotNull ROSPktField field) {
+    static boolean isLegalConstant(@NotNull ROSPktFieldBase field) {
         ROSPktConst msgConst = field.getConst();
         if (msgConst == null) { return false; }
         String num = msgConst.getText();
-        String type = field.getType().raw().getText();
+        String type = field.getTypeBase().raw().getText();
         boolean f64 = "float64".equals(type),
                 f32 = "float32".equals(type),
                 i64 = MaxValue.INT64.nameEquals(type),
@@ -157,5 +168,10 @@ class ROSPktFieldUtil {
 
     private static boolean isNotBigger(@NotNull UnsignedLong unsignedLong, @NotNull MaxValue value) {
         return unsignedLong.compareTo(value.getValue()) <= 0;
+    }
+
+    @Contract(pure = true)
+    static boolean isComplete(@SuppressWarnings("unused") @NotNull ROSPktField field) {
+        return true;
     }
 }

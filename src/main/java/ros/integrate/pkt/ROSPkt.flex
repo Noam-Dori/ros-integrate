@@ -1,5 +1,6 @@
 package ros.integrate.pkt.lang;
 
+import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.tree.IElementType;
 import ros.integrate.pkt.psi.ROSPktTypes;
 import com.intellij.psi.TokenType;
@@ -24,10 +25,13 @@ NUMBER=[0-9]
 ARRAY_LEAD="["
 ARRAY_END="]"
 NON_NUMERICAL=[^\n\ 0-9\.-]
+NON_NUMERICAL_4FRAG=[^\n\ 0-9\.=-]
 CONST_STRING=[^\n]
 FIRST_STRING=[^\n\ ]
+FIRST_STRING_4FRAG=[^\n\ =]
 END_STR_SEQ={CONST_STRING}*{FIRST_STRING}
 START_STR_SEQ={FIRST_STRING}{CONST_STRING}*
+START_STR_SEQ_4FRAG={FIRST_STRING_4FRAG}{CONST_STRING}*
 KEYTYPE_INT=u?int(8|16|32|64)
 KEYTYPE_FLOAT=float(32|64)
 KEYTYPE_TIME=(time)|(duration)
@@ -37,16 +41,23 @@ KEYTYPE_NUM={KEYTYPE_BOOL}|{KEYTYPE_INT}|{KEYTYPE_FLOAT}
 KEYTYPE_OTHER={KEYTYPE_STRING}|{KEYTYPE_TIME}
 
 MULTI_PERIOD_STR={START_STR_SEQ}?\.{CONST_STRING}*\.{END_STR_SEQ}?
+MULTI_PERIOD_STR_4FRAG={START_STR_SEQ_4FRAG}?\.{CONST_STRING}*\.{END_STR_SEQ}?
 NON_NUMERICAL_STR={START_STR_SEQ}?{NON_NUMERICAL}{END_STR_SEQ}?|{START_STR_SEQ}\ {END_STR_SEQ}
+NON_NUMERICAL_STR_4FRAG={START_STR_SEQ_4FRAG}?{NON_NUMERICAL_4FRAG}{END_STR_SEQ}?|{START_STR_SEQ_4FRAG}\ {END_STR_SEQ}
 BAD_NEG_STR={START_STR_SEQ}-{END_STR_SEQ}?
+BAD_NEG_STR_4FRAG={START_STR_SEQ_4FRAG}-{END_STR_SEQ}?
 STR_CONST={BAD_NEG_STR}|{MULTI_PERIOD_STR}|{NON_NUMERICAL_STR}
+STR_CONST_4FRAG={BAD_NEG_STR_4FRAG}|{MULTI_PERIOD_STR_4FRAG}|{NON_NUMERICAL_STR_4FRAG}
 
-FLOATING_POINT={NUMBER}+(\.)?{NUMBER}*|{NUMBER}*(\.)?{NUMBER}+
+FLOAT={NUMBER}+(\.)?{NUMBER}*|{NUMBER}*(\.)?{NUMBER}+
 
 %states END_TYPE, IN_ARRAY, END_ARRAY, START_NAME, END_NAME, START_CONST, END_LINE
 %states END_INT_TYPE, IN_INT_ARRAY, END_INT_ARRAY, START_INT_NAME, END_INT_NAME, START_INT_CONST, NEG_NUM
+%states START_CONST_FRAG, START_INT_CONST_FRAG
 
 %%
+
+// standard message
 
 <YYINITIAL> ---                                             { yybegin(END_LINE); return ROSPktTypes.SERVICE_SEPARATOR; }
 
@@ -71,24 +82,41 @@ FLOATING_POINT={NUMBER}+(\.)?{NUMBER}*|{NUMBER}*(\.)?{NUMBER}+
 <START_NAME> {NAME_CHARACTER}+                              { yybegin(END_NAME); return ROSPktTypes.NAME; }
 <START_INT_NAME> {NAME_CHARACTER}+                          { yybegin(END_INT_NAME); return ROSPktTypes.NAME; }
 
-<END_NAME> {CONST_ASSIGNER}                                 { yybegin(START_CONST); return ROSPktTypes.CONST_ASSIGNER; }
-<END_INT_NAME> {CONST_ASSIGNER}                             { yybegin(START_INT_CONST); return ROSPktTypes.CONST_ASSIGNER; }
+<END_NAME> {WHITE_SPACE}+                                   { yybegin(START_CONST_FRAG); return TokenType.WHITE_SPACE; }
+<END_INT_NAME> {WHITE_SPACE}+                               { yybegin(START_INT_CONST_FRAG); return TokenType.WHITE_SPACE; }
+
+<END_NAME,START_CONST_FRAG> {CONST_ASSIGNER}                { yybegin(START_CONST); return ROSPktTypes.CONST_ASSIGNER; }
+<END_INT_NAME,START_INT_CONST_FRAG> {CONST_ASSIGNER}        { yybegin(START_INT_CONST); return ROSPktTypes.CONST_ASSIGNER; }
 
 <START_CONST> {WHITE_SPACE}+                                { yybegin(START_CONST); return TokenType.WHITE_SPACE; }
 <START_INT_CONST> {WHITE_SPACE}+                            { yybegin(START_INT_CONST); return TokenType.WHITE_SPACE; }
 
-<START_INT_CONST> -                                         { yybegin(NEG_NUM); return ROSPktTypes.NEG_OPERATOR; }
-<NEG_NUM,START_INT_CONST> {FLOATING_POINT}                  { yybegin(END_LINE); return ROSPktTypes.NUMBER;}
+<START_INT_CONST,START_INT_CONST_FRAG> -                    { yybegin(NEG_NUM); return ROSPktTypes.NEG_OPERATOR; }
+<NEG_NUM,START_INT_CONST,START_INT_CONST_FRAG> {FLOAT}      { yybegin(END_LINE); return ROSPktTypes.NUMBER;}
 
 <START_INT_CONST> {STR_CONST}                               { yybegin(END_LINE); return ROSPktTypes.STRING;}
 
 <START_CONST> {FIRST_STRING}{END_STR_SEQ}?                  { yybegin(END_LINE); return ROSPktTypes.STRING;}
 
-<END_NAME> {WHITE_SPACE}+                                   { yybegin(END_NAME); return TokenType.WHITE_SPACE; }
-<END_INT_NAME> {WHITE_SPACE}+                               { yybegin(END_INT_NAME); return TokenType.WHITE_SPACE; }
-
 <YYINITIAL> {WHITE_SPACE}+                                  { yybegin(YYINITIAL); return TokenType.WHITE_SPACE; }
 
+// fragmentation
+
+<IN_ARRAY> {WHITE_SPACE}+                                   { yybegin(START_NAME); return TokenType.WHITE_SPACE;}
+<IN_INT_ARRAY> {WHITE_SPACE}+                               { yybegin(START_INT_NAME); return TokenType.WHITE_SPACE;}
+
+<START_CONST_FRAG> {WHITE_SPACE}+                           { yybegin(START_CONST_FRAG); return TokenType.WHITE_SPACE; }
+<START_INT_CONST_FRAG> {WHITE_SPACE}+                       { yybegin(START_INT_CONST_FRAG); return TokenType.WHITE_SPACE; }
+
+<START_INT_CONST_FRAG> {STR_CONST_4FRAG}                    { yybegin(END_LINE); return ROSPktTypes.STRING;}
+<START_CONST_FRAG> {FIRST_STRING_4FRAG}{END_STR_SEQ}?       { yybegin(END_LINE); return ROSPktTypes.STRING;}
+
+// terminator
+
 {WHITE_SPACE}*{CRLF}                                        { yybegin(YYINITIAL); return TokenType.WHITE_SPACE; }
+
+// fallback
+
+{WHITE_SPACE}+                                              { return TokenType.WHITE_SPACE; }
 
 .                                                           { return TokenType.BAD_CHARACTER; }

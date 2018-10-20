@@ -1,14 +1,16 @@
 // This is a generated file. Not intended for manual editing.
 package ros.integrate.pkt.psi.impl;
 
+import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.lang.ASTNode;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
+import com.intellij.psi.util.PsiTreeUtil;
+import static ros.integrate.pkt.psi.ROSPktTypes.*;
 import ros.integrate.pkt.psi.*;
-import com.intellij.navigation.ItemPresentation;
 
-public class ROSPktFieldImpl extends ASTWrapperPsiElement implements ROSPktField {
+public class ROSPktFieldImpl extends ROSPktFieldBaseImpl implements ROSPktField {
 
   public ROSPktFieldImpl(@NotNull ASTNode node) {
     super(node);
@@ -24,12 +26,6 @@ public class ROSPktFieldImpl extends ASTWrapperPsiElement implements ROSPktField
   }
 
   @Override
-  @Nullable
-  public ROSPktConst getConst() {
-    return findChildByClass(ROSPktConst.class);
-  }
-
-  @Override
   @NotNull
   public ROSPktLabel getLabel() {
     return findNotNullChildByClass(ROSPktLabel.class);
@@ -42,12 +38,8 @@ public class ROSPktFieldImpl extends ASTWrapperPsiElement implements ROSPktField
   }
 
   @NotNull
-  public ItemPresentation getPresentation() {
-    return ROSPktPsiImplUtil.getPresentation(this);
-  }
-
-  public boolean isLegalConstant() {
-    return ROSPktPsiImplUtil.isLegalConstant(this);
+  public ROSPktType getTypeBase() {
+    return ROSPktPsiImplUtil.getTypeBase(this);
   }
 
 }

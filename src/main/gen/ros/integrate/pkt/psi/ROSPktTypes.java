@@ -11,9 +11,11 @@ public interface ROSPktTypes {
   IElementType COMMENT = new ROSPktElementType("COMMENT");
   IElementType CONST = new ROSPktElementType("CONST");
   IElementType FIELD = new ROSPktElementType("FIELD");
+  IElementType FIELD_FRAG = new ROSPktElementType("FIELD_FRAG");
   IElementType LABEL = new ROSPktElementType("LABEL");
   IElementType SEPARATOR = new ROSPktElementType("SEPARATOR");
   IElementType TYPE = new ROSPktElementType("TYPE");
+  IElementType TYPE_FRAG = new ROSPktElementType("TYPE_FRAG");
 
   IElementType CONST_ASSIGNER = new ROSPktTokenType("CONST_ASSIGNER");
   IElementType CRLF = new ROSPktTokenType("CRLF");
@@ -40,6 +42,9 @@ public interface ROSPktTypes {
       else if (type == FIELD) {
         return new ROSPktFieldImpl(node);
       }
+      else if (type == FIELD_FRAG) {
+        return new ROSPktFieldFragImpl(node);
+      }
       else if (type == LABEL) {
         return new ROSPktLabelImpl(node);
       }
@@ -48,6 +53,9 @@ public interface ROSPktTypes {
       }
       else if (type == TYPE) {
         return new ROSPktTypeImpl(node);
+      }
+      else if (type == TYPE_FRAG) {
+        return new ROSPktTypeFragImpl(node);
       }
       throw new AssertionError("Unknown element type: " + type);
     }
