@@ -35,9 +35,6 @@ public class ROSPktParser implements PsiParser, LightPsiParser {
     else if (t == SEPARATOR) {
       r = separator(b, 0);
     }
-    else if (t == TYPE) {
-      r = type(b, 0);
-    }
     else if (t == TYPE_FRAG) {
       r = type_frag(b, 0);
     }
@@ -49,6 +46,28 @@ public class ROSPktParser implements PsiParser, LightPsiParser {
 
   protected boolean parse_root_(IElementType t, PsiBuilder b, int l) {
     return rosPktFile(b, l + 1);
+  }
+
+  /* ********************************************************** */
+  // type_ LBRACKET NUMBER? RBRACKET
+  public static boolean array_type(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "array_type")) return false;
+    if (!nextTokenIs(b, "<array type>", CUSTOM_TYPE, KEYTYPE)) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, TYPE, "<array type>");
+    r = type_(b, l + 1);
+    r = r && consumeToken(b, LBRACKET);
+    r = r && array_type_2(b, l + 1);
+    r = r && consumeToken(b, RBRACKET);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // NUMBER?
+  private static boolean array_type_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "array_type_2")) return false;
+    consumeToken(b, NUMBER);
+    return true;
   }
 
   /* ********************************************************** */
@@ -94,13 +113,13 @@ public class ROSPktParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // type label CONST_ASSIGNER const
+  // type_valid_ label CONST_ASSIGNER const
   public static boolean const_field(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "const_field")) return false;
     if (!nextTokenIs(b, "<const field>", CUSTOM_TYPE, KEYTYPE)) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, FIELD, "<const field>");
-    r = type(b, l + 1);
+    r = type_valid_(b, l + 1);
     r = r && label(b, l + 1);
     r = r && consumeToken(b, CONST_ASSIGNER);
     r = r && const_$(b, l + 1);
@@ -109,25 +128,16 @@ public class ROSPktParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // (type|type_frag) label (CONST_ASSIGNER | const)
+  // type_any_ label (CONST_ASSIGNER | const)
   public static boolean const_field_frag(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "const_field_frag")) return false;
     if (!nextTokenIs(b, "<const field frag>", CUSTOM_TYPE, KEYTYPE)) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, FIELD_FRAG, "<const field frag>");
-    r = const_field_frag_0(b, l + 1);
+    r = type_any_(b, l + 1);
     r = r && label(b, l + 1);
     r = r && const_field_frag_2(b, l + 1);
     exit_section_(b, l, m, r, false, null);
-    return r;
-  }
-
-  // type|type_frag
-  private static boolean const_field_frag_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "const_field_frag_0")) return false;
-    boolean r;
-    r = type(b, l + 1);
-    if (!r) r = type_frag(b, l + 1);
     return r;
   }
 
@@ -202,68 +212,48 @@ public class ROSPktParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // type label
+  // type_valid_ label
   public static boolean short_field(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "short_field")) return false;
     if (!nextTokenIs(b, "<short field>", CUSTOM_TYPE, KEYTYPE)) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, FIELD, "<short field>");
-    r = type(b, l + 1);
+    r = type_valid_(b, l + 1);
     r = r && label(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
 
   /* ********************************************************** */
-  // type|type_frag
+  // type_any_ label?
   public static boolean short_field_frag(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "short_field_frag")) return false;
     if (!nextTokenIs(b, "<short field frag>", CUSTOM_TYPE, KEYTYPE)) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, FIELD_FRAG, "<short field frag>");
-    r = type(b, l + 1);
-    if (!r) r = type_frag(b, l + 1);
+    r = type_any_(b, l + 1);
+    r = r && short_field_frag_1(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
+  }
+
+  // label?
+  private static boolean short_field_frag_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "short_field_frag_1")) return false;
+    label(b, l + 1);
+    return true;
   }
 
   /* ********************************************************** */
-  // type_ (LBRACKET NUMBER? RBRACKET)?
-  public static boolean type(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "type")) return false;
-    if (!nextTokenIs(b, "<type>", CUSTOM_TYPE, KEYTYPE)) return false;
+  // type_
+  public static boolean short_type(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "short_type")) return false;
+    if (!nextTokenIs(b, "<short type>", CUSTOM_TYPE, KEYTYPE)) return false;
     boolean r;
-    Marker m = enter_section_(b, l, _NONE_, TYPE, "<type>");
+    Marker m = enter_section_(b, l, _NONE_, TYPE, "<short type>");
     r = type_(b, l + 1);
-    r = r && type_1(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
-  }
-
-  // (LBRACKET NUMBER? RBRACKET)?
-  private static boolean type_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "type_1")) return false;
-    type_1_0(b, l + 1);
-    return true;
-  }
-
-  // LBRACKET NUMBER? RBRACKET
-  private static boolean type_1_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "type_1_0")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, LBRACKET);
-    r = r && type_1_0_1(b, l + 1);
-    r = r && consumeToken(b, RBRACKET);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // NUMBER?
-  private static boolean type_1_0_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "type_1_0_1")) return false;
-    consumeToken(b, NUMBER);
-    return true;
   }
 
   /* ********************************************************** */
@@ -278,49 +268,47 @@ public class ROSPktParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // type_ (LBRACKET NUMBER? RBRACKET?)?
+  // array_type|type_frag|short_type
+  static boolean type_any_(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "type_any_")) return false;
+    if (!nextTokenIs(b, "", CUSTOM_TYPE, KEYTYPE)) return false;
+    boolean r;
+    r = array_type(b, l + 1);
+    if (!r) r = type_frag(b, l + 1);
+    if (!r) r = short_type(b, l + 1);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // type_ LBRACKET NUMBER?
   public static boolean type_frag(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "type_frag")) return false;
     if (!nextTokenIs(b, "<type frag>", CUSTOM_TYPE, KEYTYPE)) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, TYPE_FRAG, "<type frag>");
     r = type_(b, l + 1);
-    r = r && type_frag_1(b, l + 1);
+    r = r && consumeToken(b, LBRACKET);
+    r = r && type_frag_2(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
 
-  // (LBRACKET NUMBER? RBRACKET?)?
-  private static boolean type_frag_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "type_frag_1")) return false;
-    type_frag_1_0(b, l + 1);
-    return true;
-  }
-
-  // LBRACKET NUMBER? RBRACKET?
-  private static boolean type_frag_1_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "type_frag_1_0")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, LBRACKET);
-    r = r && type_frag_1_0_1(b, l + 1);
-    r = r && type_frag_1_0_2(b, l + 1);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
   // NUMBER?
-  private static boolean type_frag_1_0_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "type_frag_1_0_1")) return false;
+  private static boolean type_frag_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "type_frag_2")) return false;
     consumeToken(b, NUMBER);
     return true;
   }
 
-  // RBRACKET?
-  private static boolean type_frag_1_0_2(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "type_frag_1_0_2")) return false;
-    consumeToken(b, RBRACKET);
-    return true;
+  /* ********************************************************** */
+  // array_type|short_type
+  static boolean type_valid_(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "type_valid_")) return false;
+    if (!nextTokenIs(b, "", CUSTOM_TYPE, KEYTYPE)) return false;
+    boolean r;
+    r = array_type(b, l + 1);
+    if (!r) r = short_type(b, l + 1);
+    return r;
   }
 
 }

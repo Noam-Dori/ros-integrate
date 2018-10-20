@@ -16,6 +16,7 @@
 
   extends(".*_field")=field
   extends(".*_field_frag")=field_frag
+  extends(".*_type")=type
 }
 
 rosPktFile ::= item_*
@@ -34,14 +35,28 @@ const ::= (NEG_OPERATOR? NUMBER | STRING) {
     methods=[getBestFit]
 }
 
-type ::= type_ (LBRACKET NUMBER? RBRACKET)? {
+fake type ::= type_ (LBRACKET NUMBER? RBRACKET)? {
     mixin="ros.integrate.pkt.psi.impl.ROSPktTypeBaseImpl"
     implements="ros.integrate.pkt.psi.ROSPktTypeBase"
     methods=[isComplete]
 }
 
+private type_valid_ ::= (array_type|short_type)
+
+private type_any_ ::= (array_type|type_frag|short_type)
+
+array_type ::= type_ LBRACKET NUMBER? RBRACKET {
+    extends="type"
+    elementType="type"
+}
+
+short_type ::= type_ {
+    extends="type"
+    elementType="type"
+}
+
 // fragments are like their parallels, but they are missing certain things from them, and therefore cannot be complete.
-type_frag ::= type_ (LBRACKET NUMBER? RBRACKET?)? {
+type_frag ::= type_ LBRACKET NUMBER? {
     mixin="ros.integrate.pkt.psi.impl.ROSPktTypeBaseImpl"
     implements="ros.integrate.pkt.psi.ROSPktTypeBase"
 }
@@ -54,29 +69,29 @@ label ::= NAME {
 
 private field_component_ ::= (const_field|const_field_frag|short_field|short_field_frag)
 
-fake field ::= type label (CONST_ASSIGNER const)? {
+fake field ::= type_valid_ label (CONST_ASSIGNER const)? {
     mixin="ros.integrate.pkt.psi.impl.ROSPktFieldBaseImpl"
     implements="ros.integrate.pkt.psi.ROSPktFieldBase"
     methods=[getTypeBase isComplete]
 }
 
-fake field_frag ::= (type|type_frag) (label (CONST_ASSIGNER | const))? {
+fake field_frag ::= type_any_ (label (CONST_ASSIGNER | const)?)? {
     mixin="ros.integrate.pkt.psi.impl.ROSPktFieldBaseImpl"
     implements="ros.integrate.pkt.psi.ROSPktFieldBase"
     methods=[getTypeBase]
 }
 
-short_field ::= type label {
+short_field ::= type_valid_ label {
     extends="field"
     elementType="field"
 }
 
-const_field ::= type label CONST_ASSIGNER const {
+const_field ::= type_valid_ label CONST_ASSIGNER const {
     extends="field"
     elementType="field"
 }
 
-short_field_frag ::= (type|type_frag) {
+short_field_frag ::= type_any_ label? {
     extends="field_frag"
     elementType="field_frag"
 }
@@ -90,7 +105,7 @@ short_field_frag ::= (type|type_frag) {
     it will hide the valid field type.
     Thus, we get sort of an XOR left, which is what we have left.
  */
-const_field_frag ::= (type|type_frag) label (CONST_ASSIGNER | const) {
+const_field_frag ::= type_any_ label (CONST_ASSIGNER | const) {
     extends="field_frag"
     elementType="field_frag"
 }

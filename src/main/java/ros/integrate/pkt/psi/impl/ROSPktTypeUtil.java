@@ -30,8 +30,7 @@ class ROSPktTypeUtil {
             keyNode = type.getFirstChild().getNode().findChildByType(ROSPktTypes.KEYTYPE);
             if (keyNode != null) {
                 return keyNode.getPsi();
-            }
-            else {
+            } else {
                 return Objects.requireNonNull(type.custom());
             }
         }
@@ -46,8 +45,7 @@ class ROSPktTypeUtil {
             keyNode = type.getFirstChild().getNode().findChildByType(ROSPktTypes.CUSTOM_TYPE);
             if (keyNode != null) {
                 return keyNode.getPsi();
-            }
-            else {
+            } else {
                 return null;
             }
         }
