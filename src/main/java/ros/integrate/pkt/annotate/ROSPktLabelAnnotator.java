@@ -15,8 +15,7 @@ import ros.integrate.pkt.psi.ROSPktLabel;
 class ROSPktLabelAnnotator extends ROSPktAnnotatorBase {
 
     private final @NotNull String fieldName;
-    private final @NotNull
-    ROSPktLabel label;
+    private final @NotNull ROSPktLabel label;
 
     ROSPktLabelAnnotator(@NotNull AnnotationHolder holder,
                          @NotNull ROSPktLabel label,

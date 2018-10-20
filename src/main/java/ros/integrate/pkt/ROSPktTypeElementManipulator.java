@@ -5,13 +5,13 @@ import com.intellij.psi.AbstractElementManipulator;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import ros.integrate.pkt.psi.ROSPktType;
+import ros.integrate.pkt.psi.ROSPktTypeBase;
 
 //unused for now
-public class ROSPktTypeElementManipulator extends AbstractElementManipulator<ROSPktType> {
+public class ROSPktTypeElementManipulator extends AbstractElementManipulator<ROSPktTypeBase> {
     @Nullable
     @Override
-    public ROSPktType handleContentChange(@NotNull ROSPktType element, @NotNull TextRange range, String newContent) throws IncorrectOperationException {
-        return (ROSPktType) element.setName(newContent);
+    public ROSPktTypeBase handleContentChange(@NotNull ROSPktTypeBase element, @NotNull TextRange range, String newContent) throws IncorrectOperationException {
+        return (ROSPktTypeBase) element.setName(newContent);
     }
 }

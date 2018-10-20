@@ -7,6 +7,9 @@ import com.intellij.psi.PsiElement;
 
 public interface ROSPktField extends ROSPktFieldBase {
 
+  @Nullable
+  ROSPktConst getConst();
+
   @NotNull
   ROSPktLabel getLabel();
 
@@ -15,5 +18,7 @@ public interface ROSPktField extends ROSPktFieldBase {
 
   @NotNull
   ROSPktType getTypeBase();
+
+  boolean isComplete();
 
 }

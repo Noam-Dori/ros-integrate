@@ -14,7 +14,8 @@
 
   psiImplUtilClass="ros.integrate.pkt.psi.impl.ROSPktPsiImplUtil"
 
-
+  extends(".*_field")=field
+  extends(".*_field_frag")=field_frag
 }
 
 rosPktFile ::= item_*
@@ -51,22 +52,33 @@ label ::= NAME {
     methods=[set getName]
 }
 
-private field_component_ ::= (field_const|field_frag_const|field|field_frag)
+private field_component_ ::= (const_field|const_field_frag|short_field|short_field_frag)
 
-field ::= type label {
+fake field ::= type label (CONST_ASSIGNER const)? {
     mixin="ros.integrate.pkt.psi.impl.ROSPktFieldBaseImpl"
     implements="ros.integrate.pkt.psi.ROSPktFieldBase"
     methods=[getTypeBase isComplete]
 }
 
-field_const ::= type label CONST_ASSIGNER const {
-    elementType="field"
-}
-
-field_frag ::= (type|type_frag) {
+fake field_frag ::= (type|type_frag) (label (CONST_ASSIGNER | const))? {
     mixin="ros.integrate.pkt.psi.impl.ROSPktFieldBaseImpl"
     implements="ros.integrate.pkt.psi.ROSPktFieldBase"
     methods=[getTypeBase]
+}
+
+short_field ::= type label {
+    extends="field"
+    elementType="field"
+}
+
+const_field ::= type label CONST_ASSIGNER const {
+    extends="field"
+    elementType="field"
+}
+
+short_field_frag ::= (type|type_frag) {
+    extends="field_frag"
+    elementType="field_frag"
 }
 
 /*
@@ -78,6 +90,7 @@ field_frag ::= (type|type_frag) {
     it will hide the valid field type.
     Thus, we get sort of an XOR left, which is what we have left.
  */
-field_frag_const ::= (type|type_frag) label (CONST_ASSIGNER | const) {
+const_field_frag ::= (type|type_frag) label (CONST_ASSIGNER | const) {
+    extends="field_frag"
     elementType="field_frag"
 }

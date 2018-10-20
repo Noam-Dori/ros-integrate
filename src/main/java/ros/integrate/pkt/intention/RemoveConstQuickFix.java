@@ -8,7 +8,7 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.IncorrectOperationException;
-import ros.integrate.pkt.psi.ROSPktField;
+import ros.integrate.pkt.psi.ROSPktFieldBase;
 import ros.integrate.pkt.psi.ROSPktTypes;
 import org.jetbrains.annotations.NotNull;
 
@@ -17,11 +17,11 @@ import org.jetbrains.annotations.NotNull;
  */
 public class RemoveConstQuickFix extends BaseIntentionAction {
 
-    public RemoveConstQuickFix(ROSPktField field) {
-        rosMsg = field;
+    public RemoveConstQuickFix(ROSPktFieldBase field) {
+        this.field = field;
     }
 
-    private ROSPktField rosMsg;
+    private ROSPktFieldBase field;
 
     @NotNull
     @Override
@@ -45,10 +45,10 @@ public class RemoveConstQuickFix extends BaseIntentionAction {
             throws IncorrectOperationException {
         ApplicationManager.getApplication().invokeLater(() ->
                 WriteCommandAction.writeCommandAction(project).run(() -> {
-                    ASTNode start = rosMsg.getNode().findChildByType(ROSPktTypes.CONST_ASSIGNER),
-                            end = rosMsg.getNode().findChildByType(ROSPktTypes.CONST);
+                    ASTNode start = field.getNode().findChildByType(ROSPktTypes.CONST_ASSIGNER),
+                            end = field.getNode().findChildByType(ROSPktTypes.CONST);
                     if (start != null && end != null) {
-                        rosMsg.deleteChildRange(start.getPsi(),end.getPsi());
+                        field.deleteChildRange(start.getPsi(),end.getPsi());
                     }
                 }));
     }

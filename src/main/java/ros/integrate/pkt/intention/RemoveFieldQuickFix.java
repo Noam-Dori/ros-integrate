@@ -7,17 +7,17 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
-import ros.integrate.pkt.psi.ROSPktField;
+import ros.integrate.pkt.psi.ROSPktFieldBase;
 
 /**
  * a fix used to remove an entire field from the file.
  */
 public class RemoveFieldQuickFix extends BaseIntentionAction {
-    public RemoveFieldQuickFix(ROSPktField field) {
-        rosMsg = field;
+    public RemoveFieldQuickFix(ROSPktFieldBase field) {
+        this.field = field;
     }
 
-    private ROSPktField rosMsg;
+    private ROSPktFieldBase field;
 
     @NotNull
     @Override
@@ -28,7 +28,7 @@ public class RemoveFieldQuickFix extends BaseIntentionAction {
     @NotNull
     @Override
     public String getText() {
-        return "Remove field '" + rosMsg.getLabel().getText() + "'";
+        return "Remove field " + (field.getLabel() != null ? "'" + field.getLabel().getText() + "'" : " fragment");
     }
 
     @Override
@@ -39,6 +39,6 @@ public class RemoveFieldQuickFix extends BaseIntentionAction {
     @Override
     public void invoke(@NotNull Project project, Editor editor, PsiFile file) {
         ApplicationManager.getApplication().invokeLater(() ->
-                WriteCommandAction.writeCommandAction(project).run(() -> rosMsg.delete()));
+                WriteCommandAction.writeCommandAction(project).run(() -> field.delete()));
     }
 }

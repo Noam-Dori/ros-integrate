@@ -10,6 +10,7 @@ import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkt.psi.ROSPktConst;
 import ros.integrate.pkt.psi.ROSPktType;
+import ros.integrate.pkt.psi.ROSPktTypeBase;
 
 /**
  * a fix used to change the key-type according to the {@link ROSPktConst} provided.
@@ -17,11 +18,11 @@ import ros.integrate.pkt.psi.ROSPktType;
 public class ChangeKeytypeQuickFix extends BaseIntentionAction {
 
     private final @NotNull
-    ROSPktType type;
+    ROSPktTypeBase type;
     private final @NotNull
     ROSPktConst constant;
 
-    public ChangeKeytypeQuickFix(@NotNull ROSPktType type, @NotNull ROSPktConst constant) {
+    public ChangeKeytypeQuickFix(@NotNull ROSPktTypeBase type, @NotNull ROSPktConst constant) {
         this.type = type;
         this.constant = constant;
     }

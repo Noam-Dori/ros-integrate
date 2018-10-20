@@ -13,13 +13,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.ROSIcons;
 import ros.integrate.pkt.psi.ROSMsgFile;
-import ros.integrate.pkt.psi.ROSPktType;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * a class defining the references of {@link ROSPktType} to {@link ROSMsgFile}
+ * a class defining the references of {@link ros.integrate.pkt.psi.ROSPktTypeBase} to {@link ROSMsgFile}
  */
 public class ROSPktTypeReference extends PsiReferenceBase<PsiElement> implements PsiFileReference {
     // note: myElement is the referencing element, and the result of resolve() is the original element (the file).

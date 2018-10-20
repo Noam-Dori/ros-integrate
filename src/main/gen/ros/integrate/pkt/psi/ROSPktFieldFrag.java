@@ -8,6 +8,12 @@ import com.intellij.psi.PsiElement;
 public interface ROSPktFieldFrag extends ROSPktFieldBase {
 
   @Nullable
+  ROSPktConst getConst();
+
+  @Nullable
+  ROSPktLabel getLabel();
+
+  @Nullable
   ROSPktType getType();
 
   @Nullable

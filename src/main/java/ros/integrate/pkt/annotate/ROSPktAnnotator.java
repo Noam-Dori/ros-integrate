@@ -4,12 +4,10 @@ import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
-import ros.integrate.pkt.psi.ROSPktConst;
-import ros.integrate.pkt.psi.ROSPktField;
-import ros.integrate.pkt.psi.ROSPktSeparator;
+import ros.integrate.pkt.psi.*;
 
 /**
- * This class is responsible for adding annotations to .pkt (and .srv) files,
+ * This class is responsible for adding annotations to .msg (and .srv) files,
  * and directing results to specific annotators.
  */
 public class ROSPktAnnotator implements Annotator {
@@ -17,12 +15,12 @@ public class ROSPktAnnotator implements Annotator {
     public void annotate(@NotNull final PsiElement element, @NotNull AnnotationHolder holder) {
         String msgName = element.getContainingFile().getName();
 
-        if (element instanceof ROSPktField) {
-            ROSPktField field = (ROSPktField) element;
-            ROSPktTypeAnnotator annotator = new ROSPktTypeAnnotator(holder, field.getType(), msgName);
+        if (element instanceof ROSPktFieldBase) {
+            ROSPktFieldBase field = (ROSPktFieldBase) element;
+            ROSPktTypeAnnotator annotator = new ROSPktTypeAnnotator(holder, field.getTypeBase(), msgName);
 
 
-            if (field.getType().custom() != null) {
+            if (field.getTypeBase().custom() != null) {
                 annotator.annSelfContaining();
                 if (!annotator.annTypeNotDefined()) {
                     annotator.annIllegalType();
@@ -37,9 +35,9 @@ public class ROSPktAnnotator implements Annotator {
                 annotator.annConstTooBig(badTypeActivated, constant);
             }
 
-            String fieldName = field.getLabel().getText();
-            if (fieldName != null) {
-                ROSPktLabelAnnotator nameAnnotator = new ROSPktLabelAnnotator(holder, field.getLabel(), fieldName);
+            ROSPktLabel label = field.getLabel();
+            if (label != null && label.getName() != null) {
+                ROSPktLabelAnnotator nameAnnotator = new ROSPktLabelAnnotator(holder, label, label.getName());
                 nameAnnotator.annDuplicateLabel();
                 nameAnnotator.annIllegalLabel();
             }

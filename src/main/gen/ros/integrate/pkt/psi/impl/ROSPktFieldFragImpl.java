@@ -27,6 +27,18 @@ public class ROSPktFieldFragImpl extends ROSPktFieldBaseImpl implements ROSPktFi
 
   @Override
   @Nullable
+  public ROSPktConst getConst() {
+    return findChildByClass(ROSPktConst.class);
+  }
+
+  @Override
+  @Nullable
+  public ROSPktLabel getLabel() {
+    return findChildByClass(ROSPktLabel.class);
+  }
+
+  @Override
+  @Nullable
   public ROSPktType getType() {
     return findChildByClass(ROSPktType.class);
   }

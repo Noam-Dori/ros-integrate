@@ -29,12 +29,6 @@ public class ROSPktParser implements PsiParser, LightPsiParser {
     else if (t == CONST) {
       r = const_$(b, 0);
     }
-    else if (t == FIELD) {
-      r = field(b, 0);
-    }
-    else if (t == FIELD_FRAG) {
-      r = field_frag(b, 0);
-    }
     else if (t == LABEL) {
       r = label(b, 0);
     }
@@ -100,38 +94,12 @@ public class ROSPktParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // type label
-  public static boolean field(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "field")) return false;
-    if (!nextTokenIs(b, "<field>", CUSTOM_TYPE, KEYTYPE)) return false;
-    boolean r;
-    Marker m = enter_section_(b, l, _NONE_, FIELD, "<field>");
-    r = type(b, l + 1);
-    r = r && label(b, l + 1);
-    exit_section_(b, l, m, r, false, null);
-    return r;
-  }
-
-  /* ********************************************************** */
-  // field_const|field_frag_const|field|field_frag
-  static boolean field_component_(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "field_component_")) return false;
-    if (!nextTokenIs(b, "", CUSTOM_TYPE, KEYTYPE)) return false;
-    boolean r;
-    r = field_const(b, l + 1);
-    if (!r) r = field_frag_const(b, l + 1);
-    if (!r) r = field(b, l + 1);
-    if (!r) r = field_frag(b, l + 1);
-    return r;
-  }
-
-  /* ********************************************************** */
   // type label CONST_ASSIGNER const
-  public static boolean field_const(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "field_const")) return false;
-    if (!nextTokenIs(b, "<field const>", CUSTOM_TYPE, KEYTYPE)) return false;
+  public static boolean const_field(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "const_field")) return false;
+    if (!nextTokenIs(b, "<const field>", CUSTOM_TYPE, KEYTYPE)) return false;
     boolean r;
-    Marker m = enter_section_(b, l, _NONE_, FIELD, "<field const>");
+    Marker m = enter_section_(b, l, _NONE_, FIELD, "<const field>");
     r = type(b, l + 1);
     r = r && label(b, l + 1);
     r = r && consumeToken(b, CONST_ASSIGNER);
@@ -141,35 +109,22 @@ public class ROSPktParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // type|type_frag
-  public static boolean field_frag(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "field_frag")) return false;
-    if (!nextTokenIs(b, "<field frag>", CUSTOM_TYPE, KEYTYPE)) return false;
-    boolean r;
-    Marker m = enter_section_(b, l, _NONE_, FIELD_FRAG, "<field frag>");
-    r = type(b, l + 1);
-    if (!r) r = type_frag(b, l + 1);
-    exit_section_(b, l, m, r, false, null);
-    return r;
-  }
-
-  /* ********************************************************** */
   // (type|type_frag) label (CONST_ASSIGNER | const)
-  public static boolean field_frag_const(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "field_frag_const")) return false;
-    if (!nextTokenIs(b, "<field frag const>", CUSTOM_TYPE, KEYTYPE)) return false;
+  public static boolean const_field_frag(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "const_field_frag")) return false;
+    if (!nextTokenIs(b, "<const field frag>", CUSTOM_TYPE, KEYTYPE)) return false;
     boolean r;
-    Marker m = enter_section_(b, l, _NONE_, FIELD_FRAG, "<field frag const>");
-    r = field_frag_const_0(b, l + 1);
+    Marker m = enter_section_(b, l, _NONE_, FIELD_FRAG, "<const field frag>");
+    r = const_field_frag_0(b, l + 1);
     r = r && label(b, l + 1);
-    r = r && field_frag_const_2(b, l + 1);
+    r = r && const_field_frag_2(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
 
   // type|type_frag
-  private static boolean field_frag_const_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "field_frag_const_0")) return false;
+  private static boolean const_field_frag_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "const_field_frag_0")) return false;
     boolean r;
     r = type(b, l + 1);
     if (!r) r = type_frag(b, l + 1);
@@ -177,11 +132,24 @@ public class ROSPktParser implements PsiParser, LightPsiParser {
   }
 
   // CONST_ASSIGNER | const
-  private static boolean field_frag_const_2(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "field_frag_const_2")) return false;
+  private static boolean const_field_frag_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "const_field_frag_2")) return false;
     boolean r;
     r = consumeToken(b, CONST_ASSIGNER);
     if (!r) r = const_$(b, l + 1);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // const_field|const_field_frag|short_field|short_field_frag
+  static boolean field_component_(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "field_component_")) return false;
+    if (!nextTokenIs(b, "", CUSTOM_TYPE, KEYTYPE)) return false;
+    boolean r;
+    r = const_field(b, l + 1);
+    if (!r) r = const_field_frag(b, l + 1);
+    if (!r) r = short_field(b, l + 1);
+    if (!r) r = short_field_frag(b, l + 1);
     return r;
   }
 
@@ -230,6 +198,32 @@ public class ROSPktParser implements PsiParser, LightPsiParser {
     Marker m = enter_section_(b);
     r = consumeToken(b, SERVICE_SEPARATOR);
     exit_section_(b, m, SEPARATOR, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // type label
+  public static boolean short_field(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "short_field")) return false;
+    if (!nextTokenIs(b, "<short field>", CUSTOM_TYPE, KEYTYPE)) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, FIELD, "<short field>");
+    r = type(b, l + 1);
+    r = r && label(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // type|type_frag
+  public static boolean short_field_frag(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "short_field_frag")) return false;
+    if (!nextTokenIs(b, "<short field frag>", CUSTOM_TYPE, KEYTYPE)) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, FIELD_FRAG, "<short field frag>");
+    r = type(b, l + 1);
+    if (!r) r = type_frag(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
     return r;
   }
 

@@ -7,18 +7,18 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
-import ros.integrate.pkt.psi.ROSPktType;
+import ros.integrate.pkt.psi.ROSPktTypeBase;
 
 /**
  * a fix used to remove arrays from type decelerators.
  */
 public class RemoveArrayQuickFix extends BaseIntentionAction {
 
-    public RemoveArrayQuickFix(ROSPktType type) {
+    public RemoveArrayQuickFix(ROSPktTypeBase type) {
         this.type = type;
     }
 
-    private ROSPktType type;
+    private ROSPktTypeBase type;
 
     @NotNull
     @Override

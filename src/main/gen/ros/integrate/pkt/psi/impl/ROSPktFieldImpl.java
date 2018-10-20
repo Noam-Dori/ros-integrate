@@ -26,6 +26,12 @@ public class ROSPktFieldImpl extends ROSPktFieldBaseImpl implements ROSPktField 
   }
 
   @Override
+  @Nullable
+  public ROSPktConst getConst() {
+    return findChildByClass(ROSPktConst.class);
+  }
+
+  @Override
   @NotNull
   public ROSPktLabel getLabel() {
     return findNotNullChildByClass(ROSPktLabel.class);
@@ -40,6 +46,10 @@ public class ROSPktFieldImpl extends ROSPktFieldBaseImpl implements ROSPktField 
   @NotNull
   public ROSPktType getTypeBase() {
     return ROSPktPsiImplUtil.getTypeBase(this);
+  }
+
+  public boolean isComplete() {
+    return ROSPktPsiImplUtil.isComplete(this);
   }
 
 }

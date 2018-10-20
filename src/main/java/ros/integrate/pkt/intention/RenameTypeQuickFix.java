@@ -19,7 +19,7 @@ import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import ros.integrate.pkt.psi.ROSPktType;
+import ros.integrate.pkt.psi.ROSPktTypeBase;
 
 import javax.swing.*;
 import java.util.Objects;
@@ -63,10 +63,10 @@ public class RenameTypeQuickFix implements LocalQuickFix {
 
     public static class RenameTypeIntention extends BaseIntentionAction {
         @NotNull private final RenameTypeQuickFix fix = new RenameTypeQuickFix(null);
-        @NotNull private ROSPktType type;
+        @NotNull private ROSPktTypeBase type;
         String message;
 
-        public RenameTypeIntention(@NotNull ROSPktType fieldType, String message) {
+        public RenameTypeIntention(@NotNull ROSPktTypeBase fieldType, String message) {
             type = fieldType;
             this.message = message;
         }

@@ -27,7 +27,13 @@ class ROSPktTypeUtil {
         if (keyNode != null) {
             return keyNode.getPsi();
         } else {
-            return Objects.requireNonNull(type.custom());
+            keyNode = type.getFirstChild().getNode().findChildByType(ROSPktTypes.KEYTYPE);
+            if (keyNode != null) {
+                return keyNode.getPsi();
+            }
+            else {
+                return Objects.requireNonNull(type.custom());
+            }
         }
     }
 
@@ -37,7 +43,13 @@ class ROSPktTypeUtil {
         if (keyNode != null) {
             return keyNode.getPsi();
         } else {
-            return null;
+            keyNode = type.getFirstChild().getNode().findChildByType(ROSPktTypes.CUSTOM_TYPE);
+            if (keyNode != null) {
+                return keyNode.getPsi();
+            }
+            else {
+                return null;
+            }
         }
     }
 

@@ -4,7 +4,7 @@ import com.intellij.patterns.PlatformPatterns;
 import com.intellij.psi.*;
 import com.intellij.util.ProcessingContext;
 import org.jetbrains.annotations.NotNull;
-import ros.integrate.pkt.psi.ROSPktType;
+import ros.integrate.pkt.psi.ROSPktTypeBase;
 
 /**
  * a class enabling references in ROS messages.
@@ -12,7 +12,7 @@ import ros.integrate.pkt.psi.ROSPktType;
 public class ROSPktTypeReferenceContributor extends PsiReferenceContributor {
     @Override
     public void registerReferenceProviders(@NotNull PsiReferenceRegistrar registrar) {
-        registrar.registerReferenceProvider(PlatformPatterns.psiElement(ROSPktType.class),
+        registrar.registerReferenceProvider(PlatformPatterns.psiElement(ROSPktTypeBase.class),
                 new PsiReferenceProvider() {
                     @NotNull
                     @Override

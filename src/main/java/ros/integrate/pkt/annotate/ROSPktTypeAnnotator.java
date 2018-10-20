@@ -9,22 +9,19 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkt.ROSPktUtil;
 import ros.integrate.pkt.intention.*;
-import ros.integrate.pkt.psi.ROSPktConst;
-import ros.integrate.pkt.psi.ROSPktField;
-import ros.integrate.pkt.psi.ROSPktType;
-import ros.integrate.pkt.psi.ROSPktTypes;
+import ros.integrate.pkt.psi.*;
 
 import java.util.List;
 
 /**
- * an annotator dedicated to {@link ROSPktType}
+ * an annotator dedicated to {@link ROSPktTypeBase}
  */
 public class ROSPktTypeAnnotator extends ROSPktAnnotatorBase {
     private final String msgName;
-    private ROSPktType type;
+    private ROSPktTypeBase type;
 
     ROSPktTypeAnnotator(@NotNull AnnotationHolder holder,
-                        @NotNull ROSPktType type,
+                        @NotNull ROSPktTypeBase type,
                         @NotNull String msgName) {
         super(holder);
         this.type = type;
@@ -37,7 +34,7 @@ public class ROSPktTypeAnnotator extends ROSPktAnnotatorBase {
     void annSelfContaining() {
         if(type.raw().getText().equals(msgName)) {
             holder.createErrorAnnotation(type.raw().getTextRange(), "A message cannot contain itself")
-                    .registerFix(new RemoveFieldQuickFix((ROSPktField) type.getParent()));
+                    .registerFix(new RemoveFieldQuickFix((ROSPktFieldBase) type.getParent()));
         }
     }
 
@@ -96,7 +93,7 @@ public class ROSPktTypeAnnotator extends ROSPktAnnotatorBase {
             TextRange range = constant.getTextRange();
             Annotation ann = holder.createErrorAnnotation(range, "Array fields cannot be assigned a constant.");
             if(!isRemoveIntentionActive) {
-                ann.registerFix(new RemoveConstQuickFix((ROSPktField) type.getParent())); // remove const
+                ann.registerFix(new RemoveConstQuickFix((ROSPktFieldBase) type.getParent())); // remove const
             }
             ann.registerFix(new RemoveArrayQuickFix(type)); // remove arr
             return true;
@@ -116,7 +113,7 @@ public class ROSPktTypeAnnotator extends ROSPktAnnotatorBase {
             TextRange range = constant.getTextRange();
             Annotation ann = holder.createErrorAnnotation(range, "Only the built-in string and numerical types may be assigned a constant.");
             if (!isRemoveIntentionActive) {
-                ann.registerFix(new RemoveConstQuickFix((ROSPktField) type.getParent())); // remove const
+                ann.registerFix(new RemoveConstQuickFix((ROSPktFieldBase) type.getParent())); // remove const
             }
             ann.registerFix(new ChangeKeytypeQuickFix(type, constant)); // change type
             return true;
@@ -130,7 +127,7 @@ public class ROSPktTypeAnnotator extends ROSPktAnnotatorBase {
      * @param constant the constant this type is tied to.
      */
     void annConstTooBig(boolean isBadType, @NotNull ROSPktConst constant) {
-        if(!isBadType && !((ROSPktField) type.getParent()).isLegalConstant()) {
+        if(!isBadType && !((ROSPktFieldBase) type.getParent()).isLegalConstant()) {
             TextRange range = constant.getTextRange();
             Annotation ann = holder.createErrorAnnotation(range, "The constant's value cannot fit within the given type.");
             ann.registerFix(new ChangeKeytypeQuickFix(type,constant)); // change type
