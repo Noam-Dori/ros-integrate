@@ -128,7 +128,7 @@ public class ROSPktParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // type_any_ label (CONST_ASSIGNER | const)
+  // type_any_ label (CONST_ASSIGNER const | CONST_ASSIGNER | const)
   public static boolean const_field_frag(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "const_field_frag")) return false;
     if (!nextTokenIs(b, "<const field frag>", CUSTOM_TYPE, KEYTYPE)) return false;
@@ -141,12 +141,26 @@ public class ROSPktParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // CONST_ASSIGNER | const
+  // CONST_ASSIGNER const | CONST_ASSIGNER | const
   private static boolean const_field_frag_2(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "const_field_frag_2")) return false;
     boolean r;
-    r = consumeToken(b, CONST_ASSIGNER);
+    Marker m = enter_section_(b);
+    r = const_field_frag_2_0(b, l + 1);
+    if (!r) r = consumeToken(b, CONST_ASSIGNER);
     if (!r) r = const_$(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // CONST_ASSIGNER const
+  private static boolean const_field_frag_2_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "const_field_frag_2_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, CONST_ASSIGNER);
+    r = r && const_$(b, l + 1);
+    exit_section_(b, m, null, r);
     return r;
   }
 

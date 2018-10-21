@@ -97,15 +97,15 @@ short_field_frag ::= type_any_ label? {
 }
 
 /*
-    long fragment. Note the (CONST_ASSIGNER | const) part.
+    long fragment. Note the (CONST_ASSIGNER const | CONST_ASSIGNER | const) part.
     why isn't it "CONST_ASSIGNER? const?"?
-    in the above scenario, if both are present, we get a valid long field, which is already covered.
-    also, its not a fragment then...
-    if both are missing, we again get a valid field, this time short. If we allow this one to cover it,
-    it will hide the valid field type.
-    Thus, we get sort of an XOR left, which is what we have left.
+    In the above scenario, if both are present, we might get a valid long field which is already covered due to ordering.
+    However, if the type is a fragment, the scenario where both const and assigner are present must be covered.
+    If both are missing, we might get a valid field, this time short. If we allow this one to cover it
+    (rather than the short fragment), it will hide the valid field type.
+    Thus, we get sort of an OR left.
  */
-const_field_frag ::= type_any_ label (CONST_ASSIGNER | const) {
+const_field_frag ::= type_any_ label (CONST_ASSIGNER const | CONST_ASSIGNER | const) {
     extends="field_frag"
     elementType="field_frag"
 }
