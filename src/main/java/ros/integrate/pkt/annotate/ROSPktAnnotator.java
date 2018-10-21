@@ -17,22 +17,26 @@ public class ROSPktAnnotator implements Annotator {
 
         if (element instanceof ROSPktFieldBase) {
             ROSPktFieldBase field = (ROSPktFieldBase) element;
-            ROSPktTypeAnnotator annotator = new ROSPktTypeAnnotator(holder, field.getTypeBase(), msgName);
-
+            ROSPktFieldAnnotator fieldAnnotator = new ROSPktFieldAnnotator(holder, field);
+            ROSPktTypeAnnotator typeAnnotator = new ROSPktTypeAnnotator(holder, field.getTypeBase(), msgName);
+            fieldAnnotator.annBadStructure();
+            typeAnnotator.annBadStructure();
 
             if (field.getTypeBase().custom() != null) {
-                annotator.annSelfContaining();
-                if (!annotator.annTypeNotDefined()) {
-                    annotator.annIllegalType();
+                typeAnnotator.annSelfContaining();
+                if (!typeAnnotator.annTypeNotDefined()) {
+                    typeAnnotator.annIllegalType();
                 }
             }
+
+
 
             // constant inspection:
             ROSPktConst constant = field.getConst();
             if (constant != null) {
-                boolean removeIntention = annotator.annArrayConst(false, constant), // only int,uint,float may use integer consts
-                        badTypeActivated = annotator.annBadTypeConst(removeIntention, constant);
-                annotator.annConstTooBig(badTypeActivated, constant);
+                boolean removeIntention = typeAnnotator.annArrayConst(false, constant), // only int,uint,float may use integer consts
+                        badTypeActivated = typeAnnotator.annBadTypeConst(removeIntention, constant);
+                typeAnnotator.annConstTooBig(badTypeActivated, constant);
             }
 
             ROSPktLabel label = field.getLabel();

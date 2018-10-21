@@ -166,4 +166,22 @@ public class ROSPktTypeAnnotator extends ROSPktAnnotatorBase {
         }
         return null;
     }
+
+    /**
+     * annotates if the type has bad structure.
+     * This is a multi-annotator, that is, it makes multiple annotations.
+     */
+    void annBadStructure() {
+        if(!type.isComplete()) { // a shortcut to skip all tests
+            checkBadArray();
+        }
+    }
+
+    private void checkBadArray() {
+        if(type.getNode().getFirstChildNode().findChildByType(ROSPktTypes.RBRACKET) == null &&
+                type.getNode().findChildByType(ROSPktTypes.RBRACKET) == null) {
+            int typeEndOffset = type.getTextRange().getEndOffset();
+            holder.createErrorAnnotation(new TextRange(typeEndOffset,typeEndOffset + 1), "']' expected");
+        }
+    }
 }
