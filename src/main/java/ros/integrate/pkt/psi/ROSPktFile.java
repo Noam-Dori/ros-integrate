@@ -21,6 +21,8 @@ import java.util.List;
  * the class name is short for "ROS Packet File", which will be used throughout the language.
  */
 public abstract class ROSPktFile extends PsiFileBase implements PsiNameIdentifierOwner {
+    public static ROSPktFile[] EMPTY_ARRAY = new ROSPktFile[0];
+
     ROSPktFile(@NotNull FileViewProvider viewProvider, @NotNull Language language) {
         super(viewProvider, language);
     }
