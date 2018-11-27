@@ -44,4 +44,5 @@
     <actions>
         <!-- Add your actions here -->
     </actions>
+    <version/>
 </idea-plugin>
