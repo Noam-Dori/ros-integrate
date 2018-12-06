@@ -1,4 +1,4 @@
-package ros.integrate.workspace.psi.impl;
+package ros.integrate.workspace.unused.psi.impl;
 
 import com.intellij.navigation.ItemPresentation;
 import com.intellij.openapi.util.text.StringUtil;
@@ -6,7 +6,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.impl.PsiManagerImpl;
 import com.intellij.psi.impl.file.PsiDirectoryImpl;
 import org.jetbrains.annotations.NotNull;
-import ros.integrate.workspace.psi.ROSDirectoryService;
+import ros.integrate.workspace.unused.psi.ROSDirectoryService;
 import ros.integrate.workspace.psi.ROSPackage;
 
 public class ROSDirectoryImpl extends PsiDirectoryImpl {

@@ -10,7 +10,7 @@ import com.intellij.psi.PsiManager;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.xml.XmlFile;
 import com.intellij.util.Processor;
-import ros.integrate.workspace.psi.ROSPackageIndex;
+import ros.integrate.workspace.unused.psi.ROSPackageIndex;
 import ros.integrate.elementFinder.ROSPsiElementFinder;
 import ros.integrate.pkt.psi.ROSPktFile;
 import ros.integrate.workspace.psi.ROSPackage;

@@ -1,7 +1,8 @@
-package ros.integrate.workspace.psi;
+package ros.integrate.workspace.unused.psi;
 
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.psi.search.GlobalSearchScope;
+import ros.integrate.workspace.psi.ROSPackage;
 
 public abstract class ROSPackageImplementationHelper {
     public static ROSPackageImplementationHelper getInstance() {

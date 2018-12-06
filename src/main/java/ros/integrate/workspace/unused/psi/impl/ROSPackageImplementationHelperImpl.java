@@ -1,11 +1,11 @@
-package ros.integrate.workspace.psi.impl;
+package ros.integrate.workspace.unused.psi.impl;
 
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.psi.NonClasspathClassFinder;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiModificationTracker;
 import ros.integrate.workspace.psi.ROSPackage;
-import ros.integrate.workspace.psi.ROSPackageImplementationHelper;
+import ros.integrate.workspace.unused.psi.ROSPackageImplementationHelper;
 
 public class ROSPackageImplementationHelperImpl extends ROSPackageImplementationHelper {
     @Override

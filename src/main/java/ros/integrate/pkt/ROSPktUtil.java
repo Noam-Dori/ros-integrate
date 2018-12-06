@@ -1,21 +1,20 @@
 package ros.integrate.pkt;
 
+import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiManager;
-import com.intellij.psi.search.FileTypeIndex;
 import com.intellij.psi.search.GlobalSearchScope;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import ros.integrate.pkt.file.ROSMsgFileType;
+import ros.integrate.pkt.psi.ROSMsgFile;
 import ros.integrate.pkt.psi.ROSPktComment;
 import ros.integrate.pkt.psi.ROSPktElementFactory;
-import ros.integrate.pkt.psi.ROSMsgFile;
+import ros.integrate.workspace.ROSPackageManager;
+import ros.integrate.workspace.psi.ROSPackage;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -38,46 +37,36 @@ public class ROSPktUtil {
     }
 
     /**
-     * fetches all the message file names in the provided project with additional options for filtering
+     * finds all the message files in the provided project with additional options for filtering
      * @param project the project where to search for all messages
-     * @param key if not null, only finds message files that have this name,
-     *            otherwise, finds all messages regardless of their name.
-     * @param file if null, will search for all files in the project. If not null, the provided file will be excluded from the search.
-     * @return a non-null list of strings containing all the message name found with the query.
+     * @param exclude if null, will search for all files in the project. If not null, the provided file will be excluded from the search.
+     * @return a non-null list containing all message files found via the query.
      */
-    @NotNull
-    public static List<String> findMessageNames(@NotNull Project project, @Nullable String key, @Nullable VirtualFile file) {
-        List<String> result = new ArrayList<>();
-        findMessages(project, key, file).forEach(
-                location->result.add(location.getName())
-        );
+    static List<ROSMsgFile> findMessages(@NotNull Project project, @Nullable ROSMsgFile exclude) {
+        ROSPackageManager manager = ServiceManager.getService(project,ROSPackageManager.class);
+        List<ROSMsgFile> result = new ArrayList<>();
+        List<ROSPackage> packages = manager.getAllPackages();
+        for (ROSPackage pkg : packages) {
+            Arrays.stream(pkg.getPackets(GlobalSearchScope.allScope(project)))
+                    .filter(pkt -> pkt instanceof ROSMsgFile && !pkt.equals(exclude))
+                    .map(pkt -> (ROSMsgFile)pkt)
+                    .forEach(result::add);
+        }
         return result.isEmpty() ? Collections.emptyList() : result;
     }
 
     /**
      * finds all the message files in the provided project with additional options for filtering
      * @param project the project where to search for all messages
-     * @param key if not null, only finds message files that have this name,
-     *            otherwise, finds all messages regardless of their name.
-     * @param file if null, will search for all files in the project. If not null, the provided file will be excluded from the search.
-     * @return a non-null list containing all message files found via the query.
+     * @param pkgName the name of the package this message belongs to
+     * @param msgName the name of the message file to search for
+     * @return null if no message was found with the given scope
      */
-    static List<ROSMsgFile> findMessages(@NotNull Project project, @Nullable String key, @Nullable VirtualFile file) {
-        List<ROSMsgFile> result = new ArrayList<>();
-        Collection<VirtualFile> virtualFiles =
-                FileTypeIndex.getFiles(ROSMsgFileType.INSTANCE, GlobalSearchScope.allScope(project));
-        if( file != null) {
-            virtualFiles.remove(file);
-        }
-        for (VirtualFile virtualFile : virtualFiles) {
-            ROSMsgFile rosMsgFile = (ROSMsgFile) PsiManager.getInstance(project).findFile(virtualFile);
-            if (rosMsgFile != null) {
-                if (key == null || key.equals(rosMsgFile.getName())) {
-                    result.add(rosMsgFile);
-                }
-            }
-        }
-        return result.isEmpty() ? Collections.emptyList() : result;
+    @Nullable
+    public static ROSMsgFile findMessage(@NotNull Project project, @NotNull String pkgName, @NotNull String msgName) {
+        ROSPackageManager manager = ServiceManager.getService(project, ROSPackageManager.class);
+        final ROSPackage pkg = manager.findPackage(pkgName);
+        return pkg != null ? pkg.findPacket(msgName, ROSMsgFile.class) : null;
     }
 
     /**

@@ -1,4 +1,4 @@
-package ros.integrate.workspace.psi.impl;
+package ros.integrate.workspace.unused.psi.impl;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ProjectFileIndex;
@@ -7,9 +7,9 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDirectory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import ros.integrate.workspace.psi.ROSDirectoryService;
+import ros.integrate.workspace.unused.psi.ROSDirectoryService;
 import ros.integrate.workspace.psi.ROSPackage;
-import ros.integrate.workspace.psi.ROSPsiFacade;
+import ros.integrate.workspace.unused.psi.ROSPsiFacade;
 
 public class ROSDirectoryServiceImpl extends ROSDirectoryService {
     @Nullable

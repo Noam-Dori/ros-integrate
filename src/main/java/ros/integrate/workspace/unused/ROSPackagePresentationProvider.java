@@ -1,4 +1,4 @@
-package ros.integrate.workspace;
+package ros.integrate.workspace.unused;
 
 import com.intellij.navigation.ColoredItemPresentation;
 import com.intellij.navigation.ItemPresentation;

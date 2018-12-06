@@ -1,4 +1,4 @@
-package ros.integrate.workspace.psi;
+package ros.integrate.workspace.unused.psi;
 
 import com.intellij.openapi.roots.ProjectFileIndex;
 import com.intellij.openapi.roots.ProjectRootManager;
@@ -14,7 +14,8 @@ import com.intellij.psi.impl.file.PsiDirectoryFactory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.jps.model.java.JavaModuleSourceRootTypes;
-import ros.integrate.workspace.psi.impl.ROSDirectoryImpl;
+import ros.integrate.workspace.psi.ROSPackage;
+import ros.integrate.workspace.unused.psi.impl.ROSDirectoryImpl;
 
 public class ROSDirectoryFactory extends PsiDirectoryFactory {
     private final PsiManagerImpl myManager;

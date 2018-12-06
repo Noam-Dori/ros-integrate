@@ -5,11 +5,13 @@ import com.intellij.lang.Language;
 import com.intellij.psi.FileViewProvider;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNameIdentifierOwner;
+import com.intellij.psi.PsiQualifiedNamedElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkt.ROSPktUtil;
+import ros.integrate.workspace.psi.ROSPackage;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -20,11 +22,18 @@ import java.util.List;
  * an instance of a packet containing template file, sent by the ROS framework.
  * the class name is short for "ROS Packet File", which will be used throughout the language.
  */
-public abstract class ROSPktFile extends PsiFileBase implements PsiNameIdentifierOwner {
+public abstract class ROSPktFile extends PsiFileBase implements PsiNameIdentifierOwner, PsiQualifiedNamedElement {
     public static ROSPktFile[] EMPTY_ARRAY = new ROSPktFile[0];
 
     ROSPktFile(@NotNull FileViewProvider viewProvider, @NotNull Language language) {
         super(viewProvider, language);
+    }
+
+    /**
+     * @return the ROS package this pkt file belongs to.
+     */
+    public ROSPackage getPackage() {
+        //TODO
     }
 
     /**

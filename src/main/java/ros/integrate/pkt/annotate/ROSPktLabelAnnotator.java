@@ -59,5 +59,5 @@ class ROSPktLabelAnnotator extends ROSPktAnnotatorBase {
     }
 
     //TODO: a warning which checks for snake_case in names. make sure to check JB-inspection first
-    //TODO: fix: offer conversion to snake_case
+    // fix: offer conversion to snake_case
 }

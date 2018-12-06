@@ -16,8 +16,8 @@ import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkt.psi.ROSPktFile;
 import ros.integrate.workspace.psi.ROSPackage;
 import ros.integrate.workspace.psi.ROSPackageBase;
-import ros.integrate.workspace.psi.ROSPackageImplementationHelper;
-import ros.integrate.workspace.psi.ROSPsiFacade;
+import ros.integrate.workspace.unused.psi.ROSPackageImplementationHelper;
+import ros.integrate.workspace.unused.psi.ROSPsiFacade;
 
 import java.util.ArrayList;
 import java.util.Collection;

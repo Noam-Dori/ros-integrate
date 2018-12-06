@@ -13,10 +13,6 @@
     <!-- this should be changed to CLion when done -->
     <depends>com.intellij.modules.lang</depends>
 
-    <extensionPoints>
-        <extensionPoint interface="ros.integrate.elementFinder.ROSPsiElementFinder" name="ros.elementFinder"/>
-    </extensionPoints>
-
     <extensions defaultExtensionNs="com.intellij">
         <spellchecker.bundledDictionaryProvider implementation="ros.integrate.ROSBundledDictionaryProvider"/>
 
@@ -35,7 +31,6 @@
         <colorSettingsPage implementation="ros.integrate.pkt.highlight.ROSPktColorSettings"/>
         <completion.contributor language="ROSPkt" implementationClass="ros.integrate.pkt.ROSPktCompletionContributor"/>
         <annotator language="ROSPkt" implementationClass="ros.integrate.pkt.annotate.ROSPktAnnotator"/>
-        <gotoSymbolContributor implementation="ros.integrate.pkt.ROSPktChooseByNameContributor"/>
         <nameSuggestionProvider implementation="ros.integrate.pkt.ROSPktNameSuggestionProvider" />
         <psi.referenceContributor language="ROSPkt" implementation="ros.integrate.pkt.ROSPktTypeReferenceContributor"/>
         <spellchecker.support language="ROSPkt" implementationClass="ros.integrate.pkt.ROSPktSpellcheckingStrategy"/>
@@ -45,22 +40,8 @@
                          groupName="ROS" displayName="Type not in CamelCase"/>
 
         <!-- ROS workspace & package -->
-        <projectService serviceInterface="com.intellij.psi.impl.file.PsiDirectoryFactory"
-                        serviceImplementation="ros.integrate.workspace.psi.ROSDirectoryFactory"/>
-        <itemPresentationProvider forClass="ros.integrate.workspace.psi.ROSPackage"
-                                  implementationClass="ros.integrate.workspace.ROSPackagePresentationProvider"/>
-        <applicationService serviceInterface="ros.integrate.workspace.psi.ROSPackageImplementationHelper"
-                            serviceImplementation="ros.integrate.workspace.psi.impl.ROSPackageImplementationHelperImpl"/>
-        <applicationService serviceInterface="ros.integrate.workspace.psi.ROSDirectoryService"
-                            serviceImplementation="ros.integrate.workspace.psi.impl.ROSDirectoryServiceImpl"/>
-        <projectService serviceInterface="ros.integrate.workspace.psi.ROSPsiFacade"
-                        serviceImplementation="ros.integrate.workspace.psi.impl.ROSPsiFacadeImpl"/>
-        <projectService serviceInterface="ros.integrate.workspace.psi.ROSPackageIndex"
-                        serviceImplementation="ros.integrate.workspace.psi.impl.ROSPackageIndexImpl"/>
-    </extensions>
-
-    <extensions defaultExtensionNs="ros.integrate">
-        <ros.elementFinder implementation="ros.integrate.elementFinder.impl.ROSPsiSourceElementFinder"/>
+        <projectService serviceInterface="ros.integrate.workspace.ROSPackageManager"
+                        serviceImplementation="ros.integrate.workspace.ROSPackageManagerImpl"/>
     </extensions>
 
     <actions>

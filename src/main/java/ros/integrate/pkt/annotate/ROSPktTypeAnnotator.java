@@ -10,9 +10,6 @@ import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkt.ROSPktUtil;
 import ros.integrate.pkt.intention.*;
 import ros.integrate.pkt.psi.*;
-
-import java.util.List;
-
 /**
  * an annotator dedicated to {@link ROSPktTypeBase}
  */
@@ -43,8 +40,6 @@ public class ROSPktTypeAnnotator extends ROSPktAnnotatorBase {
      * @return true if the annotation was activated, false if not.
      */
     boolean annTypeNotDefined() {
-        // TODO: Search outside project (include files) for 'slashed' msgs <CLION>
-        // TODO: if catkin is defined, use it to search for msgs. <CLION>
         if (unknownType()) {
             if(type.raw().getText().equals("Header")) {
                 Annotation ann = holder.createErrorAnnotation(type.raw().getTextRange(),
@@ -66,8 +61,8 @@ public class ROSPktTypeAnnotator extends ROSPktAnnotatorBase {
      * @return true if the type is not defined anywhere, false otherwise.
      */
     private boolean unknownType() {
-        List<String> types = ROSPktUtil.findMessageNames(type.getProject(), type.raw().getText(), null);
-        return types.isEmpty() && // found no message within project matching this field type.
+        ROSMsgFile message = ROSPktUtil.findMessage(type.getProject(),((ROSPktFile)type.getContainingFile()).getPackage().getName() , type.raw().getText());
+        return message == null && // found no message within project matching this field type.
                 !(type.raw().getText().equals("Header") && type.getParent().getNode().equals(getFirstField())) && // field is the header
                 !type.raw().getText().contains("/"); // message is defined outside project
     }

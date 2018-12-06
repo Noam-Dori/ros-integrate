@@ -1,9 +1,11 @@
 package ros.integrate.workspace.psi;
 
 import com.intellij.navigation.NavigationItem;
-import com.intellij.psi.*;
+import com.intellij.psi.PsiCheckedRenameElement;
+import com.intellij.psi.PsiDirectoryContainer;
+import com.intellij.psi.PsiModifierListOwner;
+import com.intellij.psi.PsiQualifiedNamedElement;
 import com.intellij.psi.search.GlobalSearchScope;
-import com.intellij.psi.xml.XmlFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkt.psi.ROSPktFile;
@@ -47,34 +49,43 @@ public interface ROSPackage extends PsiCheckedRenameElement, NavigationItem, Psi
     ROSPktFile[] getPackets(@NotNull GlobalSearchScope scope);
 
     /**
-     * get all source files available for this package, compiled or source.
-     * @param scope where to search if at all.
-     * @return an array of PSI source files, usually C++ or python files.
-     *         these can also be generated source code like message sources.
-     *         for sources, they can be found anywhere within the root dir and below.
-     *         Use CMakeLists.txt for help where to search.
-     *         For built packages, they are all placed in their root directory within the include directory
+     * finds a specific packet in the package
+     * @param msgName the name of the packet file to search for.
+     * @param <T> allows filtering by type of file. If you don't wish to use this filter, set this to <code>ROSPktFile.class</code>
+     * @return null if the packet if not found, otherwise the packet file you are searching for.
      */
-    @NotNull
-    PsiFile[] getSources(@NotNull GlobalSearchScope scope);
+    @Nullable
+    <T extends ROSPktFile> T findPacket(String msgName, T pktType);
+
+//    /**
+//     * get all source files available for this package, compiled or source.
+//     * @param scope where to search if at all.
+//     * @return an array of PSI source files, usually C++ or python files.
+//     *         these can also be generated source code like message sources.
+//     *         for sources, they can be found anywhere within the root dir and below.
+//     *         Use CMakeLists.txt for help where to search.
+//     *         For built packages, they are all placed in their root directory within the include directory
+//     */
+//    @NotNull
+//    PsiFile[] getSources(@NotNull GlobalSearchScope scope);
 
     /*@NotNull
     ROSBundleFile[] getBundles(@NotNull GlobalSearchScope scope);*/
 
-    /**
-     * @return {@code null} if compiled package, the CMakeLists.txt file otherwise.
-     *         for source directories, this is simply in the root of the source folder.
-     */
-    @Nullable
-    PsiFile getCMakeLists();
+//    /**
+//     * @return {@code null} if compiled package, the CMakeLists.txt file otherwise.
+//     *         for source directories, this is simply in the root of the source folder.
+//     */
+//    @Nullable
+//    PsiFile getCMakeLists();
 
-    /**
-     * @return the package.xml file.
-     *         for source packages, this is simply in the root of the source folder.
-     *         for built packages, this is in their root folder in the "share" directory.
-     */
-    @NotNull
-    XmlFile getPackageXml();
+//    /**
+//     * @return the package.xml file.
+//     *         for source packages, this is simply in the root of the source folder.
+//     *         for built packages, this is in their root folder in the "share" directory.
+//     */
+//    @NotNull
+//    XmlFile getPackageXml();
 
 //    /**
 //     * @return all the packages this specific package requires to work.
@@ -83,11 +94,11 @@ public interface ROSPackage extends PsiCheckedRenameElement, NavigationItem, Psi
 //    @NotNull
 //    ROSPackage[] getDependencies();
 
-    /**
-     * Returns the list of all files in the package, restricted by the specified scope. (This is
-     * normally the list of all files in all directories corresponding to the package, but it can
-     * be modified by custom language plugins which have a different notion of packages.)
-     */
-    @NotNull
-    PsiFile[] getFiles(@NotNull GlobalSearchScope scope);
+//    /**
+//     * Returns the list of all files in the package, restricted by the specified scope. (This is
+//     * normally the list of all files in all directories corresponding to the package, but it can
+//     * be modified by custom language plugins which have a different notion of packages.)
+//     */
+//    @NotNull
+//    PsiFile[] getFiles(@NotNull GlobalSearchScope scope);
 }

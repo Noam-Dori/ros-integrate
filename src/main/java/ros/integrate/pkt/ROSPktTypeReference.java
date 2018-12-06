@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.ROSIcons;
 import ros.integrate.pkt.psi.ROSMsgFile;
+import ros.integrate.pkt.psi.ROSPktFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,23 +24,28 @@ import java.util.List;
 public class ROSPktTypeReference extends PsiReferenceBase<PsiElement> implements PsiFileReference {
     // note: myElement is the referencing element, and the result of resolve() is the original element (the file).
 
-    private String key;
+    private @NotNull String msgName, pkgName;
 
-    public ROSPktTypeReference(@NotNull PsiElement element, @NotNull TextRange textRange) { //TODO: namespace support
+    public ROSPktTypeReference(@NotNull PsiElement element, @NotNull TextRange textRange) {
         super(element, textRange);
-        key = element.getText().substring(textRange.getStartOffset(), textRange.getEndOffset());
+        msgName = element.getText().substring(textRange.getStartOffset(), textRange.getEndOffset());
+        if(msgName.contains("/")) {
+            pkgName = msgName.replaceAll("/.*","");
+            msgName = msgName.replaceAll(".*/","");
+        } else {
+            pkgName = ((ROSPktFile)element.getContainingFile()).getPackage().getName();
+        }
     }
 
     @NotNull
     @Override
     public ResolveResult[] multiResolve(boolean incompleteCode) {
         Project project = myElement.getProject();
-        final List<ROSMsgFile> files = ROSPktUtil.findMessages(project, key, myElement.getContainingFile().getVirtualFile());
-        List<ResolveResult> results = new ArrayList<>();
-        for (ROSMsgFile file : files) {
-            results.add(new PsiElementResolveResult(file));
+        ROSMsgFile file = ROSPktUtil.findMessage(project, pkgName, msgName);
+        if(file == null || file.equals(myElement.getContainingFile())) {
+            return ResolveResult.EMPTY_ARRAY;
         }
-        return results.toArray(new ResolveResult[0]);
+        return new ResolveResult[]{new PsiElementResolveResult(file)};
     }
 
     @Nullable
@@ -53,14 +59,14 @@ public class ROSPktTypeReference extends PsiReferenceBase<PsiElement> implements
     @Override
     public Object[] getVariants() {
         Project project = myElement.getProject();
-        final List<ROSMsgFile> files = ROSPktUtil.findMessages(project, null, null);
+        final List<ROSMsgFile> messages = ROSPktUtil.findMessages(project, (ROSMsgFile) myElement.getContainingFile());
         List<LookupElement> variants = new ArrayList<>();
-        for (final ROSMsgFile file : files) {
-            String fileName = file.getName();
+        for (final ROSMsgFile msg : messages) {
+            String fileName = msg.getName();
             if (fileName.length() > 0) {
-                variants.add(LookupElementBuilder.create(file).
+                variants.add(LookupElementBuilder.create(msg).
                         withIcon(ROSIcons.MsgFile).
-                        withTypeText("/" + fileName) //TODO add package in here
+                        withTypeText(msg.getQualifiedName())
                 );
             }
         }

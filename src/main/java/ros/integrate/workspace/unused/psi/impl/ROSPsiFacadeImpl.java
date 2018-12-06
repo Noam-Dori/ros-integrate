@@ -1,4 +1,4 @@
-package ros.integrate.workspace.psi.impl;
+package ros.integrate.workspace.unused.psi.impl;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.extensions.ExtensionPoint;
@@ -21,7 +21,7 @@ import org.jetbrains.annotations.Nullable;
 import ros.integrate.elementFinder.ROSPsiElementFinder;
 import ros.integrate.pkt.psi.ROSPktFile;
 import ros.integrate.workspace.psi.ROSPackage;
-import ros.integrate.workspace.psi.ROSPsiFacade;
+import ros.integrate.workspace.unused.psi.ROSPsiFacade;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentMap;

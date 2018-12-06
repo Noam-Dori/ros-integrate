@@ -1,4 +1,4 @@
-package ros.integrate.workspace.psi;
+package ros.integrate.workspace.unused.psi;
 
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;

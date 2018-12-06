@@ -1,4 +1,4 @@
-package ros.integrate.workspace.psi;
+package ros.integrate.workspace.unused.psi;
 
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkt.psi.ROSPktFile;
+import ros.integrate.workspace.psi.ROSPackage;
 
 public abstract class ROSPsiFacade {
     private static final NotNullLazyKey<ROSPsiFacade, Project> INSTANCE_KEY = ServiceManager.createLazyKey(ROSPsiFacade.class);
