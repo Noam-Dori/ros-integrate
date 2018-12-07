@@ -61,7 +61,7 @@ public class ROSPktTypeAnnotator extends ROSPktAnnotatorBase {
      * @return true if the type is not defined anywhere, false otherwise.
      */
     private boolean unknownType() {
-        ROSMsgFile message = ROSPktUtil.findMessage(type.getProject(),((ROSPktFile)type.getContainingFile()).getPackage().getName() , type.raw().getText());
+        ROSMsgFile message = ROSPktUtil.findMessage(type.getProject(), type.getContainingFile().getPackage().getName(), type.raw().getText());
         return message == null && // found no message within project matching this field type.
                 !(type.raw().getText().equals("Header") && type.getParent().getNode().equals(getFirstField())) && // field is the header
                 !type.raw().getText().contains("/"); // message is defined outside project

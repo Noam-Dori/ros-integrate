@@ -29,7 +29,7 @@ class ROSPktLabelAnnotator extends ROSPktAnnotatorBase {
      * annotates if this label being used for two separate fields?
      */
     void annDuplicateLabel() {
-        ROSPktFile file = (ROSPktFile) label.getContainingFile();
+        ROSPktFile file = label.getContainingFile();
         int nameCount = file.countNameInFile(fieldName);
         if (nameCount > 1 && !file.isFirstDefinition(label)) {
             TextRange range = new TextRange(label.getTextRange().getStartOffset(),

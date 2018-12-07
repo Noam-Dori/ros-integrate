@@ -138,6 +138,7 @@ class ROSPktTypeUtil {
     }
 
     // the type is there to allow generation from the .bnf
+    @SuppressWarnings("SameReturnValue")
     @Contract(pure = true)
     static boolean isComplete(@SuppressWarnings("unused") @NotNull ROSPktType type) {
         return true;

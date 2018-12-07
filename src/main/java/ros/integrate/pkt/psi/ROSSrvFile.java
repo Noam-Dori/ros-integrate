@@ -8,7 +8,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.ROSIcons;
 import ros.integrate.pkt.file.ROSSrvFileType;
-import ros.integrate.pkt.lang.ROSPktLanguage;
 import ros.integrate.pkt.ROSPktUtil;
 
 import javax.swing.*;
@@ -18,7 +17,7 @@ import javax.swing.*;
  */
 public class ROSSrvFile extends ROSPktFile {
     public ROSSrvFile(@NotNull FileViewProvider viewProvider) {
-        super(viewProvider, ROSPktLanguage.INSTANCE);
+        super(viewProvider);
     }
 
     @NotNull

@@ -1,7 +1,6 @@
 package ros.integrate.pkt.psi;
 
 import com.intellij.extapi.psi.PsiFileBase;
-import com.intellij.lang.Language;
 import com.intellij.psi.FileViewProvider;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNameIdentifierOwner;
@@ -11,6 +10,7 @@ import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkt.ROSPktUtil;
+import ros.integrate.pkt.lang.ROSPktLanguage;
 import ros.integrate.workspace.psi.ROSPackage;
 
 import javax.swing.*;
@@ -25,8 +25,8 @@ import java.util.List;
 public abstract class ROSPktFile extends PsiFileBase implements PsiNameIdentifierOwner, PsiQualifiedNamedElement {
     public static ROSPktFile[] EMPTY_ARRAY = new ROSPktFile[0];
 
-    ROSPktFile(@NotNull FileViewProvider viewProvider, @NotNull Language language) {
-        super(viewProvider, language);
+    ROSPktFile(@NotNull FileViewProvider viewProvider) {
+        super(viewProvider, ROSPktLanguage.INSTANCE);
     }
 
     /**
@@ -34,6 +34,12 @@ public abstract class ROSPktFile extends PsiFileBase implements PsiNameIdentifie
      */
     public ROSPackage getPackage() {
         //TODO
+    }
+
+    @Nullable
+    @Override
+    public String getQualifiedName() {
+        return getName();
     }
 
     /**

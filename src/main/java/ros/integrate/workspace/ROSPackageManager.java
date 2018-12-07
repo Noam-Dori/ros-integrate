@@ -1,8 +1,8 @@
 package ros.integrate.workspace;
 
+import org.jetbrains.annotations.Nullable;
 import ros.integrate.workspace.psi.ROSPackage;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 public interface ROSPackageManager {
@@ -17,5 +17,6 @@ public interface ROSPackageManager {
      * @param pkgName the name of the package (which is also its fully qualified name)
      * @return null if a ROS package with the given name was not found, otherwise,
      */
-    @Nullable ROSPackage findPackage(String pkgName);
+    @Nullable
+    ROSPackage findPackage(String pkgName);
 }

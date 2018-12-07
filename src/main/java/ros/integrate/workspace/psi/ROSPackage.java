@@ -55,7 +55,7 @@ public interface ROSPackage extends PsiCheckedRenameElement, NavigationItem, Psi
      * @return null if the packet if not found, otherwise the packet file you are searching for.
      */
     @Nullable
-    <T extends ROSPktFile> T findPacket(String msgName, T pktType);
+    <T extends ROSPktFile> T findPacket(@NotNull String msgName, @NotNull Class<T> pktType);
 
 //    /**
 //     * get all source files available for this package, compiled or source.
