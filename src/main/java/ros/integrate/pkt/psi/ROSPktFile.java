@@ -24,16 +24,22 @@ import java.util.List;
  */
 public abstract class ROSPktFile extends PsiFileBase implements PsiNameIdentifierOwner, PsiQualifiedNamedElement {
     public static ROSPktFile[] EMPTY_ARRAY = new ROSPktFile[0];
+    private ROSPackage parentPackage;
 
     ROSPktFile(@NotNull FileViewProvider viewProvider) {
         super(viewProvider, ROSPktLanguage.INSTANCE);
+        parentPackage = ROSPackage.ORPHAN;
     }
 
     /**
      * @return the ROS package this pkt file belongs to.
      */
     public ROSPackage getPackage() {
-        //TODO
+        return parentPackage;
+    }
+
+    public void setPackage(ROSPackage newPackage) {
+        parentPackage = newPackage;
     }
 
     @Nullable

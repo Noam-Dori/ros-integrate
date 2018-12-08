@@ -1,4 +1,4 @@
-package ros.integrate.workspace.psi.impl;
+package ros.integrate.workspace.unused.psi.impl;
 
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiFile;
@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkt.psi.ROSPktFile;
 import ros.integrate.workspace.psi.ROSPackage;
-import ros.integrate.workspace.psi.ROSPackageBase;
+import ros.integrate.workspace.unused.psi.ROSPackageBase;
 import ros.integrate.workspace.unused.psi.ROSPackageImplementationHelper;
 import ros.integrate.workspace.unused.psi.ROSPsiFacade;
 

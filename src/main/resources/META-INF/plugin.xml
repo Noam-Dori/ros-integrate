@@ -13,6 +13,10 @@
     <!-- this should be changed to CLion when done -->
     <depends>com.intellij.modules.lang</depends>
 
+    <extensionPoints>
+        <extensionPoint name="packageFinder" interface="ros.integrate.workspace.ROSPackageFinder"/>
+    </extensionPoints>
+
     <extensions defaultExtensionNs="com.intellij">
         <spellchecker.bundledDictionaryProvider implementation="ros.integrate.ROSBundledDictionaryProvider"/>
 
@@ -44,8 +48,11 @@
                         serviceImplementation="ros.integrate.workspace.ROSPackageManagerImpl"/>
     </extensions>
 
+    <extensions defaultExtensionNs="ros-integrate">
+        <packageFinder implementation="ros.integrate.workspace.ROSProjectPackageFinder"/>
+    </extensions>
+
     <actions>
         <!-- Add your actions here -->
     </actions>
-    <version/>
 </idea-plugin>

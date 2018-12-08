@@ -30,10 +30,18 @@ public class ROSPackageManagerImpl implements ROSPackageManager {
         });
     }
 
+    private void findAndCachePackages() {
+        // 1. get all package finders (new EP)
+        List<ROSPackageFinder> finders = ROSPackageFinder.EP_NAME.getExtensionList();
+        // 2. use each package finder to make and cache packages
+        finders.forEach(finder -> finder.findAndCache(project,pkgCache));
+    }
+
     private void doBulkFileChangeEvents(List<? extends VFileEvent> events) {
-        // 1. figure out which package these files belongs to, and map events per package
-        // options - none, and a specific package
-        // 2. do action based on event type
+        // 1. filter by file (if these are key-files (CMakeLists.txt or package.xml) and by project (if the file belongs to this project)
+        // 2. group by parent dir (convert to package if possible)
+        // 3. figure out what happened per package per file
+        // 4. do steps (create new package, delete new package, modify details)
         //TODO
     }
 

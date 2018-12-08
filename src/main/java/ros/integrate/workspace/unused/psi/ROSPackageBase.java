@@ -1,4 +1,4 @@
-package ros.integrate.workspace.psi;
+package ros.integrate.workspace.unused.psi;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.Language;
@@ -21,6 +21,7 @@ import com.intellij.util.PlatformIcons;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import ros.integrate.workspace.psi.ROSPackage;
 
 import java.util.ArrayList;
 import java.util.Collection;
