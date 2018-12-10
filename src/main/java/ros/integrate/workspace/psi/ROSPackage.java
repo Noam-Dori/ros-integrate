@@ -2,7 +2,6 @@ package ros.integrate.workspace.psi;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.Language;
-import com.intellij.navigation.NavigationItem;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.*;
 import com.intellij.psi.impl.PsiElementBase;
@@ -18,24 +17,11 @@ import ros.integrate.pkt.psi.ROSPktFile;
  * 1. a package.xml file
  * 2. a CMakeLists.txt file which has the {@code catkin_package()} function
  */
-public interface ROSPackage extends PsiCheckedRenameElement, NavigationItem, PsiModifierListOwner,
-        PsiDirectoryContainer, PsiQualifiedNamedElement {
+public interface ROSPackage extends PsiCheckedRenameElement, NavigatablePsiElement, PsiDirectoryContainer {
     /**
      * a default ROS package everything is referenced to if a ROS file does not belong to any package.
      */
     ROSPackage ORPHAN = new ROSOrphanPackage();
-
-    /**
-     * Returns the full-qualified name of the package.
-     * Full-qualified name includes location from workspace
-     *
-     * @return the full-qualified name. Should never be empty
-     */
-    @Override
-    @NotNull
-    default String getQualifiedName() {
-        return getName();
-    }
 
     /**
      * @return the name of the element. Should never be empty.
@@ -66,6 +52,9 @@ public interface ROSPackage extends PsiCheckedRenameElement, NavigationItem, Psi
      */
     @Nullable
     <T extends ROSPktFile> T findPacket(@NotNull String msgName, @NotNull Class<T> pktType);
+
+    @NotNull
+    PsiDirectory[] getRoots();
 
 //    /**
 //     * get all source files available for this package, compiled or source.
@@ -134,6 +123,12 @@ public interface ROSPackage extends PsiCheckedRenameElement, NavigationItem, Psi
         }
 
         @Override
+        @NotNull
+        public PsiDirectory[] getRoots() {
+            return PsiDirectory.EMPTY_ARRAY;
+        }
+
+        @Override
         public void checkSetName(String name) {
         }
 
@@ -147,17 +142,6 @@ public interface ROSPackage extends PsiCheckedRenameElement, NavigationItem, Psi
         @Override
         public PsiDirectory[] getDirectories(@NotNull GlobalSearchScope scope) {
             return getDirectories();
-        }
-
-        @Nullable
-        @Override
-        public PsiModifierList getModifierList() {
-            return null;
-        }
-
-        @Override
-        public boolean hasModifierProperty(@NotNull String name) {
-            return false;
         }
 
         @Override

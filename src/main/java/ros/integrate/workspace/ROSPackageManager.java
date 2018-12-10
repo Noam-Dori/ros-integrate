@@ -15,7 +15,8 @@ public interface ROSPackageManager {
     /**
      * finds a ROS package with the provided name.
      * @param pkgName the name of the package (which is also its fully qualified name)
-     * @return null if a ROS package with the given name was not found, otherwise,
+     * @return null if a ROS package with the given name was not found,
+     * otherwise, the package stored in the cache with that name.
      */
     @Nullable
     ROSPackage findPackage(String pkgName);
