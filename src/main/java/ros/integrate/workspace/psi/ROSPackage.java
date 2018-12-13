@@ -46,12 +46,12 @@ public interface ROSPackage extends PsiCheckedRenameElement, NavigatablePsiEleme
     /**
      * finds a specific packet in the package
      *
-     * @param msgName the name of the packet file to search for.
+     * @param pktName the name of the packet file to search for.
      * @param <T>     allows filtering by type of file. If you don't wish to use this filter, set this to <code>ROSPktFile.class</code>
      * @return null if the packet if not found, otherwise the packet file you are searching for.
      */
     @Nullable
-    <T extends ROSPktFile> T findPacket(@NotNull String msgName, @NotNull Class<T> pktType);
+    <T extends ROSPktFile> T findPacket(@NotNull String pktName, @NotNull Class<T> pktType);
 
     @NotNull
     PsiDirectory[] getRoots();
@@ -118,7 +118,7 @@ public interface ROSPackage extends PsiCheckedRenameElement, NavigatablePsiEleme
 
         @Nullable
         @Override
-        public <T extends ROSPktFile> T findPacket(@NotNull String msgName, @NotNull Class<T> pktType) {
+        public <T extends ROSPktFile> T findPacket(@NotNull String pktName, @NotNull Class<T> pktType) {
             return null;
         }
 

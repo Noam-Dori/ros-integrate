@@ -20,4 +20,11 @@ public interface ROSPackageManager {
      */
     @Nullable
     ROSPackage findPackage(String pkgName);
+
+    /**
+     * updates the package's information in the cache.
+     * @param pkg the package to update
+     * @param newName the new name of the package.
+     */
+    void updatePackageName(ROSPackage pkg, String newName);
 }

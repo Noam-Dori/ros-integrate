@@ -26,14 +26,14 @@ public abstract class ROSPackageBase extends PsiElementBase implements ROSPackag
     @NotNull
     protected final XmlFile pkgXml;
     @NotNull
-    protected final String name;
+    protected String name;
     @NotNull
     protected final Project project;
     @NotNull
     protected final ROSPackageManager manager;
 
 
-    public ROSPackageBase(@NotNull Project project, @NotNull String name, @NotNull XmlFile pkgXml) {
+    ROSPackageBase(@NotNull Project project, @NotNull String name, @NotNull XmlFile pkgXml) {
         this.name = name;
         this.project = project;
         this.pkgXml = pkgXml;
@@ -62,7 +62,7 @@ public abstract class ROSPackageBase extends PsiElementBase implements ROSPackag
     public void checkSetName(String name) throws IncorrectOperationException {
         if(manager.findPackage(name) != null) {
             throw new IncorrectOperationException("A package with named \"" +
-                    name + "\" already exists! remove or rename it first.");
+                    name + "\" already exists! remove or updatePackageName it first.");
         }
     }
 
@@ -70,7 +70,10 @@ public abstract class ROSPackageBase extends PsiElementBase implements ROSPackag
     @Override
     public ROSPackageBase setName(@NotNull String name) throws IncorrectOperationException {
         checkSetName(name);
-        manager.rename(this,name);
+        manager.updatePackageName(this, name);
+        this.name = name;
+        // TODO change package.xml
+        // TODO change CMakeLists.txt
         return this;
     }
 

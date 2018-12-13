@@ -16,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkt.lang.ROSPktLanguage;
 import ros.integrate.pkt.psi.ROSPktFile;
 import ros.integrate.workspace.psi.ROSPackage;
+import ros.integrate.workspace.psi.impl.ROSSourcePackage;
 
 import java.util.Comparator;
 import java.util.List;

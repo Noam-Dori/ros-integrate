@@ -47,7 +47,7 @@ public class ROSPackageManagerImpl implements ROSPackageManager {
 
     @Override
     public List<ROSPackage> getAllPackages() {
-        final SortedList<ROSPackage> ret = new SortedList<>(Comparator.comparing(ROSPackage::getQualifiedName));
+        final SortedList<ROSPackage> ret = new SortedList<>(Comparator.comparing(ROSPackage::getName));
         pkgCache.forEach((name,pkg) -> ret.add(pkg));
         return ret;
     }
@@ -56,5 +56,11 @@ public class ROSPackageManagerImpl implements ROSPackageManager {
     @Override
     public ROSPackage findPackage(String pkgName) {
         return pkgCache.get(pkgName);
+    }
+
+    @Override
+    public void updatePackageName(ROSPackage pkg, String newName) {
+        pkgCache.remove(pkg.getName());
+        pkgCache.put(newName,pkg);
     }
 }
