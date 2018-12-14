@@ -104,5 +104,5 @@ publishPlugin {
     password intellijPublishPassword
 }
 
-group 'ros-integrate'
+group 'ros.integrate'
 version '0.1.1'

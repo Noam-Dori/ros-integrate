@@ -21,11 +21,6 @@ public class ROSMsgFile extends ROSPktFile {
         return ROSMsgFileType.INSTANCE;
     }
 
-    @Override
-    public String toString() {
-        return "ROS Message File";
-    }
-
     @Nullable
     @Override
     public PsiElement getNameIdentifier() {

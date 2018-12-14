@@ -104,6 +104,11 @@ public interface ROSPackage extends PsiCheckedRenameElement, NavigatablePsiEleme
         private ROSOrphanPackage() {
         }
 
+        @Override
+        public String toString() {
+            return "ROSOrphanPackage{\"\"}";
+        }
+
         @NotNull
         @Override
         public String getName() {

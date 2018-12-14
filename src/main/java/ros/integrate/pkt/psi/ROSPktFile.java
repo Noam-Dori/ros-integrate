@@ -23,12 +23,16 @@ import java.util.List;
  * the class name is short for "ROS Packet File", which will be used throughout the language.
  */
 public abstract class ROSPktFile extends PsiFileBase implements PsiNameIdentifierOwner, PsiQualifiedNamedElement {
-    public static ROSPktFile[] EMPTY_ARRAY = new ROSPktFile[0];
     private ROSPackage parentPackage;
 
     ROSPktFile(@NotNull FileViewProvider viewProvider) {
         super(viewProvider, ROSPktLanguage.INSTANCE);
         parentPackage = ROSPackage.ORPHAN;
+    }
+
+    @Override
+    public String toString() {
+        return getQualifiedName() + getDotDefaultExtension();
     }
 
     /**
@@ -42,10 +46,10 @@ public abstract class ROSPktFile extends PsiFileBase implements PsiNameIdentifie
         parentPackage = newPackage;
     }
 
-    @Nullable
+    @NotNull
     @Override
     public String getQualifiedName() {
-        return getName();
+        return getPackage().getName() + "/" + getName();
     }
 
     /**

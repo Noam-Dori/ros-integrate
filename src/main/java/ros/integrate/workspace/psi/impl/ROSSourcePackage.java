@@ -24,6 +24,12 @@ public class ROSSourcePackage extends ROSPackageBase {
         super(project,name,pkgXml);
         this.root = root;
         this.packets = packets;
+        packets.forEach(pkt -> pkt.setPackage(this));
+    }
+
+    @Override
+    public String toString() {
+        return "ROSSourcePackage{\"" + getName() + "\"}";
     }
 
     @NotNull

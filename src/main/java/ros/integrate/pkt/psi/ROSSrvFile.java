@@ -21,11 +21,6 @@ public class ROSSrvFile extends ROSPktFile {
         return ROSSrvFileType.INSTANCE;
     }
 
-    @Override
-    public String toString() {
-        return "ROS Service File";
-    }
-
     @Nullable
     @Override
     public PsiElement getNameIdentifier() {

@@ -43,7 +43,7 @@ public class ROSProjectPackageFinder implements ROSPackageFinder {
             // FIXME for now, since we don't want to read into files just yet, we will use the directory to name packages.
             String pkgName = vXml.getParent().getName();
             // 2. search for the package in the cache. If it exists, move on to next xml.
-            if(pkgCache.getOrDefault(pkgName,ROSPackage.ORPHAN) == ROSPackage.ORPHAN) continue;
+            if(pkgCache.getOrDefault(pkgName,ROSPackage.ORPHAN) != ROSPackage.ORPHAN) continue;
             // 3. get package.xml file in XML PSI form
             XmlFile pkgXml = (XmlFile) Objects.requireNonNull(PsiManager.getInstance(project).findFile(vXml));
             // 4. get package root dir

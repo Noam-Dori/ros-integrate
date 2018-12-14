@@ -123,12 +123,7 @@ class ROSPktTypeUtil {
     static PsiReference getReference(@NotNull ROSPktTypeBase type) {
         PsiElement raw = type.raw();
         int location = raw.getText().indexOf('/');
-        TextRange range;
-        if (location == -1) {
-            range = new TextRange(0, raw.getText().length());
-        } else {
-            range = new TextRange(location, raw.getText().length());
-        }
+        TextRange range = new TextRange(location + 1, raw.getText().length());
         return new ROSPktTypeReference(type, range);
     }
 
