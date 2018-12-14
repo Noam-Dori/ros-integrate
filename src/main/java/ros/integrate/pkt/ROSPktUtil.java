@@ -87,6 +87,6 @@ public class ROSPktUtil {
      */
     @NotNull
     public static String trimPktFileName(@NotNull String name) {
-        return name.substring(0,name.length() - 4);
+        return name.substring(0,name.lastIndexOf('.'));
     }
 }

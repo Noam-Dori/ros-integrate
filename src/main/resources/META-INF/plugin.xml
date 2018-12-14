@@ -19,6 +19,7 @@
         <!-- ROS packet files -->
         <fileTypeFactory implementation="ros.integrate.pkt.file.ROSMsgFileTypeFactory"/>
         <fileTypeFactory implementation="ros.integrate.pkt.file.ROSSrvFileTypeFactory"/>
+        <fileTypeFactory implementation="ros.integrate.pkt.file.ROSActFileTypeFactory"/>
 
         <!-- ROS packet Language -->
         <lang.parserDefinition language="ROSPkt" implementationClass="ros.integrate.pkt.lang.ROSPktParserDefinition"/>

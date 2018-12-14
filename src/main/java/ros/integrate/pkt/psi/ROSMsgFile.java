@@ -71,6 +71,6 @@ public class ROSMsgFile extends ROSPktFile {
 
     @Override
     public String getTooManySeparatorsMessage() {
-        return "ROS Messages cannot have service separators";
+        return "ROS Messages cannot have separators";
     }
 }

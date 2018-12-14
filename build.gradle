@@ -36,10 +36,12 @@ sourceSets {
 patchPluginXml {
     version '0.1.1'
     changeNotes """
+        <p>0.2</p>
+            <li>added support for *.action files - equipped with all inspections for ROS messages and with its own file icon</li>
         <p>0.1.1</p>
         <ul>
             <li>renamed the ROSMsg language to ROSPkt - short for ROS Packet</li>
-            <li>added support for *.srv files - equipped with all inspection for ROS messages and with its own file icon</li>
+            <li>added support for *.srv files - equipped with all inspections for ROS messages and with its own file icon</li>
         </ul>
         <p>0.1</p>
         <ul>

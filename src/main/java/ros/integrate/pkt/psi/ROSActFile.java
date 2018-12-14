@@ -7,29 +7,24 @@ import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.ROSIcons;
-import ros.integrate.pkt.file.ROSSrvFileType;
-import ros.integrate.pkt.lang.ROSPktLanguage;
 import ros.integrate.pkt.ROSPktUtil;
+import ros.integrate.pkt.file.ROSActFileType;
+import ros.integrate.pkt.lang.ROSPktLanguage;
 
 import javax.swing.*;
 
 /**
  * a ROS message, a one-directional message sent between (and within) executables.
  */
-public class ROSSrvFile extends ROSPktFile {
-    public ROSSrvFile(@NotNull FileViewProvider viewProvider) {
+public class ROSActFile extends ROSPktFile {
+    public ROSActFile(@NotNull FileViewProvider viewProvider) {
         super(viewProvider, ROSPktLanguage.INSTANCE);
     }
 
     @NotNull
     @Override
     public FileType getFileType() {
-        return ROSSrvFileType.INSTANCE;
-    }
-
-    @Override
-    public String toString() {
-        return "ROS Service File";
+        return ROSActFileType.INSTANCE;
     }
 
     @Override
@@ -48,7 +43,7 @@ public class ROSSrvFile extends ROSPktFile {
 
             @Override
             public Icon getIcon(boolean unused) {
-                return ROSIcons.SrvFile;
+                return ROSIcons.ActFile;
             }
         };
     }
@@ -61,16 +56,16 @@ public class ROSSrvFile extends ROSPktFile {
 
     @Override
     String getDotDefaultExtension() {
-        return ROSSrvFileType.DOT_DEFAULT_EXTENSION;
+        return ROSActFileType.DOT_DEFAULT_EXTENSION;
     }
 
     @Override
     public int getMaxSeparators() {
-        return 1;
+        return 2;
     }
 
     @Override
     public String getTooManySeparatorsMessage() {
-        return "ROS Services can only have one separator";
+        return "ROS Services can only have two separators";
     }
 }
