@@ -31,9 +31,11 @@ public class AddROSMsgQuickFix extends BaseIntentionAction {
 
     public AddROSMsgQuickFix(PsiElement fieldType) {
         type = fieldType;
+        origPkgName = ((ROSPktFile)type.getContainingFile().getOriginalFile()).getPackage().getName();
     }
 
     private PsiElement type;
+    private String origPkgName;
 
     @NotNull
     @Override
@@ -69,17 +71,18 @@ public class AddROSMsgQuickFix extends BaseIntentionAction {
         }
         ApplicationManager.getApplication().runWriteAction(() -> {
 
-            ROSMsgFile rosMsgFile = (ROSMsgFile) ROSPktElementFactory.createFile(dialogue.getFileName(), dialogue.getDirectory(), ROSMsgFileType.INSTANCE).getOriginalFile();
-            rosMsgFile.setPackage(pkg == null ? ROSPackage.ORPHAN : pkg);
+            ROSMsgFile newMsg = (ROSMsgFile) ROSPktElementFactory.createFile(dialogue.getFileName(), dialogue.getDirectory(), ROSMsgFileType.INSTANCE).getOriginalFile();
+            newMsg.setPackage(pkg == null ? ROSPackage.ORPHAN : pkg);
 
             IdeDocumentHistory.getInstance(project).includeCurrentPlaceAsChangePlace();
 
-            if (!type.getText().equals(rosMsgFile.getQualifiedName())) {
-                type.replace(ROSPktElementFactory.createType(project, rosMsgFile.getQualifiedName()));
+            if (!type.getText().equals(newMsg.getQualifiedName())) {
+                type.replace(ROSPktElementFactory.createType(project,
+                        newMsg.getPackage().getName().equals(origPkgName) ? newMsg.getName() : newMsg.getQualifiedName()));
             }
 
-            OpenFileDescriptor descriptor = new OpenFileDescriptor(rosMsgFile.getProject(), rosMsgFile.getVirtualFile());
-            FileEditorManager.getInstance(rosMsgFile.getProject()).openTextEditor(descriptor, true);
+            OpenFileDescriptor descriptor = new OpenFileDescriptor(newMsg.getProject(), newMsg.getVirtualFile());
+            FileEditorManager.getInstance(newMsg.getProject()).openTextEditor(descriptor, true);
         });
     }
 
@@ -96,7 +99,7 @@ public class AddROSMsgQuickFix extends BaseIntentionAction {
             pkg = msg.replaceAll("/.*","");
             msg = msg.replaceAll(".*/","");
         } else {
-            pkg = ((ROSPktFile)type.getContainingFile().getOriginalFile()).getPackage().getName();
+            pkg = origPkgName;
         }
         return new Pair<>(pkg,msg);
     }

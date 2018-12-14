@@ -78,7 +78,12 @@ public class ROSPktTypeReference extends PsiReferenceBase<PsiElement> implements
         CaretModel model = context.getEditor().getCaretModel();
 
         model.getCurrentCaret().moveCaretRelatively(- msg.getName().length(),0,false,false);
-        context.getDocument().insertString(model.getOffset(),msg.getPackage().getName() + "/");
+        // remove prev. package references if they exist
+        context.getDocument().deleteString(model.getVisualLineStart(),model.getOffset());
+        // add new ref.
+        if(!msg.getPackage().getName().equals(((ROSPktFile)context.getFile()).getPackage().getName())) {
+            context.getDocument().insertString(model.getOffset(), msg.getPackage().getName() + "/");
+        }
         model.getCurrentCaret().moveCaretRelatively(msg.getQualifiedName().length(),0,false,false);
     }
 }
