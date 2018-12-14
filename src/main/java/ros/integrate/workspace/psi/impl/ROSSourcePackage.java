@@ -57,4 +57,16 @@ public class ROSSourcePackage extends ROSPackageBase {
     public PsiDirectory[] getRoots() {
         return new PsiDirectory[]{root};
     }
+
+    @Override
+    public boolean isEditable() {
+        return true;
+    }
+
+    @Nullable
+    @Override
+    public PsiDirectory getMsgRoot() { //TODO use CMakeLists to help
+        PsiDirectory msgDir = root.findSubdirectory("msg");
+        return msgDir == null ? root : msgDir;
+    }
 }

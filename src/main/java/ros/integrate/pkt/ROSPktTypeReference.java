@@ -6,10 +6,7 @@ import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.openapi.editor.CaretModel;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiElementResolveResult;
-import com.intellij.psi.PsiReferenceBase;
-import com.intellij.psi.ResolveResult;
+import com.intellij.psi.*;
 import com.intellij.psi.impl.source.resolve.reference.impl.providers.PsiFileReference;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -61,7 +58,8 @@ public class ROSPktTypeReference extends PsiReferenceBase<PsiElement> implements
     @Override
     public Object[] getVariants() {
         Project project = myElement.getProject();
-        final List<ROSMsgFile> messages = ROSPktUtil.findMessages(project, (ROSMsgFile) myElement.getContainingFile().getOriginalFile());
+        PsiFile containingFile = myElement.getContainingFile().getOriginalFile();
+        final List<ROSMsgFile> messages = ROSPktUtil.findMessages(project, containingFile instanceof ROSMsgFile ? (ROSMsgFile) containingFile : null );
         List<LookupElement> variants = new ArrayList<>();
         for (final ROSMsgFile msg : messages) {
             String fileName = msg.getName();

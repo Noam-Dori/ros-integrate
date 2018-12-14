@@ -56,6 +56,11 @@ public interface ROSPackage extends PsiCheckedRenameElement, NavigatablePsiEleme
     @NotNull
     PsiDirectory[] getRoots();
 
+    boolean isEditable();
+
+    @Nullable
+    PsiDirectory getMsgRoot();
+
 //    /**
 //     * get all source files available for this package, compiled or source.
 //     * @param scope where to search if at all.
@@ -131,6 +136,17 @@ public interface ROSPackage extends PsiCheckedRenameElement, NavigatablePsiEleme
         @NotNull
         public PsiDirectory[] getRoots() {
             return PsiDirectory.EMPTY_ARRAY;
+        }
+
+        @Override
+        public boolean isEditable() {
+            return false;
+        }
+
+        @Nullable
+        @Override
+        public PsiDirectory getMsgRoot() {
+            return null;
         }
 
         @Override
