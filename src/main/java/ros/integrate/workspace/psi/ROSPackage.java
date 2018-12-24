@@ -6,10 +6,13 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.*;
 import com.intellij.psi.impl.PsiElementBase;
 import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.psi.xml.XmlFile;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkt.psi.ROSPktFile;
+
+import java.util.Collection;
 
 /**
  * represents a low-level ROS package. it does not contain any packages. That's the job of the meta-package.
@@ -53,13 +56,36 @@ public interface ROSPackage extends PsiCheckedRenameElement, NavigatablePsiEleme
     @Nullable
     <T extends ROSPktFile> T findPacket(@NotNull String pktName, @NotNull Class<T> pktType);
 
+    /**
+     * @return the roots of this package.
+     */
     @NotNull
     PsiDirectory[] getRoots();
 
+    /**
+     * @return true if this package is supposed to be edited, false otherwise.
+     */
     boolean isEditable();
 
+    /**
+     * @return gets the recommended message file root.
+     */
     @Nullable
     PsiDirectory getMsgRoot();
+
+    /**
+     * @return the package.xml file.
+     *         for source packages, this is simply in the root of the source folder.
+     *         for built packages, this is in their root folder in the "share" directory.
+     */
+    @Nullable
+    XmlFile getPackageXml();
+
+    /**
+     * add packets to this package.
+     * @param packets the collection of packages to add
+     */
+    void addPackets(Collection<ROSPktFile> packets);
 
 //    /**
 //     * get all source files available for this package, compiled or source.
@@ -84,14 +110,6 @@ public interface ROSPackage extends PsiCheckedRenameElement, NavigatablePsiEleme
 //    PsiFile getCMakeLists();
 
 //    /**
-//     * @return the package.xml file.
-//     *         for source packages, this is simply in the root of the source folder.
-//     *         for built packages, this is in their root folder in the "share" directory.
-//     */
-//    @NotNull
-//    XmlFile getPackageXml();
-
-//    /**
 //     * @return all the packages this specific package requires to work.
 //     *         An empty array means this package depends on no-one.
 //     */
@@ -105,6 +123,7 @@ public interface ROSPackage extends PsiCheckedRenameElement, NavigatablePsiEleme
 //     */
 //    @NotNull
 //    PsiFile[] getFiles(@NotNull GlobalSearchScope scope);
+
     final class ROSOrphanPackage extends PsiElementBase implements ROSPackage {
         private ROSOrphanPackage() {
         }
@@ -149,9 +168,17 @@ public interface ROSPackage extends PsiCheckedRenameElement, NavigatablePsiEleme
             return null;
         }
 
+        @Nullable
         @Override
-        public void checkSetName(String name) {
+        public XmlFile getPackageXml() {
+            return null;
         }
+
+        @Override
+        public void addPackets(Collection<ROSPktFile> packets) {}
+
+        @Override
+        public void checkSetName(String name) {}
 
         @NotNull
         @Override

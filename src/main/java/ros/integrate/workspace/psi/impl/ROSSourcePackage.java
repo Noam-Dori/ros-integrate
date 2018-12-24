@@ -5,11 +5,13 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.xml.XmlFile;
+import com.intellij.util.containers.hash.HashSet;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkt.psi.ROSPktFile;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.Set;
 
 public class ROSSourcePackage extends ROSPackageBase {
     private static final Logger LOG = Logger.getInstance("#ros.integrate.workspace.ROSProjectPackageFinder");
@@ -17,13 +19,14 @@ public class ROSSourcePackage extends ROSPackageBase {
     @NotNull
     private PsiDirectory root;
     @NotNull
-    private List<ROSPktFile> packets;
+    private Set<ROSPktFile> packets;
 
     public ROSSourcePackage(@NotNull Project project,@NotNull String name,@NotNull PsiDirectory root,
-                            @NotNull XmlFile pkgXml,@NotNull List<ROSPktFile> packets) {
+                            @NotNull XmlFile pkgXml,@NotNull Collection<ROSPktFile> packets) {
         super(project,name,pkgXml);
         this.root = root;
-        this.packets = packets;
+        this.packets = new HashSet<>();
+        this.packets.addAll(packets);
         packets.forEach(pkt -> pkt.setPackage(this));
     }
 
@@ -68,5 +71,16 @@ public class ROSSourcePackage extends ROSPackageBase {
     public PsiDirectory getMsgRoot() { //TODO use CMakeLists to help
         PsiDirectory msgDir = root.findSubdirectory("msg");
         return msgDir == null ? root : msgDir;
+    }
+
+    @NotNull
+    @Override
+    public XmlFile getPackageXml() {
+        return pkgXml;
+    }
+
+    @Override
+    public void addPackets(Collection<ROSPktFile> packets) {
+        this.packets.addAll(packets);
     }
 }
