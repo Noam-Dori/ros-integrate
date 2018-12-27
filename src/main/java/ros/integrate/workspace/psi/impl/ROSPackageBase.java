@@ -2,7 +2,6 @@ package ros.integrate.workspace.psi.impl;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.Language;
-import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Queryable;
 import com.intellij.openapi.util.TextRange;
@@ -24,7 +23,7 @@ import java.util.Map;
 
 public abstract class ROSPackageBase extends PsiElementBase implements ROSPackage, Queryable {
     @NotNull
-    protected final XmlFile pkgXml;
+    protected XmlFile pkgXml;
     @NotNull
     protected String name;
     @NotNull
@@ -38,7 +37,7 @@ public abstract class ROSPackageBase extends PsiElementBase implements ROSPackag
     }
 
     protected ROSPackageManager getPackageManager() {
-        return ServiceManager.getService(project,ROSPackageManager.class);
+        return project.getComponent(ROSPackageManager.class);
     }
 
     @Override

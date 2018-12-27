@@ -44,13 +44,18 @@
                          groupName="ROS" displayName="Type not in CamelCase"/>
 
         <!-- ROS workspace & package -->
-        <projectService serviceInterface="ros.integrate.workspace.ROSPackageManager"
-                        serviceImplementation="ros.integrate.workspace.ROSPackageManagerImpl"/>
     </extensions>
 
     <extensions defaultExtensionNs="ros.integrate">
         <packageFinder implementation="ros.integrate.workspace.ROSProjectPackageFinder"/>
     </extensions>
+
+    <project-components>
+        <component>
+            <interface-class>ros.integrate.workspace.ROSPackageManager</interface-class>
+            <implementation-class>ros.integrate.workspace.ROSPackageManagerImpl</implementation-class>
+        </component>
+    </project-components>
 
     <actions>
         <!-- Add your actions here -->

@@ -26,8 +26,7 @@ public class ROSSourcePackage extends ROSPackageBase {
         super(project,name,pkgXml);
         this.root = root;
         this.packets = new HashSet<>();
-        this.packets.addAll(packets);
-        packets.forEach(pkt -> pkt.setPackage(this));
+        addPackets(packets);
     }
 
     @Override
@@ -82,5 +81,23 @@ public class ROSSourcePackage extends ROSPackageBase {
     @Override
     public void addPackets(Collection<ROSPktFile> packets) {
         this.packets.addAll(packets);
+        packets.forEach(pkt -> pkt.setPackage(this));
+    }
+
+    @Override
+    public void setPackets(Collection<ROSPktFile> packets) {
+        removePackets(this.packets);
+        addPackets(packets);
+    }
+
+    @Override
+    public void removePackets(Collection<ROSPktFile> packets) {
+        packets.forEach(pkt -> pkt.setPackage(ORPHAN));
+        this.packets.removeAll(packets);
+    }
+
+    @Override
+    public void setPackageXml(XmlFile newPackageXml) {
+        pkgXml = newPackageXml;
     }
 }

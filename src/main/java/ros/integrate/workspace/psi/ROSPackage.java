@@ -87,6 +87,24 @@ public interface ROSPackage extends PsiCheckedRenameElement, NavigatablePsiEleme
      */
     void addPackets(Collection<ROSPktFile> packets);
 
+    /**
+     * add packets to this package and makes sure that these are the ONLY packets in the package.
+     * @param packets the collection of packages to add
+     */
+    void setPackets(Collection<ROSPktFile> packets);
+
+    /**
+     * removes packets from this package.
+     * @param packets the collection of packages to add
+     */
+    void removePackets(Collection<ROSPktFile> packets);
+
+    /**
+     * change this package's package.xml to this file
+     * @param newPackageXml the new package.xml file
+     */
+    void setPackageXml(XmlFile newPackageXml);
+
 //    /**
 //     * get all source files available for this package, compiled or source.
 //     * @param scope where to search if at all.
@@ -125,8 +143,7 @@ public interface ROSPackage extends PsiCheckedRenameElement, NavigatablePsiEleme
 //    PsiFile[] getFiles(@NotNull GlobalSearchScope scope);
 
     final class ROSOrphanPackage extends PsiElementBase implements ROSPackage {
-        private ROSOrphanPackage() {
-        }
+        private ROSOrphanPackage() {}
 
         @Override
         public String toString() {
@@ -176,6 +193,16 @@ public interface ROSPackage extends PsiCheckedRenameElement, NavigatablePsiEleme
 
         @Override
         public void addPackets(Collection<ROSPktFile> packets) {}
+
+        @Override
+        public void setPackets(Collection<ROSPktFile> packets) {}
+
+
+        @Override
+        public void removePackets(Collection<ROSPktFile> packets) {}
+
+        @Override
+        public void setPackageXml(XmlFile newPackageXml) { }
 
         @Override
         public void checkSetName(String name) {}

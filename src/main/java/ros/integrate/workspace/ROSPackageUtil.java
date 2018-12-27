@@ -1,9 +1,13 @@
 package ros.integrate.workspace;
 
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.vfs.newvfs.events.VFileCopyEvent;
 import com.intellij.openapi.vfs.newvfs.events.VFileCreateEvent;
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
+import com.intellij.openapi.vfs.newvfs.events.VFileMoveEvent;
 import com.intellij.psi.PsiDirectory;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.xml.XmlFile;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -16,7 +20,10 @@ class ROSPackageUtil {
     @Contract(pure = true)
     static boolean belongsToRoot(@NotNull PsiDirectory root, @NotNull VFileEvent event) {
         String rootPath = root.getVirtualFile().getPath();
-        return getParentOfEvent(event).getPath().contains(rootPath);
+        if(event instanceof VFileMoveEvent && ((VFileMoveEvent) event).getOldPath().contains(rootPath)) {
+            return true;
+        }
+        return event.getPath().contains(rootPath);
     }
 
     @NotNull
@@ -38,7 +45,33 @@ class ROSPackageUtil {
     @Nullable
     static VirtualFile getXml(@NotNull VFileEvent event) {
         if(isPackageXml(event)) {
-            return event.getFile();
-        } else return null;
+            return event instanceof VFileCopyEvent ?
+                    ((VFileCopyEvent) event).getNewParent().findChild(((VFileCopyEvent) event).getNewChildName())
+                    : event.getFile();
+        } else {
+            return null;
+        }
+    }
+
+    @Nullable
+    static XmlFile findPackageXml(@NotNull PsiDirectory root) {
+        for(PsiFile file : root.getFiles()) {
+            if(file.getName().equals(PACKAGE_XML)) {
+                return (XmlFile) file;
+            }
+        }
+        return null;
+    }
+
+    static int getRequiredSorts(VFileEvent event, PsiDirectory currentRoot) {
+        if(event instanceof VFileMoveEvent) {
+            String rootPath = currentRoot.getVirtualFile().getPath();
+            if(((VFileMoveEvent) event).getOldPath().contains(rootPath)
+                    && event.getPath().contains(rootPath)) {
+                return 1;
+            }
+            return 2;
+        }
+        return 1;
     }
 }

@@ -23,6 +23,10 @@ public class ROSPackageManagerImpl implements ROSPackageManager {
 
     public ROSPackageManagerImpl(@NotNull Project project) {
         this.project = project;
+    }
+
+    @Override
+    public void projectOpened() {
         findAndCachePackages();
         // add a watch to VirtualFileSystem that will trigger this
         project.getMessageBus().connect().subscribe(VirtualFileManager.VFS_CHANGES, new BulkFileListener() {
@@ -88,7 +92,6 @@ public class ROSPackageManagerImpl implements ROSPackageManager {
             switch (cmd) {
                 case DELETE: {
                     pkgCache.remove(pkg.getName());
-                    pkg.delete();
                     break;
                 }
                 case RENAME: {
@@ -106,11 +109,15 @@ public class ROSPackageManagerImpl implements ROSPackageManager {
     private void sortToLists(VFileEvent event, List<ROSPackage> affectedPackages,
                              List<VFileEvent> affectedOrphans) {
         // try to see if it falls under a package, if not put it under the orphan list
+        int successfulSorts = 0;
         for (ROSPackage pkg : getAllPackages()) {
             for (PsiDirectory root : pkg.getRoots()) {
                 if(ROSPackageUtil.belongsToRoot(root,event)) {
                     affectedPackages.add(pkg);
-                    return;
+                    successfulSorts++;
+                    if(ROSPackageUtil.getRequiredSorts(event,root) == successfulSorts) {
+                        return;
+                    }
                 }
             }
         }

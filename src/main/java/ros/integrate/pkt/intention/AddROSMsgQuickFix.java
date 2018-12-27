@@ -2,7 +2,6 @@ package ros.integrate.pkt.intention;
 
 import com.intellij.codeInsight.intention.impl.BaseIntentionAction;
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
@@ -60,7 +59,7 @@ public class AddROSMsgQuickFix extends BaseIntentionAction {
         PsiDocumentManager.getInstance(project).commitAllDocuments();
 
         Pair<String,String> fullMsgName = getFullName();
-        ROSPackageManager manager = ServiceManager.getService(project,ROSPackageManager.class);
+        ROSPackageManager manager = project.getComponent(ROSPackageManager.class);
         ROSPackage pkg = manager.findPackage(fullMsgName.first);
 
         NewROSMsgDialogue dialogue = new NewROSMsgDialogue(project, pkg == null || !pkg.isEditable() || pkg.getMsgRoot() == null ?

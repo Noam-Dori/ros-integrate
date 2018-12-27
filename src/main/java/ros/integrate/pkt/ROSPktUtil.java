@@ -1,6 +1,5 @@
 package ros.integrate.pkt;
 
-import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.search.GlobalSearchScope;
@@ -43,7 +42,7 @@ public class ROSPktUtil {
      * @return a non-null list containing all message files found via the query.
      */
     static List<ROSMsgFile> findMessages(@NotNull Project project, @Nullable ROSMsgFile exclude) {
-        ROSPackageManager manager = ServiceManager.getService(project,ROSPackageManager.class);
+        ROSPackageManager manager = project.getComponent(ROSPackageManager.class);
         List<ROSMsgFile> result = new ArrayList<>();
         List<ROSPackage> packages = manager.getAllPackages();
         for (ROSPackage pkg : packages) {
@@ -64,7 +63,7 @@ public class ROSPktUtil {
      */
     @Nullable
     public static ROSMsgFile findMessage(@NotNull Project project, @NotNull String pkgName, @NotNull String msgName) {
-        ROSPackageManager manager = ServiceManager.getService(project, ROSPackageManager.class);
+        ROSPackageManager manager = project.getComponent(ROSPackageManager.class);
         final ROSPackage pkg = manager.findPackage(pkgName);
         return pkg != null ? pkg.findPacket(msgName, ROSMsgFile.class) : null;
     }

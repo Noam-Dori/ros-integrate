@@ -93,7 +93,6 @@ public class ROSProjectPackageFinder implements ROSPackageFinder {
             if(newPkg != ROSPackage.ORPHAN) {
                 ret.putValue(newPkg, event);
             }
-            projectEvents.remove(event);
         });
         sortEventsByPkgRoot(projectEvents, ret);
         return ret;
@@ -105,18 +104,24 @@ public class ROSProjectPackageFinder implements ROSPackageFinder {
         if(!(pkg instanceof ROSSourcePackage)) {
             return null;
         } // this has one sole root.
-        if(pkg.getRoots()[0] == null) {
+        if(notInProject(project, pkg.getRoots()[0].getVirtualFile())) { // something is up with the root
+            if(pkg.getRoots()[0].getParentDirectory() != null && // check parent - if its in the project, the dir was deleted.
+                    notInProject(project, pkg.getRoots()[0].getParentDirectory().getVirtualFile())) {
+                return null;
+            }
             return CacheCommand.DELETE;
-        } // must be done since the root is so critical.
-        if(!ProjectRootManager.getInstance(project).getFileIndex().isInContent(pkg.getRoots()[0].getVirtualFile())) {
-            return null;
         }
         // 1. check package XML exists. if some don't -> return DELETE.
-        if(pkg.getPackageXml() == null) {
+        XmlFile newXml = ROSPackageUtil.findPackageXml(pkg.getRoots()[0]);
+        if(newXml == null) {
             return CacheCommand.DELETE;
         }
+        // if package.xml was changed, change it in the package.
+        if(!newXml.equals(pkg.getPackageXml())) {
+            pkg.setPackageXml(newXml);
+        }
         // 2. check for new packets in root & apply changes
-        pkg.addPackets(findPacketFiles(pkg.getRoots()[0]));
+        pkg.setPackets(findPacketFiles(pkg.getRoots()[0]));
         // 3. check new name of PSI directory (XML in the future. if renamed -> set RENAME and continue)
         if(!pkg.getRoots()[0].getName().equals(pkg.getName())) { // change to XML eventually
             pkg.setName(pkg.getRoots()[0].getName());
@@ -124,6 +129,10 @@ public class ROSProjectPackageFinder implements ROSPackageFinder {
         } else {
             return CacheCommand.NONE;
         }
+    }
+
+    private boolean notInProject(Project project, VirtualFile vFile) {
+        return !ProjectRootManager.getInstance(project).getFileIndex().isInContent(vFile);
     }
 
     private boolean belongsToProject(VFileEvent event, Project project) {
@@ -136,6 +145,9 @@ public class ROSProjectPackageFinder implements ROSPackageFinder {
     }
 
     private void sortSingleEvent(@NotNull VFileEvent event, @NotNull MultiMap<ROSPackage, VFileEvent> map) {
+        if(map.containsScalarValue(event)) {
+            return;
+        }
         for (ROSPackage pkg : map.keySet()) {
             for (PsiDirectory root : pkg.getRoots()) {
                 if (ROSPackageUtil.belongsToRoot(root, event)) {

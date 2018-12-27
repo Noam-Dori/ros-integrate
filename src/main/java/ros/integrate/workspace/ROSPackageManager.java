@@ -1,11 +1,12 @@
 package ros.integrate.workspace;
 
+import com.intellij.openapi.components.ProjectComponent;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.workspace.psi.ROSPackage;
 
 import java.util.List;
 
-public interface ROSPackageManager {
+public interface ROSPackageManager extends ProjectComponent {
     /**
      * retrieves all packages in the cache (and tries to find more)
      * @return all packages the project knows about.
