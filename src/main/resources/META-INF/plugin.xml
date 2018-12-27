@@ -1,5 +1,5 @@
 <idea-plugin>
-    <id>ros-integrate</id>
+    <id>ros.integrate</id>
     <name>ROS Support</name>
     <vendor email="TheNODO55@gmail.com">Noam Dori</vendor>
     <idea-version since-build="182.3684"/>
@@ -12,6 +12,10 @@
          on how to target different products -->
     <!-- this should be changed to CLion when done -->
     <depends>com.intellij.modules.lang</depends>
+
+    <extensionPoints>
+        <extensionPoint name="packageFinder" interface="ros.integrate.workspace.ROSPackageFinder"/>
+    </extensionPoints>
 
     <extensions defaultExtensionNs="com.intellij">
         <spellchecker.bundledDictionaryProvider implementation="ros.integrate.ROSBundledDictionaryProvider"/>
@@ -32,7 +36,6 @@
         <colorSettingsPage implementation="ros.integrate.pkt.highlight.ROSPktColorSettings"/>
         <completion.contributor language="ROSPkt" implementationClass="ros.integrate.pkt.ROSPktCompletionContributor"/>
         <annotator language="ROSPkt" implementationClass="ros.integrate.pkt.annotate.ROSPktAnnotator"/>
-        <gotoSymbolContributor implementation="ros.integrate.pkt.ROSPktChooseByNameContributor"/>
         <nameSuggestionProvider implementation="ros.integrate.pkt.ROSPktNameSuggestionProvider" />
         <psi.referenceContributor language="ROSPkt" implementation="ros.integrate.pkt.ROSPktTypeReferenceContributor"/>
         <spellchecker.support language="ROSPkt" implementationClass="ros.integrate.pkt.ROSPktSpellcheckingStrategy"/>
@@ -40,10 +43,22 @@
         <localInspection language="ROSPkt" implementationClass="ros.integrate.pkt.inspection.CamelCaseInspection"
                          level="WARNING" enabledByDefault="true" shortName="type-not-camelcase"
                          groupName="ROS" displayName="Type not in CamelCase"/>
+
+        <!-- ROS workspace & package -->
     </extensions>
+
+    <extensions defaultExtensionNs="ros.integrate">
+        <packageFinder implementation="ros.integrate.workspace.ROSProjectPackageFinder"/>
+    </extensions>
+
+    <project-components>
+        <component>
+            <interface-class>ros.integrate.workspace.ROSPackageManager</interface-class>
+            <implementation-class>ros.integrate.workspace.ROSPackageManagerImpl</implementation-class>
+        </component>
+    </project-components>
 
     <actions>
         <!-- Add your actions here -->
     </actions>
-    <version/>
 </idea-plugin>

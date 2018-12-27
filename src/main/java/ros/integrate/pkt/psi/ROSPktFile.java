@@ -1,15 +1,17 @@
 package ros.integrate.pkt.psi;
 
 import com.intellij.extapi.psi.PsiFileBase;
-import com.intellij.lang.Language;
 import com.intellij.psi.FileViewProvider;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNameIdentifierOwner;
+import com.intellij.psi.PsiQualifiedNamedElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkt.ROSPktUtil;
+import ros.integrate.pkt.lang.ROSPktLanguage;
+import ros.integrate.workspace.psi.ROSPackage;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -20,9 +22,34 @@ import java.util.List;
  * an instance of a packet containing template file, sent by the ROS framework.
  * the class name is short for "ROS Packet File", which will be used throughout the language.
  */
-public abstract class ROSPktFile extends PsiFileBase implements PsiNameIdentifierOwner {
-    ROSPktFile(@NotNull FileViewProvider viewProvider, @NotNull Language language) {
-        super(viewProvider, language);
+public abstract class ROSPktFile extends PsiFileBase implements PsiNameIdentifierOwner, PsiQualifiedNamedElement {
+    private ROSPackage parentPackage;
+
+    ROSPktFile(@NotNull FileViewProvider viewProvider) {
+        super(viewProvider, ROSPktLanguage.INSTANCE);
+        parentPackage = ROSPackage.ORPHAN;
+    }
+
+    @Override
+    public String toString() {
+        return getQualifiedName() + getDotDefaultExtension();
+    }
+
+    /**
+     * @return the ROS package this pkt file belongs to.
+     */
+    public ROSPackage getPackage() {
+        return parentPackage;
+    }
+
+    public void setPackage(ROSPackage newPackage) {
+        parentPackage = newPackage;
+    }
+
+    @NotNull
+    @Override
+    public String getQualifiedName() {
+        return getPackage().getName() + "/" + getName();
     }
 
     /**

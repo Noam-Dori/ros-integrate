@@ -4,15 +4,14 @@ import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
+import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.TextRange;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkt.ROSPktUtil;
 import ros.integrate.pkt.intention.*;
 import ros.integrate.pkt.psi.*;
-
-import java.util.List;
-
 /**
  * an annotator dedicated to {@link ROSPktTypeBase}
  */
@@ -43,8 +42,6 @@ public class ROSPktTypeAnnotator extends ROSPktAnnotatorBase {
      * @return true if the annotation was activated, false if not.
      */
     boolean annTypeNotDefined() {
-        // TODO: Search outside project (include files) for 'slashed' msgs <CLION>
-        // TODO: if catkin is defined, use it to search for msgs. <CLION>
         if (unknownType()) {
             if(type.raw().getText().equals("Header")) {
                 Annotation ann = holder.createErrorAnnotation(type.raw().getTextRange(),
@@ -66,10 +63,23 @@ public class ROSPktTypeAnnotator extends ROSPktAnnotatorBase {
      * @return true if the type is not defined anywhere, false otherwise.
      */
     private boolean unknownType() {
-        List<String> types = ROSPktUtil.findMessageNames(type.getProject(), type.raw().getText(), null);
-        return types.isEmpty() && // found no message within project matching this field type.
-                !(type.raw().getText().equals("Header") && type.getParent().getNode().equals(getFirstField())) && // field is the header
-                !type.raw().getText().contains("/"); // message is defined outside project
+        Pair<String,String> name = getFullName();
+        ROSMsgFile message = ROSPktUtil.findMessage(type.getProject(), name.first, name.second );
+        return message == null && // found no message matching this field type.
+                !(type.raw().getText().equals("Header") && type.getParent().getNode().equals(getFirstField())); // field is the header
+    }
+
+    @NotNull
+    @Contract(" -> new")
+    private Pair<String,String> getFullName() {
+        String msg = type.raw().getText(), pkg;
+        if(msg.contains("/")) {
+            pkg = msg.replaceAll("/.*","");
+            msg = msg.replaceAll(".*/","");
+        } else {
+            pkg = ((ROSPktFile)type.getContainingFile().getOriginalFile()).getPackage().getName();
+        }
+        return new Pair<>(pkg,msg);
     }
 
     /**

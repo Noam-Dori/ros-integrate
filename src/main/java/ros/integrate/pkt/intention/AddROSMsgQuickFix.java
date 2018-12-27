@@ -8,15 +8,20 @@ import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.fileEditor.ex.IdeDocumentHistory;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.util.Pair;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.IncorrectOperationException;
+import org.jetbrains.annotations.Contract;
 import ros.integrate.pkt.dialogue.NewROSMsgDialogue;
 import ros.integrate.pkt.file.ROSMsgFileType;
 import ros.integrate.pkt.psi.ROSPktElementFactory;
 import ros.integrate.pkt.psi.ROSMsgFile;
 import org.jetbrains.annotations.NotNull;
+import ros.integrate.pkt.psi.ROSPktFile;
+import ros.integrate.workspace.ROSPackageManager;
+import ros.integrate.workspace.psi.ROSPackage;
 
 /**
  * a fix used to add new ROS messages when needed.
@@ -25,9 +30,11 @@ public class AddROSMsgQuickFix extends BaseIntentionAction {
 
     public AddROSMsgQuickFix(PsiElement fieldType) {
         type = fieldType;
+        origPkgName = ((ROSPktFile)type.getContainingFile().getOriginalFile()).getPackage().getName();
     }
 
     private PsiElement type;
+    private String origPkgName;
 
     @NotNull
     @Override
@@ -51,28 +58,48 @@ public class AddROSMsgQuickFix extends BaseIntentionAction {
             throws IncorrectOperationException {
         PsiDocumentManager.getInstance(project).commitAllDocuments();
 
-        NewROSMsgDialogue dialogue = new NewROSMsgDialogue(project,file.getContainingDirectory(),type.getText());
+        Pair<String,String> fullMsgName = getFullName();
+        ROSPackageManager manager = project.getComponent(ROSPackageManager.class);
+        ROSPackage pkg = manager.findPackage(fullMsgName.first);
+
+        NewROSMsgDialogue dialogue = new NewROSMsgDialogue(project, pkg == null || !pkg.isEditable() || pkg.getMsgRoot() == null ?
+                file.getContainingDirectory() : pkg.getMsgRoot(),fullMsgName.second);
         dialogue.show();
         if(dialogue.getExitCode() != DialogWrapper.OK_EXIT_CODE) {
             return;
         }
         ApplicationManager.getApplication().runWriteAction(() -> {
 
-            ROSMsgFile rosMsgFile = (ROSMsgFile) ROSPktElementFactory.createFile(dialogue.getFileName(), dialogue.getDirectory(), ROSMsgFileType.INSTANCE);
+            ROSMsgFile newMsg = (ROSMsgFile) ROSPktElementFactory.createFile(dialogue.getFileName(), dialogue.getDirectory(), ROSMsgFileType.INSTANCE).getOriginalFile();
+            newMsg.setPackage(pkg == null ? ROSPackage.ORPHAN : pkg);
 
             IdeDocumentHistory.getInstance(project).includeCurrentPlaceAsChangePlace();
 
-            if (!type.getText().equals(dialogue.getFileName())) {
-                type.replace(ROSPktElementFactory.createType(project, dialogue.getFileName()));
+            if (!type.getText().equals(newMsg.getQualifiedName())) {
+                type.replace(ROSPktElementFactory.createType(project,
+                        newMsg.getPackage().getName().equals(origPkgName) ? newMsg.getName() : newMsg.getQualifiedName()));
             }
 
-            OpenFileDescriptor descriptor = new OpenFileDescriptor(rosMsgFile.getProject(), rosMsgFile.getVirtualFile());
-            FileEditorManager.getInstance(rosMsgFile.getProject()).openTextEditor(descriptor, true);
+            OpenFileDescriptor descriptor = new OpenFileDescriptor(newMsg.getProject(), newMsg.getVirtualFile());
+            FileEditorManager.getInstance(newMsg.getProject()).openTextEditor(descriptor, true);
         });
     }
 
     @Override
     public boolean startInWriteAction() {
         return false;
+    }
+
+    @NotNull
+    @Contract(" -> new")
+    private Pair<String,String> getFullName() {
+        String msg = type.getText(), pkg;
+        if(msg.contains("/")) {
+            pkg = msg.replaceAll("/.*","");
+            msg = msg.replaceAll(".*/","");
+        } else {
+            pkg = origPkgName;
+        }
+        return new Pair<>(pkg,msg);
     }
 }
