@@ -20,7 +20,7 @@ dependencies {
 }
 
 intellij {
-    version '183.3647.12'
+    version '183.4284.148'
     updateSinceUntilBuild false
 }
 
@@ -33,11 +33,24 @@ sourceSets {
     }
 }
 
+String pluginVersion = '0.1.2'
+
 patchPluginXml {
-    version '0.1.1'
+    version pluginVersion
     changeNotes """
-        <p>0.2</p>
-            <li>added support for *.action files - equipped with all inspections for ROS messages and with its own file icon</li>
+        <p>0.1.2</p>
+        <ul>
+            <li>added support for *.action files - equipped with all inspections for ROS packets and with its own file icon</li>
+            <li>initial support for ROS Packages:
+                <ul>
+                    <li>introduced the concept of ROSPackage</li>
+                    <li>ROSPackages have their own qualified names, used to properly search for messages within packages</li>
+                    <li>message autocompletion will add packages when selected. Additional package info will appear as well</li>
+                    <!--<li>autocompletion for ROS packages which will also trigger another message autocompletion query</li>-->
+                </ul>
+            </li>
+            <!--<li>moving message files will also change their references accordingly</li>-->
+        </ul>
         <p>0.1.1</p>
         <ul>
             <li>renamed the ROSMsg language to ROSPkt - short for ROS Packet</li>
@@ -107,4 +120,4 @@ publishPlugin {
 }
 
 group 'ros.integrate'
-version '0.1.1'
+version pluginVersion
