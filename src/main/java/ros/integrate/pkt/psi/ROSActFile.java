@@ -9,7 +9,6 @@ import org.jetbrains.annotations.Nullable;
 import ros.integrate.ROSIcons;
 import ros.integrate.pkt.ROSPktUtil;
 import ros.integrate.pkt.file.ROSActFileType;
-import ros.integrate.pkt.lang.ROSPktLanguage;
 
 import javax.swing.*;
 
@@ -18,7 +17,7 @@ import javax.swing.*;
  */
 public class ROSActFile extends ROSPktFile {
     public ROSActFile(@NotNull FileViewProvider viewProvider) {
-        super(viewProvider, ROSPktLanguage.INSTANCE);
+        super(viewProvider);
     }
 
     @NotNull

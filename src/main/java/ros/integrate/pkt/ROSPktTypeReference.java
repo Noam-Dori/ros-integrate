@@ -8,6 +8,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.*;
 import com.intellij.psi.impl.source.resolve.reference.impl.providers.PsiFileReference;
+import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.ROSIcons;
@@ -23,16 +24,17 @@ import java.util.List;
 public class ROSPktTypeReference extends PsiReferenceBase<PsiElement> implements PsiFileReference {
     // note: myElement is the referencing element, and the result of resolve() is the original element (the file).
 
-    private @NotNull String msgName, pkgName;
+    @NotNull
+    private String msgName, pkgName;
 
     public ROSPktTypeReference(@NotNull PsiElement element, @NotNull TextRange textRange) {
         super(element, textRange);
         msgName = element.getText();
-        if(msgName.contains("/")) {
-            pkgName = msgName.replaceAll("/.*","");
-            msgName = msgName.replaceAll(".*/","");
+        if (msgName.contains("/")) {
+            pkgName = msgName.replaceAll("/.*", "");
+            msgName = msgName.replaceAll(".*/", "");
         } else {
-            pkgName = ((ROSPktFile)element.getContainingFile().getOriginalFile()).getPackage().getName();
+            pkgName = ((ROSPktFile) element.getContainingFile().getOriginalFile()).getPackage().getName();
         }
     }
 
@@ -41,7 +43,7 @@ public class ROSPktTypeReference extends PsiReferenceBase<PsiElement> implements
     public ResolveResult[] multiResolve(boolean incompleteCode) {
         Project project = myElement.getProject();
         ROSMsgFile file = ROSPktUtil.findMessage(project, pkgName, msgName);
-        if(file == null || file.equals(myElement.getContainingFile().getOriginalFile())) {
+        if (file == null || file.equals(myElement.getContainingFile().getOriginalFile())) {
             return ResolveResult.EMPTY_ARRAY;
         }
         return new ResolveResult[]{new PsiElementResolveResult(file)};
@@ -49,9 +51,9 @@ public class ROSPktTypeReference extends PsiReferenceBase<PsiElement> implements
 
     @Nullable
     @Override
-    public PsiElement resolve() {
+    public ROSMsgFile resolve() {
         ResolveResult[] resolveResults = multiResolve(false);
-        return resolveResults.length == 1 ? resolveResults[0].getElement() : null;
+        return resolveResults.length == 1 ? (ROSMsgFile) resolveResults[0].getElement() : null;
     }
 
     @NotNull
@@ -59,7 +61,7 @@ public class ROSPktTypeReference extends PsiReferenceBase<PsiElement> implements
     public Object[] getVariants() {
         Project project = myElement.getProject();
         PsiFile containingFile = myElement.getContainingFile().getOriginalFile();
-        final List<ROSMsgFile> messages = ROSPktUtil.findMessages(project, containingFile instanceof ROSMsgFile ? (ROSMsgFile) containingFile : null );
+        final List<ROSMsgFile> messages = ROSPktUtil.findMessages(project, containingFile instanceof ROSMsgFile ? (ROSMsgFile) containingFile : null);
         List<LookupElement> variants = new ArrayList<>();
         for (final ROSMsgFile msg : messages) {
             String fileName = msg.getName();
@@ -67,7 +69,7 @@ public class ROSPktTypeReference extends PsiReferenceBase<PsiElement> implements
                 variants.add(LookupElementBuilder.create(msg)
                         .withIcon(ROSIcons.MsgFile)
                         .withTypeText(msg.getQualifiedName())
-                        .withInsertHandler((context,item) -> addPackageName(context, msg))
+                        .withInsertHandler((context, item) -> addPackageName(context, msg))
                 );
             }
         }
@@ -77,13 +79,24 @@ public class ROSPktTypeReference extends PsiReferenceBase<PsiElement> implements
     private void addPackageName(@NotNull InsertionContext context, @NotNull ROSMsgFile msg) {
         CaretModel model = context.getEditor().getCaretModel();
 
-        model.getCurrentCaret().moveCaretRelatively(- msg.getName().length(),0,false,false);
+        model.getCurrentCaret().moveCaretRelatively(-msg.getName().length(), 0, false, false);
         // remove prev. package references if they exist
-        context.getDocument().deleteString(model.getVisualLineStart(),model.getOffset());
+        context.getDocument().deleteString(model.getVisualLineStart(), model.getOffset());
         // add new ref.
-        if(!msg.getPackage().getName().equals(((ROSPktFile)context.getFile()).getPackage().getName())) {
+        if (!msg.getPackage().getName().equals(((ROSPktFile) context.getFile()).getPackage().getName())) {
             context.getDocument().insertString(model.getOffset(), msg.getPackage().getName() + "/");
         }
-        model.getCurrentCaret().moveCaretRelatively(msg.getQualifiedName().length(),0,false,false);
+        model.getCurrentCaret().moveCaretRelatively(msg.getQualifiedName().length(), 0, false, false);
+    }
+
+    @Override
+    public PsiElement handleElementRename(@NotNull String newElementName) throws IncorrectOperationException {
+        String pkgPrefix = pkgName + "/";
+        // check if reference is in the same package as target.
+        ROSMsgFile referencer = (ROSMsgFile) myElement.getContainingFile().getOriginalFile();
+        if(referencer.getPackage().getName().equals(pkgName) || newElementName.contains("/")) {
+            pkgPrefix = "";
+        }
+        return super.handleElementRename(pkgPrefix + newElementName);
     }
 }
