@@ -138,6 +138,17 @@ public class ROSPackageManagerImpl implements ROSPackageManager {
         return pkgCache.get(pkgName);
     }
 
+    @Nullable
+    @Override
+    public ROSPackage findPackage(PsiDirectory childDirectory) {
+        for(ROSPackage pkg : pkgCache.values()) {
+            if(ROSPackageUtil.belongToPackage(pkg,childDirectory)) {
+                return pkg;
+            }
+        }
+        return null;
+    }
+
     @Override
     public void updatePackageName(ROSPackage pkg, String newName) {
         pkgCache.remove(pkg.getName());

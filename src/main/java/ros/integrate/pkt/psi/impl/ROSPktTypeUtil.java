@@ -113,9 +113,10 @@ class ROSPktTypeUtil {
         return type;
     }
 
+    @Contract(pure = true)
     @Nullable
-    static PsiElement getNameIdentifier(@NotNull ROSPktTypeBase type) {
-        return type.custom();
+    static PsiElement getNameIdentifier(@SuppressWarnings("unused") @NotNull ROSPktTypeBase type) {
+        return null;
     }
 
     @NotNull

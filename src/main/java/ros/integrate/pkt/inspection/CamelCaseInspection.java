@@ -42,7 +42,7 @@ public class CamelCaseInspection extends ROSPktInspectionBase {
 
     public ProblemDescriptor[] checkFile(@NotNull PsiFile file, @NotNull final InspectionManager manager, final boolean isOnTheFly) {
         if (!(file instanceof ROSMsgFile)) return null;
-        final List<ROSPktField> fields = ((ROSMsgFile)file).getFields();
+        final List<ROSPktField> fields = ((ROSMsgFile)file).getFields(ROSPktField.class);
         final List<ProblemDescriptor> descriptors = new SmartList<>();
         for (ROSPktField field : fields) {
             if(isSuppressedFor(field)) {continue;}

@@ -11,6 +11,7 @@ import com.intellij.psi.xml.XmlFile;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import ros.integrate.workspace.psi.ROSPackage;
 
 import java.util.Objects;
 
@@ -73,5 +74,14 @@ class ROSPackageUtil {
             return 2;
         }
         return 1;
+    }
+
+    static boolean belongToPackage(@NotNull ROSPackage pkg, PsiDirectory childDirectory) {
+        for (PsiDirectory root : pkg.getRoots()) {
+            if(childDirectory.getVirtualFile().getPath().contains(root.getVirtualFile().getPath())) {
+                return true;
+            }
+        }
+        return false;
     }
 }

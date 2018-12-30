@@ -94,11 +94,14 @@ public abstract class ROSPktFile extends PsiFileBase implements PsiNameIdentifie
     /**
      * gets all available (and valid) fields in this file.
      * @return a list of all available fields in this file in textual order.
+     * @param queryClass the class of which to search. If limited to complete fields, use {@link ROSPktField}
+     *                   if fragments need be searched use {@link ROSPktFieldFrag}.
+     *                   if you want both, use {@link ROSPktFieldBase}
      */
     @NotNull
-    public List<ROSPktField> getFields() {
-        List<ROSPktField> result = new ArrayList<>();
-        ROSPktField[] fields = PsiTreeUtil.getChildrenOfType(this, ROSPktField.class);
+    public <T extends ROSPktFieldBase> List<T> getFields(Class<T> queryClass) {
+        List<T> result = new ArrayList<>();
+        T[] fields = PsiTreeUtil.getChildrenOfType(this, queryClass);
         if (fields != null) {
             Collections.addAll(result, fields);
         }

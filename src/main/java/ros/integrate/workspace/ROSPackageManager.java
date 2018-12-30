@@ -1,6 +1,7 @@
 package ros.integrate.workspace;
 
 import com.intellij.openapi.components.ProjectComponent;
+import com.intellij.psi.PsiDirectory;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.workspace.psi.ROSPackage;
 
@@ -21,6 +22,14 @@ public interface ROSPackageManager extends ProjectComponent {
      */
     @Nullable
     ROSPackage findPackage(String pkgName);
+
+    /**
+     * finds a ROS package that contains the provided directory
+     * @param childDirectory the directory to use as a test whether or not the package is the right one.
+     * @return null is no package was found, otherwise, the package stored in the cache with that directory.
+     */
+    @Nullable
+    ROSPackage findPackage(PsiDirectory childDirectory);
 
     /**
      * updates the package's information in the cache.
