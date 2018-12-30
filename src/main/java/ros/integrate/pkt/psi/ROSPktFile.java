@@ -49,7 +49,7 @@ public abstract class ROSPktFile extends PsiFileBase implements PsiNameIdentifie
     @NotNull
     @Override
     public String getQualifiedName() {
-        return getPackage().getName() + "/" + getName();
+        return getPackage().getName() + "/" + getPacketName();
     }
 
     /**
@@ -155,10 +155,12 @@ public abstract class ROSPktFile extends PsiFileBase implements PsiNameIdentifie
         return null;
     }
 
+    /**
+     * @return the file's name without the extension
+     */
     @NotNull
-    @Override
-    public String getName() {
-        return ROSPktUtil.trimPktFileName(super.getName());
+    public String getPacketName() {
+        return ROSPktUtil.trimPktFileName(getName());
     }
 
     @NotNull

@@ -77,7 +77,7 @@ public class AddROSMsgQuickFix extends BaseIntentionAction {
 
             if (!type.getText().equals(newMsg.getQualifiedName())) {
                 type.replace(ROSPktElementFactory.createType(project,
-                        newMsg.getPackage().getName().equals(origPkgName) ? newMsg.getName() : newMsg.getQualifiedName()));
+                        newMsg.getPackage().getName().equals(origPkgName) ? newMsg.getPacketName() : newMsg.getQualifiedName()));
             }
 
             OpenFileDescriptor descriptor = new OpenFileDescriptor(newMsg.getProject(), newMsg.getVirtualFile());

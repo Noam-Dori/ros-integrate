@@ -15,6 +15,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkt.psi.ROSPktFieldBase;
 import ros.integrate.pkt.psi.ROSPktFile;
+import ros.integrate.pkt.psi.ROSPktTypeBase;
 import ros.integrate.workspace.ROSPackageManager;
 import ros.integrate.workspace.psi.ROSPackage;
 
@@ -32,13 +33,18 @@ public class MovePktFileHandler extends MoveFileHandler {
         ROSPackage oldPkg = pkt(file).getPackage();
         ROSPackage newPkg = file.getProject().getComponent(ROSPackageManager.class).findPackage(moveDestination);
         oldToNewMap.put(oldPkg, newPkg);
-        // updates the file's new package
-        pkt(file).setPackage(newPkg);
         // trigger references, auto-updating them.
-        pkt(file).getFields(ROSPktFieldBase.class).parallelStream().map(ROSPktFieldBase::getTypeBase)
-                .filter(type -> type.custom() != null).forEach(type -> type.getReference()
-                .handleElementRename(type.getText().replaceAll(".*/", "")));
-        pkt(file).setPackage(oldPkg);
+        for (ROSPktFieldBase field : pkt(file).getFields(ROSPktFieldBase.class)) {
+            ROSPktTypeBase type = field.getTypeBase();
+            if (type.custom() != null) {
+                PsiElement resolution = type.getReference().resolve();
+                if (resolution != null) {
+                    pkt(file).setPackage(newPkg);
+                    type.getReference().bindToElement(resolution);
+                    pkt(file).setPackage(oldPkg);
+                }
+            }
+        }
     }
 
     @Nullable
@@ -63,7 +69,7 @@ public class MovePktFileHandler extends MoveFileHandler {
 
     private void findNonCodeUsages(boolean searchInComments, boolean searchInNonCodeFiles,
                                    PsiFile psiFile, List<UsageInfo> results) {
-        String qName = pkt(psiFile).getQualifiedName(), name = pkt(psiFile).getName();
+        String qName = pkt(psiFile).getQualifiedName(), name = pkt(psiFile).getPacketName();
         TextOccurrencesUtil.findNonCodeUsages(psiFile, qName, searchInComments, searchInNonCodeFiles, qName, results);
         TextOccurrencesUtil.findNonCodeUsages(psiFile, name, searchInComments, searchInNonCodeFiles, qName, results);
     }

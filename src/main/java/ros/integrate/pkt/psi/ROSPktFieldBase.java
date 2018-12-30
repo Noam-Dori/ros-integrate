@@ -21,4 +21,7 @@ public interface ROSPktFieldBase extends PsiElement {
      * @return true is it is considered a valid type, false otherwise.
      */
     boolean isComplete();
+
+    @Override
+    ROSPktFile getContainingFile();
 }

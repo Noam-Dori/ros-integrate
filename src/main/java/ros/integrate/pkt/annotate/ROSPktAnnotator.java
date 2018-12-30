@@ -13,10 +13,9 @@ import ros.integrate.pkt.psi.*;
 public class ROSPktAnnotator implements Annotator {
     @Override
     public void annotate(@NotNull final PsiElement element, @NotNull AnnotationHolder holder) {
-        String msgName = element.getContainingFile().getName();
-
         if (element instanceof ROSPktFieldBase) {
             ROSPktFieldBase field = (ROSPktFieldBase) element;
+            String msgName = field.getContainingFile().getPacketName();
             ROSPktFieldAnnotator fieldAnnotator = new ROSPktFieldAnnotator(holder, field);
             ROSPktTypeAnnotator typeAnnotator = new ROSPktTypeAnnotator(holder, field.getTypeBase(), msgName);
             fieldAnnotator.annBadStructure();

@@ -11,9 +11,9 @@ import com.intellij.psi.impl.source.resolve.reference.impl.providers.PsiFileRefe
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import ros.integrate.ROSIcons;
 import ros.integrate.pkt.psi.ROSMsgFile;
 import ros.integrate.pkt.psi.ROSPktFile;
+import ros.integrate.pkt.psi.ROSPktTypeBase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,9 +27,9 @@ public class ROSPktTypeReference extends PsiReferenceBase<PsiElement> implements
     @NotNull
     private String msgName, pkgName;
 
-    public ROSPktTypeReference(@NotNull PsiElement element, @NotNull TextRange textRange) {
+    public ROSPktTypeReference(@NotNull ROSPktTypeBase element, @NotNull TextRange textRange) {
         super(element, textRange);
-        msgName = element.getText();
+        msgName = element.raw().getText();
         if (msgName.contains("/")) {
             pkgName = msgName.replaceAll("/.*", "");
             msgName = msgName.replaceAll(".*/", "");
@@ -64,10 +64,10 @@ public class ROSPktTypeReference extends PsiReferenceBase<PsiElement> implements
         final List<ROSMsgFile> messages = ROSPktUtil.findMessages(project, containingFile instanceof ROSMsgFile ? (ROSMsgFile) containingFile : null);
         List<LookupElement> variants = new ArrayList<>();
         for (final ROSMsgFile msg : messages) {
-            String fileName = msg.getName();
+            String fileName = msg.getPacketName();
             if (fileName.length() > 0) {
-                variants.add(LookupElementBuilder.create(msg)
-                        .withIcon(ROSIcons.MsgFile)
+                variants.add(LookupElementBuilder.createWithIcon(msg)
+                        .withPresentableText(msg.getPacketName())
                         .withTypeText(msg.getQualifiedName())
                         .withInsertHandler((context, item) -> addPackageName(context, msg))
                 );
@@ -79,7 +79,9 @@ public class ROSPktTypeReference extends PsiReferenceBase<PsiElement> implements
     private void addPackageName(@NotNull InsertionContext context, @NotNull ROSMsgFile msg) {
         CaretModel model = context.getEditor().getCaretModel();
 
-        model.getCurrentCaret().moveCaretRelatively(-msg.getName().length(), 0, false, false);
+        context.getDocument().deleteString(model.getOffset() - 4,model.getOffset());
+
+        model.getCurrentCaret().moveCaretRelatively(-msg.getPacketName().length(), 0, false, false);
         // remove prev. package references if they exist
         context.getDocument().deleteString(model.getVisualLineStart(), model.getOffset());
         // add new ref.
@@ -91,12 +93,28 @@ public class ROSPktTypeReference extends PsiReferenceBase<PsiElement> implements
 
     @Override
     public PsiElement handleElementRename(@NotNull String newElementName) throws IncorrectOperationException {
-        String pkgPrefix = pkgName + "/";
         // check if reference is in the same package as target.
         ROSMsgFile referencer = (ROSMsgFile) myElement.getContainingFile().getOriginalFile();
-        if(referencer.getPackage().getName().equals(pkgName) || newElementName.contains("/")) {
-            pkgPrefix = "";
+        String pkg, pkt;
+        if (newElementName.contains("/")) {
+            pkg = newElementName.replaceAll("/.*", "");
+            pkt = newElementName.replaceAll(".*/", "");
+        } else {
+            pkg = pkgName;
+            pkt = newElementName;
         }
-        return super.handleElementRename(pkgPrefix + newElementName);
+        if (referencer.getPackage().getName().equals(pkg)) {
+            return super.handleElementRename(pkt);
+        } else {
+            return super.handleElementRename(pkg + "/" + pkt);
+        }
+    }
+
+    @Override
+    public PsiElement bindToElement(@NotNull PsiElement element) throws IncorrectOperationException {
+        if(!(element instanceof ROSMsgFile)) {
+            throw new IncorrectOperationException("Cannot bind to " + element);
+        }
+        return handleElementRename(((ROSMsgFile)element).getQualifiedName());
     }
 }

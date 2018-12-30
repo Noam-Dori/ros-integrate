@@ -45,7 +45,7 @@ public class ROSSourcePackage extends ROSPackageBase {
     @Override
     public <T extends ROSPktFile> T findPacket(@NotNull String pktName, @NotNull Class<T> pktType) {
         ROSPktFile[] validFiles = packets.parallelStream()
-                .filter(pkt -> pkt.getName().equals(pktName)).toArray(ROSPktFile[]::new);
+                .filter(pkt -> pkt.getPacketName().equals(pktName)).toArray(ROSPktFile[]::new);
         if(validFiles.length > 1) {
             LOG.error("Found 2 messages with the same name in the same package.",
                     "Package name: " + name,

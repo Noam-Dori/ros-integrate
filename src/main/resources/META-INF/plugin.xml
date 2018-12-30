@@ -40,6 +40,7 @@
         <psi.referenceContributor language="ROSPkt" implementation="ros.integrate.pkt.ROSPktTypeReferenceContributor"/>
         <spellchecker.support language="ROSPkt" implementationClass="ros.integrate.pkt.ROSPktSpellcheckingStrategy"/>
         <moveFileHandler implementation="ros.integrate.pkt.MovePktFileHandler"/>
+        <renameHandler implementation="ros.integrate.pkt.ROSPktTypeInplaceRenameHandler"/>
 
         <localInspection language="ROSPkt" implementationClass="ros.integrate.pkt.inspection.CamelCaseInspection"
                          level="WARNING" enabledByDefault="true" shortName="type-not-camelcase"
