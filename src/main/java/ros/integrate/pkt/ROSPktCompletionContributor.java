@@ -5,9 +5,9 @@ import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.codeInsight.lookup.LookupManager;
 import com.intellij.openapi.editor.CaretModel;
-import com.intellij.openapi.extensions.Extensions;
 import com.intellij.patterns.PlatformPatterns;
 import com.intellij.psi.PsiElement;
+import com.intellij.refactoring.rename.NameSuggestionProvider;
 import com.intellij.util.ProcessingContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -15,10 +15,7 @@ import ros.integrate.pkt.lang.ROSPktLanguage;
 import ros.integrate.pkt.psi.ROSPktFieldBase;
 import ros.integrate.pkt.psi.ROSPktTypes;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /**
  * a class enabling and defining auto-completion within ROS messages
@@ -38,37 +35,40 @@ public class ROSPktCompletionContributor extends CompletionContributor {
                 PlatformPatterns.psiElement(ROSPktTypes.CUSTOM_TYPE).withLanguage(ROSPktLanguage.INSTANCE),
                 new CompletionProvider<CompletionParameters>() {
                     public void addCompletions(@NotNull CompletionParameters parameters,
-                                               ProcessingContext context,
+                                               @NotNull ProcessingContext context,
                                                @NotNull CompletionResultSet resultSet) {
-                        resultSet.addElement(LookupElementBuilder.create("Header")
-                                .withTypeText("std_msgs/Header data-type"));
-                        resultSet.addElement(LookupElementBuilder.create("string").bold()
-                                .withTypeText("string of characters"));
-                        resultSet.addElement(LookupElementBuilder.create("time").bold()
-                                .withTypeText("ROS time"));
-                        resultSet.addElement(LookupElementBuilder.create("duration").bold()
-                                .withTypeText("ROS duration"));
-                        resultSet.addElement(LookupElementBuilder.create("bool").bold()
-                                .withTypeText("1 or 0"));
-                        resultSet.addElement(LookupElementBuilder.create("float").bold()
-                                .withTypeText("floating point number")
-                                .withInsertHandler((insertionContext, item) ->
-                                        handleNumericalInserts(insertionContext,FLOAT_SIZES,FLOAT_SIZES[1])));
-                        resultSet.addElement(LookupElementBuilder.create("int").bold()
-                                .withTypeText("signed integral number")
-                                .withInsertHandler((insertionContext, item) ->
-                                        handleNumericalInserts(insertionContext,INTEGRAL_SIZES,INTEGRAL_SIZES[2])));
-                        resultSet.addElement(LookupElementBuilder.create("uint").bold()
-                                .withTypeText("unsigned integral number")
-                                .withInsertHandler((insertionContext, item) ->
-                                        handleNumericalInserts(insertionContext,INTEGRAL_SIZES,INTEGRAL_SIZES[0])));
+                        PsiElement element = parameters.getPosition();
+                        if(!element.getText().contains("/")) {
+                            resultSet.addElement(LookupElementBuilder.create("Header")
+                                    .withTypeText("std_msgs/Header data-type"));
+                            resultSet.addElement(LookupElementBuilder.create("string").bold()
+                                    .withTypeText("string of characters"));
+                            resultSet.addElement(LookupElementBuilder.create("time").bold()
+                                    .withTypeText("ROS time"));
+                            resultSet.addElement(LookupElementBuilder.create("duration").bold()
+                                    .withTypeText("ROS duration"));
+                            resultSet.addElement(LookupElementBuilder.create("bool").bold()
+                                    .withTypeText("1 or 0"));
+                            resultSet.addElement(LookupElementBuilder.create("float").bold()
+                                    .withTypeText("floating point number")
+                                    .withInsertHandler((insertionContext, item) ->
+                                            handleNumericalInserts(insertionContext, FLOAT_SIZES, FLOAT_SIZES[1])));
+                            resultSet.addElement(LookupElementBuilder.create("int").bold()
+                                    .withTypeText("signed integral number")
+                                    .withInsertHandler((insertionContext, item) ->
+                                            handleNumericalInserts(insertionContext, INTEGRAL_SIZES, INTEGRAL_SIZES[2])));
+                            resultSet.addElement(LookupElementBuilder.create("uint").bold()
+                                    .withTypeText("unsigned integral number")
+                                    .withInsertHandler((insertionContext, item) ->
+                                            handleNumericalInserts(insertionContext, INTEGRAL_SIZES, INTEGRAL_SIZES[0])));
+                        }
                     }
                 }
         );
         extend(CompletionType.BASIC,PlatformPatterns.psiElement(ROSPktTypes.NAME),
                 new CompletionProvider<CompletionParameters>() {
                     public void addCompletions(@NotNull CompletionParameters parameters,
-                                               ProcessingContext context,
+                                               @NotNull ProcessingContext context,
                                                @NotNull CompletionResultSet resultSet) {
                         ROSPktNameSuggestionProvider provider = findProvider();
                         PsiElement element = parameters.getPosition();
@@ -100,7 +100,7 @@ public class ROSPktCompletionContributor extends CompletionContributor {
 
     @Nullable
     private static ROSPktNameSuggestionProvider findProvider() {
-        Object[] extensions = Extensions.getExtensions(ROSPktNameSuggestionProvider.EP_NAME);
+        List<NameSuggestionProvider> extensions = ROSPktNameSuggestionProvider.EP_NAME.getExtensionList();
 
         for (Object extension : extensions) {
             if (extension instanceof ROSPktNameSuggestionProvider) {

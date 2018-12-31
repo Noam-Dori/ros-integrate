@@ -46,10 +46,11 @@ patchPluginXml {
                     <li>introduced the concept of ROSPackage</li>
                     <li>ROSPackages have their own qualified names, used to properly search for messages within packages</li>
                     <li>message autocompletion will add packages when selected. Additional package info will appear as well</li>
-                    <!--<li>autocompletion for ROS packages which will also trigger another message autocompletion query</li>-->
+                    <li>autocompletion for ROS packages which will also trigger another message autocompletion query</li>
+                    <li>autocompletion for messages now respects package names and will search within them</li>
                 </ul>
             </li>
-            <!--<li>moving message files will also change their references accordingly</li>-->
+            <li>moving message files will also change their references accordingly</li>
         </ul>
         <p>0.1.1</p>
         <ul>

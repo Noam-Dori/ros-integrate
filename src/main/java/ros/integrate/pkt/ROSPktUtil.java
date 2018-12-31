@@ -12,10 +12,7 @@ import ros.integrate.pkt.psi.ROSPktElementFactory;
 import ros.integrate.workspace.ROSPackageManager;
 import ros.integrate.workspace.psi.ROSPackage;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * a generic utility class regarding ROS messages and services.
@@ -38,13 +35,22 @@ public class ROSPktUtil {
     /**
      * finds all the message files in the provided project with additional options for filtering
      * @param project the project where to search for all messages
-     * @param exclude if null, will search for all files in the project. If not null, the provided file will be excluded from the search.
+     * @param pkgName if null, will search for all packages.
+     *                If not null, will search for a package with this name and if it is not found will return an empty list.
+     * @param exclude if null, will search for all files in the project.
+     *                If not null, the provided file will be excluded from the search.
      * @return a non-null list containing all message files found via the query.
      */
-    static List<ROSMsgFile> findMessages(@NotNull Project project, @Nullable ROSMsgFile exclude) {
+    static List<ROSMsgFile> findMessages(@NotNull Project project, @Nullable String pkgName, @Nullable ROSMsgFile exclude) {
         ROSPackageManager manager = project.getComponent(ROSPackageManager.class);
         List<ROSMsgFile> result = new ArrayList<>();
-        List<ROSPackage> packages = manager.getAllPackages();
+        List<ROSPackage> packages;
+        if(pkgName == null){
+            packages = manager.getAllPackages();
+        } else {
+            packages = new ArrayList<>();
+            Optional.ofNullable(manager.findPackage(pkgName)).ifPresent(packages::add);
+        }
         for (ROSPackage pkg : packages) {
             Arrays.stream(pkg.getPackets(GlobalSearchScope.allScope(project)))
                     .filter(pkt -> pkt instanceof ROSMsgFile && !pkt.equals(exclude))

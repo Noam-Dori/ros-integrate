@@ -26,6 +26,7 @@ public class ROSPktTypeReference extends PsiReferenceBase<PsiElement> implements
 
     @NotNull
     private String msgName, pkgName;
+    private boolean explicitPackage;
 
     public ROSPktTypeReference(@NotNull ROSPktTypeBase element, @NotNull TextRange textRange) {
         super(element, textRange);
@@ -33,8 +34,10 @@ public class ROSPktTypeReference extends PsiReferenceBase<PsiElement> implements
         if (msgName.contains("/")) {
             pkgName = msgName.replaceAll("/.*", "");
             msgName = msgName.replaceAll(".*/", "");
+            explicitPackage = true;
         } else {
             pkgName = ((ROSPktFile) element.getContainingFile().getOriginalFile()).getPackage().getName();
+            explicitPackage = false;
         }
     }
 
@@ -61,7 +64,13 @@ public class ROSPktTypeReference extends PsiReferenceBase<PsiElement> implements
     public Object[] getVariants() {
         Project project = myElement.getProject();
         PsiFile containingFile = myElement.getContainingFile().getOriginalFile();
-        final List<ROSMsgFile> messages = ROSPktUtil.findMessages(project, containingFile instanceof ROSMsgFile ? (ROSMsgFile) containingFile : null);
+        ROSMsgFile thisAsExclude = containingFile instanceof ROSMsgFile ? (ROSMsgFile) containingFile : null;
+        final List<ROSMsgFile> messages;
+        if(explicitPackage) {
+            messages = ROSPktUtil.findMessages(project, pkgName, thisAsExclude);
+        } else {
+            messages = ROSPktUtil.findMessages(project, null, thisAsExclude);
+        }
         List<LookupElement> variants = new ArrayList<>();
         for (final ROSMsgFile msg : messages) {
             String fileName = msg.getPacketName();
