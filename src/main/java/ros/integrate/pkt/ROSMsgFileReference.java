@@ -14,6 +14,8 @@ import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkt.psi.ROSMsgFile;
 import ros.integrate.pkt.psi.ROSPktFile;
 import ros.integrate.pkt.psi.ROSPktTypeBase;
+import ros.integrate.workspace.ROSPackageManager;
+import ros.integrate.workspace.psi.ROSPackage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,14 +23,14 @@ import java.util.List;
 /**
  * a class defining the references of {@link ros.integrate.pkt.psi.ROSPktTypeBase} to {@link ROSMsgFile}
  */
-public class ROSPktTypeReference extends PsiReferenceBase<PsiElement> implements PsiFileReference {
+public class ROSMsgFileReference extends PsiReferenceBase<PsiElement> implements PsiFileReference {
     // note: myElement is the referencing element, and the result of resolve() is the original element (the file).
 
     @NotNull
     private String msgName, pkgName;
     private boolean explicitPackage;
 
-    public ROSPktTypeReference(@NotNull ROSPktTypeBase element, @NotNull TextRange textRange) {
+    public ROSMsgFileReference(@NotNull ROSPktTypeBase element, @NotNull TextRange textRange) {
         super(element, textRange);
         msgName = element.raw().getText();
         if (msgName.contains("/")) {
@@ -63,6 +65,31 @@ public class ROSPktTypeReference extends PsiReferenceBase<PsiElement> implements
     @Override
     public Object[] getVariants() {
         Project project = myElement.getProject();
+        List<LookupElement> variants = new ArrayList<>();
+        addMessageVariants(project,variants);
+        addPackageVariants(project,variants);
+        return variants.toArray();
+    }
+
+    private void addPackageVariants(@NotNull Project project, List<LookupElement> variants) {
+        if(!explicitPackage) {
+            for (final ROSPackage pkg : project.getComponent(ROSPackageManager.class).getAllPackages()) {
+                if (pkg.getName().length() > 0) {
+                    variants.add(LookupElementBuilder.createWithIcon(pkg)
+                            .withInsertHandler((context, item) -> addSlash(context))
+                    );
+                }
+            }
+        }
+    }
+
+    private void addSlash(@NotNull InsertionContext context) {
+        CaretModel model = context.getEditor().getCaretModel();
+        context.getDocument().insertString(model.getOffset(),"/");
+        model.getCurrentCaret().moveCaretRelatively(1,0,false,false);
+    }
+
+    private void addMessageVariants(@NotNull Project project, List<LookupElement> variants) {
         PsiFile containingFile = myElement.getContainingFile().getOriginalFile();
         ROSMsgFile thisAsExclude = containingFile instanceof ROSMsgFile ? (ROSMsgFile) containingFile : null;
         final List<ROSMsgFile> messages;
@@ -71,10 +98,8 @@ public class ROSPktTypeReference extends PsiReferenceBase<PsiElement> implements
         } else {
             messages = ROSPktUtil.findMessages(project, null, thisAsExclude);
         }
-        List<LookupElement> variants = new ArrayList<>();
         for (final ROSMsgFile msg : messages) {
-            String fileName = msg.getPacketName();
-            if (fileName.length() > 0) {
+            if (msg.getPacketName().length() > 0) {
                 variants.add(LookupElementBuilder.createWithIcon(msg)
                         .withPresentableText(msg.getPacketName())
                         .withTypeText(msg.getQualifiedName())
@@ -82,7 +107,6 @@ public class ROSPktTypeReference extends PsiReferenceBase<PsiElement> implements
                 );
             }
         }
-        return variants.toArray();
     }
 
     private void addPackageName(@NotNull InsertionContext context, @NotNull ROSMsgFile msg) {

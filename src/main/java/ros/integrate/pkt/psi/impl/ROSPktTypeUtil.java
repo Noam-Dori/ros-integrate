@@ -9,7 +9,7 @@ import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import ros.integrate.pkt.ROSPktTypeReference;
+import ros.integrate.pkt.ROSMsgFileReference;
 import ros.integrate.pkt.psi.ROSPktElementFactory;
 import ros.integrate.pkt.psi.ROSPktType;
 import ros.integrate.pkt.psi.ROSPktTypeBase;
@@ -125,7 +125,7 @@ class ROSPktTypeUtil {
         PsiElement raw = type.raw();
         int location = raw.getText().indexOf('/');
         TextRange range = new TextRange(location + 1, raw.getText().length());
-        return new ROSPktTypeReference(type, range);
+        return new ROSMsgFileReference(type, range);
     }
 
     @NotNull

@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkt.psi.ROSPktFile;
 
+import javax.swing.*;
 import java.util.Collection;
 
 /**
@@ -32,6 +33,9 @@ public interface ROSPackage extends PsiCheckedRenameElement, NavigatablePsiEleme
     @Override
     @NotNull
     String getName();
+
+    @Override
+    Icon getIcon(int flags);
 
     /**
      * Returns the list of packet files in directories corresponding to the package in the specified

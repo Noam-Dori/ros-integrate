@@ -9,7 +9,7 @@ import ros.integrate.pkt.psi.ROSPktTypeBase;
 /**
  * a class enabling references in ROS messages.
  */
-public class ROSPktTypeReferenceContributor extends PsiReferenceContributor {
+public class ROSMsgFileReferenceContributor extends PsiReferenceContributor {
     @Override
     public void registerReferenceProviders(@NotNull PsiReferenceRegistrar registrar) {
         registrar.registerReferenceProvider(PlatformPatterns.psiElement(ROSPktTypeBase.class),

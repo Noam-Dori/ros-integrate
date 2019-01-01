@@ -8,8 +8,10 @@ import com.intellij.psi.xml.XmlFile;
 import com.intellij.util.containers.hash.HashSet;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import ros.integrate.ROSIcons;
 import ros.integrate.pkt.psi.ROSPktFile;
 
+import javax.swing.*;
 import java.util.Collection;
 import java.util.Set;
 
@@ -99,5 +101,11 @@ public class ROSSourcePackage extends ROSPackageBase {
     @Override
     public void setPackageXml(XmlFile newPackageXml) {
         pkgXml = newPackageXml;
+    }
+
+    @Nullable
+    @Override
+    public Icon getIcon(int flags) {
+        return ROSIcons.SrcPkg;
     }
 }

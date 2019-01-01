@@ -7,6 +7,7 @@ import com.intellij.openapi.ui.Queryable;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
 import com.intellij.psi.impl.PsiElementBase;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.xml.XmlFile;
@@ -147,5 +148,29 @@ public abstract class ROSPackageBase extends PsiElementBase implements ROSPackag
     @Override
     public PsiElement findElementAt(int offset) {
         return null;
+    }
+
+    @Override
+    public boolean isValid() {
+        return !project.isDisposed()
+                && project.getComponent(ROSPackageManager.class).findPackage(name) != null
+                && getRoots().length > 0;
+    }
+
+    @Override
+    public PsiFile getContainingFile() {
+        return null;
+    }
+
+    @NotNull
+    @Override
+    public PsiElement getNavigationElement() {
+        return getRoots()[0];
+    }
+
+    @Override
+    @NotNull
+    public Project getProject() {
+        return project;
     }
 }

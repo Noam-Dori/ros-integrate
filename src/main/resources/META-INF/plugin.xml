@@ -37,7 +37,7 @@
         <completion.contributor language="ROSPkt" implementationClass="ros.integrate.pkt.ROSPktCompletionContributor"/>
         <annotator language="ROSPkt" implementationClass="ros.integrate.pkt.annotate.ROSPktAnnotator"/>
         <nameSuggestionProvider implementation="ros.integrate.pkt.ROSPktNameSuggestionProvider" />
-        <psi.referenceContributor language="ROSPkt" implementation="ros.integrate.pkt.ROSPktTypeReferenceContributor"/>
+        <psi.referenceContributor language="ROSPkt" implementation="ros.integrate.pkt.ROSMsgFileReferenceContributor"/>
         <spellchecker.support language="ROSPkt" implementationClass="ros.integrate.pkt.ROSPktSpellcheckingStrategy"/>
         <moveFileHandler implementation="ros.integrate.pkt.MovePktFileHandler"/>
         <renameHandler implementation="ros.integrate.pkt.ROSPktTypeInplaceRenameHandler"/>
@@ -47,6 +47,7 @@
                          groupName="ROS" displayName="Type not in CamelCase"/>
 
         <!-- ROS workspace & package -->
+        <psi.referenceContributor language="ROSPkt" implementation="ros.integrate.workspace.ROSPackageReferenceContributor"/>
     </extensions>
 
     <extensions defaultExtensionNs="ros.integrate">
