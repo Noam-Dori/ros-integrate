@@ -3,6 +3,7 @@ package ros.integrate.pkt;
 import com.intellij.codeInsight.completion.InsertionContext;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
+import com.intellij.codeInsight.lookup.LookupManager;
 import com.intellij.openapi.editor.CaretModel;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
@@ -66,42 +67,42 @@ public class ROSMsgFileReference extends PsiReferenceBase<PsiElement> implements
     public Object[] getVariants() {
         Project project = myElement.getProject();
         List<LookupElement> variants = new ArrayList<>();
-        addMessageVariants(project,variants);
-        addPackageVariants(project,variants);
+        addMessageVariants(project, variants, null);
+        addPackageVariants(project, variants);
         return variants.toArray();
     }
 
     private void addPackageVariants(@NotNull Project project, List<LookupElement> variants) {
-        if(!explicitPackage) {
+        if (!explicitPackage) {
             for (final ROSPackage pkg : project.getComponent(ROSPackageManager.class).getAllPackages()) {
                 if (pkg.getName().length() > 0) {
                     variants.add(LookupElementBuilder.createWithIcon(pkg)
-                            .withInsertHandler((context, item) -> addSlash(context))
+                            .withInsertHandler((context, item) -> addSlash(context, project, pkg))
                     );
                 }
             }
         }
     }
 
-    private void addSlash(@NotNull InsertionContext context) {
+    private void addSlash(@NotNull InsertionContext context, @NotNull Project project, ROSPackage pkg) {
         CaretModel model = context.getEditor().getCaretModel();
-        context.getDocument().insertString(model.getOffset(),"/");
-        model.getCurrentCaret().moveCaretRelatively(1,0,false,false);
+        context.getDocument().insertString(model.getOffset(), "/");
+        model.getCurrentCaret().moveCaretRelatively(1, 0, false, false);
+
+        List<LookupElement> variants = new ArrayList<>();
+        addMessageVariants(project, variants, pkg.getName());
+
+        LookupManager.getInstance(project).showLookup(context.getEditor(), variants.toArray(LookupElement.EMPTY_ARRAY));
     }
 
-    private void addMessageVariants(@NotNull Project project, List<LookupElement> variants) {
+    private void addMessageVariants(@NotNull Project project, List<LookupElement> variants, @Nullable String forcedPkg) {
         PsiFile containingFile = myElement.getContainingFile().getOriginalFile();
         ROSMsgFile thisAsExclude = containingFile instanceof ROSMsgFile ? (ROSMsgFile) containingFile : null;
-        final List<ROSMsgFile> messages;
-        if(explicitPackage) {
-            messages = ROSPktUtil.findMessages(project, pkgName, thisAsExclude);
-        } else {
-            messages = ROSPktUtil.findMessages(project, null, thisAsExclude);
-        }
-        for (final ROSMsgFile msg : messages) {
+        final String lookupPkg = forcedPkg != null ? forcedPkg : explicitPackage ? pkgName : null;
+        for (final ROSMsgFile msg : ROSPktUtil.findMessages(project, lookupPkg, thisAsExclude)) {
             if (msg.getPacketName().length() > 0) {
-                variants.add(LookupElementBuilder.createWithIcon(msg)
-                        .withPresentableText(msg.getPacketName())
+                variants.add(LookupElementBuilder.create(msg.getPacketName())
+                        .withIcon(msg.getIcon(0))
                         .withTypeText(msg.getQualifiedName())
                         .withInsertHandler((context, item) -> addPackageName(context, msg))
                 );
@@ -111,8 +112,6 @@ public class ROSMsgFileReference extends PsiReferenceBase<PsiElement> implements
 
     private void addPackageName(@NotNull InsertionContext context, @NotNull ROSMsgFile msg) {
         CaretModel model = context.getEditor().getCaretModel();
-
-        context.getDocument().deleteString(model.getOffset() - 4,model.getOffset());
 
         model.getCurrentCaret().moveCaretRelatively(-msg.getPacketName().length(), 0, false, false);
         // remove prev. package references if they exist
@@ -145,9 +144,9 @@ public class ROSMsgFileReference extends PsiReferenceBase<PsiElement> implements
 
     @Override
     public PsiElement bindToElement(@NotNull PsiElement element) throws IncorrectOperationException {
-        if(!(element instanceof ROSMsgFile)) {
+        if (!(element instanceof ROSMsgFile)) {
             throw new IncorrectOperationException("Cannot bind to " + element);
         }
-        return handleElementRename(((ROSMsgFile)element).getQualifiedName());
+        return handleElementRename(((ROSMsgFile) element).getQualifiedName());
     }
 }
