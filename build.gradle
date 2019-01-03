@@ -43,11 +43,13 @@ patchPluginXml {
             <li>added support for *.action files - equipped with all inspections for ROS packets and with its own file icon</li>
             <li>initial support for ROS Packages:
                 <ul>
-                    <li>introduced the concept of ROSPackage</li>
+                    <li>introduced the concept of ROSPackage - the package containing all the files for a module in ROS!</li>
+                    <li>packages also have their own icon</li>
                     <li>ROSPackages have their own qualified names, used to properly search for messages within packages</li>
                     <li>message autocompletion will add packages when selected. Additional package info will appear as well</li>
                     <li>autocompletion for ROS packages which will also trigger another message autocompletion query</li>
                     <li>autocompletion for messages now respects package names and will search within them</li>
+                    <li>package prefixes within files can be used to refactor packages</li>
                 </ul>
             </li>
             <li>moving message files will also change their references accordingly</li>

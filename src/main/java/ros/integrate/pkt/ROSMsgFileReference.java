@@ -5,6 +5,7 @@ import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.codeInsight.lookup.LookupManager;
 import com.intellij.openapi.editor.CaretModel;
+import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.*;
@@ -84,15 +85,24 @@ public class ROSMsgFileReference extends PsiReferenceBase<PsiElement> implements
         }
     }
 
-    private void addSlash(@NotNull InsertionContext context, @NotNull Project project, ROSPackage pkg) {
+    private void addSlash(@NotNull InsertionContext context, @NotNull Project project, @NotNull ROSPackage pkg) {
         CaretModel model = context.getEditor().getCaretModel();
-        context.getDocument().insertString(model.getOffset(), "/");
-        model.getCurrentCaret().moveCaretRelatively(1, 0, false, false);
+        Document document = context.getDocument();
+        final String prevName;
+
+        if(document.getTextLength() > model.getOffset() && document.getText(new TextRange(model.getOffset(),model.getOffset() + 1)).equals("/")) {
+            prevName = document.getText(new TextRange(model.getOffset() + 1, model.getVisualLineEnd())).replaceAll("( .*)?\n?","");
+            model.getCurrentCaret().moveCaretRelatively(prevName.length() + 1, 0, false, false);
+        } else {
+            document.insertString(model.getOffset(), "/");
+            model.getCurrentCaret().moveCaretRelatively(1, 0, false, false);
+            prevName = "";
+        }
 
         List<LookupElement> variants = new ArrayList<>();
         addMessageVariants(project, variants, pkg.getName());
 
-        LookupManager.getInstance(project).showLookup(context.getEditor(), variants.toArray(LookupElement.EMPTY_ARRAY));
+        LookupManager.getInstance(project).showLookup(context.getEditor(), variants.toArray(LookupElement.EMPTY_ARRAY),prevName);
     }
 
     private void addMessageVariants(@NotNull Project project, List<LookupElement> variants, @Nullable String forcedPkg) {
@@ -126,7 +136,7 @@ public class ROSMsgFileReference extends PsiReferenceBase<PsiElement> implements
     @Override
     public PsiElement handleElementRename(@NotNull String newElementName) throws IncorrectOperationException {
         // check if reference is in the same package as target.
-        ROSMsgFile referencer = (ROSMsgFile) myElement.getContainingFile().getOriginalFile();
+        ROSPktFile referencer = (ROSPktFile) myElement.getContainingFile().getOriginalFile();
         String pkg, pkt;
         if (newElementName.contains("/")) {
             pkg = newElementName.replaceAll("/.*", "");

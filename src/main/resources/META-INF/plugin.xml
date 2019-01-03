@@ -48,6 +48,7 @@
 
         <!-- ROS workspace & package -->
         <psi.referenceContributor language="ROSPkt" implementation="ros.integrate.workspace.ROSPackageReferenceContributor"/>
+        <iconProvider implementation="ros.integrate.workspace.ROSPackageIconProvider" order="first"/>
     </extensions>
 
     <extensions defaultExtensionNs="ros.integrate">

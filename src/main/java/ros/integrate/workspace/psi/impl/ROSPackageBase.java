@@ -62,7 +62,7 @@ public abstract class ROSPackageBase extends PsiElementBase implements ROSPackag
     @Override
     public void checkSetName(String name) throws IncorrectOperationException {
         if(getPackageManager().findPackage(name) != null) {
-            throw new IncorrectOperationException("A package with named \"" +
+            throw new IncorrectOperationException("A package named \"" +
                     name + "\" already exists! remove or updatePackageName it first.");
         }
     }

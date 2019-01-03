@@ -7,6 +7,7 @@ import com.intellij.psi.PsiElementResolveResult;
 import com.intellij.psi.PsiReferenceBase;
 import com.intellij.psi.ResolveResult;
 import com.intellij.psi.impl.source.resolve.reference.impl.providers.PsiFileReference;
+import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkt.psi.ROSPktTypeBase;
@@ -45,30 +46,17 @@ public class ROSPackageReference extends PsiReferenceBase<PsiElement> implements
         return resolveResults.length == 1 ? (ROSPackage) resolveResults[0].getElement() : null;
     }
 
-//    @Override
-//    public PsiElement handleElementRename(@NotNull String newElementName) throws IncorrectOperationException {
-//        // check if reference is in the same package as target.
-//        ROSMsgFile referencer = (ROSMsgFile) myElement.getContainingFile().getOriginalFile();
-//        String pkg, pkt;
-//        if (newElementName.contains("/")) {
-//            pkg = newElementName.replaceAll("/.*", "");
-//            pkt = newElementName.replaceAll(".*/", "");
-//        } else {
-//            pkg = pkgName;
-//            pkt = newElementName;
-//        }
-//        if (referencer.getPackage().getName().equals(pkg)) {
-//            return super.handleElementRename(pkt);
-//        } else {
-//            return super.handleElementRename(pkg + "/" + pkt);
-//        }
-//    }
-//
-//    @Override
-//    public PsiElement bindToElement(@NotNull PsiElement element) throws IncorrectOperationException {
-//        if(!(element instanceof ROSMsgFile)) {
-//            throw new IncorrectOperationException("Cannot bind to " + element);
-//        }
-//        return handleElementRename(((ROSMsgFile)element).getQualifiedName());
-//    }
+    @Override
+    public PsiElement handleElementRename(@NotNull String newElementName) throws IncorrectOperationException {
+        String pkt = myElement.getText().replaceAll(".*/","");
+        return super.handleElementRename(newElementName.equals(pkgName) ? "" : (newElementName + "/") + pkt);
+    }
+
+    @Override
+    public PsiElement bindToElement(@NotNull PsiElement element) throws IncorrectOperationException {
+        if(!(element instanceof ROSPackage)) {
+            throw new IncorrectOperationException("Cannot bind to " + element);
+        }
+        return handleElementRename(((ROSPackage)element).getName());
+    }
 }
