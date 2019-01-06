@@ -1,5 +1,5 @@
 <idea-plugin>
-    <id>ros.integrate</id>
+    <id>ros-integrate</id>
     <name>ROS Support</name>
     <vendor email="TheNODO55@gmail.com">Noam Dori</vendor>
     <idea-version since-build="183.4284"/>
@@ -51,7 +51,7 @@
         <iconProvider implementation="ros.integrate.workspace.ROSPackageIconProvider" order="first"/>
     </extensions>
 
-    <extensions defaultExtensionNs="ros.integrate">
+    <extensions defaultExtensionNs="ros-integrate">
         <packageFinder implementation="ros.integrate.workspace.ROSProjectPackageFinder"/>
     </extensions>
 
