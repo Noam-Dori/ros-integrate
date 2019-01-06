@@ -2,6 +2,7 @@ package ros.integrate.workspace;
 
 import com.intellij.ide.highlighter.XmlFileType;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -9,8 +10,10 @@ import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
+import com.intellij.psi.PsiReference;
 import com.intellij.psi.search.FileTypeIndex;
 import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.psi.search.searches.ReferencesSearch;
 import com.intellij.psi.xml.XmlFile;
 import com.intellij.util.containers.MultiMap;
 import com.intellij.util.containers.SortedList;
@@ -124,7 +127,13 @@ public class ROSProjectPackageFinder implements ROSPackageFinder {
         pkg.setPackets(findPacketFiles(pkg.getRoots()[0]));
         // 3. check new name of PSI directory (XML in the future. if renamed -> set RENAME and continue)
         if(!pkg.getRoots()[0].getName().equals(pkg.getName())) { // change to XML eventually
-            pkg.setName(pkg.getRoots()[0].getName());
+            String newName = pkg.getRoots()[0].getName();
+            DumbService.getInstance(project).smartInvokeLater(() -> {
+                for (PsiReference ref : ReferencesSearch.search(pkg,GlobalSearchScope.projectScope(project))) {
+                    ref.handleElementRename(newName);
+                }
+                pkg.setName(newName);
+            });
             return CacheCommand.RENAME;
         } else {
             return CacheCommand.NONE;
