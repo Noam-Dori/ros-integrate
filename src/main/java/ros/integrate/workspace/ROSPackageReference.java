@@ -49,7 +49,7 @@ public class ROSPackageReference extends PsiReferenceBase<PsiElement> implements
     @Override
     public PsiElement handleElementRename(@NotNull String newElementName) throws IncorrectOperationException {
         String pkt = myElement.getText().replaceAll(".*/","");
-        return super.handleElementRename(newElementName.equals(pkgName) ? "" : (newElementName + "/") + pkt);
+        return super.handleElementRename((newElementName.equals(pkgName) ? "" : (newElementName + "/")) + pkt);
     }
 
     @Override
