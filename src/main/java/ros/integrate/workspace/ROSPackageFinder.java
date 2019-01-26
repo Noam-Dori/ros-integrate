@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentMap;
  * an extension point used to find and add ROS packages to the cache
  */
 public interface ROSPackageFinder {
-    ExtensionPointName<ROSPackageFinder> EP_NAME = ExtensionPointName.create("ros.integrate.packageFinder");
+    ExtensionPointName<ROSPackageFinder> EP_NAME = ExtensionPointName.create("ros-integrate.packageFinder");
 
     /**
      * the main action which finds ROS packages based on their key-files,

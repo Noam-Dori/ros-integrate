@@ -6,6 +6,7 @@
       <module name="ros-integrate_integrationTest" target="1.8" />
       <module name="ros-integrate_java" target="1.8" />
       <module name="ros-integrate_main" target="1.8" />
+      <module name="ros.integrate-ros-integrate_main" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>
