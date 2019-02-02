@@ -47,7 +47,7 @@
                          groupName="ROS" displayName="Type not in CamelCase"/>
 
         <!-- ROS workspace & package -->
-        <psi.referenceContributor language="ROSPkt" implementation="ros.integrate.workspace.ROSPackageReferenceContributor"/>
+        <psi.referenceContributor language="ROSPkt" implementation="ros.integrate.workspace.ref.ROSPktTypeReferenceContributor"/>
         <iconProvider implementation="ros.integrate.workspace.ROSPackageIconProvider" order="first"/>
     </extensions>
 

@@ -50,6 +50,7 @@ patchPluginXml {
                     <li>autocompletion for ROS packages which will also trigger another message autocompletion query</li>
                     <li>autocompletion for messages now respects package names and will search within them</li>
                     <li>package prefixes within files can be used to refactor packages</li>
+                    <li>renaming directories will also refactor files accordingly</li>
                 </ul>
             </li>
             <li>moving message files will also change their references accordingly</li>

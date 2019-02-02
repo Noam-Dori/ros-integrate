@@ -124,7 +124,10 @@ public class ROSProjectPackageFinder implements ROSPackageFinder {
         pkg.setPackets(findPacketFiles(pkg.getRoots()[0]));
         // 3. check new name of PSI directory (XML in the future. if renamed -> set RENAME and continue)
         if(!pkg.getRoots()[0].getName().equals(pkg.getName())) { // change to XML eventually
-            pkg.setName(pkg.getRoots()[0].getName());
+            String newName = pkg.getRoots()[0].getName();
+            if(!pkg.getName().equals(newName)) {
+                pkg.setName(newName);
+            }
             return CacheCommand.RENAME;
         } else {
             return CacheCommand.NONE;
