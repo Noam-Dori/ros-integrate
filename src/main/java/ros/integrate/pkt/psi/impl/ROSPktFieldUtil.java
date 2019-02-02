@@ -64,8 +64,8 @@ class ROSPktFieldUtil {
                     ret |= i64;
                 } else { // uint
                     UnsignedLong integral = UnsignedLong.valueOf(num);
-                    if (integral.byteValue() == 0 || integral.byteValue() == 1) {
-                        ret = "bool".equals(type);
+                    if (isNotBigger(integral, MaxValue.BIT)) {
+                        ret = MaxValue.BIT.nameEquals(type);
                     }
                     ret |= isNotBigger(integral, MaxValue.INT8) && i8;
                     ret |= isNotBigger(integral, MaxValue.UINT8) && ui8;
@@ -111,8 +111,8 @@ class ROSPktFieldUtil {
                     return MaxValue.INT64.createType(project);
                 } else { // uint
                     UnsignedLong integral = UnsignedLong.valueOf(num);
-                    if (integral.byteValue() == 0 || integral.byteValue() == 1) {
-                        return ROSPktElementFactory.createType(project, "bool");
+                    if (isNotBigger(integral, MaxValue.BIT)) {
+                        return MaxValue.BIT.createType(project);
                     }
                     if (isNotBigger(integral, MaxValue.UINT8)) {
                         return MaxValue.UINT8.createType(project);
@@ -132,6 +132,7 @@ class ROSPktFieldUtil {
     }
 
     private enum MaxValue {
+        BIT(1,"bool"),
         INT8(Byte.MAX_VALUE, "int8"),
         UINT8((long) Byte.MAX_VALUE - Byte.MIN_VALUE, "uint8"),
         INT16(Short.MAX_VALUE, "int16"),
