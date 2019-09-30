@@ -171,6 +171,7 @@ class ROSPktFieldUtil {
         return unsignedLong.compareTo(value.getValue()) <= 0;
     }
 
+    @SuppressWarnings("SameReturnValue")
     @Contract(pure = true)
     static boolean isComplete(@SuppressWarnings("unused") @NotNull ROSPktField field) {
         return true;

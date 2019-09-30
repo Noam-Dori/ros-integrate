@@ -1,7 +1,16 @@
 package ros.integrate.workspace;
 
+import com.intellij.openapi.command.WriteCommandAction;
+import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.*;
+import com.intellij.openapi.roots.ModuleRootModificationUtil;
+import com.intellij.openapi.roots.OrderRootType;
+import com.intellij.openapi.roots.libraries.Library;
+import com.intellij.openapi.roots.libraries.LibraryTable;
+import com.intellij.openapi.roots.libraries.LibraryTablesRegistrar;
+import com.intellij.openapi.vfs.LocalFileSystem;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.openapi.vfs.newvfs.BulkFileListener;
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
 import com.intellij.psi.PsiDirectory;
@@ -27,6 +36,27 @@ public class ROSPackageManagerImpl implements ROSPackageManager {
 
     @Override
     public void projectOpened() {
+        WriteCommandAction.runWriteCommandAction(project,() -> {
+            String rosVersion = "kinetic";
+            String url = VirtualFileManager.constructUrl(LocalFileSystem.PROTOCOL,
+                    "C:/Users/theNO/IdeaProjects/ros/" + rosVersion);
+            LibraryTable table = LibraryTablesRegistrar.getInstance().getLibraryTable(project);
+            Library lib = table.getLibraryByName("ROS");
+            if (lib != null) {
+                table.removeLibrary(lib);
+            }
+            lib = table.createLibrary("ROS");
+            Library.ModifiableModel model = lib.getModifiableModel();
+            VirtualFile file = VirtualFileManager.getInstance().findFileByUrl(url);
+            if (file != null) {
+                model.addRoot(file, OrderRootType.SOURCES);
+                model.commit();
+            }
+
+            Library finalLib = lib;
+            Arrays.stream(ModuleManager.getInstance(project).getModules()).forEach(module ->
+                    ModuleRootModificationUtil.addDependency(module, finalLib));
+        });
         findAndCachePackages();
         // add a watch to VirtualFileSystem that will trigger this
         project.getMessageBus().connect().subscribe(VirtualFileManager.VFS_CHANGES, new BulkFileListener() {

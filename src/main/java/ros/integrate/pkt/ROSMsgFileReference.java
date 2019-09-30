@@ -10,17 +10,17 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.*;
 import com.intellij.psi.impl.source.resolve.reference.impl.providers.PsiFileReference;
+import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import ros.integrate.pkt.psi.ROSMsgFile;
-import ros.integrate.pkt.psi.ROSPktFile;
-import ros.integrate.pkt.psi.ROSPktTypeBase;
+import ros.integrate.pkt.psi.*;
 import ros.integrate.workspace.ROSPackageManager;
 import ros.integrate.workspace.psi.ROSPackage;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * a class defining the references of {@link ros.integrate.pkt.psi.ROSPktTypeBase} to {@link ROSMsgFile}
@@ -50,6 +50,10 @@ public class ROSMsgFileReference extends PsiReferenceBase<PsiElement> implements
     public ResolveResult[] multiResolve(boolean incompleteCode) {
         Project project = myElement.getProject();
         ROSMsgFile file = ROSPktUtil.findMessage(project, pkgName, msgName);
+        if (file == null && isFirstHeader(null)) {
+            return new ResolveResult[]{new PsiElementResolveResult(Objects.requireNonNull(
+                    ROSPktUtil.findMessage(project, "std_msgs", msgName)))};
+        }
         if (file == null || file.equals(myElement.getContainingFile().getOriginalFile())) {
             return ResolveResult.EMPTY_ARRAY;
         }
@@ -120,6 +124,11 @@ public class ROSMsgFileReference extends PsiReferenceBase<PsiElement> implements
         }
     }
 
+    /**
+     * adds completion context by reference.
+     * @param context the insertion context pointing to the original ROS pkt file that references another file.
+     * @param msg the file that is being referenced.
+     */
     private void addPackageName(@NotNull InsertionContext context, @NotNull ROSMsgFile msg) {
         CaretModel model = context.getEditor().getCaretModel();
 
@@ -127,10 +136,27 @@ public class ROSMsgFileReference extends PsiReferenceBase<PsiElement> implements
         // remove prev. package references if they exist
         context.getDocument().deleteString(model.getVisualLineStart(), model.getOffset());
         // add new ref.
-        if (!msg.getPackage().getName().equals(((ROSPktFile) context.getFile()).getPackage().getName())) {
+        if (!msg.getPackage().getName().equals(((ROSPktFile) context.getFile()).getPackage().getName()) &&
+            !isFirstHeader(msg)) {
             context.getDocument().insertString(model.getOffset(), msg.getPackage().getName() + "/");
         }
         model.getCurrentCaret().moveCaretRelatively(msg.getQualifiedName().length(), 0, false, false);
+    }
+
+    /**
+     * checks if this reference element is the first header in the document.
+     * @param msg the referenced file. If null, no information about the referenced file is available.
+     * @return true if the current element is the first header in the file, false otherwise.
+     */
+    private boolean isFirstHeader(@Nullable ROSMsgFile msg) {
+        if (msg != null && !msg.getQualifiedName().equals("std_msgs/Header")) {
+            return false;
+        }
+        if (msg == null && !msgName.equals("Header")) {
+            return false;
+        }
+        return myElement.getParent().equals(
+                PsiTreeUtil.getChildOfType(myElement.getContainingFile(), ROSPktFieldBase.class));
     }
 
     @Override

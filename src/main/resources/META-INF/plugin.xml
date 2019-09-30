@@ -21,9 +21,12 @@
         <spellchecker.bundledDictionaryProvider implementation="ros.integrate.ROSBundledDictionaryProvider"/>
 
         <!-- ROS packet files -->
-        <fileTypeFactory implementation="ros.integrate.pkt.file.ROSMsgFileTypeFactory"/>
-        <fileTypeFactory implementation="ros.integrate.pkt.file.ROSSrvFileTypeFactory"/>
-        <fileTypeFactory implementation="ros.integrate.pkt.file.ROSActFileTypeFactory"/>
+        <fileType name="ROS Msg" implementationClass="ros.integrate.pkt.file.ROSMsgFileType"
+                  language="ROSPkt" extensions="msg" fieldName="INSTANCE"/>
+        <fileType name="ROS Srv" implementationClass="ros.integrate.pkt.file.ROSSrvFileType"
+                  language="ROSPkt" extensions="srv" fieldName="INSTANCE"/>
+        <fileType name="ROS Action" implementationClass="ros.integrate.pkt.file.ROSActFileType"
+                  language="ROSPkt" extensions="action" fieldName="INSTANCE"/>
 
         <!-- ROS packet Language -->
         <lang.parserDefinition language="ROSPkt" implementationClass="ros.integrate.pkt.lang.ROSPktParserDefinition"/>
@@ -53,6 +56,7 @@
 
     <extensions defaultExtensionNs="ros-integrate">
         <packageFinder implementation="ros.integrate.workspace.ROSProjectPackageFinder"/>
+        <packageFinder implementation="ros.integrate.workspace.ROSCompiledPackageFinder"/>
     </extensions>
 
     <project-components>

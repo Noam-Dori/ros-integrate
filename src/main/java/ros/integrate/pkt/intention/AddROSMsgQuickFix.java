@@ -45,7 +45,7 @@ public class AddROSMsgQuickFix extends BaseIntentionAction {
     @NotNull
     @Override
     public String getText() {
-        return "Create new ROS Message in project";
+        return "Create new ROS Message";
     }
 
     @Override

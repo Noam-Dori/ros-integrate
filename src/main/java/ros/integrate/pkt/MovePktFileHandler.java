@@ -70,8 +70,9 @@ public class MovePktFileHandler extends MoveFileHandler {
     private void findNonCodeUsages(boolean searchInComments, boolean searchInNonCodeFiles,
                                    PsiFile psiFile, List<UsageInfo> results) {
         String qName = pkt(psiFile).getQualifiedName(), name = pkt(psiFile).getPacketName();
-        TextOccurrencesUtil.findNonCodeUsages(psiFile, qName, searchInComments, searchInNonCodeFiles, qName, results);
-        TextOccurrencesUtil.findNonCodeUsages(psiFile, name, searchInComments, searchInNonCodeFiles, qName, results);
+        GlobalSearchScope scope = GlobalSearchScope.projectScope(psiFile.getProject());
+        TextOccurrencesUtil.findNonCodeUsages(psiFile, scope, qName, searchInComments, searchInNonCodeFiles, qName, results);
+        TextOccurrencesUtil.findNonCodeUsages(psiFile, scope, name, searchInComments, searchInNonCodeFiles, qName, results);
     }
 
     @Override

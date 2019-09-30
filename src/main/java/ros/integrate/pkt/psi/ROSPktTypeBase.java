@@ -17,6 +17,7 @@ public interface ROSPktTypeBase extends ROSPktIdentifier {
     @SuppressWarnings("UnusedReturnValue")
     PsiElement removeArray();
 
+    @SuppressWarnings("UnusedReturnValue")
     @NotNull
     PsiElement set(String rawType, int size);
 

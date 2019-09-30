@@ -71,7 +71,7 @@ public class NewROSMsgDialogue extends DialogWrapper {
         msgNameField.setText(suggestedName);
         msgNameField.getDocument().addDocumentListener(new DocumentAdapter() {
             @Override
-            protected void textChanged(DocumentEvent e) { validateOKButton(); updateMsgNameTooltip();
+            protected void textChanged(@NotNull DocumentEvent e) { validateOKButton(); updateMsgNameTooltip();
             }
         });
 
@@ -112,7 +112,7 @@ public class NewROSMsgDialogue extends DialogWrapper {
         FileChooserFactory.getInstance().installFileCompletion(textField, descriptor, true, getDisposable());
         textField.getDocument().addDocumentListener(new DocumentAdapter() {
             @Override
-            protected void textChanged(DocumentEvent e) {
+            protected void textChanged(@NotNull DocumentEvent e) {
                 validateOKButton();
             }
         });
@@ -123,7 +123,7 @@ public class NewROSMsgDialogue extends DialogWrapper {
         FileChooserFactory.getInstance().installFileCompletion(textField, descriptor, true, getDisposable());
         textField.getDocument().addDocumentListener(new DocumentAdapter() {
             @Override
-            protected void textChanged(DocumentEvent e) {
+            protected void textChanged(@NotNull DocumentEvent e) {
                 validateOKButton();
             }
         });

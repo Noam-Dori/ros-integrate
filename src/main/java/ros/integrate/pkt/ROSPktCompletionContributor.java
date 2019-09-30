@@ -39,8 +39,6 @@ public class ROSPktCompletionContributor extends CompletionContributor {
                                                @NotNull CompletionResultSet resultSet) {
                         PsiElement element = parameters.getPosition();
                         if(!element.getText().contains("/")) {
-                            resultSet.addElement(LookupElementBuilder.create("Header")
-                                    .withTypeText("std_msgs/Header data-type"));
                             resultSet.addElement(LookupElementBuilder.create("string").bold()
                                     .withTypeText("string of characters"));
                             resultSet.addElement(LookupElementBuilder.create("time").bold()

@@ -6,7 +6,6 @@ import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.codeInsight.lookup.LookupManager;
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.extensions.Extensions;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.util.text.StringUtil;
@@ -87,7 +86,7 @@ public class ChangeNameQuickFix extends BaseIntentionAction {
      */
     @Nullable
     private static ROSPktNameSuggestionProvider findProvider() {
-        Object[] extensions = Extensions.getExtensions(ROSPktNameSuggestionProvider.EP_NAME);
+        Object[] extensions = ROSPktNameSuggestionProvider.EP_NAME.getExtensions();
 
         for (Object extension : extensions) {
             if (extension instanceof ROSPktNameSuggestionProvider) {

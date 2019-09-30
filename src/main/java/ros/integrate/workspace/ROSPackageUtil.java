@@ -20,7 +20,12 @@ class ROSPackageUtil {
 
     @Contract(pure = true)
     static boolean belongsToRoot(@NotNull PsiDirectory root, @NotNull VFileEvent event) {
-        String rootPath = root.getVirtualFile().getPath();
+        return belongsToRoot(root.getVirtualFile(),event);
+    }
+
+    @Contract(pure = true)
+    static boolean belongsToRoot(@NotNull VirtualFile root, @NotNull VFileEvent event) {
+        String rootPath = root.getPath();
         if(event instanceof VFileMoveEvent && ((VFileMoveEvent) event).getOldPath().contains(rootPath)) {
             return true;
         }

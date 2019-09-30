@@ -1,11 +1,11 @@
 package ros.integrate.pkt.annotate;
 
 import com.intellij.codeInspection.ProblemHighlightType;
-import com.intellij.lang.ASTNode;
 import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.TextRange;
+import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -66,7 +66,7 @@ public class ROSPktTypeAnnotator extends ROSPktAnnotatorBase {
         Pair<String,String> name = getFullName();
         ROSMsgFile message = ROSPktUtil.findMessage(type.getProject(), name.first, name.second );
         return message == null && // found no message matching this field type.
-                !(type.raw().getText().equals("Header") && type.getParent().getNode().equals(getFirstField())); // field is the header
+                !(type.raw().getText().equals("Header") && type.getParent().equals(getFirstField())); // field is the header
     }
 
     @NotNull
@@ -87,8 +87,8 @@ public class ROSPktTypeAnnotator extends ROSPktAnnotatorBase {
      * @return null is no field is present, otherwise the first field available.
      */
     @Nullable
-    private ASTNode getFirstField() {
-        return type.getContainingFile().getNode().findChildByType(ROSPktTypes.FIELD);
+    private ROSPktFieldBase getFirstField() {
+        return PsiTreeUtil.getChildOfType(type.getContainingFile(), ROSPktFieldBase.class);
     }
 
     /**

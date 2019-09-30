@@ -113,6 +113,7 @@ class ROSPktTypeUtil {
         return type;
     }
 
+    @SuppressWarnings("SameReturnValue")
     @Contract(pure = true)
     @Nullable
     static PsiElement getNameIdentifier(@SuppressWarnings("unused") @NotNull ROSPktTypeBase type) {

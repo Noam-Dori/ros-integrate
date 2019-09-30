@@ -13,27 +13,32 @@ import ros.integrate.pkt.psi.ROSPktFile;
 
 import javax.swing.*;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 
-public class ROSSourcePackage extends ROSPackageBase {
-    private static final Logger LOG = Logger.getInstance("#ros.integrate.workspace.ROSSourcePackage");
+public class ROSCompiledPackage extends ROSPackageBase {
+    private static final Logger LOG = Logger.getInstance("#ros.integrate.workspace.ROSCompiledPackage");
+
+    public enum RootType {
+        SHARE
+    }
 
     @NotNull
-    private PsiDirectory root;
+    private Map<RootType,PsiDirectory> rootMap;
     @NotNull
     private Set<ROSPktFile> packets;
 
-    public ROSSourcePackage(@NotNull Project project,@NotNull String name,@NotNull PsiDirectory root,
-                            @NotNull XmlFile pkgXml,@NotNull Collection<ROSPktFile> packets) {
+    public ROSCompiledPackage(@NotNull Project project, @NotNull String name, @NotNull Map<RootType, PsiDirectory> rootMap,
+                            @NotNull XmlFile pkgXml, @NotNull Collection<ROSPktFile> packets) {
         super(project,name,pkgXml);
-        this.root = root;
+        this.rootMap = rootMap;
         this.packets = new HashSet<>();
         addPackets(packets);
     }
 
     @Override
     public String toString() {
-        return "ROSSourcePackage{\"" + getName() + "\"}";
+        return "ROSCompiledPackage{\"" + getName() + "\"}";
     }
 
     @NotNull
@@ -59,7 +64,7 @@ public class ROSSourcePackage extends ROSPackageBase {
     @NotNull
     @Override
     public PsiDirectory[] getRoots() {
-        return new PsiDirectory[]{root};
+        return rootMap.values().toArray(new PsiDirectory[0]);
     }
 
     @Override
@@ -69,9 +74,8 @@ public class ROSSourcePackage extends ROSPackageBase {
 
     @Nullable
     @Override
-    public PsiDirectory getMsgRoot() { //TODO use CMakeLists to help
-        PsiDirectory msgDir = root.findSubdirectory("msg");
-        return msgDir == null ? root : msgDir;
+    public PsiDirectory getMsgRoot() {
+        return rootMap.get(RootType.SHARE).findSubdirectory("msg");
     }
 
     @NotNull
@@ -106,6 +110,6 @@ public class ROSSourcePackage extends ROSPackageBase {
     @Nullable
     @Override
     public Icon getIcon(int flags) {
-        return ROSIcons.SrcPkg;
+        return ROSIcons.LibPkg;
     }
 }
