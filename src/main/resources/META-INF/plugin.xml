@@ -20,6 +20,9 @@
     <extensions defaultExtensionNs="com.intellij">
         <spellchecker.bundledDictionaryProvider implementation="ros.integrate.ROSBundledDictionaryProvider"/>
 
+        <projectConfigurable instance="ros.integrate.settings.ROSSettingsPage"/>
+        <projectService serviceImplementation="ros.integrate.settings.ROSSettings"/>
+
         <!-- ROS packet files -->
         <fileType name="ROS Msg" implementationClass="ros.integrate.pkt.file.ROSMsgFileType"
                   language="ROSPkt" extensions="msg" fieldName="INSTANCE"/>

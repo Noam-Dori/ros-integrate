@@ -1,10 +1,10 @@
 package ros.integrate.workspace;
 
 import com.intellij.openapi.command.WriteCommandAction;
+import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.roots.ModuleRootModificationUtil;
-import com.intellij.openapi.roots.OrderRootType;
+import com.intellij.openapi.roots.*;
 import com.intellij.openapi.roots.libraries.Library;
 import com.intellij.openapi.roots.libraries.LibraryTable;
 import com.intellij.openapi.roots.libraries.LibraryTablesRegistrar;
@@ -19,6 +19,7 @@ import com.intellij.util.containers.MultiMap;
 import com.intellij.util.containers.SortedList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import ros.integrate.settings.ROSSettings;
 import ros.integrate.workspace.psi.ROSPackage;
 
 import java.util.*;
@@ -36,10 +37,9 @@ public class ROSPackageManagerImpl implements ROSPackageManager {
 
     @Override
     public void projectOpened() {
-        WriteCommandAction.runWriteCommandAction(project,() -> {
-            String rosVersion = "kinetic";
+        WriteCommandAction.runWriteCommandAction(project, () -> {
             String url = VirtualFileManager.constructUrl(LocalFileSystem.PROTOCOL,
-                    "C:/Users/theNO/IdeaProjects/ros/" + rosVersion);
+                    ROSSettings.getInstance(project).getROSPath());
             LibraryTable table = LibraryTablesRegistrar.getInstance().getLibraryTable(project);
             Library lib = table.getLibraryByName("ROS");
             if (lib != null) {
@@ -55,7 +55,7 @@ public class ROSPackageManagerImpl implements ROSPackageManager {
 
             Library finalLib = lib;
             Arrays.stream(ModuleManager.getInstance(project).getModules()).forEach(module ->
-                    ModuleRootModificationUtil.addDependency(module, finalLib));
+                    setDependency(module, finalLib));
         });
         findAndCachePackages();
         // add a watch to VirtualFileSystem that will trigger this
@@ -65,6 +65,14 @@ public class ROSPackageManagerImpl implements ROSPackageManager {
                 doBulkFileChangeEvents(events);
             }
         });
+    }
+
+    private void setDependency(Module module, Library lib) {
+        ModifiableRootModel model = ModuleRootManager.getInstance(module).getModifiableModel();
+        LibraryOrderEntry entry = model.findLibraryOrderEntry(lib);
+        if (entry == null) {
+            ModuleRootModificationUtil.addDependency(module, lib);
+        }
     }
 
     private void findAndCachePackages() {
