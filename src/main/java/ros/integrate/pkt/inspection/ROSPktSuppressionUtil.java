@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkt.ROSPktUtil;
 import ros.integrate.pkt.psi.ROSPktComment;
 import ros.integrate.pkt.psi.ROSPktElementFactory;
-import ros.integrate.pkt.psi.ROSPktField;
+import ros.integrate.pkt.psi.ROSPktFieldBase;
 
 /**
  * a collection of utility functions regarding suppressing ROS inspections.
@@ -25,7 +25,7 @@ class ROSPktSuppressionUtil {
     static void addSuppressAnnotation(@NotNull Project project,
                                       final @NotNull PsiElement container,
                                       @NotNull String id) {
-        final ROSPktComment annotation = findAnnotation(container);
+        final ROSPktComment annotation = findAnnotation(container, null);
         final ROSPktComment newAnnotation = createNewAnnotation(project, annotation, id);
         if (newAnnotation != null) {
             if (annotation != null && annotation.isPhysical()) {
@@ -40,11 +40,12 @@ class ROSPktSuppressionUtil {
     /**
      * fetches the annotation for the element if it exists.
      * @param container the element containing the supposed annotation
+     * @param id the string ID of the inspection
      * @return null if no annotation is available for this PSI element,
      *         otherwise an annotation in the form of a {@link ROSPktComment}
      */
     @Nullable
-    static ROSPktComment findAnnotation(@NotNull PsiElement container) {
+    static ROSPktComment findAnnotation(@NotNull PsiElement container, @Nullable String id) {
         PsiElement[] fields = container.getContainingFile().getChildren();
         int i = fields.length - 1;
         for (; i > 0; i--) {
@@ -52,9 +53,10 @@ class ROSPktSuppressionUtil {
                 break;
             }
         }
-        for (i--; i >= 0; i--) {
-            if (fields[i] instanceof ROSPktComment) {
-                return ROSPktUtil.checkAnnotation(fields[i]);
+        for (i--; i >= 0 && !(fields[i] instanceof ROSPktFieldBase); i--) {
+            ROSPktComment comment = ROSPktUtil.checkAnnotation(fields[i], id);
+            if (comment != null) {
+                return comment;
             }
         }
         return null;
@@ -98,7 +100,7 @@ class ROSPktSuppressionUtil {
      */
     @Contract(value = "null -> null", pure = true)
     static PsiElement getElementToAnnotate(@Nullable PsiElement container) {
-        if (container instanceof ROSPktField) {
+        if (container instanceof ROSPktFieldBase) {
             return container;
         }
         return null;

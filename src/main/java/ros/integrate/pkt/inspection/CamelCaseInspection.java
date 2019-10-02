@@ -13,8 +13,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkt.annotate.ROSPktTypeAnnotator;
 import ros.integrate.pkt.intention.RenameTypeQuickFix;
-import ros.integrate.pkt.psi.ROSMsgFile;
-import ros.integrate.pkt.psi.ROSPktField;
+import ros.integrate.pkt.psi.ROSPktFile;
+import ros.integrate.pkt.psi.ROSPktFieldBase;
 
 import java.util.List;
 
@@ -40,14 +40,15 @@ public class CamelCaseInspection extends ROSPktInspectionBase {
         return null;
     }
 
+    @Override
     public ProblemDescriptor[] checkFile(@NotNull PsiFile file, @NotNull final InspectionManager manager, final boolean isOnTheFly) {
-        if (!(file instanceof ROSMsgFile)) return null;
-        final List<ROSPktField> fields = ((ROSMsgFile)file).getFields(ROSPktField.class);
+        if (!(file instanceof ROSPktFile)) return null;
+        final List<ROSPktFieldBase> fields = ((ROSPktFile)file).getFields(ROSPktFieldBase.class);
         final List<ProblemDescriptor> descriptors = new SmartList<>();
-        for (ROSPktField field : fields) {
+        for (ROSPktFieldBase field : fields) {
             if(isSuppressedFor(field)) {continue;}
             ProgressManager.checkCanceled();
-            PsiElement custom = field.getType().custom();
+            PsiElement custom = field.getTypeBase().custom();
             if (custom != null && ROSPktTypeAnnotator.getIllegalTypeMessage(custom.getText(),false) == null) {
                 String message = getUnorthodoxTypeMessage(custom.getText(),false);
                 if (message != null) {

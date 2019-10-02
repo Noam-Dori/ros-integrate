@@ -24,7 +24,7 @@ public class ROSPktPsiImplUtil {
      */
     @Nullable
     public static String getAnnotationIds(@NotNull ROSPktComment comment) {
-        if(ROSPktUtil.checkAnnotation(comment) != null) {
+        if(ROSPktUtil.checkAnnotation(comment, null) != null) {
             return comment.getText().substring(ANNOTATION_PREFIX.length());
         }
         return null;

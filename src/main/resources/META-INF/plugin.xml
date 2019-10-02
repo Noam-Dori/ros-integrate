@@ -50,7 +50,10 @@
 
         <localInspection language="ROSPkt" implementationClass="ros.integrate.pkt.inspection.CamelCaseInspection"
                          level="WARNING" enabledByDefault="true" shortName="type-not-camelcase"
-                         groupName="ROS" displayName="Type not in CamelCase"/>
+                         groupName="ROS" displayName="Type not in PascalCase"/>
+        <localInspection language="ROSPkt" implementationClass="ros.integrate.pkt.inspection.DeprecatedTypeInspection"
+                         level="WARNING" enabledByDefault="true" shortName="deprecated-type"
+                         groupName="ROS" displayName="Deprecated type"/>
 
         <!-- ROS workspace & package -->
         <psi.referenceContributor language="ROSPkt" implementation="ros.integrate.workspace.ref.ROSPktTypeReferenceContributor"/>

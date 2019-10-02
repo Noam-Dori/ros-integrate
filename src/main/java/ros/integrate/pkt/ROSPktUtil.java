@@ -19,14 +19,18 @@ import java.util.*;
  */
 public class ROSPktUtil {
     /**
-     * checks of this is an annotation comment.
+     * checks of this is an annotation comment that contains the specified id.
      * @param comment the psi-element to check
+     * @param id the string ID of the inspection
      * @return {@param comment} in {@link ROSPktComment} form if it is an annotation, <code>null</code> otherwise.
      */
     @Nullable
-    @Contract("null -> null")
-    public static ROSPktComment checkAnnotation(@Nullable PsiElement comment) {
-        if(comment instanceof ROSPktComment && comment.getText().startsWith(ROSPktElementFactory.ANNOTATION_PREFIX)) {
+    @Contract("null, _ -> null")
+    public static ROSPktComment checkAnnotation(@Nullable PsiElement comment, String id) {
+        if (comment instanceof ROSPktComment &&
+                comment.getText().startsWith(ROSPktElementFactory.ANNOTATION_PREFIX)
+                && (id == null || comment.getText().substring(ROSPktElementFactory.ANNOTATION_PREFIX.length() - 1)
+                .contains(id))) {
             return (ROSPktComment) comment;
         }
         return null;
