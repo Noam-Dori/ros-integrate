@@ -2,6 +2,7 @@ package ros.integrate.workspace;
 
 import com.intellij.ide.highlighter.XmlFileType;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.module.impl.scopes.LibraryScope;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.OrderRootType;
 import com.intellij.openapi.roots.libraries.Library;
@@ -38,22 +39,22 @@ public class ROSCompiledPackageFinder implements ROSPackageFinder {
 
     @Override
     public void findAndCache(Project project, ConcurrentMap<String, ROSPackage> pkgCache) {
-        VirtualFile rosRoot = getROSRoot(project);
-
         /*
          * the files that actually determine whether or not a directory is a package is the package.xml file.
          * the following condition is true:
          * A directory is a ROS package iff one of its roots directly contains a package.xml file
          */
-        List<VirtualFile> packageXmls = FileTypeIndex.getFiles(XmlFileType.INSTANCE,
-                GlobalSearchScope.filesWithLibrariesScope(project, Collections.singleton(rosRoot)))
-                .stream().filter(xml -> xml.getName().equals(ROSPackageUtil.PACKAGE_XML)).collect(Collectors.toList());
-        for (VirtualFile vXml : packageXmls) {
-            ROSPackage newPkg = investigateXml(vXml, project, pkgCache);
-            if (newPkg != ROSPackage.ORPHAN) {
-                pkgCache.putIfAbsent(newPkg.getName(), newPkg);
-            }
-        }
+        GlobalSearchScope scope = Optional.ofNullable(LibraryTablesRegistrar.getInstance()
+                .getLibraryTable(project).getLibraryByName("ROS"))
+                .map(lib -> (GlobalSearchScope) new LibraryScope(project, lib)).orElse(GlobalSearchScope.EMPTY_SCOPE);
+        FileTypeIndex.getFiles(XmlFileType.INSTANCE, scope)
+                .stream().filter(xml -> xml.getName().equals(ROSPackageUtil.PACKAGE_XML))
+                .forEach(vXml -> {
+                    ROSPackage newPkg = investigateXml(vXml, project, pkgCache);
+                    if (newPkg != ROSPackage.ORPHAN) {
+                        pkgCache.putIfAbsent(newPkg.getName(), newPkg);
+                    }
+                });
     }
 
     private VirtualFile getROSRoot(Project project) {
@@ -95,11 +96,10 @@ public class ROSCompiledPackageFinder implements ROSPackageFinder {
 
     @Override
     public MultiMap<ROSPackage, VFileEvent> investigate(@NotNull Project project, @NotNull Collection<VFileEvent> events) {
-        VirtualFile rosRoot = getROSRoot(project);
         MultiMap<ROSPackage, VFileEvent> ret = new MultiMap<>();
         // 1. check who is under the jurisdiction of this finder
         List<VFileEvent> libraryEvents = events.stream()
-                .filter(event -> belongsToROSLibrary(event, project)).collect(Collectors.toList());
+                .filter(event -> inROSLibrary(event, project)).collect(Collectors.toList());
         // 2. do XML parents first and get a list of parent directories, use these to create ROSCompiledPackages using original method.
         libraryEvents.stream().filter(ROSPackageUtil::isPackageXml).forEach(event -> {
             ROSPackage newPkg = investigateXml(Objects.requireNonNull(ROSPackageUtil.getXml(event)),
@@ -118,9 +118,9 @@ public class ROSCompiledPackageFinder implements ROSPackageFinder {
         if(!(pkg instanceof ROSCompiledPackage)) {
             return null;
         } // this has one sole root.
-        if(notInROSLibrary(project, pkg.getRoots()[0].getVirtualFile())) { // something is up with the root
+        if(notInROSLibrary(pkg.getRoots()[0].getVirtualFile(), project)) { // something is up with the root
             if(pkg.getRoots()[0].getParentDirectory() != null && // check parent - if its in the project, the dir was deleted.
-                    notInROSLibrary(project, pkg.getRoots()[0].getParentDirectory().getVirtualFile())) {
+                    notInROSLibrary(pkg.getRoots()[0].getParentDirectory().getVirtualFile(), project)) {
                 return null;
             }
             return CacheCommand.DELETE;
@@ -148,11 +148,11 @@ public class ROSCompiledPackageFinder implements ROSPackageFinder {
         }
     }
 
-    private boolean notInROSLibrary(Project project, @NotNull VirtualFile vFile) {
+    private boolean notInROSLibrary(@NotNull VirtualFile vFile, Project project) {
         return !vFile.getPath().contains(getROSRoot(project).getPath());
     }
 
-    private boolean belongsToROSLibrary(VFileEvent event, Project project) {
+    private boolean inROSLibrary(VFileEvent event, Project project) {
          return ROSPackageUtil.belongsToRoot(getROSRoot(project),event);
     }
 

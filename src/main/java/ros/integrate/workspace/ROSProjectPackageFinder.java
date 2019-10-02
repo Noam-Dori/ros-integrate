@@ -42,7 +42,7 @@ public class ROSProjectPackageFinder implements ROSPackageFinder {
          * the following condition is true:
          * A directory is a ROS package iff one of its roots directly contains a package.xml file
          */
-        List<VirtualFile> packageXmls = FileTypeIndex.getFiles(XmlFileType.INSTANCE, GlobalSearchScope.allScope(project))
+        List<VirtualFile> packageXmls = FileTypeIndex.getFiles(XmlFileType.INSTANCE, GlobalSearchScope.projectScope(project))
                 .stream().filter(xml -> xml.getName().equals(ROSPackageUtil.PACKAGE_XML)).collect(Collectors.toList());
         for (VirtualFile vXml : packageXmls) {
             ROSPackage newPkg = investigateXml(vXml, project, pkgCache);

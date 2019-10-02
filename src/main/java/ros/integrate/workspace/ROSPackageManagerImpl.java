@@ -30,6 +30,7 @@ public class ROSPackageManagerImpl implements ROSPackageManager {
     private final Project project;
 
     private static List<ROSPackageFinder> finders = ROSPackageFinder.EP_NAME.getExtensionList();
+    private boolean purgeFlag = false;
 
     public ROSPackageManagerImpl(@NotNull Project project) {
         this.project = project;
@@ -37,34 +38,61 @@ public class ROSPackageManagerImpl implements ROSPackageManager {
 
     @Override
     public void projectOpened() {
-        WriteCommandAction.runWriteCommandAction(project, () -> {
-            String url = VirtualFileManager.constructUrl(LocalFileSystem.PROTOCOL,
-                    ROSSettings.getInstance(project).getROSPath());
-            LibraryTable table = LibraryTablesRegistrar.getInstance().getLibraryTable(project);
-            Library lib = table.getLibraryByName("ROS");
-            if (lib != null) {
-                table.removeLibrary(lib);
-            }
-            lib = table.createLibrary("ROS");
-            Library.ModifiableModel model = lib.getModifiableModel();
-            VirtualFile file = VirtualFileManager.getInstance().findFileByUrl(url);
-            if (file != null) {
-                model.addRoot(file, OrderRootType.SOURCES);
-                model.commit();
-            }
-
-            Library finalLib = lib;
-            Arrays.stream(ModuleManager.getInstance(project).getModules()).forEach(module ->
-                    setDependency(module, finalLib));
-        });
+        WriteCommandAction.runWriteCommandAction(project, this::setupLibrary);
         findAndCachePackages();
         // add a watch to VirtualFileSystem that will trigger this
         project.getMessageBus().connect().subscribe(VirtualFileManager.VFS_CHANGES, new BulkFileListener() {
             @Override
             public void after(@NotNull List<? extends VFileEvent> events) {
-                doBulkFileChangeEvents(events);
+                if(purgeFlag) {
+                    pkgCache.clear();
+                    findAndCachePackages();
+                    purgeFlag = false;
+                } else {
+                    doBulkFileChangeEvents(events);
+                }
             }
         });
+    }
+
+    private void setupLibrary() {
+        String url = VirtualFileManager.constructUrl(LocalFileSystem.PROTOCOL,
+                ROSSettings.getInstance(project).getROSPath());
+        LibraryTable table = LibraryTablesRegistrar.getInstance().getLibraryTable(project);
+        Library lib = table.getLibraryByName("ROS");
+        if (lib != null) {
+            table.removeLibrary(lib);
+        }
+        lib = table.createLibrary("ROS");
+        Library.ModifiableModel model = lib.getModifiableModel();
+        VirtualFile file = VirtualFileManager.getInstance().findFileByUrl(url);
+        if (file != null) {
+            model.addRoot(file, OrderRootType.SOURCES);
+            model.commit();
+        }
+
+        Library finalLib = lib;
+        ROSSettings.getInstance(project).addListener(settings ->
+                WriteCommandAction.runWriteCommandAction(project, () -> reconfigureLibrary(settings, finalLib)));
+        Arrays.stream(ModuleManager.getInstance(project).getModules()).forEach(module ->
+                setDependency(module, finalLib));
+    }
+
+    private void reconfigureLibrary(@NotNull ROSSettings settings, @NotNull Library lib) {
+        Library.ModifiableModel model = lib.getModifiableModel();
+        String newUrl =  VirtualFileManager.constructUrl(LocalFileSystem.PROTOCOL,settings.getROSPath());
+        if(!Arrays.asList(model.getUrls(OrderRootType.SOURCES)).contains(newUrl)) {
+            Arrays.stream(model.getUrls(OrderRootType.SOURCES))
+                    .forEach(modelUrl -> model.removeRoot(modelUrl, OrderRootType.SOURCES));
+            VirtualFile newFile = VirtualFileManager.getInstance().findFileByUrl(newUrl);
+            if (newFile != null) {
+                model.addRoot(newFile, OrderRootType.SOURCES);
+                model.commit();
+            }
+            purgeFlag = true;
+        } else {
+            purgeFlag = false;
+        }
     }
 
     private void setDependency(Module module, Library lib) {
@@ -73,6 +101,7 @@ public class ROSPackageManagerImpl implements ROSPackageManager {
         if (entry == null) {
             ModuleRootModificationUtil.addDependency(module, lib);
         }
+        model.dispose();
     }
 
     private void findAndCachePackages() {

@@ -10,19 +10,15 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
-import java.nio.file.PathMatcher;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.*;
+import java.util.function.Consumer;
 
 @State(name = "ROSSettings", storages = {@Storage("ros.cfg")})
 public class ROSSettings implements PersistentStateComponent<ROSSettings> {
 
     private Project project;
     private String rosPath = System.getenv("ROS_ROOT");
+    private List<Consumer<ROSSettings>> listeners = new LinkedList<>();
 
     @Contract(pure = true)
     public ROSSettings(Project project) {
@@ -48,7 +44,15 @@ public class ROSSettings implements PersistentStateComponent<ROSSettings> {
         return rosPath;
     }
 
-    public void setRosPath(String rosPath) {
+    void setRosPath(String rosPath) {
         this.rosPath = rosPath;
+    }
+
+    void triggerListeners() {
+        listeners.forEach(listener -> listener.accept(this));
+    }
+
+    public void addListener(Consumer<ROSSettings> trigger) {
+        listeners.add(trigger);
     }
 }
