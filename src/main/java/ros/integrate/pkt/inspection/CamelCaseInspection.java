@@ -4,16 +4,12 @@ import com.intellij.codeInspection.InspectionManager;
 import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.openapi.fileEditor.FileEditorManager;
-import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiFile;
-import com.intellij.util.SmartList;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkt.annotate.ROSPktTypeAnnotator;
 import ros.integrate.pkt.intention.RenameTypeQuickFix;
-import ros.integrate.pkt.psi.ROSPktFile;
 import ros.integrate.pkt.psi.ROSPktFieldBase;
 
 import java.util.List;
@@ -41,26 +37,18 @@ public class CamelCaseInspection extends ROSPktInspectionBase {
     }
 
     @Override
-    public ProblemDescriptor[] checkFile(@NotNull PsiFile file, @NotNull final InspectionManager manager, final boolean isOnTheFly) {
-        if (!(file instanceof ROSPktFile)) return null;
-        final List<ROSPktFieldBase> fields = ((ROSPktFile)file).getFields(ROSPktFieldBase.class);
-        final List<ProblemDescriptor> descriptors = new SmartList<>();
-        for (ROSPktFieldBase field : fields) {
-            if(isSuppressedFor(field)) {continue;}
-            ProgressManager.checkCanceled();
-            PsiElement custom = field.getTypeBase().custom();
-            if (custom != null && ROSPktTypeAnnotator.getIllegalTypeMessage(custom.getText(),false) == null) {
-                String message = getUnorthodoxTypeMessage(custom.getText(),false);
-                if (message != null) {
-                    ProblemDescriptor descriptor = manager.createProblemDescriptor(custom, custom, message,
-                            ProblemHighlightType.GENERIC_ERROR_OR_WARNING, isOnTheFly,
-                            new RenameTypeQuickFix(FileEditorManager.getInstance(
-                                    file.getProject()).getSelectedEditor()));
-                    descriptors.add(descriptor);
-                }
+    protected void checkField(@NotNull ROSPktFieldBase field, @NotNull InspectionManager manager, boolean isOnTheFly, @NotNull List<ProblemDescriptor> descriptors) {
+        PsiElement custom = field.getTypeBase().custom();
+        if (custom != null && ROSPktTypeAnnotator.getIllegalTypeMessage(custom.getText(),false) == null) {
+            String message = getUnorthodoxTypeMessage(custom.getText(),false);
+            if (message != null) {
+                ProblemDescriptor descriptor = manager.createProblemDescriptor(custom, custom, message,
+                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING, isOnTheFly,
+                        new RenameTypeQuickFix(FileEditorManager.getInstance(
+                                field.getProject()).getSelectedEditor()));
+                descriptors.add(descriptor);
             }
         }
-        return descriptors.toArray(new ProblemDescriptor[0]);
     }
 
     /* // if forced rename ever becomes available, here is some starting code to camelcase a string
