@@ -149,10 +149,5 @@ patchPluginXml {
 
 }
 
-publishPlugin {
-    username intellijPublishUsername
-    password intellijPublishPassword
-}
-
 group 'ros-integrate'
 version pluginVersion
