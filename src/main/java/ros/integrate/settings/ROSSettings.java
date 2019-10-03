@@ -1,9 +1,6 @@
 package ros.integrate.settings;
 
-import com.intellij.openapi.components.PersistentStateComponent;
-import com.intellij.openapi.components.ServiceManager;
-import com.intellij.openapi.components.State;
-import com.intellij.openapi.components.Storage;
+import com.intellij.openapi.components.*;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import org.jetbrains.annotations.Contract;
@@ -13,16 +10,22 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
 
-@State(name = "ROSSettings", storages = {@Storage("ros.cfg")})
-public class ROSSettings implements PersistentStateComponent<ROSSettings> {
+@State(name = "ROSSettings",storages = @Storage("ros.xml"))
+public class ROSSettings implements PersistentStateComponent<ROSSettings.State> {
+    @SuppressWarnings("WeakerAccess")
+    static class State {
+        public String rosPath;
+    }
 
-    private Project project;
-    private String rosPath = System.getenv("ROS_ROOT");
-    private List<Consumer<ROSSettings>> listeners = new LinkedList<>();
+    @SuppressWarnings({"FieldCanBeLocal", "unused"}) // yes, but its PROJECT level, so we need something to track that. (?)
+    private final Project project;
+    private final State state = new State();
+    private final List<Consumer<ROSSettings>> listeners = new LinkedList<>();
 
     @Contract(pure = true)
     public ROSSettings(Project project) {
         this.project = project;
+        state.rosPath = System.getenv("ROS_ROOT");
     }
 
     public static ROSSettings getInstance(Project project) {
@@ -31,21 +34,21 @@ public class ROSSettings implements PersistentStateComponent<ROSSettings> {
 
     @Nullable
     @Override
-    public ROSSettings getState() {
-        return this;
+    public State getState() {
+        return state;
     }
 
     @Override
-    public void loadState(@NotNull ROSSettings state) {
-        XmlSerializerUtil.copyBean(state, this);
+    public void loadState(@NotNull State state) {
+        XmlSerializerUtil.copyBean(state, this.state);
     }
 
     public String getROSPath() {
-        return rosPath;
+        return state.rosPath;
     }
 
     void setRosPath(String rosPath) {
-        this.rosPath = rosPath;
+        state.rosPath = rosPath;
     }
 
     void triggerListeners() {
