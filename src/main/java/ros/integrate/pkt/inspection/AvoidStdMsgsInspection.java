@@ -16,13 +16,10 @@ public class AvoidStdMsgsInspection extends ROSPktInspectionBase {
     @Override
     protected void checkField(@NotNull ROSPktFieldBase field, @NotNull InspectionManager manager, boolean isOnTheFly, @NotNull List<ProblemDescriptor> descriptors) {
         ROSPktTypeBase type = field.getTypeBase();
-        if (!type.raw().getText().startsWith("std_msgs/")) {
+        if (!type.raw().getText().startsWith("std_msgs/") || type.raw().getText().equals("std_msgs/")) {
             return;
         }
         String pureMsgName = type.raw().getText().substring("std_msgs/".length()).toLowerCase();
-        if(pureMsgName.isEmpty()) {
-            return;
-        }
         ROSPktType newType = ROSPktElementFactory.createType(field.getProject(),pureMsgName);
         if(newType.custom() == null) {
             String message = "Redundant use of std_msgs message type";

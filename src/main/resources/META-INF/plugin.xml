@@ -56,7 +56,10 @@
                          groupName="ROS" displayName="Deprecated type"/>
         <localInspection language="ROSPkt" implementationClass="ros.integrate.pkt.inspection.AvoidStdMsgsInspection"
                          level="WARNING" enabledByDefault="true" shortName="avoid-std-msgs"
-                         groupName="ROS" displayName="Deprecated type"/>
+                         groupName="ROS" displayName="Redundant std_msg type"/>
+        <localInspection language="ROSPkt" implementationClass="ros.integrate.pkt.inspection.RedundantStampingInspection"
+                         level="WEAK WARNING" enabledByDefault="true" shortName="redundant-stamping"
+                         groupName="ROS" displayName="Redundant header stamp"/>
 
         <!-- ROS workspace & package -->
         <psi.referenceContributor language="ROSPkt" implementation="ros.integrate.workspace.ref.ROSPktTypeReferenceContributor"/>
