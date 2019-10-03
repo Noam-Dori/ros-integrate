@@ -33,11 +33,42 @@ sourceSets {
     }
 }
 
-String pluginVersion = '0.1.2'
+String pluginVersion = '0.1.3'
 
 patchPluginXml {
     version pluginVersion
     changeNotes """
+        <p>0.1.3</p>
+        <ul>
+            <li><b>Added settings tab for ROS</b>. For now only includes settings for the ROS Root, but will be expanded in the future.</li>
+            <li>The ROS Root may be changed to any directory, and is by default \$ROS_ROOT</li>
+            <li>The settings are persistent and exist per project</li>
+            <li><b>ROS Packages in the ROS root are now supported</b>:
+                <ul>
+                    <li>these packages have a unique icon</li>
+                    <li>all functionality of the ROS packages applies to them.</li>
+                    <li>these packages rely on the ROS Root configuration</li>
+                </ul>
+            </li>
+            <li>deprecated builtin types are now properly displayed, though if you use them in your sources, the IDE will raise warnings (see inspections)</li>
+            <li><b>ROS Inspections</b>
+                <ul>
+                    <li>added inspection that checks for deprecated types in message definition</li>
+                    <li>added inspection that checks for types in the form of std_msgs/BUILTIN</li>
+                    <li>added inspection that checks for redundant use of stamped messages in message definition</li>
+                    <li>this inspection is configurable based on whether or not it is a list, array, or plain object</li>
+                </ul>
+            </li>
+            <li><b>ROS Intentions</b>
+                <ul>
+                    <li>deprecated-type can be fixed by updating the type to its modern counterpart</li>
+                    <li>avoid-std-msgs-builtin can be fixed by converting the type to its builtin counterpart</li>
+                    <li>redundant-stamping can be fixed by using the unstamped variant of the given type</li>
+                </ul>
+            </li>
+            <li>Fixed some bugs with inspection suppression in packet files</li>
+            <li>fixed bug where ROS packages did not display the proper icon</li>
+        </ul>
         <p>0.1.2</p>
         <ul>
             <li>added support for *.action files - equipped with all inspections for ROS packets and with its own file icon</li>

@@ -26,7 +26,7 @@ public class ROSPackageIconProvider extends IconProvider {
     @Contract(pure = true)
     private boolean search(@NotNull PsiDirectory[] roots, PsiDirectory potentialRoot) {
         for (PsiDirectory root : roots) {
-            if(root == potentialRoot) {
+            if(root.getVirtualFile().getPath().equals(potentialRoot.getVirtualFile().getPath())) {
                 return true;
             }
         }
