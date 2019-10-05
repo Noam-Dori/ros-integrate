@@ -111,7 +111,7 @@ public class ROSPackageManagerImpl implements ROSPackageManager {
 
     private void doBulkFileChangeEvents(@NotNull List<? extends VFileEvent> events) {
         // 1. group by parent dir name (convert to package if possible)
-        List<ROSPackage> affectedPackages = new SortedList<>(Comparator.comparing(ROSPackage::getName));
+        Set<ROSPackage> affectedPackages = new TreeSet<>(Comparator.comparing(ROSPackage::getName));
         List<VFileEvent> affectedOrphans = new SortedList<>(Comparator.comparing(VFileEvent::getPath)),
                 affectedOrphansOld = new SortedList<>(Comparator.comparing(VFileEvent::getPath));
         affectedOrphansOld.addAll(events); boolean orphansRemainedTheSame = false;
@@ -173,7 +173,7 @@ public class ROSPackageManagerImpl implements ROSPackageManager {
         }
     }
 
-    private void sortToLists(VFileEvent event, List<ROSPackage> affectedPackages,
+    private void sortToLists(VFileEvent event, Set<ROSPackage> affectedPackages,
                              List<VFileEvent> affectedOrphans) {
         // try to see if it falls under a package, if not put it under the orphan list
         int successfulSorts = 0;
@@ -193,10 +193,8 @@ public class ROSPackageManagerImpl implements ROSPackageManager {
     }
 
     @Override
-    public List<ROSPackage> getAllPackages() {
-        final SortedList<ROSPackage> ret = new SortedList<>(Comparator.comparing(ROSPackage::getName));
-        pkgCache.forEach((name,pkg) -> ret.add(pkg));
-        return ret;
+    public Collection<ROSPackage> getAllPackages() {
+        return pkgCache.values();
     }
 
     @Nullable

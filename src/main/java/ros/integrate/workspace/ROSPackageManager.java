@@ -5,14 +5,14 @@ import com.intellij.psi.PsiDirectory;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.workspace.psi.ROSPackage;
 
-import java.util.List;
+import java.util.Collection;
 
 public interface ROSPackageManager extends ProjectComponent {
     /**
      * retrieves all packages in the cache (and tries to find more)
      * @return all packages the project knows about.
      */
-    List<ROSPackage> getAllPackages();
+    Collection<ROSPackage> getAllPackages();
 
     /**
      * finds a ROS package with the provided name.
