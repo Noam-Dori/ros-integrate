@@ -48,7 +48,7 @@ public class ROSPktUtil {
     static List<ROSMsgFile> findMessages(@NotNull Project project, @Nullable String pkgName, @Nullable ROSMsgFile exclude) {
         ROSPackageManager manager = project.getComponent(ROSPackageManager.class);
         List<ROSMsgFile> result = new ArrayList<>();
-        List<ROSPackage> packages;
+        Collection<ROSPackage> packages;
         if(pkgName == null){
             packages = manager.getAllPackages();
         } else {

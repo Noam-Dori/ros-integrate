@@ -2,6 +2,7 @@ package ros.integrate.workspace;
 
 import com.intellij.openapi.extensions.ExtensionPointName;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.roots.libraries.Library;
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
 import com.intellij.util.containers.MultiMap;
 import org.jetbrains.annotations.Nullable;
@@ -51,6 +52,15 @@ public interface ROSPackageFinder {
      */
     @Nullable
     CacheCommand investigateChanges(Project project, ROSPackage pkg);
+
+    /**
+     * fetches the library this finder uses
+     * @param project the project the finder will search/create a library for
+     * @return {@code null} if the finder does not rely on a library,
+     *         otherwise the library this finder uses for its packages.
+     */
+    @Nullable
+    Library getLibrary(Project project);
 
     enum CacheCommand {
         NONE,

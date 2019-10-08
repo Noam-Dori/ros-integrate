@@ -37,7 +37,7 @@ public class ROSMsgFileType extends ROSPktFileType {
     @NotNull
     @Override
     public String getDescription() {
-        return "ROS Message File";
+        return "Message";
     }
 
     @NotNull

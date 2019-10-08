@@ -115,12 +115,9 @@ public abstract class ROSPktFile extends PsiFileBase implements PsiNameIdentifie
      */
     public int countNameInFile(@NotNull String name) {
         int count = 0;
-        ROSPktField[] fields = PsiTreeUtil.getChildrenOfType(this, ROSPktField.class);
-        if (fields != null) {
-            for (ROSPktField field : fields) {
-                if (name.equals(field.getLabel().getText())) {
-                    count++;
-                }
+        for (ROSPktFieldBase field : getFields(ROSPktFieldBase.class)) {
+            if (field.getLabel() != null && name.equals(field.getLabel().getText())) {
+                count++;
             }
         }
         return count;
@@ -144,12 +141,9 @@ public abstract class ROSPktFile extends PsiFileBase implements PsiNameIdentifie
      */
     @Nullable
     private ROSPktLabel getFirstNameInFile(@NotNull String name) {
-        ROSPktField[] fields = PsiTreeUtil.getChildrenOfType(this, ROSPktField.class);
-        if (fields != null) {
-            for (ROSPktField field : fields) {
-                if (name.equals(field.getLabel().getText())) {
-                    return field.getLabel();
-                }
+        for (ROSPktFieldBase field : getFields(ROSPktFieldBase.class)) {
+            if (field.getLabel() != null && name.equals(field.getLabel().getText())) {
+                return field.getLabel();
             }
         }
         return null;

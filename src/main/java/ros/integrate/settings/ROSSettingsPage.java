@@ -22,7 +22,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class ROSSettingsPage implements Configurable {
-    @SuppressWarnings("FieldCanBeLocal")
     private final String RECENT_KEYS = "ROSSettings.RECENT_KEYS";
 
     private final Project project;
@@ -57,8 +56,8 @@ public class ROSSettingsPage implements Configurable {
     @Override
     public JComponent createComponent() {
         rosSettingsLabel.setText("In here, you can configure your interactions with ROS in the IDE");
-        envVariablesLabel.setText("Environment Variables");
-        rosRootLabel.setText("ROS Root");
+        envVariablesLabel.setText("Environment");
+        rosRootLabel.setText("ROS Path");
 
         initRosRoot("Choose Target Directory","This Directory is the Root ROS Library.");
 

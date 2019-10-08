@@ -39,6 +39,6 @@ public class ROSActFile extends ROSPktFile {
 
     @Override
     public String getTooManySeparatorsMessage() {
-        return "ROS Services can only have two separators";
+        return "ROS Actions can only have two separators";
     }
 }

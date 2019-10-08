@@ -19,10 +19,6 @@ import java.util.Set;
 public class ROSCompiledPackage extends ROSPackageBase {
     private static final Logger LOG = Logger.getInstance("#ros.integrate.workspace.ROSCompiledPackage");
 
-    public enum RootType {
-        SHARE
-    }
-
     @NotNull
     private Map<RootType,PsiDirectory> rootMap;
     @NotNull
@@ -111,5 +107,11 @@ public class ROSCompiledPackage extends ROSPackageBase {
     @Override
     public Icon getIcon(int flags) {
         return ROSIcons.LibPkg;
+    }
+
+    @Nullable
+    @Override
+    public PsiDirectory getRoot(RootType type) {
+        return rootMap.get(type);
     }
 }

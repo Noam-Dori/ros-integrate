@@ -8,6 +8,7 @@ import com.intellij.psi.impl.PsiElementBase;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.xml.XmlFile;
 import com.intellij.util.IncorrectOperationException;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkt.psi.ROSPktFile;
@@ -22,6 +23,10 @@ import java.util.Collection;
  * 2. a CMakeLists.txt file which has the {@code catkin_package()} function
  */
 public interface ROSPackage extends PsiCheckedRenameElement, NavigatablePsiElement, PsiDirectoryContainer {
+    public enum RootType {
+        SHARE
+    }
+
     /**
      * a default ROS package everything is referenced to if a ROS file does not belong to any package.
      */
@@ -65,6 +70,9 @@ public interface ROSPackage extends PsiCheckedRenameElement, NavigatablePsiEleme
      */
     @NotNull
     PsiDirectory[] getRoots();
+
+    @Nullable
+    PsiDirectory getRoot(RootType type);
 
     /**
      * @return true if this package is supposed to be edited, false otherwise.
@@ -149,33 +157,46 @@ public interface ROSPackage extends PsiCheckedRenameElement, NavigatablePsiEleme
     final class ROSOrphanPackage extends PsiElementBase implements ROSPackage {
         private ROSOrphanPackage() {}
 
+        @NotNull
+        @Contract(pure = true)
         @Override
         public String toString() {
             return "ROSOrphanPackage{\"\"}";
         }
 
+        @Contract(pure = true)
         @NotNull
         @Override
         public String getName() {
             return "";
         }
 
+        @Contract(value = "_ -> new", pure = true)
         @NotNull
         @Override
         public ROSPktFile[] getPackets(@NotNull GlobalSearchScope scope) {
             return new ROSPktFile[0];
         }
 
+        @Contract(pure = true)
         @Nullable
         @Override
         public <T extends ROSPktFile> T findPacket(@NotNull String pktName, @NotNull Class<T> pktType) {
             return null;
         }
 
+        @Contract(pure = true)
         @Override
         @NotNull
         public PsiDirectory[] getRoots() {
             return PsiDirectory.EMPTY_ARRAY;
+        }
+
+        @Contract(pure = true)
+        @Nullable
+        @Override
+        public PsiDirectory getRoot(RootType type) {
+            return null;
         }
 
         @Override

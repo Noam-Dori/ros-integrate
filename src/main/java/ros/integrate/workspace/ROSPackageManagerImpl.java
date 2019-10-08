@@ -6,8 +6,6 @@ import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.*;
 import com.intellij.openapi.roots.libraries.Library;
-import com.intellij.openapi.roots.libraries.LibraryTable;
-import com.intellij.openapi.roots.libraries.LibraryTablesRegistrar;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
@@ -38,7 +36,7 @@ public class ROSPackageManagerImpl implements ROSPackageManager {
 
     @Override
     public void projectOpened() {
-        WriteCommandAction.runWriteCommandAction(project, this::setupLibrary);
+        WriteCommandAction.runWriteCommandAction(project, this::setupLibraries);
         findAndCachePackages();
         // add a watch to VirtualFileSystem that will trigger this
         project.getMessageBus().connect().subscribe(VirtualFileManager.VFS_CHANGES, new BulkFileListener() {
@@ -55,27 +53,16 @@ public class ROSPackageManagerImpl implements ROSPackageManager {
         });
     }
 
-    private void setupLibrary() {
-        String url = VirtualFileManager.constructUrl(LocalFileSystem.PROTOCOL,
-                ROSSettings.getInstance(project).getROSPath());
-        LibraryTable table = LibraryTablesRegistrar.getInstance().getLibraryTable(project);
-        Library lib = table.getLibraryByName("ROS");
-        if (lib != null) {
-            table.removeLibrary(lib);
-        }
-        lib = table.createLibrary("ROS");
-        Library.ModifiableModel model = lib.getModifiableModel();
-        VirtualFile file = VirtualFileManager.getInstance().findFileByUrl(url);
-        if (file != null) {
-            model.addRoot(file, OrderRootType.SOURCES);
-            model.commit();
-        }
-
-        Library finalLib = lib;
-        ROSSettings.getInstance(project).addListener(settings ->
-                WriteCommandAction.runWriteCommandAction(project, () -> reconfigureLibrary(settings, finalLib)));
-        Arrays.stream(ModuleManager.getInstance(project).getModules()).forEach(module ->
-                setDependency(module, finalLib));
+    private void setupLibraries() {
+        Module[] projectModules = ModuleManager.getInstance(project).getModules();
+        finders.forEach(finder -> {
+            Library lib = finder.getLibrary(project);
+            if (lib != null) {
+                ROSSettings.getInstance(project).addListener(settings ->
+                        WriteCommandAction.runWriteCommandAction(project, () -> reconfigureLibrary(settings, lib)));
+                Arrays.stream(projectModules).forEach(module -> setDependency(module, lib));
+            }
+        });
     }
 
     private void reconfigureLibrary(@NotNull ROSSettings settings, @NotNull Library lib) {
@@ -95,7 +82,7 @@ public class ROSPackageManagerImpl implements ROSPackageManager {
         }
     }
 
-    private void setDependency(Module module, Library lib) {
+    private void setDependency(@NotNull Module module, @NotNull Library lib) {
         ModifiableRootModel model = ModuleRootManager.getInstance(module).getModifiableModel();
         LibraryOrderEntry entry = model.findLibraryOrderEntry(lib);
         if (entry == null) {
@@ -116,7 +103,7 @@ public class ROSPackageManagerImpl implements ROSPackageManager {
                 affectedOrphansOld = new SortedList<>(Comparator.comparing(VFileEvent::getPath));
         affectedOrphansOld.addAll(events); boolean orphansRemainedTheSame = false;
         while (!orphansRemainedTheSame) {
-            affectedOrphansOld.parallelStream().forEach(event -> sortToLists(event,affectedPackages,affectedOrphans));
+            affectedOrphansOld.forEach(event -> sortToLists(event,affectedPackages,affectedOrphans));
             // 2. figure out what happened per package per file & react accordingly (create new package, delete new package, modify details)
             affectedPackages.forEach(this::applyChangesToPackage);
             if (affectedOrphans.containsAll(affectedOrphansOld)) {
@@ -215,7 +202,7 @@ public class ROSPackageManagerImpl implements ROSPackageManager {
     }
 
     @Override
-    public void updatePackageName(ROSPackage pkg, String newName) {
+    public void updatePackageName(@NotNull ROSPackage pkg, String newName) {
         pkgCache.remove(pkg.getName());
         pkgCache.put(newName,pkg);
     }

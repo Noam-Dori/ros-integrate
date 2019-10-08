@@ -37,7 +37,7 @@ public class ROSSrvFileType extends ROSPktFileType {
     @NotNull
     @Override
     public String getDescription() {
-        return "ROS Service File";
+        return "Service";
     }
 
     @NotNull

@@ -37,7 +37,7 @@ public class ROSActFileType extends ROSPktFileType {
     @NotNull
     @Override
     public String getDescription() {
-        return "ROS Action File";
+        return "Action";
     }
 
     @NotNull

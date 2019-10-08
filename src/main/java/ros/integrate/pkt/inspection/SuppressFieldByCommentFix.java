@@ -5,26 +5,17 @@ import com.intellij.codeInsight.daemon.impl.actions.SuppressByCommentFix;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import ros.integrate.pkt.lang.ROSPktLanguage;
-import ros.integrate.pkt.psi.ROSPktField;
+import ros.integrate.pkt.psi.ROSPktFieldBase;
 
 /**
  * a fix intended to suppress inspections via a comment.
  */
 public class SuppressFieldByCommentFix extends SuppressByCommentFix {
     SuppressFieldByCommentFix(@NotNull HighlightDisplayKey key) {
-        super(key, ROSPktField.class);
-    }
-
-    @Override
-    @Nullable
-    public PsiElement getContainer(PsiElement context) {
-        ROSPktField field = PsiTreeUtil.getParentOfType(context, ROSPktField.class, false);
-        return field != null && ROSPktLanguage.INSTANCE.equals(field.getLanguage()) ? field : null;
+        super(key, ROSPktFieldBase.class);
     }
 
     @Override

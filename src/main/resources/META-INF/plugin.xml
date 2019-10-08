@@ -24,11 +24,11 @@
         <projectService serviceImplementation="ros.integrate.settings.ROSSettings"/>
 
         <!-- ROS packet files -->
-        <fileType name="ROS Msg" implementationClass="ros.integrate.pkt.file.ROSMsgFileType"
+        <fileType name="ROSMsg" implementationClass="ros.integrate.pkt.file.ROSMsgFileType"
                   language="ROSPkt" extensions="msg" fieldName="INSTANCE"/>
-        <fileType name="ROS Srv" implementationClass="ros.integrate.pkt.file.ROSSrvFileType"
+        <fileType name="ROSSrv" implementationClass="ros.integrate.pkt.file.ROSSrvFileType"
                   language="ROSPkt" extensions="srv" fieldName="INSTANCE"/>
-        <fileType name="ROS Action" implementationClass="ros.integrate.pkt.file.ROSActFileType"
+        <fileType name="ROSAct" implementationClass="ros.integrate.pkt.file.ROSActFileType"
                   language="ROSPkt" extensions="action" fieldName="INSTANCE"/>
 
         <!-- ROS packet Language -->

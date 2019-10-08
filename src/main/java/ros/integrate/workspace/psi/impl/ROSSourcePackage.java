@@ -108,4 +108,10 @@ public class ROSSourcePackage extends ROSPackageBase {
     public Icon getIcon(int flags) {
         return ROSIcons.SrcPkg;
     }
+
+    @Nullable
+    @Override
+    public PsiDirectory getRoot(RootType type) {
+        return root; // update later once include and other join in the party.
+    }
 }

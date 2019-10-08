@@ -21,6 +21,7 @@ import ros.integrate.workspace.psi.ROSPackage;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 
 public abstract class ROSPackageBase extends PsiElementBase implements ROSPackage, Queryable {
     @NotNull
@@ -166,8 +167,12 @@ public abstract class ROSPackageBase extends PsiElementBase implements ROSPackag
     @NotNull
     @Override
     public PsiElement getNavigationElement() {
-        return getRoots()[0];
+        return Objects.requireNonNull(getRoot(RootType.SHARE)); // packages MUST have a share root, as it contains the package.xml stuff
     }
+
+    @Nullable
+    @Override
+    abstract public PsiDirectory getRoot(RootType type);
 
     @Override
     @NotNull

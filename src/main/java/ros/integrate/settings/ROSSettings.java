@@ -25,7 +25,8 @@ public class ROSSettings implements PersistentStateComponent<ROSSettings.State> 
     @Contract(pure = true)
     public ROSSettings(Project project) {
         this.project = project;
-        state.rosPath = System.getenv("ROS_ROOT");
+        String rosPath = System.getenv("ROS_ROOT");
+        state.rosPath = rosPath.substring(0, rosPath.length() - "/share/ros".length());
     }
 
     public static ROSSettings getInstance(Project project) {
