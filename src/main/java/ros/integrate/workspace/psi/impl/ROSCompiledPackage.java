@@ -65,7 +65,7 @@ public class ROSCompiledPackage extends ROSPackageBase {
 
     @Override
     public boolean isEditable() {
-        return true;
+        return false;
     }
 
     @Nullable

@@ -16,6 +16,7 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.TextComponentAccessor;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.psi.PsiDirectory;
+import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.refactoring.RefactoringBundle;
 import com.intellij.refactoring.copy.CopyFilesOrDirectoriesDialog;
@@ -34,6 +35,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkt.annotate.ROSPktTypeAnnotator;
 import ros.integrate.pkt.inspection.CamelCaseInspection;
+import ros.integrate.workspace.ROSPackageManager;
+import ros.integrate.workspace.psi.ROSPackage;
+import ros.integrate.workspace.psi.impl.ROSSourcePackage;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -41,6 +45,7 @@ import java.awt.*;
 import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * the message dialog when creating a new message type.
@@ -58,14 +63,16 @@ public class NewROSMsgDialogue extends DialogWrapper {
     private PsiDirectory targetDir;
     private final Project prj;
 
-    public NewROSMsgDialogue(@NotNull Project prj, @Nullable PsiDirectory suggestedDir, @Nullable String suggestedName) {
+    public NewROSMsgDialogue(@NotNull Project prj, @Nullable ROSPackage suggestedPkg, @Nullable String suggestedName, @NotNull PsiFile origFile) {
         super(prj);
         this.prj = prj;
 
-        if(suggestedDir != null) {
-            targetDir = suggestedDir;
-        } else {
-            targetDir = (PsiDirectory) prj.getBaseDir();
+        targetDir = suggestedPkg == null || !suggestedPkg.isEditable() || suggestedPkg.getMsgRoot() == null ?
+                origFile.getContainingDirectory() : suggestedPkg.getMsgRoot();
+        if (targetDir == null) {
+            targetDir = prj.getComponent(ROSPackageManager.class).getAllPackages()
+                    .stream().filter(pkg -> pkg instanceof ROSSourcePackage)
+                    .collect(Collectors.toList()).get(0).getMsgRoot();
         }
 
         msgNameField.setText(suggestedName);
@@ -142,6 +149,7 @@ public class NewROSMsgDialogue extends DialogWrapper {
                 .getPanel();
     }
 
+    @NotNull
     private JBLabel createToolTip() {
         final JBLabel label = new JBLabel("", UIUtil.ComponentStyle.SMALL);
         label.setBorder(JBUI.Borders.emptyLeft(10));

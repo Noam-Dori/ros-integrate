@@ -58,14 +58,13 @@ public class AddROSMsgQuickFix extends BaseIntentionAction {
             throws IncorrectOperationException {
         PsiDocumentManager.getInstance(project).commitAllDocuments();
 
-        Pair<String,String> fullMsgName = getFullName();
+        Pair<String, String> fullMsgName = getFullName();
         ROSPackageManager manager = project.getComponent(ROSPackageManager.class);
         ROSPackage pkg = manager.findPackage(fullMsgName.first);
 
-        NewROSMsgDialogue dialogue = new NewROSMsgDialogue(project, pkg == null || !pkg.isEditable() || pkg.getMsgRoot() == null ?
-                file.getContainingDirectory() : pkg.getMsgRoot(),fullMsgName.second);
+        NewROSMsgDialogue dialogue = new NewROSMsgDialogue(project, pkg, fullMsgName.second, file);
         dialogue.show();
-        if(dialogue.getExitCode() != DialogWrapper.OK_EXIT_CODE) {
+        if (dialogue.getExitCode() != DialogWrapper.OK_EXIT_CODE) {
             return;
         }
         ApplicationManager.getApplication().runWriteAction(() -> {
