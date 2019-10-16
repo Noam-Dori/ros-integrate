@@ -15,42 +15,42 @@ import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.xml.XmlFile;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkt.psi.ROSPktFile;
 import ros.integrate.settings.ROSSettings;
 import ros.integrate.workspace.psi.ROSPackage;
-import ros.integrate.workspace.psi.impl.ROSCompiledPackage;
+import ros.integrate.workspace.psi.impl.ROSSourcePackage;
 
-import java.util.*;
-
-import static ros.integrate.workspace.psi.impl.ROSCompiledPackage.RootType;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
- * a default finder used for finding compiled packages within the libraries
+ * a default finder used for finding packages within the project
  */
-public class ROSCompiledPackageFinder extends ROSPackageFinderBase {
-    private static final Logger LOG = Logger.getInstance("#ros.integrate.workspace.ROSCompiledPackageFinder");
+public class ROSWorkspacePackageFinder extends ROSPackageFinderBase {
+    private static final Logger LOG = Logger.getInstance("#ros.integrate.workspace.ROSProjectPackageFinder");
 
-    private VirtualFile getROSRoot(Project project) {
-        Library origin = LibraryTablesRegistrar.getInstance().getLibraryTable(project).getLibraryByName("ROS");
+    private VirtualFile getWorkspaceRoot(Project project) {
+        Library origin = LibraryTablesRegistrar.getInstance().getLibraryTable(project).getLibraryByName("workspace");
         return Objects.requireNonNull(origin).getFiles(OrderRootType.SOURCES)[0];
     }
 
     @Override
     Class<? extends ROSPackage> getPackageType() {
-        return ROSCompiledPackage.class;
+        return ROSSourcePackage.class;
     }
 
     @NotNull
     @Override
     ROSPackage tryNewROSPackage(Project project, String pkgName, PsiDirectory xmlRoot, XmlFile pkgXml, List<ROSPktFile> pkgPackets) {
-        Map<RootType, PsiDirectory> rootMap = new HashMap<>();
-        rootMap.put(RootType.SHARE, xmlRoot);
-        ROSPackage newPkg = new ROSCompiledPackage(project, pkgName, rootMap, pkgXml, pkgPackets);
+        ROSPackage newPkg = new ROSSourcePackage(project, pkgName, xmlRoot, pkgXml, pkgPackets);
         if (newPkg == ROSPackage.ORPHAN) {
             LOG.error("Failed indexing a valid ROS package",
-                    "the compiled package finder tried finding a ros package, and failed.",
+                    "the project package finder tried finding a ros package, and failed.",
                     "Name: [" + pkgName + "]",
-                    "Share Root: [" + xmlRoot.getVirtualFile().getPath() + "]");
+                    "Root: [" + xmlRoot.getVirtualFile().getPath() + "]");
         }
         return newPkg;
     }
@@ -59,21 +59,21 @@ public class ROSCompiledPackageFinder extends ROSPackageFinderBase {
     @Override
     GlobalSearchScope getScope(Project project) {
         return Optional.ofNullable(LibraryTablesRegistrar.getInstance()
-                .getLibraryTable(project).getLibraryByName("ROS"))
+                .getLibraryTable(project).getLibraryByName("workspace"))
                 .map(lib -> (GlobalSearchScope) new LibraryScope(project, lib)).orElse(GlobalSearchScope.EMPTY_SCOPE);
     }
 
-    @NotNull
+    @Nullable
     @Override
     public Library getLibrary(Project project) {
         String url = VirtualFileManager.constructUrl(LocalFileSystem.PROTOCOL,
-                ROSSettings.getInstance(project).getROSPath());
+                ROSSettings.getInstance(project).getWorkspacePath()); // TODO additional sources via $ROS_PACKAGE_PATH
         LibraryTable table = LibraryTablesRegistrar.getInstance().getLibraryTable(project);
-        Library lib = table.getLibraryByName("ROS");
+        Library lib = table.getLibraryByName("workspace");
         if (lib != null) {
             table.removeLibrary(lib);
         }
-        lib = table.createLibrary("ROS");
+        lib = table.createLibrary("workspace");
         Library.ModifiableModel model = lib.getModifiableModel();
         VirtualFile file = VirtualFileManager.getInstance().findFileByUrl(url);
         if (file != null) {
@@ -88,7 +88,7 @@ public class ROSCompiledPackageFinder extends ROSPackageFinderBase {
     public boolean updateLibrary(Project project, @NotNull Library lib) {
         Library.ModifiableModel model = lib.getModifiableModel();
         String newUrl = VirtualFileManager.constructUrl(LocalFileSystem.PROTOCOL,
-                ROSSettings.getInstance(project).getROSPath());
+                ROSSettings.getInstance(project).getWorkspacePath());
         if(!Arrays.asList(model.getUrls(OrderRootType.SOURCES)).contains(newUrl)) {
             Arrays.stream(model.getUrls(OrderRootType.SOURCES))
                     .forEach(modelUrl -> model.removeRoot(modelUrl, OrderRootType.SOURCES));
@@ -104,10 +104,10 @@ public class ROSCompiledPackageFinder extends ROSPackageFinderBase {
     }
 
     boolean notInFinder(@NotNull VirtualFile vFile, @NotNull Project project) {
-        return !vFile.getPath().contains(getROSRoot(project).getPath());
+        return !vFile.getPath().contains(getWorkspaceRoot(project).getPath());
     }
 
     boolean inFinder(@NotNull VFileEvent event, @NotNull Project project) {
-         return ROSPackageUtil.belongsToRoot(getROSRoot(project),event);
+        return ROSPackageUtil.belongsToRoot(getWorkspaceRoot(project),event);
     }
 }

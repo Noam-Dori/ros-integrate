@@ -16,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 public class ROSPktParserDefinition implements ParserDefinition {
     private static final TokenSet WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE);
     private static final TokenSet COMMENTS = TokenSet.create(ROSPktTypes.COMMENT);
+    private static final TokenSet STRINGS = TokenSet.create(ROSPktTypes.STRING);
 
     private static final IFileElementType FILE = new IFileElementType(ROSPktLanguage.INSTANCE);
 
@@ -37,7 +38,7 @@ public class ROSPktParserDefinition implements ParserDefinition {
 
     @NotNull
     public TokenSet getStringLiteralElements() {
-        return TokenSet.EMPTY;
+        return STRINGS;
     }
 
     @NotNull

@@ -5,6 +5,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.libraries.Library;
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
 import com.intellij.util.containers.MultiMap;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.workspace.psi.ROSPackage;
 
@@ -61,6 +62,8 @@ public interface ROSPackageFinder {
      */
     @Nullable
     Library getLibrary(Project project);
+
+    boolean updateLibrary(Project project, @NotNull Library lib);
 
     enum CacheCommand {
         NONE,

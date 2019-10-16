@@ -67,7 +67,7 @@
     </extensions>
 
     <extensions defaultExtensionNs="ros-integrate">
-        <packageFinder implementation="ros.integrate.workspace.ROSProjectPackageFinder"/>
+        <packageFinder implementation="ros.integrate.workspace.ROSWorkspacePackageFinder"/>
         <packageFinder implementation="ros.integrate.workspace.ROSCompiledPackageFinder"/>
     </extensions>
 

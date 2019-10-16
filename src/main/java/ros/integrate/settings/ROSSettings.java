@@ -15,18 +15,30 @@ public class ROSSettings implements PersistentStateComponent<ROSSettings.State> 
     @SuppressWarnings("WeakerAccess")
     static class State {
         public String rosPath;
-    }
+        public String workspacePath;
+        public String additionalSources;
 
-    @SuppressWarnings({"FieldCanBeLocal", "unused"}) // yes, but its PROJECT level, so we need something to track that. (?)
-    private final Project project;
+        public boolean additionalEnvSync;
+    }
     private final State state = new State();
     private final List<Consumer<ROSSettings>> listeners = new LinkedList<>();
 
     @Contract(pure = true)
     public ROSSettings(Project project) {
-        this.project = project;
+        state.additionalEnvSync = true;
+
         String rosPath = System.getenv("ROS_ROOT");
-        state.rosPath = rosPath.substring(0, rosPath.length() - "/share/ros".length());
+        if(rosPath == null) {
+            state.rosPath = "";
+        } else {
+            state.rosPath = rosPath.substring(0, rosPath.length() - "/share/ros".length());
+        }
+
+        String workspacePath = ROSSettingsUtil.detectWorkspace(project);
+        state.workspacePath = workspacePath == null ? "" : workspacePath;
+
+        String additionalSources = System.getenv("ROS_PACKAGE_PATH");
+        state.additionalSources = additionalSources == null ? "" : additionalSources;
     }
 
     public static ROSSettings getInstance(Project project) {
@@ -41,7 +53,17 @@ public class ROSSettings implements PersistentStateComponent<ROSSettings.State> 
 
     @Override
     public void loadState(@NotNull State state) {
-        XmlSerializerUtil.copyBean(state, this.state);
+        XmlSerializerUtil.getAccessors(State.class).forEach(accessor ->
+                Optional.ofNullable(accessor.read(state))
+                        .ifPresent(val -> accessor.set(this.state, val)));
+    }
+
+    void triggerListeners() {
+        listeners.forEach(listener -> listener.accept(this));
+    }
+
+    public void addListener(Consumer<ROSSettings> trigger) {
+        listeners.add(trigger);
     }
 
     public String getROSPath() {
@@ -52,11 +74,27 @@ public class ROSSettings implements PersistentStateComponent<ROSSettings.State> 
         state.rosPath = rosPath;
     }
 
-    void triggerListeners() {
-        listeners.forEach(listener -> listener.accept(this));
+    public String getWorkspacePath() {
+        return state.workspacePath;
     }
 
-    public void addListener(Consumer<ROSSettings> trigger) {
-        listeners.add(trigger);
+    void setWorkspacePath(String workspacePath) {
+        state.workspacePath = workspacePath;
+    }
+
+    public List<String> getAdditionalSources() {
+        return Arrays.asList(state.additionalSources.split(":"));
+    }
+
+    void setAdditionalSources(@NotNull Collection<String> additionalSources) {
+        state.additionalSources = String.join(":", additionalSources);
+    }
+
+    public boolean isAdditionalEnvSynced() {
+        return state.additionalEnvSync;
+    }
+
+    void setAdditionalEnvSync(boolean isSynced) {
+        state.additionalEnvSync = isSynced;
     }
 }

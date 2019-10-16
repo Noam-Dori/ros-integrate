@@ -6,8 +6,7 @@ import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.*;
 import com.intellij.openapi.roots.libraries.Library;
-import com.intellij.openapi.vfs.LocalFileSystem;
-import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.openapi.vfs.newvfs.BulkFileListener;
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
@@ -59,27 +58,11 @@ public class ROSPackageManagerImpl implements ROSPackageManager {
             Library lib = finder.getLibrary(project);
             if (lib != null) {
                 ROSSettings.getInstance(project).addListener(settings ->
-                        WriteCommandAction.runWriteCommandAction(project, () -> reconfigureLibrary(settings, lib)));
+                        WriteCommandAction.runWriteCommandAction(project, (Computable<Boolean>) () ->
+                                purgeFlag = finder.updateLibrary(project, lib)));
                 Arrays.stream(projectModules).forEach(module -> setDependency(module, lib));
             }
         });
-    }
-
-    private void reconfigureLibrary(@NotNull ROSSettings settings, @NotNull Library lib) {
-        Library.ModifiableModel model = lib.getModifiableModel();
-        String newUrl =  VirtualFileManager.constructUrl(LocalFileSystem.PROTOCOL,settings.getROSPath());
-        if(!Arrays.asList(model.getUrls(OrderRootType.SOURCES)).contains(newUrl)) {
-            Arrays.stream(model.getUrls(OrderRootType.SOURCES))
-                    .forEach(modelUrl -> model.removeRoot(modelUrl, OrderRootType.SOURCES));
-            VirtualFile newFile = VirtualFileManager.getInstance().findFileByUrl(newUrl);
-            if (newFile != null) {
-                model.addRoot(newFile, OrderRootType.SOURCES);
-                model.commit();
-            }
-            purgeFlag = true;
-        } else {
-            purgeFlag = false;
-        }
     }
 
     private void setDependency(@NotNull Module module, @NotNull Library lib) {
@@ -98,7 +81,7 @@ public class ROSPackageManagerImpl implements ROSPackageManager {
 
     private void doBulkFileChangeEvents(@NotNull List<? extends VFileEvent> events) {
         // 1. group by parent dir name (convert to package if possible)
-        Set<ROSPackage> affectedPackages = new TreeSet<>(Comparator.comparing(ROSPackage::getName));
+        Set<ROSPackage> affectedPackages = new TreeSet<>();
         List<VFileEvent> affectedOrphans = new SortedList<>(Comparator.comparing(VFileEvent::getPath)),
                 affectedOrphansOld = new SortedList<>(Comparator.comparing(VFileEvent::getPath));
         affectedOrphansOld.addAll(events); boolean orphansRemainedTheSame = false;
