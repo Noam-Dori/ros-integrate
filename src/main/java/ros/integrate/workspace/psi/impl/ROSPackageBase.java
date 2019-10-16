@@ -2,6 +2,7 @@ package ros.integrate.workspace.psi.impl;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.Language;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Queryable;
 import com.intellij.openapi.util.TextRange;
@@ -15,19 +16,21 @@ import com.intellij.util.ArrayUtil;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import ros.integrate.pkt.psi.ROSPktFile;
 import ros.integrate.workspace.ROSPackageManager;
 import ros.integrate.workspace.psi.ROSPackage;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public abstract class ROSPackageBase extends PsiElementBase implements ROSPackage, Queryable {
+    private static final Logger LOG = Logger.getInstance("#ros.integrate.workspace.ROSSourcePackage");
+
     @NotNull
-    protected XmlFile pkgXml;
+    private XmlFile pkgXml;
     @NotNull
     protected String name;
+    @NotNull
+    private Set<ROSPktFile> packets;
     @NotNull
     protected final Project project;
 
@@ -36,9 +39,10 @@ public abstract class ROSPackageBase extends PsiElementBase implements ROSPackag
         this.name = name;
         this.project = project;
         this.pkgXml = pkgXml;
+        this.packets = new TreeSet<>();
     }
 
-    protected ROSPackageManager getPackageManager() {
+    private ROSPackageManager getPackageManager() {
         return project.getComponent(ROSPackageManager.class);
     }
 
@@ -155,7 +159,7 @@ public abstract class ROSPackageBase extends PsiElementBase implements ROSPackag
     @Override
     public boolean isValid() {
         return !project.isDisposed()
-                && project.getComponent(ROSPackageManager.class).findPackage(name) != null
+                && getPackageManager().findPackage(name) != null
                 && getRoots().length > 0;
     }
 
@@ -178,5 +182,54 @@ public abstract class ROSPackageBase extends PsiElementBase implements ROSPackag
     @NotNull
     public Project getProject() {
         return project;
+    }
+
+    @Override
+    public void addPackets(Collection<ROSPktFile> packets) {
+        this.packets.addAll(packets);
+        packets.forEach(pkt -> pkt.setPackage(this));
+    }
+
+    @Override
+    public void setPackets(Collection<ROSPktFile> packets) { // yes, we can retain, but we need to modify things in all packets
+        removePackets(this.packets);
+        addPackets(packets);
+    }
+
+    @Override
+    public void removePackets(Collection<ROSPktFile> packets) {
+        packets.forEach(pkt -> pkt.setPackage(ORPHAN));
+        this.packets.removeAll(packets);
+    }
+
+    @NotNull
+    @Override
+    public ROSPktFile[] getPackets(@NotNull GlobalSearchScope scope) {
+        return packets.parallelStream()
+                .filter(pkt -> scope.accept(pkt.getVirtualFile())).toArray(ROSPktFile[]::new);
+    }
+
+    @Nullable
+    @Override
+    public <T extends ROSPktFile> T findPacket(@NotNull String pktName, @NotNull Class<T> pktType) {
+        ROSPktFile[] validFiles = packets.parallelStream()
+                .filter(pkt -> pkt.getPacketName().equals(pktName)).toArray(ROSPktFile[]::new);
+        if(validFiles.length > 1) {
+            LOG.error("Found 2 messages with the same name in the same package.",
+                    "Package name: " + name,
+                    "Packet file name: " + pktName);
+        }
+        return validFiles.length == 1 && pktType.isInstance(validFiles[0]) ? pktType.cast(validFiles[0]) : null;
+    }
+
+    @NotNull
+    @Override
+    public XmlFile getPackageXml() {
+        return pkgXml;
+    }
+
+    @Override
+    public void setPackageXml(XmlFile newPackageXml) {
+        pkgXml = newPackageXml;
     }
 }

@@ -22,7 +22,7 @@ import java.util.Collection;
  * 1. a package.xml file
  * 2. a CMakeLists.txt file which has the {@code catkin_package()} function
  */
-public interface ROSPackage extends PsiCheckedRenameElement, NavigatablePsiElement, PsiDirectoryContainer {
+public interface ROSPackage extends PsiCheckedRenameElement, NavigatablePsiElement, PsiDirectoryContainer, Comparable<ROSPackage> {
     public enum RootType {
         SHARE
     }
@@ -117,7 +117,12 @@ public interface ROSPackage extends PsiCheckedRenameElement, NavigatablePsiEleme
      */
     void setPackageXml(XmlFile newPackageXml);
 
-//    /**
+    @Override
+    default int compareTo(@NotNull ROSPackage o) {
+        return getName().compareTo(o.getName());
+    }
+
+    //    /**
 //     * get all source files available for this package, compiled or source.
 //     * @param scope where to search if at all.
 //     * @return an array of PSI source files, usually C++ or python files.

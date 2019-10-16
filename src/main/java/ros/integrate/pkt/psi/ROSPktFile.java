@@ -22,12 +22,17 @@ import java.util.List;
  * an instance of a packet containing template file, sent by the ROS framework.
  * the class name is short for "ROS Packet File", which will be used throughout the language.
  */
-public abstract class ROSPktFile extends PsiFileBase implements PsiNameIdentifierOwner, PsiQualifiedNamedElement {
+public abstract class ROSPktFile extends PsiFileBase implements PsiNameIdentifierOwner, PsiQualifiedNamedElement, Comparable<ROSPktFile> {
     private ROSPackage parentPackage;
 
     ROSPktFile(@NotNull FileViewProvider viewProvider) {
         super(viewProvider, ROSPktLanguage.INSTANCE);
         parentPackage = ROSPackage.ORPHAN;
+    }
+
+    @Override
+    public int compareTo(@NotNull ROSPktFile o) {
+        return getQualifiedName().compareTo(o.getQualifiedName());
     }
 
     @Override
