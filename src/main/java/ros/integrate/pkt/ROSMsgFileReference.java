@@ -10,6 +10,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.*;
 import com.intellij.psi.impl.source.resolve.reference.impl.providers.PsiFileReference;
+import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
@@ -80,7 +81,7 @@ public class ROSMsgFileReference extends PsiReferenceBase<PsiElement> implements
     private void addPackageVariants(@NotNull Project project, List<LookupElement> variants) {
         if (!explicitPackage) {
             for (final ROSPackage pkg : project.getComponent(ROSPackageManager.class).getAllPackages()) {
-                if (pkg.getName().length() > 0) {
+                if (pkg.getPackets(GlobalSearchScope.allScope(project)).length > 0) {
                     variants.add(LookupElementBuilder.createWithIcon(pkg)
                             .withInsertHandler((context, item) -> addSlash(context, project, pkg))
                     );
