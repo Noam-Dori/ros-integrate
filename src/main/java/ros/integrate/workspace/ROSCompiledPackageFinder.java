@@ -32,7 +32,7 @@ public class ROSCompiledPackageFinder extends ROSPackageFinderBase {
 
     private VirtualFile getROSRoot(Project project) {
         Library origin = LibraryTablesRegistrar.getInstance().getLibraryTable(project).getLibraryByName("ROS");
-        return Objects.requireNonNull(origin).getFiles(OrderRootType.SOURCES)[0];
+        return Objects.requireNonNull(origin).getFiles(OrderRootType.CLASSES)[0];
     }
 
     @Override
@@ -77,7 +77,7 @@ public class ROSCompiledPackageFinder extends ROSPackageFinderBase {
         Library.ModifiableModel model = lib.getModifiableModel();
         VirtualFile file = VirtualFileManager.getInstance().findFileByUrl(url);
         if (file != null) {
-            model.addRoot(file, OrderRootType.SOURCES);
+            model.addRoot(file, OrderRootType.CLASSES); // note: OrderRootType.SOURCES also works, but will not show in external libraries.
             model.commit();
         }
 
@@ -89,12 +89,12 @@ public class ROSCompiledPackageFinder extends ROSPackageFinderBase {
         Library.ModifiableModel model = lib.getModifiableModel();
         String newUrl = VirtualFileManager.constructUrl(LocalFileSystem.PROTOCOL,
                 ROSSettings.getInstance(project).getROSPath());
-        if(!Arrays.asList(model.getUrls(OrderRootType.SOURCES)).contains(newUrl)) {
-            Arrays.stream(model.getUrls(OrderRootType.SOURCES))
-                    .forEach(modelUrl -> model.removeRoot(modelUrl, OrderRootType.SOURCES));
+        if(!Arrays.asList(model.getUrls(OrderRootType.CLASSES)).contains(newUrl)) {
+            Arrays.stream(model.getUrls(OrderRootType.CLASSES))
+                    .forEach(modelUrl -> model.removeRoot(modelUrl, OrderRootType.CLASSES));
             VirtualFile newFile = VirtualFileManager.getInstance().findFileByUrl(newUrl);
             if (newFile != null) {
-                model.addRoot(newFile, OrderRootType.SOURCES);
+                model.addRoot(newFile, OrderRootType.CLASSES);
                 model.commit();
             }
             return true;
