@@ -93,8 +93,12 @@ public class ROSSettings implements PersistentStateComponent<ROSSettings.State> 
                 .collect(Collectors.toList());
     }
 
-    void setAdditionalSources(@NotNull Collection<String> additionalSources) {
-        state.additionalSources = String.join(":", additionalSources);
+    String getRawAdditionalSources() {
+        return state.additionalSources;
+    }
+
+    void setAdditionalSources(String rawAdditionalSources) {
+        state.additionalSources = rawAdditionalSources;
     }
 
     public boolean isAdditionalEnvSynced() {
