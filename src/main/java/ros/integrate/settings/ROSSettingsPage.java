@@ -10,8 +10,10 @@ import com.intellij.refactoring.copy.CopyFilesOrDirectoriesDialog;
 import com.intellij.ui.RecentsManager;
 import com.intellij.ui.TextFieldWithHistoryWithBrowseButton;
 import com.intellij.ui.components.JBLabel;
+import com.intellij.util.Consumer;
 import com.intellij.util.ui.FormBuilder;
 import com.intellij.util.ui.UIUtil;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -22,9 +24,52 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class ROSSettingsPage implements Configurable {
-    private final String RECENT_KEYS = "ROSSettings.RECENT_KEYS";
+    private enum HistoryKey {
+        DEFAULT("RECENT_KEYS"),
+        WORKSPACE("WORKSPACE");
+
+        private final String historyKey;
+
+        @Contract(pure = true)
+        HistoryKey(String lookupKey) {
+            this.historyKey = "ROSSettings." + lookupKey;
+        }
+
+        @Contract(pure = true)
+        public String get() {
+            return historyKey;
+        }
+    }
+
+    private static class BrowserOptions {
+        private String title = "", description = "";
+        private HistoryKey key = HistoryKey.DEFAULT;
+        @Contract(pure = true)
+        BrowserOptions() {}
+
+        @Contract(pure = true)
+        BrowserOptions(HistoryKey historyKey) {
+            this.key = historyKey;
+        }
+
+        BrowserOptions withDescription(String description) {
+            this.description = description;
+            return this;
+        }
+
+        BrowserOptions withTitle(String title) {
+            this.title = title;
+            return this;
+        }
+
+        String getKey() {
+            return key.get();
+        }
+    }
 
     private final Project project;
+    private final RecentsManager recentsManager;
+    private final ROSSettings data;
 
     private final JBLabel rosSettingsLabel = new JBLabel();
 
@@ -34,8 +79,13 @@ public class ROSSettingsPage implements Configurable {
     private final TextFieldWithHistoryWithBrowseButton rosRoot = new TextFieldWithHistoryWithBrowseButton();
     private final JBLabel rosRootLabel = new JBLabel();
 
+    private final TextFieldWithHistoryWithBrowseButton workspace = new TextFieldWithHistoryWithBrowseButton();
+    private final JBLabel workspaceLabel = new JBLabel();
+
     public ROSSettingsPage(Project project) {
         this.project = project;
+        recentsManager = RecentsManager.getInstance(project);
+        data = ROSSettings.getInstance(project);
     }
 
     @NotNull
@@ -55,64 +105,72 @@ public class ROSSettingsPage implements Configurable {
     @Nullable
     @Override
     public JComponent createComponent() {
+        reset();
         rosSettingsLabel.setText("In here, you can configure your interactions with ROS in the IDE");
         envVariablesLabel.setText("Environment");
         rosRootLabel.setText("ROS Path");
+        workspaceLabel.setText("Workspace");
 
-        initRosRoot("Choose Target Directory","This Directory is the Root ROS Library.");
+        installBrowserHistory(rosRoot,new BrowserOptions()
+                .withTitle("Choose Target Directory")
+                .withDescription("This Directory is the Root ROS Library."));
+        installBrowserHistory(workspace,new BrowserOptions(HistoryKey.WORKSPACE)
+                .withTitle("Choose Target Workspace")
+                .withDescription("This is the root directory of this project's workspace"));
 
         JPanel unalignedPanel = FormBuilder.createFormBuilder()
                 .addComponent(rosSettingsLabel)
                 .addLabeledComponent(envVariablesLabel, envVariables, UIUtil.LARGE_VGAP)
                 .addLabeledComponent(rosRootLabel,rosRoot)
+                .addLabeledComponent(workspaceLabel, workspace)
                 .getPanel();
         JPanel ret = new JPanel(new BorderLayout());
         ret.add(unalignedPanel, BorderLayout.NORTH);
         return ret;
     }
 
-    @SuppressWarnings("SameParameterValue") // its nicer from a configuration standpoint.
-    private void initRosRoot(String browserTitle, String browserDescription) {
+    private void installBrowserHistory(@NotNull TextFieldWithHistoryWithBrowseButton field, @NotNull BrowserOptions options) {
         FileChooserDescriptor descriptor = FileChooserDescriptorFactory.createSingleFolderDescriptor();
-        rosRoot.addBrowseFolderListener(browserTitle,
-                browserDescription,
+        field.addBrowseFolderListener(options.title,
+                options.description,
                 project, descriptor, TextComponentAccessor.TEXT_FIELD_WITH_HISTORY_WHOLE_TEXT);
 
-        List<String> recentEntries = RecentsManager.getInstance(project).getRecentEntries(RECENT_KEYS);
+        List<String> recentEntries = recentsManager.getRecentEntries(options.getKey());
         if (recentEntries == null) {
             recentEntries = new LinkedList<>();
         }
-        String curDir = ROSSettings.getInstance(project).getROSPath();
+        String curDir = field.getText();
         recentEntries.remove(curDir); // doing this and the line below will move curDir to the top regardless if it exists or not
         recentEntries.add(0,curDir);
-        rosRoot.getChildComponent().setHistory(recentEntries);
+        field.getChildComponent().setHistory(recentEntries);
 
         // add current PSI dir as current selection
-        rosRoot.getChildComponent().setText(curDir);
+        field.getChildComponent().setText(curDir);
 
         // folder text field
-        final JTextField textField = rosRoot.getChildComponent().getTextEditor();
+        final JTextField textField = field.getChildComponent().getTextEditor();
         FileChooserFactory.getInstance().installFileCompletion(textField, descriptor, true, null);
-        rosRoot.setTextFieldPreferredWidth(CopyFilesOrDirectoriesDialog.MAX_PATH_LENGTH);
+        field.setTextFieldPreferredWidth(CopyFilesOrDirectoriesDialog.MAX_PATH_LENGTH);
     }
 
     @Override
     public boolean isModified() {
-        ROSSettings data = ROSSettings.getInstance(project);
         return isModified(rosRoot.getChildComponent().getTextEditor(),data.getROSPath());
+    }
+
+    private boolean addToHistory(@NotNull TextFieldWithHistoryWithBrowseButton field, HistoryKey historyKey, Consumer<String> updateAction) {
+        if (!field.getText().isEmpty()) {
+            recentsManager.registerRecentEntry(historyKey.get(), rosRoot.getChildComponent().getText());
+            updateAction.consume(field.getText());
+            return true;
+        }
+        return false;
     }
 
     @Override
     public void apply() {
-        boolean triggerFlag = false;
-        ROSSettings data = ROSSettings.getInstance(project);
-        if(!rosRoot.getText().isEmpty()) {
-            // adds to history
-            RecentsManager.getInstance(project).registerRecentEntry(RECENT_KEYS, rosRoot.getChildComponent().getText());
-
-            data.setRosPath(rosRoot.getText());
-            triggerFlag = true;
-        }
+        boolean triggerFlag = addToHistory(rosRoot,HistoryKey.DEFAULT, data::setRosPath);
+        triggerFlag |= addToHistory(workspace,HistoryKey.WORKSPACE, data::setWorkspacePath);
 
         if(triggerFlag) {
             data.triggerListeners();
@@ -121,8 +179,8 @@ public class ROSSettingsPage implements Configurable {
 
     @Override
     public void reset() {
-        ROSSettings data = ROSSettings.getInstance(project);
         rosRoot.setText(data.getROSPath());
+        workspace.setText(data.getWorkspacePath());
     }
 
 
