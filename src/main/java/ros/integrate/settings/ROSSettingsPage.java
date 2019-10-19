@@ -11,15 +11,12 @@ import com.intellij.ui.RecentsManager;
 import com.intellij.ui.TextFieldWithHistoryWithBrowseButton;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.util.Consumer;
-import com.intellij.util.ui.FormBuilder;
-import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.settings.BrowserOptions.HistoryKey;
 
 import javax.swing.*;
-import java.awt.*;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -32,9 +29,6 @@ public class ROSSettingsPage implements Configurable {
 
     private final JBLabel rosSettingsLabel = new JBLabel();
 
-    private final JSeparator envVariables = new JSeparator();
-    private final JBLabel envVariablesLabel = newSectionHeaderLabel();
-
     private final TextFieldWithHistoryWithBrowseButton rosRoot = new TextFieldWithHistoryWithBrowseButton();
     private final JBLabel rosRootLabel = new JBLabel();
 
@@ -44,18 +38,12 @@ public class ROSSettingsPage implements Configurable {
     private final PathListTextField additionalSources = new PathListTextField();
     private final JBLabel additionalSourcesLabel = new JBLabel();
 
+    private final JButton resetSourcesButton = new JButton();
+
     public ROSSettingsPage(Project project) {
         this.project = project;
         recentsManager = RecentsManager.getInstance(project);
         data = ROSSettings.getInstance(project);
-    }
-
-    @NotNull
-    private JBLabel newSectionHeaderLabel() {
-        JBLabel ret = new JBLabel();
-        Font oldFont = ret.getFont();
-        ret.setFont(new Font(oldFont.getName(),oldFont.getStyle(),oldFont.getSize() - 2));
-        return ret;
     }
 
     @Nls(capitalization = Nls.Capitalization.Title)
@@ -68,11 +56,15 @@ public class ROSSettingsPage implements Configurable {
     @Override
     public JComponent createComponent() {
         reset();
+
+        String envVariables = "Environment";
+
         rosSettingsLabel.setText("In here, you can configure your interactions with ROS in the IDE");
-        envVariablesLabel.setText("Environment");
         rosRootLabel.setText("ROS Path:");
         workspaceLabel.setText("Workspace:");
-        additionalSourcesLabel.setText("Additional Package Repositories:");
+        additionalSourcesLabel.setText("Additional Package Paths:");
+
+        resetSourcesButton.setText("Reset to $ROS_PACKAGE_PATH");
 
         installBrowserHistory(rosRoot, new BrowserOptions(project)
                 .withTitle("Choose Target Directory")
@@ -86,16 +78,14 @@ public class ROSSettingsPage implements Configurable {
                 .withDialogTitle("Configure Paths to Source")
                 .withDescription("This is the a root directory to additional sources outside of the workspace."));
 
-        JPanel unalignedPanel = FormBuilder.createFormBuilder()
+        return SectionedFormBuilder.createFormBuilder()
                 .addComponent(rosSettingsLabel)
-                .addLabeledComponent(envVariablesLabel, envVariables, UIUtil.LARGE_VGAP)
+                .addSection(envVariables)
                 .addLabeledComponent(rosRootLabel, rosRoot)
                 .addLabeledComponent(workspaceLabel, workspace)
                 .addLabeledComponent(additionalSourcesLabel, additionalSources)
+                .addComponent(resetSourcesButton)
                 .getPanel();
-        JPanel ret = new JPanel(new BorderLayout());
-        ret.add(unalignedPanel, BorderLayout.NORTH);
-        return ret;
     }
 
     private void installBrowserHistory(@NotNull TextFieldWithHistoryWithBrowseButton field, @NotNull BrowserOptions options) {
@@ -147,5 +137,4 @@ public class ROSSettingsPage implements Configurable {
         workspace.setText(data.getWorkspacePath());
         additionalSources.setText(data.getRawAdditionalSources());
     }
-
 }

@@ -32,12 +32,6 @@ class ROSPackageUtil {
         return event.getPath().contains(rootPath);
     }
 
-    @NotNull
-    static VirtualFile getParentOfEvent(@NotNull VFileEvent event) {
-        return event instanceof VFileCreateEvent ? ((VFileCreateEvent) event).getParent()
-                : Objects.requireNonNull(event.getFile()).getParent();
-    }
-
     static boolean isPackageXml(@NotNull VFileEvent event) {
         return getEventName(event).equals(PACKAGE_XML);
     }
