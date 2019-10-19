@@ -63,7 +63,6 @@ public class ROSSettingsPage implements Configurable {
         rosRootLabel.setText("ROS Path:");
         workspaceLabel.setText("Workspace:");
         additionalSourcesLabel.setText("Additional Package Paths:");
-
         resetSourcesButton.setText("Reset to $ROS_PACKAGE_PATH");
 
         installBrowserHistory(rosRoot, new BrowserOptions(project)
@@ -77,6 +76,9 @@ public class ROSSettingsPage implements Configurable {
                 .withTitle("Modify source path")
                 .withDialogTitle("Configure Paths to Source")
                 .withDescription("This is the a root directory to additional sources outside of the workspace."));
+        resetSourcesButton.addActionListener(action ->
+                additionalSources.setText(Optional.ofNullable(System.getenv("ROS_PACKAGE_PATH"))
+                        .orElse("")));
 
         return SectionedFormBuilder.createFormBuilder()
                 .addComponent(rosSettingsLabel)

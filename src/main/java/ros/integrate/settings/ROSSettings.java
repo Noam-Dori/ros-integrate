@@ -18,16 +18,12 @@ public class ROSSettings implements PersistentStateComponent<ROSSettings.State> 
         public String rosPath;
         public String workspacePath;
         public String additionalSources;
-
-        public boolean additionalEnvSync;
     }
     private final State state = new State();
     private final List<Consumer<ROSSettings>> listeners = new LinkedList<>();
 
     @Contract(pure = true)
     public ROSSettings(Project project) {
-        state.additionalEnvSync = true;
-
         String rosPath = System.getenv("ROS_ROOT");
         if(rosPath == null) {
             state.rosPath = "";
@@ -99,13 +95,5 @@ public class ROSSettings implements PersistentStateComponent<ROSSettings.State> 
 
     void setAdditionalSources(String rawAdditionalSources) {
         state.additionalSources = rawAdditionalSources;
-    }
-
-    public boolean isAdditionalEnvSynced() {
-        return state.additionalEnvSync;
-    }
-
-    void setAdditionalEnvSync(boolean isSynced) {
-        state.additionalEnvSync = isSynced;
     }
 }
