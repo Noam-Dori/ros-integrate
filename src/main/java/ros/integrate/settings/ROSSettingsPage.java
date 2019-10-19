@@ -79,9 +79,11 @@ public class ROSSettingsPage implements Configurable {
                 .withDescription("This Directory is the Root ROS Library."));
         installBrowserHistory(workspace, new BrowserOptions(project, HistoryKey.WORKSPACE)
                 .withTitle("Choose Target Workspace")
+                .withDialogTitle("Configure Path to Workspace")
                 .withDescription("This is the root directory of this project's workspace"));
         additionalSources.installHistoryAndDialog(recentsManager, new BrowserOptions(project, HistoryKey.EXTRA_SOURCES)
                 .withTitle("Modify source path")
+                .withDialogTitle("Configure Paths to Source")
                 .withDescription("This is the a root directory to additional sources outside of the workspace."));
 
         JPanel unalignedPanel = FormBuilder.createFormBuilder()

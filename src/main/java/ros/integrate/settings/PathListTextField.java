@@ -20,14 +20,14 @@ class PathListTextField extends TextFieldWithHistoryWithBrowseButton {
         private final JPanel display = new JPanel(new BorderLayout());
         private final PathListTextField parent;
 
-        private final PackagePathTable data;
+        private final PathListTable data;
 
         PackagePathDialog(PathListTextField component, BrowserOptions options) {
             super(component, true);
             parent = component;
-            data = new PackagePathTable(options);
+            data = new PathListTable(options);
 
-            setTitle("Configure Paths to Source");
+            setTitle(options.dialogTitle);
             data.setValues(Arrays.stream(component.getText()
                     .split(":"))
                     .filter(path -> !path.equals("")));

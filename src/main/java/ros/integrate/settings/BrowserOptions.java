@@ -4,6 +4,7 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.Contract;
 
 class BrowserOptions {
+
     enum HistoryKey {
         DEFAULT("RECENT_KEYS"),
         WORKSPACE("WORKSPACE"),
@@ -24,7 +25,7 @@ class BrowserOptions {
 
     final Project project;
 
-    String title = "", description = "";
+    String title = "", description = "", dialogTitle = "";
     private HistoryKey key = HistoryKey.DEFAULT;
     @Contract(pure = true)
     BrowserOptions(Project project) {
@@ -44,6 +45,11 @@ class BrowserOptions {
 
     BrowserOptions withTitle(String title) {
         this.title = title;
+        return this;
+    }
+
+    BrowserOptions withDialogTitle(String dialogTitle) {
+        this.dialogTitle = dialogTitle;
         return this;
     }
 

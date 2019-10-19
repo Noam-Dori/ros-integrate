@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class PackagePathTable extends ListTableWithButtons<PackagePathTable.Path> {
+public class PathListTable extends ListTableWithButtons<PathListTable.Path> {
     static class Path {
         private String path;
 
@@ -38,8 +38,8 @@ public class PackagePathTable extends ListTableWithButtons<PackagePathTable.Path
 
     private final BrowserOptions browserOptions;
 
-    PackagePathTable(BrowserOptions browserOptions) {
-        getTableView().getEmptyText().setText("No additional directories");
+    PathListTable(BrowserOptions browserOptions) {
+        getTableView().getEmptyText().setText("No paths specified");
         this.browserOptions = browserOptions;
     }
 
