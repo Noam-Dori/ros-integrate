@@ -1,6 +1,5 @@
 package ros.integrate.settings;
 
-import com.intellij.execution.util.PathMappingsComponent; // for reference
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.refactoring.copy.CopyFilesOrDirectoriesDialog;
 import com.intellij.ui.RecentsManager;
@@ -31,8 +30,7 @@ class PathListTextField extends TextFieldWithHistoryWithBrowseButton {
             setTitle("Configure Paths to Source");
             data.setValues(Arrays.stream(component.getText()
                     .split(":"))
-                    .filter(path -> path.equals(""))
-                    .collect(Collectors.toList()));
+                    .filter(path -> !path.equals("")));
             display.add(data.getComponent(),BorderLayout.CENTER);
             init();
         }
