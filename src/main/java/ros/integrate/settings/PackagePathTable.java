@@ -1,6 +1,14 @@
 package ros.integrate.settings;
 
 import com.intellij.execution.util.ListTableWithButtons;
+import com.intellij.icons.AllIcons;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
+import com.intellij.openapi.ui.ComponentWithBrowseButton.BrowseFolderActionListener;
+import com.intellij.openapi.ui.TextComponentAccessor;
+import com.intellij.openapi.ui.TextFieldWithBrowseButton;
+import com.intellij.ui.AnActionButton;
+import com.intellij.ui.UIBundle;
 import com.intellij.util.ui.ListTableModel;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -28,8 +36,11 @@ public class PackagePathTable extends ListTableWithButtons<PackagePathTable.Path
         }
     }
 
-    PackagePathTable() {
+    private final BrowserOptions browserOptions;
+
+    PackagePathTable(BrowserOptions browserOptions) {
         getTableView().getEmptyText().setText("No additional directories");
+        this.browserOptions = browserOptions;
     }
 
     @Override
@@ -91,5 +102,43 @@ public class PackagePathTable extends ListTableWithButtons<PackagePathTable.Path
 
     void setValues(@NotNull Stream<String> paths) {
         setValues(paths.map(Path::new).collect(Collectors.toList()));
+    }
+
+    @NotNull
+    @Override
+    protected AnActionButton[] createExtraActions() {
+        AnActionButton duplicateButton = new AnActionButton("Duplicate Path", AllIcons.Actions.Copy) {
+            @Override
+            public void actionPerformed(@NotNull AnActionEvent e) {
+                stopEditing();
+                getSelection().forEach(path -> addNewElement(cloneElement(path)));
+            }
+
+            @Override
+            public boolean isEnabled() {
+                return !getSelection().isEmpty();
+            }
+        };
+        AnActionButton browseButton = new AnActionButton(UIBundle.message("component.with.browse.button.browse.button.tooltip.text"), AllIcons.Actions.Menu_open) {
+            private final TextFieldWithBrowseButton dummy = new TextFieldWithBrowseButton();
+            private final BrowseFolderActionListener action =
+                    new BrowseFolderActionListener<>(browserOptions.title,
+                            browserOptions.description, dummy, browserOptions.project,
+                            FileChooserDescriptorFactory.createSingleFolderDescriptor(),
+                            TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT);
+
+            @Override
+            public void actionPerformed(@NotNull AnActionEvent e) {
+                stopEditing();
+                action.run();
+                getSelection().forEach(path -> path.set(dummy.getText()));
+            }
+
+            @Override
+            public boolean isEnabled() {
+                return getSelection().size() == 1;
+            }
+        };
+        return new AnActionButton[]{duplicateButton, browseButton};
     }
 }

@@ -74,13 +74,13 @@ public class ROSSettingsPage implements Configurable {
         workspaceLabel.setText("Workspace:");
         additionalSourcesLabel.setText("Additional Package Repositories:");
 
-        installBrowserHistory(rosRoot, new BrowserOptions()
+        installBrowserHistory(rosRoot, new BrowserOptions(project)
                 .withTitle("Choose Target Directory")
                 .withDescription("This Directory is the Root ROS Library."));
-        installBrowserHistory(workspace, new BrowserOptions(HistoryKey.WORKSPACE)
+        installBrowserHistory(workspace, new BrowserOptions(project, HistoryKey.WORKSPACE)
                 .withTitle("Choose Target Workspace")
                 .withDescription("This is the root directory of this project's workspace"));
-        additionalSources.installHistoryAndDialog(recentsManager, new BrowserOptions(HistoryKey.EXTRA_SOURCES)
+        additionalSources.installHistoryAndDialog(recentsManager, new BrowserOptions(project, HistoryKey.EXTRA_SOURCES)
                 .withTitle("Modify source path")
                 .withDescription("This is the a root directory to additional sources outside of the workspace."));
 

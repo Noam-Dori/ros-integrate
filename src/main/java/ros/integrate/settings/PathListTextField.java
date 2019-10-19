@@ -22,10 +22,10 @@ class PathListTextField extends TextFieldWithHistoryWithBrowseButton {
 
         private final PackagePathTable data;
 
-        PackagePathDialog(PathListTextField component) {
+        PackagePathDialog(PathListTextField component, BrowserOptions options) {
             super(component, true);
             parent = component;
-            data = new PackagePathTable();
+            data = new PackagePathTable(options);
 
             setTitle("Configure Paths to Source");
             data.setValues(Arrays.stream(component.getText()
@@ -52,7 +52,7 @@ class PathListTextField extends TextFieldWithHistoryWithBrowseButton {
     }
 
     void installHistoryAndDialog(@NotNull RecentsManager recentsManager, @NotNull BrowserOptions options) {
-        addActionListener(actionEvent -> new PackagePathDialog(this).show());
+        addActionListener(actionEvent -> new PackagePathDialog(this, options).show());
 
         List<String> recentEntries = Optional.ofNullable(recentsManager.getRecentEntries(options.getKey()))
                 .orElse(new LinkedList<>());

@@ -1,5 +1,6 @@
 package ros.integrate.settings;
 
+import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.Contract;
 
 class BrowserOptions {
@@ -21,13 +22,18 @@ class BrowserOptions {
         }
     }
 
+    final Project project;
+
     String title = "", description = "";
     private HistoryKey key = HistoryKey.DEFAULT;
     @Contract(pure = true)
-    BrowserOptions() {}
+    BrowserOptions(Project project) {
+        this.project = project;
+    }
 
     @Contract(pure = true)
-    BrowserOptions(HistoryKey historyKey) {
+    BrowserOptions(Project project, HistoryKey historyKey) {
+        this.project = project;
         this.key = historyKey;
     }
 
