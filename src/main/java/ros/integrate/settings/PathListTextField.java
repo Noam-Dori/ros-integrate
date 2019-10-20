@@ -9,7 +9,6 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -28,9 +27,7 @@ class PathListTextField extends TextFieldWithHistoryWithBrowseButton {
             data = new PathListTable(options);
 
             setTitle(options.dialogTitle);
-            data.setValues(Arrays.stream(component.getText()
-                    .split(":"))
-                    .filter(path -> !path.equals("")));
+            data.setValues(ROSSettingsUtil.parsePathList(component.getText()));
             display.add(data.getComponent(),BorderLayout.CENTER);
             init();
         }

@@ -9,7 +9,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 @State(name = "ROSSettings",storages = @Storage("ros.xml"))
 public class ROSSettings implements PersistentStateComponent<ROSSettings.State> {
@@ -84,9 +83,7 @@ public class ROSSettings implements PersistentStateComponent<ROSSettings.State> 
      * @return a copy of the list of additional sources available. This list may be modified.
      */
     public List<String> getAdditionalSources() {
-        return Arrays.stream(state.additionalSources.split(":"))
-                .filter(item -> !item.equals(""))
-                .collect(Collectors.toList());
+        return ROSSettingsUtil.parsePathList(state.additionalSources);
     }
 
     String getRawAdditionalSources() {

@@ -14,9 +14,9 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class PathListTable extends ListTableWithButtons<PathListTable.Path> {
     static class Path {
@@ -100,8 +100,8 @@ public class PathListTable extends ListTableWithButtons<PathListTable.Path> {
         return getElements().stream().map(Path::get).collect(Collectors.toList());
     }
 
-    void setValues(@NotNull Stream<String> paths) {
-        setValues(paths.map(Path::new).collect(Collectors.toList()));
+    void setValues(@NotNull Collection<String> paths) {
+        setValues(paths.stream().map(Path::new).collect(Collectors.toList()));
     }
 
     @NotNull

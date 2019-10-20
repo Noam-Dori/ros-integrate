@@ -8,6 +8,10 @@ import com.intellij.psi.search.GlobalSearchScope;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 class ROSSettingsUtil {
     @Nullable
     static String detectWorkspace(@NotNull Project project) {
@@ -25,5 +29,11 @@ class ROSSettingsUtil {
             treeNode = treeNode.getParent();
         }
         return null;
+    }
+
+    static List<String> parsePathList(@NotNull String rawPathList) {
+        return Arrays.stream(rawPathList.split("(?<!(:|^)[A-Z]):"))
+                .filter(item -> !item.equals(""))
+                .collect(Collectors.toList());
     }
 }
