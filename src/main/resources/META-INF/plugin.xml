@@ -2,11 +2,6 @@
     <id>ros-integrate</id>
     <name>ROS Support</name>
     <vendor email="TheNODO55@gmail.com">Noam Dori</vendor>
-    <idea-version since-build="192.5728"/>
-
-    <description>
-        A plugin for IntelliJ based IDEs with the purpose of allowing easy use of the ROS framework.
-    </description>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
          on how to target different products -->
