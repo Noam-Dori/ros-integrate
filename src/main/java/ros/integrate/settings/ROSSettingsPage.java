@@ -88,6 +88,8 @@ public class ROSSettingsPage implements Configurable {
         resetSourcesButton.addActionListener(action ->
                 additionalSources.setText(Optional.ofNullable(System.getenv("ROS_PACKAGE_PATH"))
                         .orElse("")));
+        resetSourcesButton.setEnabled(!Optional.ofNullable(System.getenv("ROS_PACKAGE_PATH"))
+                .orElse("").equals(additionalSources.getText()));
 
         return SectionedFormBuilder.createFormBuilder()
                 .addComponent(rosSettingsLabel)
@@ -108,7 +110,7 @@ public class ROSSettingsPage implements Configurable {
         List<String> recentEntries = Optional.ofNullable(recentsManager.getRecentEntries(options.getKey()))
                 .orElse(new LinkedList<>());
         recentEntries.remove(field.getText()); // doing this and the line below will move curDir to the top regardless if it exists or not
-        recentEntries.add(0,field.getText());
+        recentEntries.add(0, field.getText());
         field.getChildComponent().setHistory(recentEntries);
 
         // folder text field
@@ -119,11 +121,14 @@ public class ROSSettingsPage implements Configurable {
 
     @Override
     public boolean isModified() {
-        return isModified(rosRoot.getChildComponent().getTextEditor(),data.getROSPath());
+        return isModified(rosRoot.getChildComponent().getTextEditor(), data.getROSPath())
+                || isModified(workspace.getChildComponent().getTextEditor(), data.getWorkspacePath())
+                || isModified(additionalSources.getChildComponent().getTextEditor(), data.getRawAdditionalSources());
     }
 
-    private boolean addToHistory(@NotNull TextFieldWithHistoryWithBrowseButton field, HistoryKey historyKey, Consumer<String> updateAction) {
-        if (!field.getText().isEmpty()) {
+    private boolean addToHistory(@NotNull TextFieldWithHistoryWithBrowseButton field, HistoryKey historyKey,
+                                 Consumer<String> updateAction, boolean handlesEmpty) {
+        if (handlesEmpty || !field.getText().isEmpty()) {
             recentsManager.registerRecentEntry(historyKey.get(), rosRoot.getChildComponent().getText());
             updateAction.consume(field.getText());
             return true;
@@ -133,11 +138,11 @@ public class ROSSettingsPage implements Configurable {
 
     @Override
     public void apply() {
-        boolean triggerFlag = addToHistory(rosRoot,HistoryKey.DEFAULT, data::setRosPath);
-        triggerFlag |= addToHistory(workspace,HistoryKey.WORKSPACE, data::setWorkspacePath);
-        triggerFlag |= addToHistory(additionalSources,HistoryKey.EXTRA_SOURCES, data::setAdditionalSources);
+        boolean triggerFlag = addToHistory(rosRoot, HistoryKey.DEFAULT, data::setRosPath, false);
+        triggerFlag |= addToHistory(workspace, HistoryKey.WORKSPACE, data::setWorkspacePath, false);
+        triggerFlag |= addToHistory(additionalSources, HistoryKey.EXTRA_SOURCES, data::setAdditionalSources, true);
 
-        if(triggerFlag) {
+        if (triggerFlag) {
             data.triggerListeners();
         }
     }
