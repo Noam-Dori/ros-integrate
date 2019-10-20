@@ -7,6 +7,7 @@ import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.TextComponentAccessor;
 import com.intellij.refactoring.copy.CopyFilesOrDirectoriesDialog;
+import com.intellij.ui.DocumentAdapter;
 import com.intellij.ui.RecentsManager;
 import com.intellij.ui.TextFieldWithHistoryWithBrowseButton;
 import com.intellij.ui.components.JBLabel;
@@ -17,6 +18,7 @@ import org.jetbrains.annotations.Nullable;
 import ros.integrate.settings.BrowserOptions.HistoryKey;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -76,6 +78,13 @@ public class ROSSettingsPage implements Configurable {
                 .withTitle("Modify source path")
                 .withDialogTitle("Configure Paths to Source")
                 .withDescription("This is the a root directory to additional sources outside of the workspace."));
+        additionalSources.getChildComponent().getTextEditor().getDocument().addDocumentListener(new DocumentAdapter() {
+            @Override
+            protected void textChanged(@NotNull DocumentEvent e) {
+                resetSourcesButton.setEnabled(!Optional.ofNullable(System.getenv("ROS_PACKAGE_PATH"))
+                        .orElse("").equals(additionalSources.getText()));
+            }
+        });
         resetSourcesButton.addActionListener(action ->
                 additionalSources.setText(Optional.ofNullable(System.getenv("ROS_PACKAGE_PATH"))
                         .orElse("")));
