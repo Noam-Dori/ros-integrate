@@ -21,11 +21,11 @@ import java.util.*;
  * a class enabling and defining auto-completion within ROS messages
  */
 public class ROSPktCompletionContributor extends CompletionContributor {
-    private static LookupElement[] INTEGRAL_SIZES = Arrays.stream(new String[] {"8", "16", "32", "64"})
+    private static final LookupElement[] INTEGRAL_SIZES = Arrays.stream(new String[] {"8", "16", "32", "64"})
             .map(LookupElementBuilder::create)
             .map(LookupElementBuilder::bold)
             .toArray(LookupElement[]::new);
-    private static LookupElement[] FLOAT_SIZES = Arrays.stream(new String[] {"32", "64"})
+    private static final LookupElement[] FLOAT_SIZES = Arrays.stream(new String[] {"32", "64"})
             .map(LookupElementBuilder::create)
             .map(LookupElementBuilder::bold)
             .toArray(LookupElement[]::new);

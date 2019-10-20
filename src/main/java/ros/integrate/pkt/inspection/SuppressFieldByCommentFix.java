@@ -13,7 +13,7 @@ import ros.integrate.pkt.psi.ROSPktFieldBase;
 /**
  * a fix intended to suppress inspections via a comment.
  */
-public class SuppressFieldByCommentFix extends SuppressByCommentFix {
+class SuppressFieldByCommentFix extends SuppressByCommentFix {
     SuppressFieldByCommentFix(@NotNull HighlightDisplayKey key) {
         super(key, ROSPktFieldBase.class);
     }

@@ -18,7 +18,7 @@ public class ChangeHeaderQuickFix extends BaseIntentionAction {
         header = field;
     }
 
-    private ROSPktTypeBase header;
+    private final ROSPktTypeBase header;
 
     @NotNull
     @Override

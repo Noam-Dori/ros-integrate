@@ -17,7 +17,7 @@ public class RemoveFieldQuickFix extends BaseIntentionAction {
         this.field = field;
     }
 
-    private ROSPktFieldBase field;
+    private final ROSPktFieldBase field;
 
     @NotNull
     @Override
@@ -39,6 +39,6 @@ public class RemoveFieldQuickFix extends BaseIntentionAction {
     @Override
     public void invoke(@NotNull Project project, Editor editor, PsiFile file) {
         ApplicationManager.getApplication().invokeLater(() ->
-                WriteCommandAction.writeCommandAction(project).run(() -> field.delete()));
+                WriteCommandAction.writeCommandAction(project).run(field::delete));
     }
 }

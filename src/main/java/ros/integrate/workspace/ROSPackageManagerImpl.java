@@ -26,7 +26,7 @@ public class ROSPackageManagerImpl implements ROSPackageManager {
     private final ConcurrentMap<String, ROSPackage> pkgCache = ContainerUtil.createConcurrentSoftValueMap();
     private final Project project;
 
-    private static List<ROSPackageFinder> finders = ROSPackageFinder.EP_NAME.getExtensionList();
+    private static final List<ROSPackageFinder> finders = ROSPackageFinder.EP_NAME.getExtensionList();
     private boolean purgeFlag = false;
 
     public ROSPackageManagerImpl(@NotNull Project project) {

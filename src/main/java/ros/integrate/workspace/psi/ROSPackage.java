@@ -23,7 +23,7 @@ import java.util.Collection;
  * 2. a CMakeLists.txt file which has the {@code catkin_package()} function
  */
 public interface ROSPackage extends PsiCheckedRenameElement, NavigatablePsiElement, PsiDirectoryContainer, Comparable<ROSPackage> {
-    public enum RootType {
+    enum RootType {
         SHARE
     }
 

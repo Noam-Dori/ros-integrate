@@ -21,7 +21,7 @@ public class RemoveConstQuickFix extends BaseIntentionAction {
         this.field = field;
     }
 
-    private ROSPktFieldBase field;
+    private final ROSPktFieldBase field;
 
     @NotNull
     @Override

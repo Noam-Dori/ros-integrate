@@ -22,7 +22,7 @@ public class ROSSettings implements PersistentStateComponent<ROSSettings.State> 
     private final List<Consumer<ROSSettings>> listeners = new LinkedList<>();
 
     @Contract(pure = true)
-    public ROSSettings(Project project) {
+    private ROSSettings(Project project) {
         String rosPath = System.getenv("ROS_ROOT");
         if(rosPath == null) {
             state.rosPath = "";

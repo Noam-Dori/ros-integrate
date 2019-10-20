@@ -28,11 +28,11 @@ public abstract class ROSPackageBase extends PsiElementBase implements ROSPackag
     @NotNull
     private XmlFile pkgXml;
     @NotNull
-    protected String name;
+    private String name;
     @NotNull
-    private Set<ROSPktFile> packets;
+    private final Set<ROSPktFile> packets;
     @NotNull
-    protected final Project project;
+    private final Project project;
 
 
     ROSPackageBase(@NotNull Project project, @NotNull String name, @NotNull XmlFile pkgXml) {

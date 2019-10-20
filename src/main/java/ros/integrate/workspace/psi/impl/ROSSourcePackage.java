@@ -14,7 +14,7 @@ import java.util.Collection;
 public class ROSSourcePackage extends ROSPackageBase {
 
     @NotNull
-    private PsiDirectory root;
+    private final PsiDirectory root;
 
     public ROSSourcePackage(@NotNull Project project,@NotNull String name,@NotNull PsiDirectory root,
                             @NotNull XmlFile pkgXml,@NotNull Collection<ROSPktFile> packets) {

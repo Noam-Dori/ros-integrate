@@ -33,8 +33,8 @@ public class AddROSMsgQuickFix extends BaseIntentionAction {
         origPkgName = ((ROSPktFile)type.getContainingFile().getOriginalFile()).getPackage().getName();
     }
 
-    private PsiElement type;
-    private String origPkgName;
+    private final PsiElement type;
+    private final String origPkgName;
 
     @NotNull
     @Override

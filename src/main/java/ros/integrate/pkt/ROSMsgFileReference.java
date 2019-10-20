@@ -30,8 +30,10 @@ public class ROSMsgFileReference extends PsiReferenceBase<PsiElement> implements
     // note: myElement is the referencing element, and the result of resolve() is the original element (the file).
 
     @NotNull
-    private String msgName, pkgName;
-    private boolean explicitPackage;
+    private String msgName;
+    @NotNull
+    private final String pkgName;
+    private final boolean explicitPackage;
 
     public ROSMsgFileReference(@NotNull ROSPktTypeBase element, @NotNull TextRange textRange) {
         super(element, textRange);

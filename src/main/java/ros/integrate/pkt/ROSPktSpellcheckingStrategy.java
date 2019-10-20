@@ -32,7 +32,7 @@ public class ROSPktSpellcheckingStrategy extends SpellcheckingStrategy {
         return super.getTokenizer(element);
     }
 
-    public static class ROSCommentTokenizer extends Tokenizer<ROSPktComment> {
+    static class ROSCommentTokenizer extends Tokenizer<ROSPktComment> {
 
         @Override
         public void tokenize(@NotNull ROSPktComment element, TokenConsumer consumer) {

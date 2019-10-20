@@ -151,18 +151,18 @@ class ROSPktFieldUtil {
 
         @NotNull
         @Contract(pure = true)
-        public UnsignedLong getValue() {
+        UnsignedLong getValue() {
             return value;
         }
 
         @NotNull
         @Contract(pure = true)
-        public ROSPktType createType(@NotNull Project project) {
+        ROSPktType createType(@NotNull Project project) {
             return ROSPktElementFactory.createType(project, name);
         }
 
         @Contract(value = "null -> false", pure = true)
-        public boolean nameEquals(@Nullable String otherName) {
+        boolean nameEquals(@Nullable String otherName) {
             return name.equals(otherName);
         }
     }

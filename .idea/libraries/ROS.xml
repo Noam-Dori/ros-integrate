@@ -1,9 +1,9 @@
 <component name="libraryTable">
   <library name="ROS">
-    <CLASSES />
-    <JAVADOC />
-    <SOURCES>
+    <CLASSES>
       <root url="file://$PROJECT_DIR$/../ros/kinetic" />
-    </SOURCES>
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
   </library>
 </component>

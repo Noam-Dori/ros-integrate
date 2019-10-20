@@ -18,7 +18,7 @@ public class RemoveArrayQuickFix extends BaseIntentionAction {
         this.type = type;
     }
 
-    private ROSPktTypeBase type;
+    private final ROSPktTypeBase type;
 
     @NotNull
     @Override
@@ -40,6 +40,6 @@ public class RemoveArrayQuickFix extends BaseIntentionAction {
     @Override
     public void invoke(@NotNull Project project, Editor editor, PsiFile file) {
         ApplicationManager.getApplication().invokeLater(() ->
-                WriteCommandAction.writeCommandAction(project).run(() -> type.removeArray()));
+                WriteCommandAction.writeCommandAction(project).run(type::removeArray));
     }
 }

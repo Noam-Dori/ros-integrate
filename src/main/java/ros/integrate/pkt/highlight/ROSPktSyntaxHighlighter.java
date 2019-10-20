@@ -20,7 +20,7 @@ import static com.intellij.openapi.editor.colors.TextAttributesKey.createTextAtt
 /**
  * a highlighter for ROS messages and services.
  */
-public class ROSPktSyntaxHighlighter extends SyntaxHighlighterBase {
+class ROSPktSyntaxHighlighter extends SyntaxHighlighterBase {
     private static final TextAttributesKey ASSIGNER =
             createTextAttributesKey("ROSPKT_CONST_ASSIGNER", DefaultLanguageHighlighterColors.OPERATION_SIGN);
     private static final TextAttributesKey NEG_NUMBER =

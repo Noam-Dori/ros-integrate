@@ -10,7 +10,8 @@ import ros.integrate.pkt.psi.ROSPktTypes;
 import java.util.Objects;
 
 class ROSPktFieldAnnotator extends ROSPktAnnotatorBase {
-    private @NotNull ROSPktFieldBase field;
+    @NotNull
+    private final ROSPktFieldBase field;
 
     ROSPktFieldAnnotator(AnnotationHolder holder, @NotNull ROSPktFieldBase field) {
         super(holder);

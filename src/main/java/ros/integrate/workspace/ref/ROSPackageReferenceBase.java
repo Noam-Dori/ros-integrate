@@ -16,7 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-public abstract class ROSPackageReferenceBase<T extends PsiElement> extends PsiPolyVariantReferenceBase<T> {
+abstract class ROSPackageReferenceBase<T extends PsiElement> extends PsiPolyVariantReferenceBase<T> {
 
     String pkgName;
 

@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class RemoveSrvLineQuickFix extends BaseIntentionAction {
 
-    private ROSPktSeparator separator;
+    private final ROSPktSeparator separator;
 
     public RemoveSrvLineQuickFix(ROSPktSeparator separator) {
         this.separator = separator;
@@ -42,6 +42,6 @@ public class RemoveSrvLineQuickFix extends BaseIntentionAction {
     public void invoke(@NotNull final Project project, final Editor editor, PsiFile file) throws
             IncorrectOperationException {
         ApplicationManager.getApplication().invokeLater(() ->
-                WriteCommandAction.writeCommandAction(project).run(() -> separator.delete()));
+                WriteCommandAction.writeCommandAction(project).run(separator::delete));
     }
 }

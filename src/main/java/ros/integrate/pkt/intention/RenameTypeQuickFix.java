@@ -31,13 +31,13 @@ public class RenameTypeQuickFix implements LocalQuickFix {
     @Nullable
     private Editor editor; // compliment of fileEditor, available only in annotation fixes.
     @Nullable
-    private FileEditor fileEditor; // compliment of editor, available only in inspection fixes.
+    private final FileEditor fileEditor; // compliment of editor, available only in inspection fixes.
 
     public RenameTypeQuickFix(@Nullable FileEditor editor) {
         this.fileEditor = editor;
     }
 
-    public void setEditor(@Nullable Editor editor) {
+    private void setEditor(@Nullable Editor editor) {
         this.editor = editor;
     }
 
@@ -63,8 +63,8 @@ public class RenameTypeQuickFix implements LocalQuickFix {
 
     public static class RenameTypeIntention extends BaseIntentionAction {
         @NotNull private final RenameTypeQuickFix fix = new RenameTypeQuickFix(null);
-        @NotNull private ROSPktTypeBase type;
-        String message;
+        @NotNull private final ROSPktTypeBase type;
+        final String message;
 
         public RenameTypeIntention(@NotNull ROSPktTypeBase fieldType, String message) {
             type = fieldType;

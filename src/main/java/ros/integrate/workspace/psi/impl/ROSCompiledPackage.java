@@ -15,7 +15,7 @@ import java.util.Map;
 public class ROSCompiledPackage extends ROSPackageBase {
 
     @NotNull
-    private Map<RootType,PsiDirectory> rootMap;
+    private final Map<RootType,PsiDirectory> rootMap;
 
     public ROSCompiledPackage(@NotNull Project project, @NotNull String name, @NotNull Map<RootType, PsiDirectory> rootMap,
                             @NotNull XmlFile pkgXml, @NotNull Collection<ROSPktFile> packets) {

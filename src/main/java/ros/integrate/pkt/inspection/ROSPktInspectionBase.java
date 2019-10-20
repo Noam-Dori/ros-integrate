@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * the generic inspection within ROS message and service files.
  */
-public abstract class ROSPktInspectionBase extends LocalInspectionTool implements CustomSuppressableInspectionTool {
+abstract class ROSPktInspectionBase extends LocalInspectionTool implements CustomSuppressableInspectionTool {
     @Nullable
     @Override
     public SuppressIntentionAction[] getSuppressActions(@Nullable PsiElement element) {
@@ -75,7 +75,7 @@ public abstract class ROSPktInspectionBase extends LocalInspectionTool implement
      * @param isOnTheFly  true if called during on the fly editor highlighting. Called from Inspect Code action otherwise.
      * @param descriptors list of descriptors to append raised problems found for the field.
      */
-    protected void checkField(@NotNull ROSPktFieldBase field, @NotNull InspectionManager manager,
-                            boolean isOnTheFly, @NotNull List<ProblemDescriptor> descriptors) {
+    void checkField(@NotNull ROSPktFieldBase field, @NotNull InspectionManager manager,
+                    boolean isOnTheFly, @NotNull List<ProblemDescriptor> descriptors) {
     }
 }

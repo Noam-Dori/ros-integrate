@@ -17,7 +17,7 @@ import ros.integrate.pkt.psi.*;
  */
 public class ROSPktTypeAnnotator extends ROSPktAnnotatorBase {
     private final String msgName;
-    private ROSPktTypeBase type;
+    private final ROSPktTypeBase type;
 
     ROSPktTypeAnnotator(@NotNull AnnotationHolder holder,
                         @NotNull ROSPktTypeBase type,

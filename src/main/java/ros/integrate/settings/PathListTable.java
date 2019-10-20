@@ -22,11 +22,11 @@ public class PathListTable extends ListTableWithButtons<PathListTable.Path> {
     static class Path {
         private String path;
 
-        public String get() {
+        String get() {
             return path;
         }
 
-        public void set(@NotNull String path) {
+        void set(@NotNull String path) {
             this.path = path;
         }
 

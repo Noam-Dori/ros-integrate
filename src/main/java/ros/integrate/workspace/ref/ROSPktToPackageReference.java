@@ -10,7 +10,7 @@ import ros.integrate.workspace.psi.ROSPackage;
 /**
  * a class defining the references of {@link ROSPktTypeBase} to {@link ROSPackage} and its affiliated roots.
  */
-public class ROSPktToPackageReference extends ROSPackageReferenceBase<ROSPktTypeBase> {
+class ROSPktToPackageReference extends ROSPackageReferenceBase<ROSPktTypeBase> {
     // note: myElement is the referencing element, and the result of resolve() is the original element (the file).
 
     ROSPktToPackageReference(@NotNull ROSPktTypeBase element, @NotNull TextRange textRange) {
