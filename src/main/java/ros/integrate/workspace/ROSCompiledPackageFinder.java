@@ -89,7 +89,7 @@ public class ROSCompiledPackageFinder extends ROSPackageFinderBase {
         Library.ModifiableModel model = lib.getModifiableModel();
         String newUrl = VirtualFileManager.constructUrl(LocalFileSystem.PROTOCOL,
                 ROSSettings.getInstance(project).getROSPath());
-        if(!Arrays.asList(model.getUrls(OrderRootType.CLASSES)).contains(newUrl)) {
+        if (!Arrays.asList(model.getUrls(OrderRootType.CLASSES)).contains(newUrl)) {
             Arrays.stream(model.getUrls(OrderRootType.CLASSES))
                     .forEach(modelUrl -> model.removeRoot(modelUrl, OrderRootType.CLASSES));
             VirtualFile newFile = VirtualFileManager.getInstance().findFileByUrl(newUrl);
@@ -104,10 +104,10 @@ public class ROSCompiledPackageFinder extends ROSPackageFinderBase {
     }
 
     boolean notInFinder(@NotNull VirtualFile vFile, @NotNull Project project) {
-        return !vFile.getPath().contains(getROSRoot(project).getPath());
+        return !ROSPackageUtil.belongsToRoot(getROSRoot(project), vFile);
     }
 
     boolean inFinder(@NotNull VFileEvent event, @NotNull Project project) {
-         return ROSPackageUtil.belongsToRoot(getROSRoot(project),event);
+        return ROSPackageUtil.belongsToRoot(getROSRoot(project), event);
     }
 }
