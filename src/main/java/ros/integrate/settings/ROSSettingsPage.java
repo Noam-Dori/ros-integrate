@@ -3,7 +3,7 @@ package ros.integrate.settings;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.fileChooser.FileChooserFactory;
-import com.intellij.openapi.options.Configurable;
+import com.intellij.openapi.options.SearchableConfigurable;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.TextComponentAccessor;
 import com.intellij.refactoring.copy.CopyFilesOrDirectoriesDialog;
@@ -23,7 +23,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-public class ROSSettingsPage implements Configurable {
+public class ROSSettingsPage implements SearchableConfigurable {
+
+    @NotNull
+    @Override
+    public String getId() {
+        return "ROS";
+    }
 
     private final Project project;
     private final RecentsManager recentsManager;

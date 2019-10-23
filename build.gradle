@@ -76,6 +76,8 @@ patchPluginXml {
             <li>Cleaned package completion suggestions so that only packages that contain messages will be suggested.</li>
             <li>Header inspection now inspects through fragments as well</li>
             <li>Field fragments can now be properly suppressed</li>
+            <li>Fixed bug where packages would not get the correct icons</li>
+            <li>ROS Settings are now under Languages & Frameworks</li>
             <li>Added more words to the ROS dictionary</li>
             <li>Fixed some Log errors.</li>
         </ul>

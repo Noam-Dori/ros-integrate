@@ -15,7 +15,8 @@
     <extensions defaultExtensionNs="com.intellij">
         <spellchecker.bundledDictionaryProvider implementation="ros.integrate.ROSBundledDictionaryProvider"/>
 
-        <projectConfigurable instance="ros.integrate.settings.ROSSettingsPage"/>
+        <projectConfigurable instance="ros.integrate.settings.ROSSettingsPage" groupId="language" id="ROS"
+                             displayName="ROS"/>
         <projectService serviceImplementation="ros.integrate.settings.ROSSettings"/>
 
         <!-- ROS packet files -->
