@@ -159,6 +159,9 @@ public class ROSPackageManagerImpl implements ROSPackageManager {
         // try to see if it falls under a package, if not put it under the orphan list
         int successfulSorts = 0;
         for (ROSPackage pkg : getAllPackages()) {
+            if (pkg == null) { // because this happens for some reason?
+                continue;
+            }
             for (PsiDirectory root : pkg.getRoots()) {
                 if(ROSPackageUtil.belongsToRoot(root,event)) {
                     affectedPackages.add(pkg);
