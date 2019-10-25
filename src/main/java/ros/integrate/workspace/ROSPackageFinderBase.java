@@ -8,7 +8,9 @@ import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.search.FileTypeIndex;
+import com.intellij.psi.search.FilenameIndex;
 import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.psi.search.GlobalSearchScopesCore;
 import com.intellij.psi.xml.XmlFile;
 import com.intellij.util.containers.MultiMap;
 import com.intellij.util.containers.SortedList;
@@ -20,7 +22,6 @@ import ros.integrate.workspace.psi.ROSPackage;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentMap;
-import java.util.stream.Collectors;
 
 import static ros.integrate.workspace.psi.ROSPackage.RootType;
 
@@ -34,12 +35,9 @@ public abstract class ROSPackageFinderBase implements ROSPackageFinder {
          */
         FileTypeIndex.getFiles(XmlFileType.INSTANCE, getScope(project))
                 .stream().filter(xml -> xml.getName().equals(ROSPackageUtil.PACKAGE_XML))
-                .forEach(vXml -> {
-                    ROSPackage newPkg = investigateXml(vXml, project, pkgCache);
-                    if (newPkg != ROSPackage.ORPHAN) {
-                        pkgCache.putIfAbsent(newPkg.getName(), newPkg);
-                    }
-                });
+                .map(vXml -> investigateXml(vXml, project, pkgCache))
+                .filter(newPkg -> newPkg != ROSPackage.ORPHAN)
+                .forEach(newPkg -> pkgCache.putIfAbsent(newPkg.getName(), newPkg));
     }
 
     @NotNull
@@ -82,18 +80,43 @@ public abstract class ROSPackageFinderBase implements ROSPackageFinder {
     public MultiMap<ROSPackage, VFileEvent> investigate(@NotNull Project project, @NotNull Collection<VFileEvent> events) {
         MultiMap<ROSPackage, VFileEvent> ret = new MultiMap<>();
         // 1. check who is under the jurisdiction of this finder
-        List<VFileEvent> projectEvents = events.stream()
-                .filter(event -> inFinder(event,project)).collect(Collectors.toList());
-        // 2. do XML parents first and get a list of parent directories, use these to create ROSSourcePackages using original method.
-        projectEvents.stream().filter(ROSPackageUtil::isPackageXml).forEach(event -> {
-            ROSPackage newPkg = investigateXml(Objects.requireNonNull(ROSPackageUtil.getXml(event)),
-                    project, null);
+        Set<VirtualFile> directoriesToSearch = new TreeSet<>(Comparator.comparing(VirtualFile::getPath,
+                new TreePathComparator()));
+        events.stream().filter(event -> inFinder(event,project))
+                .map(ROSPackageUtil::getParentOfEvent)
+                .filter(Objects::nonNull)
+                .forEach(directoriesToSearch::add);
+        removeUnneededChildDirs(directoriesToSearch);
+        // 2. do XML parents first and get a list of parent directories, use these to create ROSPackages using original method.
+        List<PsiFile> pkgFiles = new LinkedList<>();
+        directoriesToSearch.stream().map(dir -> Arrays.asList(FilenameIndex.getFilesByName(project,ROSPackageUtil.PACKAGE_XML,
+                new GlobalSearchScopesCore.DirectoryScope(project,dir,true)))).forEach(pkgFiles::addAll);
+        pkgFiles.forEach(xml -> {
+            ROSPackage newPkg = investigateXml(xml.getVirtualFile(), project, null);
             if (newPkg != ROSPackage.ORPHAN) {
-                ret.putValue(newPkg, event);
+                ret.putValues(newPkg, new ArrayList<>(0));
             }
         });
-        projectEvents.parallelStream().forEach(event -> sortEventByRoot(event, ret));
+        events.parallelStream().forEach(event -> sortEventByRoot(event, ret));
         return ret;
+    }
+
+    private void removeUnneededChildDirs(@NotNull Set<VirtualFile> directoriesToSearch) {
+        Iterator<VirtualFile> iter = directoriesToSearch.iterator();
+        if (!iter.hasNext()) {
+            return;
+        }
+        VirtualFile vParent = iter.next();
+        for (VirtualFile vFile = vParent; iter.hasNext(); vFile = iter.next()) { // this cannot be possible with bad sorting.
+            if (vFile.equals(vParent)) {
+                continue;
+            }
+            if (ROSPackageUtil.belongsToRoot(vParent, vFile)) {
+                iter.remove();
+            } else {
+                vParent = vFile;
+            }
+        }
     }
 
     private void sortEventByRoot(@NotNull VFileEvent event, @NotNull MultiMap<ROSPackage, VFileEvent> map) {
@@ -113,12 +136,11 @@ public abstract class ROSPackageFinderBase implements ROSPackageFinder {
     @Nullable
     @Override
     public CacheCommand investigateChanges(Project project, ROSPackage pkg) {
-        PsiDirectory xmlRoot = Objects.requireNonNull(pkg.getRoot(RootType.SHARE));
-        
-        // 0. check the package is under the jurisdiction of this finder.
         if(!getPackageType().isInstance(pkg)) {
             return null;
-        } // this has one sole root.
+        }
+        // 0. check the package is under the jurisdiction of this finder.
+        PsiDirectory xmlRoot = Objects.requireNonNull(pkg.getRoot(RootType.SHARE));
         if(notInFinder(xmlRoot.getVirtualFile(), project)) { // something is up with the root
             if(xmlRoot.getParentDirectory() != null && // check parent - if its in the project, the dir was deleted.
                     notInFinder(xmlRoot.getParentDirectory().getVirtualFile(), project)) {

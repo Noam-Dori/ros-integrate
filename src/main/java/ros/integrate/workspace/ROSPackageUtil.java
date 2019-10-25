@@ -6,13 +6,10 @@ import com.intellij.openapi.vfs.newvfs.events.VFileCreateEvent;
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
 import com.intellij.openapi.vfs.newvfs.events.VFileMoveEvent;
 import com.intellij.psi.PsiDirectory;
-import com.intellij.psi.PsiFile;
 import com.intellij.psi.xml.XmlFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.workspace.psi.ROSPackage;
-
-import java.util.Objects;
 
 class ROSPackageUtil {
     static final String PACKAGE_XML = "package.xml";
@@ -27,47 +24,24 @@ class ROSPackageUtil {
 
     static boolean belongsToRoot(@NotNull VirtualFile root, @NotNull VFileEvent event) {
         String rootPath = root.getPath();
-        if (event instanceof VFileMoveEvent && childOf(((VFileMoveEvent) event).getOldPath(), rootPath)) {
+        if (event instanceof VFileMoveEvent && childOf(rootPath, ((VFileMoveEvent) event).getOldPath())) {
             return true;
         }
-        return childOf(event.getPath(), rootPath);
-    }
-
-    static boolean isPackageXml(@NotNull VFileEvent event) {
-        return getEventName(event).equals(PACKAGE_XML);
-    }
-
-    private static String getEventName(@NotNull VFileEvent event) {
-        return event instanceof VFileCreateEvent ? ((VFileCreateEvent) event).getChildName()
-                : Objects.requireNonNull(event.getFile()).getName();
-    }
-
-
-    @Nullable
-    static VirtualFile getXml(@NotNull VFileEvent event) {
-        if (isPackageXml(event)) {
-            return event instanceof VFileCopyEvent ?
-                    ((VFileCopyEvent) event).getNewParent().findChild(((VFileCopyEvent) event).getNewChildName())
-                    : event.getFile();
-        } else {
-            return null;
-        }
+        return childOf(rootPath, event.getPath());
     }
 
     @Nullable
     static XmlFile findPackageXml(@NotNull PsiDirectory root) {
-        for (PsiFile file : root.getFiles()) {
-            if (file.getName().equals(PACKAGE_XML)) {
-                return (XmlFile) file;
-            }
+        if (!root.getVirtualFile().isValid()) {
+            return null;
         }
-        return null;
+        return (XmlFile) root.findFile(PACKAGE_XML);
     }
 
     static int getRequiredSorts(VFileEvent event, PsiDirectory currentRoot) {
         if (event instanceof VFileMoveEvent) {
             String rootPath = currentRoot.getVirtualFile().getPath();
-            if (childOf(((VFileMoveEvent) event).getOldPath(), rootPath) && childOf(event.getPath(), rootPath)) {
+            if (childOf(rootPath, ((VFileMoveEvent) event).getOldPath()) && childOf(rootPath, event.getPath())) {
                 return 1;
             }
             return 2;
@@ -90,5 +64,29 @@ class ROSPackageUtil {
         }
         String diff = child.substring(parent.length());
         return diff.isEmpty() || diff.startsWith("/");
+    }
+
+    @Nullable
+    static VirtualFile getParentOfEvent(VFileEvent event) {
+        VirtualFile ret;
+        if (event instanceof VFileCreateEvent) {
+            ret = ((VFileCreateEvent) event).getParent();
+        }
+        else if (event instanceof VFileMoveEvent) {
+            ret = ((VFileMoveEvent) event).getNewParent();
+        }
+        else if (event instanceof VFileCopyEvent) {
+            ret = ((VFileCopyEvent) event).getNewParent();
+        }
+        else {
+            ret = event.getFile();
+            if (ret != null && ret.getParent() != null) {
+                ret = ret.getParent();
+            }
+        }
+        if (ret == null) {
+            ret = event.getFile();
+        }
+        return ret;
     }
 }

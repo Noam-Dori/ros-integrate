@@ -35,6 +35,17 @@ public class ROSPackageManagerImpl implements ROSPackageManager {
 
     @Override
     public void projectOpened() {
+        init();
+    }
+
+    @Override
+    public void initComponent() {
+        if (project.isInitialized()) {
+            init();
+        }
+    }
+
+    private void init() {
         WriteCommandAction.runWriteCommandAction(project, this::setupLibraries);
         findAndCachePackages();
         // add a watch to VirtualFileSystem that will trigger this
