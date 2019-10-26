@@ -34,7 +34,7 @@ public class MovePktFileHandler extends MoveFileHandler {
         ROSPackage newPkg = file.getProject().getComponent(ROSPackageManager.class).findPackage(moveDestination);
         oldToNewMap.put(oldPkg, newPkg);
         // trigger references, auto-updating them.
-        for (ROSPktFieldBase field : pkt(file).getFields(ROSPktFieldBase.class)) {
+        for (ROSPktFieldBase field : pkt(file).getFields(ROSPktFieldBase.class, true)) {
             ROSPktTypeBase type = field.getTypeBase();
             if (type.custom() != null) {
                 PsiElement resolution = type.getReference().resolve();

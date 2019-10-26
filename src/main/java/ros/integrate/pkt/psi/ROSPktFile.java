@@ -15,6 +15,7 @@ import ros.integrate.workspace.psi.ROSPackage;
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * an instance of a packet containing template file, sent by the ROS framework.
@@ -105,14 +106,19 @@ public abstract class ROSPktFile extends PsiFileBase implements PsiNameIdentifie
      * @param queryClass the class of which to search. If limited to complete fields, use {@link ROSPktField}
      *                   if fragments need be searched use {@link ROSPktFieldFrag}.
      *                   if you want both, use {@link ROSPktFieldBase}
+     * @param includeConstants whether or not constant fields should be included
      */
     @NotNull
-    public <T extends ROSPktFieldBase> List<T> getFields(Class<T> queryClass) {
+    public <T extends ROSPktFieldBase> List<T> getFields(Class<T> queryClass, boolean includeConstants) {
         List<T> result = new ArrayList<>();
         getSections().stream()
                 .map(section -> PsiTreeUtil.getChildrenOfTypeAsList(section, queryClass))
                 .forEach(result::addAll);
-        return result;
+        if (includeConstants) {
+            return result;
+        }
+        return result.stream().filter(field -> field.getConst() == null)
+                .collect(Collectors.toList());
     }
 
     public List<PsiElement> getFieldsAndComments() {

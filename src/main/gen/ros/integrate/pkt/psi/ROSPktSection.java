@@ -17,6 +17,6 @@ public interface ROSPktSection extends PsiElement {
   List<ROSPktFieldFrag> getFieldFragList();
 
   @NotNull
-  <T extends ROSPktFieldBase> List<T> getFields(Class<T> queryClass);
+  <T extends ROSPktFieldBase> List<T> getFields(Class<T> queryClass, boolean includeConstants);
 
 }

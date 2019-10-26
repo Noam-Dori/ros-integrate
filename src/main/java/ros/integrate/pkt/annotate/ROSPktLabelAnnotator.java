@@ -62,7 +62,7 @@ class ROSPktLabelAnnotator extends ROSPktAnnotatorBase {
      *         <code>false</code> otherwise.
      */
     private boolean notFirstDefinition(@NotNull ROSPktLabel name) {
-        for (ROSPktFieldBase field : name.getContainingSection().getFields(ROSPktFieldBase.class)) {
+        for (ROSPktFieldBase field : name.getContainingSection().getFields(ROSPktFieldBase.class, false)) {
             if (field.getLabel() != null && name.getText().equals(field.getLabel().getText())) {
                 return !name.equals(field.getLabel());
             }

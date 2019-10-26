@@ -90,7 +90,7 @@ public class ROSPktTypeAnnotator extends ROSPktAnnotatorBase {
      */
     @Nullable
     private ROSPktFieldBase getFirstField() {
-        List<ROSPktFieldBase> result = type.getContainingSection().getFields(ROSPktFieldBase.class);
+        List<ROSPktFieldBase> result = type.getContainingSection().getFields(ROSPktFieldBase.class, false);
         return result.isEmpty() ? null : result.get(0);
     }
 

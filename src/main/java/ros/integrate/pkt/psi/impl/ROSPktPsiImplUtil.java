@@ -216,11 +216,13 @@ public class ROSPktPsiImplUtil {
      * @return a list of all available fields in this section in textual order.
      * @param section the section to search for fields
      * @param queryClass the class of which to search. If limited to complete fields, use {@link ROSPktField}
-     *                   if fragments need be searched use {@link ROSPktFieldFrag}.
-     *                   if you want both, use {@link ROSPktFieldBase}
+ *                   if fragments need be searched use {@link ROSPktFieldFrag}.
+ *                   if you want both, use {@link ROSPktFieldBase}
+     * @param includeConstants whether or not constant fields should be included
      */
     @NotNull
-    public static <T extends ROSPktFieldBase> List<T> getFields(@NotNull ROSPktSection section, Class<T> queryClass) {
-        return ROSPktSectionUtil.getFields(section, queryClass);
+    public static <T extends ROSPktFieldBase> List<T> getFields(@NotNull ROSPktSection section, Class<T> queryClass,
+                                                                boolean includeConstants) {
+        return ROSPktSectionUtil.getFields(section, queryClass, includeConstants);
     }
 }

@@ -55,7 +55,7 @@ abstract class ROSPktInspectionBase extends LocalInspectionTool implements Custo
     @Override
     public ProblemDescriptor[] checkFile(@NotNull PsiFile file, @NotNull InspectionManager manager, boolean isOnTheFly) {
         if (!(file instanceof ROSPktFile)) return null;
-        final List<ROSPktFieldBase> fields = ((ROSPktFile) file).getFields(ROSPktFieldBase.class);
+        final List<ROSPktFieldBase> fields = ((ROSPktFile) file).getFields(ROSPktFieldBase.class, true);
         final List<ProblemDescriptor> descriptors = new SmartList<>();
         for (ROSPktFieldBase field : fields) {
             if (isSuppressedFor(field)) {

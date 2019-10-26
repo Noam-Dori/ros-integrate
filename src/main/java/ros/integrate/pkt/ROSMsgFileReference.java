@@ -11,7 +11,6 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.*;
 import com.intellij.psi.impl.source.resolve.reference.impl.providers.PsiFileReference;
 import com.intellij.psi.search.GlobalSearchScope;
-import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -159,7 +158,8 @@ public class ROSMsgFileReference extends PsiReferenceBase<PsiElement> implements
             return false;
         }
         return myElement.getParent().equals(
-                PsiTreeUtil.getChildOfType(myElement.getContainingFile(), ROSPktFieldBase.class));
+                ((ROSPktTypeBase)myElement).getContainingSection()
+                        .getFields(ROSPktFieldBase.class, false).get(0));
     }
 
     @Override

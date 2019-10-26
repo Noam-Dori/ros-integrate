@@ -46,8 +46,8 @@ public class ROSPktSectionImpl extends ASTWrapperPsiElement implements ROSPktSec
 
   @Override
   @NotNull
-  public <T extends ROSPktFieldBase> List<T> getFields(Class<T> queryClass) {
-    return ROSPktPsiImplUtil.getFields(this, queryClass);
+  public <T extends ROSPktFieldBase> List<T> getFields(Class<T> queryClass, boolean includeConstants) {
+    return ROSPktPsiImplUtil.getFields(this, queryClass, includeConstants);
   }
 
 }
