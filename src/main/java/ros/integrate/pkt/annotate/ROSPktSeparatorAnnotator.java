@@ -25,7 +25,7 @@ class ROSPktSeparatorAnnotator extends ROSPktAnnotatorBase {
      */
     void annTooManySeparators() {
         ROSPktFile file = (ROSPktFile) sep.getContainingFile();
-        int separatorCount = file.countServiceSeparators();
+        int separatorCount = file.countSectionSeparators();
         if (separatorCount > file.getMaxSeparators()) {
             TextRange range = new TextRange(sep.getTextRange().getStartOffset(),
                     sep.getTextRange().getEndOffset());

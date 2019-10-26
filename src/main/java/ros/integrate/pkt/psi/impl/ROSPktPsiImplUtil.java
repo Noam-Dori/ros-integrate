@@ -9,6 +9,8 @@ import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkt.ROSPktUtil;
 import ros.integrate.pkt.psi.*;
 
+import java.util.List;
+
 import static ros.integrate.pkt.psi.ROSPktElementFactory.ANNOTATION_PREFIX;
 
 /**
@@ -207,5 +209,18 @@ public class ROSPktPsiImplUtil {
     @NotNull
     public static ROSPktType getBestFit(@NotNull ROSPktConst constant) {
         return ROSPktFieldUtil.getBestFit(constant);
+    }
+
+    /**
+     * gets all available (and valid) fields in this section.
+     * @return a list of all available fields in this section in textual order.
+     * @param section the section to search for fields
+     * @param queryClass the class of which to search. If limited to complete fields, use {@link ROSPktField}
+     *                   if fragments need be searched use {@link ROSPktFieldFrag}.
+     *                   if you want both, use {@link ROSPktFieldBase}
+     */
+    @NotNull
+    public static <T extends ROSPktFieldBase> List<T> getFields(@NotNull ROSPktSection section, Class<T> queryClass) {
+        return ROSPktSectionUtil.getFields(section, queryClass);
     }
 }

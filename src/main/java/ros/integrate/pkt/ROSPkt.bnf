@@ -19,9 +19,13 @@
   extends(".*_type")=type
 }
 
-rosPktFile ::= item_*
+rosPktFile ::= sectioned_item_* section?
 
-private item_ ::= (separator|field_component_|comment|CRLF)
+private sectioned_item_ ::= (section? separator)
+
+section ::= (field_component_|comment|CRLF)* {
+    methods=[getFields]
+}
 
 comment ::= LINE_COMMENT {
     methods=[getAnnotationIds]

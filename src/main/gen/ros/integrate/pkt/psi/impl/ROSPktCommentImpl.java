@@ -26,6 +26,7 @@ public class ROSPktCommentImpl extends ASTWrapperPsiElement implements ROSPktCom
     else super.accept(visitor);
   }
 
+  @Override
   @Nullable
   public String getAnnotationIds() {
     return ROSPktPsiImplUtil.getAnnotationIds(this);

@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkt.psi.ROSPktFile;
 import ros.integrate.pkt.psi.ROSPktIdentifier;
+import ros.integrate.pkt.psi.ROSPktSection;
 
 public abstract class ROSPktIdentifierImpl extends ASTWrapperPsiElement implements ROSPktIdentifier {
     ROSPktIdentifierImpl(@NotNull ASTNode node) {
@@ -27,5 +28,10 @@ public abstract class ROSPktIdentifierImpl extends ASTWrapperPsiElement implemen
     @Override
     public PsiElement setName(@NotNull String name) {
         return set(name);
+    }
+
+    @Override
+    public ROSPktSection getContainingSection() {
+        return (ROSPktSection) getParent().getParent();
     }
 }

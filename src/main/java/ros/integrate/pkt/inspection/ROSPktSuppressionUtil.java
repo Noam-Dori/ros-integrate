@@ -3,6 +3,7 @@ package ros.integrate.pkt.inspection;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -10,6 +11,9 @@ import ros.integrate.pkt.ROSPktUtil;
 import ros.integrate.pkt.psi.ROSPktComment;
 import ros.integrate.pkt.psi.ROSPktElementFactory;
 import ros.integrate.pkt.psi.ROSPktFieldBase;
+import ros.integrate.pkt.psi.ROSPktFile;
+
+import java.util.List;
 
 /**
  * a collection of utility functions regarding suppressing ROS inspections.
@@ -46,15 +50,19 @@ class ROSPktSuppressionUtil {
      */
     @Nullable
     static ROSPktComment findAnnotation(@NotNull PsiElement container, @Nullable String id) {
-        PsiElement[] fields = container.getContainingFile().getChildren();
-        int i = fields.length - 1;
+        PsiFile file = container.getContainingFile();
+        if (!(file instanceof ROSPktFile)) {
+            return null;
+        }
+        List<PsiElement> fieldsAndComments = ((ROSPktFile) file).getFieldsAndComments();
+        int i = fieldsAndComments.size() - 1;
         for (; i > 0; i--) {
-            if (fields[i] == container) {
+            if (fieldsAndComments.get(i) == container) {
                 break;
             }
         }
-        for (i--; i >= 0 && !(fields[i] instanceof ROSPktFieldBase); i--) {
-            ROSPktComment comment = ROSPktUtil.checkAnnotation(fields[i], id);
+        for (i--; i >= 0 && !(fieldsAndComments.get(i) instanceof ROSPktFieldBase); i--) {
+            ROSPktComment comment = ROSPktUtil.checkAnnotation(fieldsAndComments.get(i), id);
             if (comment != null) {
                 return comment;
             }
@@ -69,8 +77,8 @@ class ROSPktSuppressionUtil {
      * @param container the PSI element to add an annotation to.
      */
     private static void appendAnnotation(@NotNull Project project, @NotNull ROSPktComment newAnnotation, @NotNull PsiElement container) {
-        container.getContainingFile().addBefore(newAnnotation,container);
-        container.getContainingFile().addBefore(ROSPktElementFactory.createCRLF(project),container);
+        container.getParent().addBefore(newAnnotation,container);
+        container.getParent().addBefore(ROSPktElementFactory.createCRLF(project),container);
     }
 
     /**

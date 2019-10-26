@@ -49,6 +49,7 @@ public class ROSPktFieldFragImpl extends ROSPktFieldBaseImpl implements ROSPktFi
     return findChildByClass(ROSPktTypeFrag.class);
   }
 
+  @Override
   @NotNull
   public ROSPktTypeBase getTypeBase() {
     return ROSPktPsiImplUtil.getTypeBase(this);

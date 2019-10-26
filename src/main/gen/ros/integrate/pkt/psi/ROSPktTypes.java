@@ -13,6 +13,7 @@ public interface ROSPktTypes {
   IElementType FIELD = new ROSPktElementType("FIELD");
   IElementType FIELD_FRAG = new ROSPktElementType("FIELD_FRAG");
   IElementType LABEL = new ROSPktElementType("LABEL");
+  IElementType SECTION = new ROSPktElementType("SECTION");
   IElementType SEPARATOR = new ROSPktElementType("SEPARATOR");
   IElementType TYPE = new ROSPktElementType("TYPE");
   IElementType TYPE_FRAG = new ROSPktElementType("TYPE_FRAG");
@@ -33,7 +34,7 @@ public interface ROSPktTypes {
   class Factory {
     public static PsiElement createElement(ASTNode node) {
       IElementType type = node.getElementType();
-       if (type == COMMENT) {
+      if (type == COMMENT) {
         return new ROSPktCommentImpl(node);
       }
       else if (type == CONST) {
@@ -47,6 +48,9 @@ public interface ROSPktTypes {
       }
       else if (type == LABEL) {
         return new ROSPktLabelImpl(node);
+      }
+      else if (type == SECTION) {
+        return new ROSPktSectionImpl(node);
       }
       else if (type == SEPARATOR) {
         return new ROSPktSeparatorImpl(node);

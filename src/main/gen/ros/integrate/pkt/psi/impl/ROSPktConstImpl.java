@@ -26,6 +26,7 @@ public class ROSPktConstImpl extends ASTWrapperPsiElement implements ROSPktConst
     else super.accept(visitor);
   }
 
+  @Override
   @NotNull
   public ROSPktType getBestFit() {
     return ROSPktPsiImplUtil.getBestFit(this);

@@ -10,4 +10,6 @@ public interface ROSPktIdentifier extends PsiNameIdentifierOwner {
     PsiElement set(String newName);
     @Override
     ROSPktFile getContainingFile(); // allows making it specifically a packet file
+
+    ROSPktSection getContainingSection();
 }

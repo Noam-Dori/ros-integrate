@@ -23,28 +23,15 @@ public class ROSPktParser implements PsiParser, LightPsiParser {
     boolean r;
     b = adapt_builder_(t, b, this, null);
     Marker m = enter_section_(b, 0, _COLLAPSE_, null);
-    if (t == COMMENT) {
-      r = comment(b, 0);
-    }
-    else if (t == CONST) {
-      r = const_$(b, 0);
-    }
-    else if (t == LABEL) {
-      r = label(b, 0);
-    }
-    else if (t == SEPARATOR) {
-      r = separator(b, 0);
-    }
-    else if (t == TYPE_FRAG) {
-      r = type_frag(b, 0);
-    }
-    else {
-      r = parse_root_(t, b, 0);
-    }
+    r = parse_root_(t, b);
     exit_section_(b, 0, m, t, r, true, TRUE_CONDITION);
   }
 
-  protected boolean parse_root_(IElementType t, PsiBuilder b, int l) {
+  protected boolean parse_root_(IElementType t, PsiBuilder b) {
+    return parse_root_(t, b, 0);
+  }
+
+  static boolean parse_root_(IElementType t, PsiBuilder b, int l) {
     return rosPktFile(b, l + 1);
   }
 
@@ -178,18 +165,6 @@ public class ROSPktParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // separator|field_component_|comment|CRLF
-  static boolean item_(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "item_")) return false;
-    boolean r;
-    r = separator(b, l + 1);
-    if (!r) r = field_component_(b, l + 1);
-    if (!r) r = comment(b, l + 1);
-    if (!r) r = consumeToken(b, CRLF);
-    return r;
-  }
-
-  /* ********************************************************** */
   // NAME
   public static boolean label(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "label")) return false;
@@ -202,14 +177,75 @@ public class ROSPktParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // item_*
+  // sectioned_item_* section?
   static boolean rosPktFile(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "rosPktFile")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = rosPktFile_0(b, l + 1);
+    r = r && rosPktFile_1(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // sectioned_item_*
+  private static boolean rosPktFile_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "rosPktFile_0")) return false;
     while (true) {
       int c = current_position_(b);
-      if (!item_(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "rosPktFile", c)) break;
+      if (!sectioned_item_(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "rosPktFile_0", c)) break;
     }
+    return true;
+  }
+
+  // section?
+  private static boolean rosPktFile_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "rosPktFile_1")) return false;
+    section(b, l + 1);
+    return true;
+  }
+
+  /* ********************************************************** */
+  // (field_component_|comment|CRLF)*
+  public static boolean section(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "section")) return false;
+    Marker m = enter_section_(b, l, _NONE_, SECTION, "<section>");
+    while (true) {
+      int c = current_position_(b);
+      if (!section_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "section", c)) break;
+    }
+    exit_section_(b, l, m, true, false, null);
+    return true;
+  }
+
+  // field_component_|comment|CRLF
+  private static boolean section_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "section_0")) return false;
+    boolean r;
+    r = field_component_(b, l + 1);
+    if (!r) r = comment(b, l + 1);
+    if (!r) r = consumeToken(b, CRLF);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // section? separator
+  static boolean sectioned_item_(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "sectioned_item_")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = sectioned_item__0(b, l + 1);
+    r = r && separator(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // section?
+  private static boolean sectioned_item__0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "sectioned_item__0")) return false;
+    section(b, l + 1);
     return true;
   }
 

@@ -5,7 +5,6 @@ import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.openapi.util.TextRange;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkt.intention.ChangeNameQuickFix;
-import ros.integrate.pkt.psi.ROSPktFile;
 import ros.integrate.pkt.psi.ROSPktFieldBase;
 import ros.integrate.pkt.psi.ROSPktLabel;
 
@@ -29,9 +28,7 @@ class ROSPktLabelAnnotator extends ROSPktAnnotatorBase {
      * annotates if this label being used for two separate fields?
      */
     void annDuplicateLabel() {
-        ROSPktFile file = label.getContainingFile();
-        int nameCount = file.countNameInFile(fieldName);
-        if (nameCount > 1 && !file.isFirstDefinition(label)) {
+        if (notFirstDefinition(label)) {
             TextRange range = new TextRange(label.getTextRange().getStartOffset(),
                     label.getTextRange().getEndOffset());
             Annotation ann = holder.createErrorAnnotation(range, "Field label '" + fieldName + "' is already used");
@@ -56,6 +53,21 @@ class ROSPktLabelAnnotator extends ROSPktAnnotatorBase {
             Annotation ann = holder.createErrorAnnotation(range, message);
             ann.registerFix(new ChangeNameQuickFix((ROSPktFieldBase) label.getParent(), label));
         }
+    }
+
+    /**
+     * checks whether of not the label provided is the first label in this section that has its name.
+     * @param name the field to test
+     * @return <code>true</code> if {@param field} is the first first defined label with the provided name in this file,
+     *         <code>false</code> otherwise.
+     */
+    private boolean notFirstDefinition(@NotNull ROSPktLabel name) {
+        for (ROSPktFieldBase field : name.getContainingSection().getFields(ROSPktFieldBase.class)) {
+            if (field.getLabel() != null && name.getText().equals(field.getLabel().getText())) {
+                return !name.equals(field.getLabel());
+            }
+        }
+        return false;
     }
 
     //TODO: a warning which checks for snake_case in names. make sure to check JB-inspection first

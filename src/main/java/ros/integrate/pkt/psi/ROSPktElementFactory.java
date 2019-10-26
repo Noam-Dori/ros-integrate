@@ -47,7 +47,7 @@ public class ROSPktElementFactory {
      */
     public static ROSPktComment createAnnotation(Project project, String annotationText) {
         final ROSMsgFile file = createFile(project, ANNOTATION_PREFIX + annotationText);
-        return (ROSPktComment) file.getFirstChild();
+        return (ROSPktComment) file.getFirstChild().getFirstChild();
     }
 
     /**
@@ -69,11 +69,11 @@ public class ROSPktElementFactory {
     @NotNull
     public static ROSPktType createType(Project project, String typeName) {
         final ROSMsgFile file = createFile(project, typeName + " dummyName");
-        return (ROSPktType) file.getFirstChild().getFirstChild();
+        return (ROSPktType) file.getFirstChild().getFirstChild().getFirstChild();
     }
 
     public static ROSPktLabel createLabel(Project project, String labelName) {
         final ROSMsgFile file = createFile(project, "dummyName " + labelName);
-        return (ROSPktLabel) file.getFirstChild().getLastChild();
+        return (ROSPktLabel) file.getFirstChild().getFirstChild().getLastChild();
     }
 }

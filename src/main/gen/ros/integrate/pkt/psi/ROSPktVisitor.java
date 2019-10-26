@@ -27,6 +27,10 @@ public class ROSPktVisitor extends PsiElementVisitor {
     visitIdentifier(o);
   }
 
+  public void visitSection(@NotNull ROSPktSection o) {
+    visitPsiElement(o);
+  }
+
   public void visitSeparator(@NotNull ROSPktSeparator o) {
     visitPsiElement(o);
   }

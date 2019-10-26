@@ -8,14 +8,12 @@ import com.intellij.psi.PsiQualifiedNamedElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkt.ROSPktUtil;
 import ros.integrate.pkt.lang.ROSPktLanguage;
 import ros.integrate.workspace.psi.ROSPackage;
 
 import javax.swing.*;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -88,12 +86,17 @@ public abstract class ROSPktFile extends PsiFileBase implements PsiNameIdentifie
      * determines how many service separators are present in this file
      * @return the number of valid service separators in this file
      */
-    public int countServiceSeparators() {
+    public int countSectionSeparators() {
         ROSPktSeparator[] fields = PsiTreeUtil.getChildrenOfType(this, ROSPktSeparator.class);
         if (fields != null) {
             return fields.length;
         }
         return 0;
+    }
+
+    @NotNull
+    private List<ROSPktSection> getSections() {
+        return PsiTreeUtil.getChildrenOfTypeAsList(this, ROSPktSection.class);
     }
 
     /**
@@ -106,52 +109,18 @@ public abstract class ROSPktFile extends PsiFileBase implements PsiNameIdentifie
     @NotNull
     public <T extends ROSPktFieldBase> List<T> getFields(Class<T> queryClass) {
         List<T> result = new ArrayList<>();
-        T[] fields = PsiTreeUtil.getChildrenOfType(this, queryClass);
-        if (fields != null) {
-            Collections.addAll(result, fields);
-        }
+        getSections().stream()
+                .map(section -> PsiTreeUtil.getChildrenOfTypeAsList(section, queryClass))
+                .forEach(result::addAll);
         return result;
     }
 
-    /**
-     * counts how many times the field name {@param name} appear in this file
-     * @param name the name to search for. should be a non-empty string
-     * @return the number of times the field name {@param name} appears in the file.
-     */
-    public int countNameInFile(@NotNull String name) {
-        int count = 0;
-        for (ROSPktFieldBase field : getFields(ROSPktFieldBase.class)) {
-            if (field.getLabel() != null && name.equals(field.getLabel().getText())) {
-                count++;
-            }
-        }
-        return count;
-    }
-
-    /**
-     * checks whether of not the label provided is the first label in this file that has its name.
-     * @param name the field to test
-     * @return <code>true</code> if {@param field} is the first first defined label with the provided name in this file,
-     *         <code>false</code> otherwise.
-     */
-    public boolean isFirstDefinition(@NotNull ROSPktLabel name) {
-        return name.equals(getFirstNameInFile(name.getText()));
-    }
-
-    /**
-     * fetches the first name provided in this file with the name {@param name}
-     * @param name the field name to search for
-     * @return <code>null</code> if a field labeled {@param name} does not exist in this file, otherwise,
-     *         the first psi label in the file holding that name.
-     */
-    @Nullable
-    private ROSPktLabel getFirstNameInFile(@NotNull String name) {
-        for (ROSPktFieldBase field : getFields(ROSPktFieldBase.class)) {
-            if (field.getLabel() != null && name.equals(field.getLabel().getText())) {
-                return field.getLabel();
-            }
-        }
-        return null;
+    public List<PsiElement> getFieldsAndComments() {
+        List<PsiElement> result = new ArrayList<>();
+        getSections().stream()
+                .map(section -> PsiTreeUtil.getChildrenOfAnyType(section, ROSPktFieldBase.class, ROSPktComment.class))
+                .forEach(result::addAll);
+        return result;
     }
 
     /**

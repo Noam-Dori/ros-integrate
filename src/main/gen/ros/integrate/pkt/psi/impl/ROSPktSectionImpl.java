@@ -8,16 +8,17 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static ros.integrate.pkt.psi.ROSPktTypes.*;
+import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import ros.integrate.pkt.psi.*;
 
-public class ROSPktFieldImpl extends ROSPktFieldBaseImpl implements ROSPktField {
+public class ROSPktSectionImpl extends ASTWrapperPsiElement implements ROSPktSection {
 
-  public ROSPktFieldImpl(@NotNull ASTNode node) {
+  public ROSPktSectionImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull ROSPktVisitor visitor) {
-    visitor.visitField(this);
+    visitor.visitSection(this);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
@@ -26,32 +27,27 @@ public class ROSPktFieldImpl extends ROSPktFieldBaseImpl implements ROSPktField 
   }
 
   @Override
-  @Nullable
-  public ROSPktConst getConst() {
-    return findChildByClass(ROSPktConst.class);
+  @NotNull
+  public List<ROSPktComment> getCommentList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, ROSPktComment.class);
   }
 
   @Override
   @NotNull
-  public ROSPktLabel getLabel() {
-    return findNotNullChildByClass(ROSPktLabel.class);
+  public List<ROSPktField> getFieldList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, ROSPktField.class);
   }
 
   @Override
   @NotNull
-  public ROSPktType getType() {
-    return findNotNullChildByClass(ROSPktType.class);
+  public List<ROSPktFieldFrag> getFieldFragList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, ROSPktFieldFrag.class);
   }
 
   @Override
   @NotNull
-  public ROSPktType getTypeBase() {
-    return ROSPktPsiImplUtil.getTypeBase(this);
-  }
-
-  @Override
-  public boolean isComplete() {
-    return ROSPktPsiImplUtil.isComplete(this);
+  public <T extends ROSPktFieldBase> List<T> getFields(Class<T> queryClass) {
+    return ROSPktPsiImplUtil.getFields(this, queryClass);
   }
 
 }

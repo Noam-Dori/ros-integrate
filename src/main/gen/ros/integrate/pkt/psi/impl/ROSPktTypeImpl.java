@@ -25,6 +25,7 @@ public class ROSPktTypeImpl extends ROSPktTypeBaseImpl implements ROSPktType {
     else super.accept(visitor);
   }
 
+  @Override
   public boolean isComplete() {
     return ROSPktPsiImplUtil.isComplete(this);
   }

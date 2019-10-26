@@ -5,13 +5,15 @@ import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.TextRange;
-import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkt.ROSPktUtil;
 import ros.integrate.pkt.intention.*;
 import ros.integrate.pkt.psi.*;
+
+import java.util.List;
+
 /**
  * an annotator dedicated to {@link ROSPktTypeBase}
  */
@@ -83,12 +85,13 @@ public class ROSPktTypeAnnotator extends ROSPktAnnotatorBase {
     }
 
     /**
-     * fetches the first field available in the file.
+     * fetches the first field available in the section.
      * @return null is no field is present, otherwise the first field available.
      */
     @Nullable
     private ROSPktFieldBase getFirstField() {
-        return PsiTreeUtil.getChildOfType(type.getContainingFile(), ROSPktFieldBase.class);
+        List<ROSPktFieldBase> result = type.getContainingSection().getFields(ROSPktFieldBase.class);
+        return result.isEmpty() ? null : result.get(0);
     }
 
     /**

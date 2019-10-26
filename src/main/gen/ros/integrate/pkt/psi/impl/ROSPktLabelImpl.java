@@ -25,10 +25,12 @@ public class ROSPktLabelImpl extends ROSPktIdentifierImpl implements ROSPktLabel
     else super.accept(visitor);
   }
 
+  @Override
   public PsiElement set(String newName) {
     return ROSPktPsiImplUtil.set(this, newName);
   }
 
+  @Override
   public String getName() {
     return ROSPktPsiImplUtil.getName(this);
   }
