@@ -61,25 +61,42 @@ patchPluginXml {
             <li><b>ROS Settings</b>
                 <ul>
                     <li>ROS Root setting is now ROS Path, which should be the path to the directory
-                     containing all ROS stuff (for example /opt/ros/kinetic)</li>
+                        containing all ROS stuff (for example /opt/ros/kinetic)
+                    </li>
                     <li>Workspace path can either be browsed or manually typed</li>
                     <li>Additional paths is displayed as a UNIX path list, which can be directly typed,
-                        or altered as a list.</li>
+                        or altered as a list.
+                    </li>
                     <li>The tool is smart and can deal with Windows paths as well as UNIX paths.</li>
                     <li>When using the list modification tab, items can directly typed, browsed, or duplicated</li>
                     <li>Additional paths field can also be reset to \$ROS_PACKAGE_PATH with a new reset button</li>
+                    <li>Moved ROS Settings tab under Languages & Frameworks</li>
                 </ul>
             </li>
             <li>The ROS library can be accessed in the Project structure window from the External Libraries tab</li>
             <li>String constants can now be explicitly searched via the "Search in String literals" option</li>
             <li>"New Message" dialog now prevent trying to create new messages in the ROS directory</li>
             <li>Cleaned package completion suggestions so that only packages that contain messages will be suggested.</li>
-            <li>Header inspection now inspects through fragments as well</li>
-            <li>Field fragments can now be properly suppressed</li>
-            <li>Fixed bug where packages would not get the correct icons</li>
-            <li>ROS Settings are now under Languages & Frameworks</li>
             <li>Added more words to the ROS dictionary</li>
-            <li>Fixed some Log errors.</li>
+            <li><b>Bug fixes</b>
+                <ul>
+                    <li>Fixed bug where packages would not get the correct icons</li>
+                    <li>Field fragments can now be properly suppressed</li>
+                    <li>Header inspection now inspects through fragments as well</li>
+                    <li>Fixed bug where package indexing would reset for projects open for too long</li>
+                    <li>Cloned git repositories (and any copied directories) are now properly examined for packages</li>
+                    <li>field names are no longer unique to their files but instead to their "section" in the packet file,
+                        which allows duplicate names in the file but not in the same section.
+                    </li>
+                    <li>the shortened version of headers is now valid if it is the first non-const field in its section</li>
+                    <li>the automatic completion also respects the new rules of sections and const fields.</li>
+                    <li>comments are now recognised after numerical constants</li>
+                    <li>constants "." and "-." are now automatically categorised as string constants. 
+                        Adding a number after them changes their interpretation to floating point numbers (with optional negation)
+                    </li>
+                    <li>Fixed some Log errors</li>
+                </ul>
+            </li>
         </ul>
         <p>0.1.3</p>
         <ul>
