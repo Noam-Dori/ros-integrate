@@ -95,6 +95,7 @@ patchPluginXml {
                         Adding a number after them changes their interpretation to floating point numbers (with optional negation)
                     </li>
                     <li>Fixed some Log errors</li>
+                    <li>Fixed one IDE freeze scenario. If your IDE still freezes please report it on the issue tracker.</li>
                 </ul>
             </li>
         </ul>
