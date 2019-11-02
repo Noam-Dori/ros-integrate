@@ -33,7 +33,7 @@ sourceSets {
     }
 }
 
-String pluginVersion = '0.1.4'
+String pluginVersion = '0.1.5'
 String pluginIndex = 'ros-integrate'
 
 patchPluginXml {
