@@ -1,8 +1,10 @@
 package ros.integrate.pkg.xml;
 
+import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.xml.XmlFile;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import ros.integrate.pkg.psi.ROSPackage;
 import ros.integrate.pkg.xml.impl.ROSPackageXmlImpl;
 
 /**
@@ -26,9 +28,22 @@ public interface ROSPackageXml {
      * @param xmlToWrap the XML file to wrap with packageXml
      * @return a new instance of ROSPackageXml bound to the XML file.
      */
-    @Contract("_ -> new")
+    @Contract("_,_ -> new")
     @NotNull
-    static ROSPackageXml newInstance(@NotNull XmlFile xmlToWrap) {
-        return new ROSPackageXmlImpl(xmlToWrap);
+    static ROSPackageXml newInstance(@NotNull XmlFile xmlToWrap, @NotNull ROSPackage pkg) {
+        return new ROSPackageXmlImpl(xmlToWrap, pkg);
     }
+
+    int getFormat();
+
+    @NotNull
+    TextRange getFormatTextRange();
+
+    ROSPackage getPackage();
+
+    String getPkgName();
+
+    TextRange getRootTextRange();
+
+    TextRange getNameTextRange();
 }

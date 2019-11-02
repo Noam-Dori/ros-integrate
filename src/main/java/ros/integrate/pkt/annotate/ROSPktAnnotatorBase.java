@@ -1,6 +1,7 @@
 package ros.integrate.pkt.annotate;
 
 import com.intellij.lang.annotation.AnnotationHolder;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -12,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 abstract class ROSPktAnnotatorBase {
     final @NotNull AnnotationHolder holder;
 
+    @Contract(pure = true)
     ROSPktAnnotatorBase(@NotNull AnnotationHolder holder) {
         this.holder = holder;
     }

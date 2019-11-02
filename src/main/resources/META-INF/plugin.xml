@@ -60,6 +60,8 @@
         <!-- ROS workspace & package -->
         <psi.referenceContributor language="ROSPkt" implementation="ros.integrate.pkg.ref.ROSPktTypeReferenceContributor"/>
         <iconProvider implementation="ros.integrate.pkg.ROSPackageIconProvider" order="first"/>
+
+        <annotator language="XML" implementationClass="ros.integrate.pkg.xml.annotate.PackageXmlAnnotator"/>
     </extensions>
 
     <extensions defaultExtensionNs="ros-integrate">

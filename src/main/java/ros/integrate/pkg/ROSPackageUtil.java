@@ -6,14 +6,11 @@ import com.intellij.openapi.vfs.newvfs.events.VFileCreateEvent;
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
 import com.intellij.openapi.vfs.newvfs.events.VFileMoveEvent;
 import com.intellij.psi.PsiDirectory;
-import com.intellij.psi.xml.XmlFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkg.psi.ROSPackage;
 
 class ROSPackageUtil {
-    static final String PACKAGE_XML = "package.xml";
-
     static boolean belongsToRoot(@NotNull VirtualFile root, @NotNull VirtualFile vFile) {
         return childOf(root.getPath(), vFile.getPath());
     }
@@ -28,14 +25,6 @@ class ROSPackageUtil {
             return true;
         }
         return childOf(rootPath, event.getPath());
-    }
-
-    @Nullable
-    static XmlFile findPackageXml(@NotNull PsiDirectory root) {
-        if (!root.getVirtualFile().isValid()) {
-            return null;
-        }
-        return (XmlFile) root.findFile(PACKAGE_XML);
     }
 
     static int getRequiredSorts(VFileEvent event, PsiDirectory currentRoot) {

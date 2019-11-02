@@ -39,7 +39,7 @@ public abstract class ROSPackageBase extends PsiElementBase implements ROSPackag
     ROSPackageBase(@NotNull Project project, @NotNull String name, @NotNull XmlFile pkgXml) {
         this.name = name;
         this.project = project;
-        this.pkgXml = ROSPackageXml.newInstance(pkgXml);
+        this.pkgXml = ROSPackageXml.newInstance(pkgXml,this);
         this.packets = new TreeSet<>();
     }
 

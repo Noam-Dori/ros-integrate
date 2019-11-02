@@ -16,6 +16,7 @@ import com.intellij.util.containers.MultiMap;
 import com.intellij.util.containers.SortedList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import ros.integrate.pkg.xml.PackageXmlUtil;
 import ros.integrate.pkg.xml.ROSPackageXml;
 import ros.integrate.pkt.lang.ROSPktLanguage;
 import ros.integrate.pkt.psi.ROSPktFile;
@@ -35,7 +36,7 @@ public abstract class ROSPackageFinderBase implements ROSPackageFinder {
          * A directory is a ROS package iff one of its roots directly contains a package.xml file
          */
         FileTypeIndex.getFiles(XmlFileType.INSTANCE, getScope(project))
-                .stream().filter(xml -> xml.getName().equals(ROSPackageUtil.PACKAGE_XML))
+                .stream().filter(xml -> xml.getName().equals(PackageXmlUtil.PACKAGE_XML))
                 .map(vXml -> investigateXml(vXml, project, pkgCache))
                 .filter(newPkg -> newPkg != ROSPackage.ORPHAN)
                 .forEach(newPkg -> pkgCache.putIfAbsent(newPkg.getName(), newPkg));
@@ -90,7 +91,7 @@ public abstract class ROSPackageFinderBase implements ROSPackageFinder {
         removeUnneededChildDirs(directoriesToSearch);
         // 2. do XML parents first and get a list of parent directories, use these to create ROSPackages using original method.
         List<PsiFile> pkgFiles = new LinkedList<>();
-        directoriesToSearch.stream().map(dir -> Arrays.asList(FilenameIndex.getFilesByName(project,ROSPackageUtil.PACKAGE_XML,
+        directoriesToSearch.stream().map(dir -> Arrays.asList(FilenameIndex.getFilesByName(project, PackageXmlUtil.PACKAGE_XML,
                 new GlobalSearchScopesCore.DirectoryScope(project,dir,true)))).forEach(pkgFiles::addAll);
         pkgFiles.forEach(xml -> {
             ROSPackage newPkg = investigateXml(xml.getVirtualFile(), project, null);
@@ -150,7 +151,7 @@ public abstract class ROSPackageFinderBase implements ROSPackageFinder {
             return CacheCommand.DELETE;
         }
         // 1. check package XML exists. if some don't -> return DELETE.
-        XmlFile newXml = ROSPackageUtil.findPackageXml(xmlRoot);
+        XmlFile newXml = PackageXmlUtil.findPackageXml(xmlRoot);
         if(newXml == null) {
             return CacheCommand.DELETE;
         }
