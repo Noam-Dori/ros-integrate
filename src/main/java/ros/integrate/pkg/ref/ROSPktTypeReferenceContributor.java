@@ -1,4 +1,4 @@
-package ros.integrate.workspace.ref;
+package ros.integrate.pkg.ref;
 
 import com.intellij.openapi.util.TextRange;
 import com.intellij.patterns.PlatformPatterns;

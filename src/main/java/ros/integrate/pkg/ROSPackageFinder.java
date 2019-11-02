@@ -1,4 +1,4 @@
-package ros.integrate.workspace;
+package ros.integrate.pkg;
 
 import com.intellij.openapi.extensions.ExtensionPointName;
 import com.intellij.openapi.project.Project;
@@ -7,7 +7,7 @@ import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
 import com.intellij.util.containers.MultiMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import ros.integrate.workspace.psi.ROSPackage;
+import ros.integrate.pkg.psi.ROSPackage;
 
 import java.util.Collection;
 import java.util.concurrent.ConcurrentMap;

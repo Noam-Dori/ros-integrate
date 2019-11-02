@@ -35,9 +35,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkt.annotate.ROSPktTypeAnnotator;
 import ros.integrate.pkt.inspection.CamelCaseInspection;
-import ros.integrate.workspace.ROSPackageManager;
-import ros.integrate.workspace.psi.ROSPackage;
-import ros.integrate.workspace.psi.impl.ROSSourcePackage;
+import ros.integrate.pkg.ROSPackageManager;
+import ros.integrate.pkg.psi.ROSPackage;
+import ros.integrate.pkg.psi.impl.ROSSourcePackage;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;

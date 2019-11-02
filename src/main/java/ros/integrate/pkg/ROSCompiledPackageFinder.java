@@ -1,4 +1,4 @@
-package ros.integrate.workspace;
+package ros.integrate.pkg;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.module.impl.scopes.LibraryScope;
@@ -17,12 +17,12 @@ import com.intellij.psi.xml.XmlFile;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkt.psi.ROSPktFile;
 import ros.integrate.settings.ROSSettings;
-import ros.integrate.workspace.psi.ROSPackage;
-import ros.integrate.workspace.psi.impl.ROSCompiledPackage;
+import ros.integrate.pkg.psi.ROSPackage;
+import ros.integrate.pkg.psi.impl.ROSCompiledPackage;
 
 import java.util.*;
 
-import static ros.integrate.workspace.psi.impl.ROSCompiledPackage.RootType;
+import static ros.integrate.pkg.psi.impl.ROSCompiledPackage.RootType;
 
 /**
  * a default finder used for finding compiled packages within the libraries

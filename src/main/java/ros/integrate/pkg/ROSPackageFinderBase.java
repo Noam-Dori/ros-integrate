@@ -1,4 +1,4 @@
-package ros.integrate.workspace;
+package ros.integrate.pkg;
 
 import com.intellij.ide.highlighter.XmlFileType;
 import com.intellij.openapi.project.Project;
@@ -18,12 +18,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkt.lang.ROSPktLanguage;
 import ros.integrate.pkt.psi.ROSPktFile;
-import ros.integrate.workspace.psi.ROSPackage;
+import ros.integrate.pkg.psi.ROSPackage;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentMap;
 
-import static ros.integrate.workspace.psi.ROSPackage.RootType;
+import static ros.integrate.pkg.psi.ROSPackage.RootType;
 
 public abstract class ROSPackageFinderBase implements ROSPackageFinder {
     @Override

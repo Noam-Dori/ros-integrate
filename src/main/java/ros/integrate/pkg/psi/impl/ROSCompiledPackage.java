@@ -1,4 +1,4 @@
-package ros.integrate.workspace.psi.impl;
+package ros.integrate.pkg.psi.impl;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDirectory;

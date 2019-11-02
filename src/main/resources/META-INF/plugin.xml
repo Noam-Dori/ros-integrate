@@ -9,7 +9,7 @@
     <depends>com.intellij.modules.lang</depends>
 
     <extensionPoints>
-        <extensionPoint name="packageFinder" interface="ros.integrate.workspace.ROSPackageFinder"/>
+        <extensionPoint name="packageFinder" interface="ros.integrate.pkg.ROSPackageFinder"/>
     </extensionPoints>
 
     <extensions defaultExtensionNs="com.intellij">
@@ -58,19 +58,19 @@
                          groupName="ROS" displayName="Redundant header stamp"/>
 
         <!-- ROS workspace & package -->
-        <psi.referenceContributor language="ROSPkt" implementation="ros.integrate.workspace.ref.ROSPktTypeReferenceContributor"/>
-        <iconProvider implementation="ros.integrate.workspace.ROSPackageIconProvider" order="first"/>
+        <psi.referenceContributor language="ROSPkt" implementation="ros.integrate.pkg.ref.ROSPktTypeReferenceContributor"/>
+        <iconProvider implementation="ros.integrate.pkg.ROSPackageIconProvider" order="first"/>
     </extensions>
 
     <extensions defaultExtensionNs="ros-integrate">
-        <packageFinder implementation="ros.integrate.workspace.ROSWorkspacePackageFinder"/>
-        <packageFinder implementation="ros.integrate.workspace.ROSCompiledPackageFinder"/>
+        <packageFinder implementation="ros.integrate.pkg.ROSWorkspacePackageFinder"/>
+        <packageFinder implementation="ros.integrate.pkg.ROSCompiledPackageFinder"/>
     </extensions>
 
     <project-components>
         <component>
-            <interface-class>ros.integrate.workspace.ROSPackageManager</interface-class>
-            <implementation-class>ros.integrate.workspace.ROSPackageManagerImpl</implementation-class>
+            <interface-class>ros.integrate.pkg.ROSPackageManager</interface-class>
+            <implementation-class>ros.integrate.pkg.ROSPackageManagerImpl</implementation-class>
         </component>
     </project-components>
 

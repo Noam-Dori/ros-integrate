@@ -20,8 +20,8 @@ import ros.integrate.pkt.psi.ROSPktElementFactory;
 import ros.integrate.pkt.psi.ROSMsgFile;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkt.psi.ROSPktFile;
-import ros.integrate.workspace.ROSPackageManager;
-import ros.integrate.workspace.psi.ROSPackage;
+import ros.integrate.pkg.ROSPackageManager;
+import ros.integrate.pkg.psi.ROSPackage;
 
 /**
  * a fix used to add new ROS messages when needed.

@@ -1,4 +1,4 @@
-package ros.integrate.workspace;
+package ros.integrate.pkg;
 
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.newvfs.events.VFileCopyEvent;
@@ -9,7 +9,7 @@ import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.xml.XmlFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import ros.integrate.workspace.psi.ROSPackage;
+import ros.integrate.pkg.psi.ROSPackage;
 
 class ROSPackageUtil {
     static final String PACKAGE_XML = "package.xml";

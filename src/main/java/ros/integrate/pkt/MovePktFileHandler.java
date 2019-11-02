@@ -16,8 +16,8 @@ import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkt.psi.ROSPktFieldBase;
 import ros.integrate.pkt.psi.ROSPktFile;
 import ros.integrate.pkt.psi.ROSPktTypeBase;
-import ros.integrate.workspace.ROSPackageManager;
-import ros.integrate.workspace.psi.ROSPackage;
+import ros.integrate.pkg.ROSPackageManager;
+import ros.integrate.pkg.psi.ROSPackage;
 
 import java.util.*;
 

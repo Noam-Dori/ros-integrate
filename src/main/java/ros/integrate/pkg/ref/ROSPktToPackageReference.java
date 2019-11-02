@@ -1,11 +1,11 @@
-package ros.integrate.workspace.ref;
+package ros.integrate.pkg.ref;
 
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkt.psi.ROSPktTypeBase;
-import ros.integrate.workspace.psi.ROSPackage;
+import ros.integrate.pkg.psi.ROSPackage;
 
 /**
  * a class defining the references of {@link ROSPktTypeBase} to {@link ROSPackage} and its affiliated roots.

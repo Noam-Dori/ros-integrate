@@ -1,4 +1,4 @@
-package ros.integrate.workspace;
+package ros.integrate.pkg;
 
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.module.Module;
@@ -17,7 +17,7 @@ import com.intellij.util.containers.SortedList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.settings.ROSSettings;
-import ros.integrate.workspace.psi.ROSPackage;
+import ros.integrate.pkg.psi.ROSPackage;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentMap;

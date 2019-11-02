@@ -1,4 +1,4 @@
-package ros.integrate.workspace.psi;
+package ros.integrate.pkg.psi;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.Language;

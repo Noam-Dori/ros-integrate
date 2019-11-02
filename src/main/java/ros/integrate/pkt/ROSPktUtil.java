@@ -9,8 +9,8 @@ import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkt.psi.ROSMsgFile;
 import ros.integrate.pkt.psi.ROSPktComment;
 import ros.integrate.pkt.psi.ROSPktElementFactory;
-import ros.integrate.workspace.ROSPackageManager;
-import ros.integrate.workspace.psi.ROSPackage;
+import ros.integrate.pkg.ROSPackageManager;
+import ros.integrate.pkg.psi.ROSPackage;
 
 import java.util.*;
 

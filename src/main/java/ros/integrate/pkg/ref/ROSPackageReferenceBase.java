@@ -1,4 +1,4 @@
-package ros.integrate.workspace.ref;
+package ros.integrate.pkg.ref;
 
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
@@ -8,8 +8,8 @@ import com.intellij.psi.ResolveResult;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import ros.integrate.workspace.ROSPackageManager;
-import ros.integrate.workspace.psi.ROSPackage;
+import ros.integrate.pkg.ROSPackageManager;
+import ros.integrate.pkg.psi.ROSPackage;
 
 import java.util.ArrayList;
 import java.util.Arrays;

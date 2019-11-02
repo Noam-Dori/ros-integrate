@@ -1,4 +1,4 @@
-package ros.integrate.workspace;
+package ros.integrate.pkg;
 
 import com.intellij.ide.IconProvider;
 import com.intellij.psi.PsiDirectory;
@@ -6,7 +6,7 @@ import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import ros.integrate.workspace.psi.ROSPackage;
+import ros.integrate.pkg.psi.ROSPackage;
 
 import javax.swing.*;
 

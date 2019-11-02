@@ -10,7 +10,7 @@ import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkt.ROSPktUtil;
 import ros.integrate.pkt.lang.ROSPktLanguage;
-import ros.integrate.workspace.psi.ROSPackage;
+import ros.integrate.pkg.psi.ROSPackage;
 
 import javax.swing.*;
 import java.util.ArrayList;

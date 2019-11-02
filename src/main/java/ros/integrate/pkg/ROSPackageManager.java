@@ -1,9 +1,9 @@
-package ros.integrate.workspace;
+package ros.integrate.pkg;
 
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.psi.PsiDirectory;
 import org.jetbrains.annotations.Nullable;
-import ros.integrate.workspace.psi.ROSPackage;
+import ros.integrate.pkg.psi.ROSPackage;
 
 import java.util.Collection;
 

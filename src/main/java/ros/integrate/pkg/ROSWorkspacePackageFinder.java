@@ -1,4 +1,4 @@
-package ros.integrate.workspace;
+package ros.integrate.pkg;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.MapDifference;
@@ -21,8 +21,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkt.psi.ROSPktFile;
 import ros.integrate.settings.ROSSettings;
-import ros.integrate.workspace.psi.ROSPackage;
-import ros.integrate.workspace.psi.impl.ROSSourcePackage;
+import ros.integrate.pkg.psi.ROSPackage;
+import ros.integrate.pkg.psi.impl.ROSSourcePackage;
 
 import java.util.*;
 
