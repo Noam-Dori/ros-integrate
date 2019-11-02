@@ -11,6 +11,7 @@ import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import ros.integrate.pkg.xml.ROSPackageXml;
 import ros.integrate.pkt.psi.ROSPktFile;
 
 import javax.swing.*;
@@ -91,7 +92,7 @@ public interface ROSPackage extends PsiCheckedRenameElement, NavigatablePsiEleme
      *         for built packages, this is in their root folder in the "share" directory.
      */
     @Nullable
-    XmlFile getPackageXml();
+    ROSPackageXml getPackageXml();
 
     /**
      * add packets to this package.
@@ -217,7 +218,7 @@ public interface ROSPackage extends PsiCheckedRenameElement, NavigatablePsiEleme
 
         @Nullable
         @Override
-        public XmlFile getPackageXml() {
+        public ROSPackageXml getPackageXml() {
             return null;
         }
 

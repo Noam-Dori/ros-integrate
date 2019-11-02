@@ -16,6 +16,7 @@ import com.intellij.util.ArrayUtil;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import ros.integrate.pkg.xml.ROSPackageXml;
 import ros.integrate.pkt.psi.ROSPktFile;
 import ros.integrate.pkg.ROSPackageManager;
 import ros.integrate.pkg.psi.ROSPackage;
@@ -26,7 +27,7 @@ public abstract class ROSPackageBase extends PsiElementBase implements ROSPackag
     private static final Logger LOG = Logger.getInstance("#ros.integrate.workspace.ROSSourcePackage");
 
     @NotNull
-    private XmlFile pkgXml;
+    private ROSPackageXml pkgXml;
     @NotNull
     private String name;
     @NotNull
@@ -38,7 +39,7 @@ public abstract class ROSPackageBase extends PsiElementBase implements ROSPackag
     ROSPackageBase(@NotNull Project project, @NotNull String name, @NotNull XmlFile pkgXml) {
         this.name = name;
         this.project = project;
-        this.pkgXml = pkgXml;
+        this.pkgXml = ROSPackageXml.newInstance(pkgXml);
         this.packets = new TreeSet<>();
     }
 
@@ -224,12 +225,12 @@ public abstract class ROSPackageBase extends PsiElementBase implements ROSPackag
 
     @NotNull
     @Override
-    public XmlFile getPackageXml() {
+    public ROSPackageXml getPackageXml() {
         return pkgXml;
     }
 
     @Override
     public void setPackageXml(XmlFile newPackageXml) {
-        pkgXml = newPackageXml;
+        pkgXml.setRawXml(newPackageXml);
     }
 }

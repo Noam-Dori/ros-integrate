@@ -16,6 +16,7 @@ import com.intellij.util.containers.MultiMap;
 import com.intellij.util.containers.SortedList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import ros.integrate.pkg.xml.ROSPackageXml;
 import ros.integrate.pkt.lang.ROSPktLanguage;
 import ros.integrate.pkt.psi.ROSPktFile;
 import ros.integrate.pkg.psi.ROSPackage;
@@ -154,7 +155,7 @@ public abstract class ROSPackageFinderBase implements ROSPackageFinder {
             return CacheCommand.DELETE;
         }
         // if package.xml was changed, change it in the package.
-        if(!newXml.equals(pkg.getPackageXml())) {
+        if(!newXml.equals(Optional.ofNullable(pkg.getPackageXml()).map(ROSPackageXml::getRawXml).get())) {
             pkg.setPackageXml(newXml);
         }
         // 2. check for new packets in root & apply changes
