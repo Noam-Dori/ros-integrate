@@ -3,12 +3,13 @@ package ros.integrate.settings;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.Contract;
 
-class BrowserOptions {
+public class BrowserOptions {
 
-    enum HistoryKey {
+    public enum HistoryKey {
         DEFAULT("RECENT_KEYS"),
         WORKSPACE("WORKSPACE"),
-        EXTRA_SOURCES("EXTRA_SOURCES");
+        EXTRA_SOURCES("EXTRA_SOURCES"),
+        EXCLUDED_XMLS("EXCLUDED_XMLS");
 
         private final String historyKey;
 

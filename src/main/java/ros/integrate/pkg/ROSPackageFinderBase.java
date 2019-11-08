@@ -1,14 +1,11 @@
 package ros.integrate.pkg;
 
-import com.intellij.ide.highlighter.XmlFileType;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
-import com.intellij.psi.search.FileTypeIndex;
-import com.intellij.psi.search.FilenameIndex;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.GlobalSearchScopesCore;
 import com.intellij.psi.xml.XmlFile;
@@ -25,6 +22,7 @@ import ros.integrate.pkg.psi.ROSPackage;
 import java.util.*;
 import java.util.concurrent.ConcurrentMap;
 
+import static ros.integrate.pkg.psi.ROSPackage.ORPHAN;
 import static ros.integrate.pkg.psi.ROSPackage.RootType;
 
 public abstract class ROSPackageFinderBase implements ROSPackageFinder {
@@ -35,15 +33,24 @@ public abstract class ROSPackageFinderBase implements ROSPackageFinder {
          * the following condition is true:
          * A directory is a ROS package iff one of its roots directly contains a package.xml file
          */
-        FileTypeIndex.getFiles(XmlFileType.INSTANCE, getScope(project))
-                .stream().filter(xml -> xml.getName().equals(PackageXmlUtil.PACKAGE_XML))
-                .map(vXml -> investigateXml(vXml, project, pkgCache))
-                .filter(newPkg -> newPkg != ROSPackage.ORPHAN)
-                .forEach(newPkg -> pkgCache.putIfAbsent(newPkg.getName(), newPkg));
+        PackageXmlUtil.findPackageXmls(project,getScope(project))
+                .forEach(xml -> findAndCacheOneFile(xml.getVirtualFile(), project, pkgCache));
+    }
+
+    public void findAndCacheOneFile(@NotNull VirtualFile vXml, Project project,
+                                    ConcurrentMap<String, ROSPackage> pkgCache) {
+        if (!getScope(project).accept(vXml)) {
+            return;
+        }
+        ROSPackage pkg = investigateXml(vXml, project, pkgCache);
+        if (pkg != ORPHAN) {
+            pkgCache.putIfAbsent(pkg.getName(), pkg);
+        }
     }
 
     @NotNull
-    private ROSPackage investigateXml(@NotNull VirtualFile vXml, Project project, ConcurrentMap<String, ROSPackage> pkgCache) {
+    private ROSPackage investigateXml(@NotNull VirtualFile vXml, Project project,
+                                     ConcurrentMap<String, ROSPackage> pkgCache) {
         // 1. get package name
         // FIXME for now, since we don't want to read into files just yet, we will use the directory to name packages.
         String pkgName = vXml.getParent().getName();
@@ -84,7 +91,7 @@ public abstract class ROSPackageFinderBase implements ROSPackageFinder {
         // 1. check who is under the jurisdiction of this finder
         Set<VirtualFile> directoriesToSearch = new TreeSet<>(Comparator.comparing(VirtualFile::getPath,
                 new TreePathComparator()));
-        events.stream().filter(event -> inFinder(event,project))
+        events.stream().filter(event -> inFinder(event, project))
                 .map(ROSPackageUtil::getParentOfEvent)
                 .filter(Objects::nonNull)
                 .forEach(directoriesToSearch::add);
@@ -92,9 +99,8 @@ public abstract class ROSPackageFinderBase implements ROSPackageFinder {
         // 2. do XML parents first and get a list of parent directories, use these to create ROSPackages using original method.
         List<PsiFile> pkgFiles = new LinkedList<>();
         directoriesToSearch.stream()
-                .map(dir -> new GlobalSearchScopesCore.DirectoryScope(project,dir,true))
-                .map(scope -> FilenameIndex.getFilesByName(project, PackageXmlUtil.PACKAGE_XML,scope))
-                .map(Arrays::asList)
+                .map(dir -> new GlobalSearchScopesCore.DirectoryScope(project, dir, true))
+                .map(scope -> PackageXmlUtil.findPackageXmls(project, scope))
                 .forEach(pkgFiles::addAll);
         pkgFiles.forEach(xml -> {
             ROSPackage newPkg = investigateXml(xml.getVirtualFile(), project, null);

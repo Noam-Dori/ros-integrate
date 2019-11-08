@@ -62,6 +62,14 @@
         <iconProvider implementation="ros.integrate.pkg.ROSPackageIconProvider" order="first"/>
 
         <annotator language="XML" implementationClass="ros.integrate.pkg.xml.annotate.PackageXmlAnnotator"/>
+        <intentionAction>
+            <className>ros.integrate.pkg.xml.intention.ExcludePackageXml</className>
+            <category>ROS</category>
+        </intentionAction>
+        <intentionAction>
+            <className>ros.integrate.pkg.xml.intention.UndoExcludeXml</className>
+            <category>ROS</category>
+        </intentionAction>
     </extensions>
 
     <extensions defaultExtensionNs="ros-integrate">

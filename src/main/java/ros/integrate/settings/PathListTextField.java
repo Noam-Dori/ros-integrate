@@ -12,7 +12,6 @@ import java.awt.*;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 class PathListTextField extends TextFieldWithHistoryWithBrowseButton {
     private static class PackagePathDialog extends DialogWrapper {
@@ -27,7 +26,7 @@ class PathListTextField extends TextFieldWithHistoryWithBrowseButton {
             data = new PathListTable(options);
 
             setTitle(options.dialogTitle);
-            data.setValues(ROSSettingsUtil.parsePathList(component.getText()));
+            data.setValues(PathListUtil.parsePathList(component.getText()));
             display.add(data.getComponent(),BorderLayout.CENTER);
             init();
         }
@@ -61,6 +60,6 @@ class PathListTextField extends TextFieldWithHistoryWithBrowseButton {
     }
 
     private void setPaths(@NotNull List<String> paths) {
-        setText(paths.stream().filter(path -> !path.isEmpty()).collect(Collectors.joining(":")));
+        setText(PathListUtil.serializePathList(paths));
     }
 }

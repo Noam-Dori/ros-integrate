@@ -3,6 +3,7 @@ package ros.integrate.pkg;
 import com.intellij.openapi.extensions.ExtensionPointName;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.libraries.Library;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
 import com.intellij.util.containers.MultiMap;
 import org.jetbrains.annotations.NotNull;
@@ -30,6 +31,19 @@ public interface ROSPackageFinder {
      *           which should be the same as the directory name and the CMake project name.
      */
     void findAndCache(Project project, ConcurrentMap<String, ROSPackage> pkgCache);
+
+
+    /**
+     * investigates a specific xml to check if it creates a package as a result, then stores the result.
+     * @param vXml the virtual XML file to check.
+     * @param project the project this file belongs to
+     * @param pkgCache the cache to store the new package in.
+     * @implNote any package you find and create needs to be added to the cache.
+     *           Make sure to not stumble into package duplicates.
+     *           packages are mapped by their package.xml name
+     *           which should be the same as the directory name and the CMake project name.
+     */
+    void findAndCacheOneFile(@NotNull VirtualFile vXml, Project project, ConcurrentMap<String, ROSPackage> pkgCache);
 
     /**
      * investigate the events provided to see if they mean a new package was created.

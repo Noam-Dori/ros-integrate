@@ -2,6 +2,7 @@ package ros.integrate.settings;
 
 import com.intellij.openapi.components.*;
 import com.intellij.openapi.project.Project;
+import com.intellij.util.containers.MultiMap;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -17,9 +18,10 @@ public class ROSSettings implements PersistentStateComponent<ROSSettings.State> 
         public String rosPath;
         public String workspacePath;
         public String additionalSources;
+        public String excludedXmls;
     }
     private final State state = new State();
-    private final List<Consumer<ROSSettings>> listeners = new LinkedList<>();
+    private final MultiMap<String,Consumer<ROSSettings>> listeners = new MultiMap<>();
 
     @Contract(pure = true)
     private ROSSettings(Project project) {
@@ -35,6 +37,8 @@ public class ROSSettings implements PersistentStateComponent<ROSSettings.State> 
 
         String additionalSources = System.getenv("ROS_PACKAGE_PATH");
         state.additionalSources = additionalSources == null ? "" : additionalSources;
+
+        state.excludedXmls = "";
     }
 
     public static ROSSettings getInstance(Project project) {
@@ -54,12 +58,18 @@ public class ROSSettings implements PersistentStateComponent<ROSSettings.State> 
                         .ifPresent(val -> accessor.set(this.state, val)));
     }
 
-    void triggerListeners() {
-        listeners.forEach(listener -> listener.accept(this));
+    void triggerListeners(String topic) {
+        listeners.get(topic).forEach(listener -> listener.accept(this));
     }
 
-    public void addListener(Consumer<ROSSettings> trigger) {
-        listeners.add(trigger);
+    public void addListener(Consumer<ROSSettings> trigger, String topic) {
+        listeners.putValue(topic, trigger);
+    }
+
+    public void addListener(Consumer<ROSSettings> trigger, @NotNull String[] topics) {
+        for (String topic : topics) {
+            listeners.putValue(topic, trigger);
+        }
     }
 
     public String getROSPath() {
@@ -83,7 +93,7 @@ public class ROSSettings implements PersistentStateComponent<ROSSettings.State> 
      * @return a copy of the list of additional sources available. This list may be modified.
      */
     public List<String> getAdditionalSources() {
-        return ROSSettingsUtil.parsePathList(state.additionalSources);
+        return PathListUtil.parsePathList(state.additionalSources);
     }
 
     String getRawAdditionalSources() {
@@ -92,5 +102,35 @@ public class ROSSettings implements PersistentStateComponent<ROSSettings.State> 
 
     void setAdditionalSources(String rawAdditionalSources) {
         state.additionalSources = rawAdditionalSources;
+    }
+
+    /**
+     * gets all XML file paths that are excluded from indexing by the ROS plugin.
+     * @return a copy of the list of excluded XMLs. This list may be modified.
+     */
+    public List<String> getExcludedXmls() {
+        return PathListUtil.parsePathList(state.excludedXmls);
+    }
+
+    public void addExcludedXml(String xmlPath) {
+        List<String> parsed = PathListUtil.parsePathList(state.excludedXmls);
+        if (!parsed.contains(xmlPath)) {
+            parsed.add(xmlPath);
+        }
+        state.excludedXmls = PathListUtil.serializePathList(parsed);
+    }
+
+    public void removeExcludedXml(String xmlPath) {
+        List<String> parsed = PathListUtil.parsePathList(state.excludedXmls);
+        parsed.remove(xmlPath);
+        state.excludedXmls = PathListUtil.serializePathList(parsed);
+    }
+
+    String getRawExcludedXmls() {
+        return state.excludedXmls;
+    }
+
+    void setExcludedXmls(String excludedXmls) {
+        state.excludedXmls = excludedXmls;
     }
 }

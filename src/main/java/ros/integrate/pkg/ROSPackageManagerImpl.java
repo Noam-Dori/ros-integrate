@@ -10,13 +10,17 @@ import com.intellij.openapi.roots.libraries.Library;
 import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.openapi.vfs.newvfs.BulkFileListener;
+import com.intellij.openapi.vfs.newvfs.events.VFileContentChangeEvent;
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
 import com.intellij.psi.PsiDirectory;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.xml.XmlFile;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.containers.MultiMap;
 import com.intellij.util.containers.SortedList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import ros.integrate.settings.BrowserOptions;
 import ros.integrate.settings.ROSSettings;
 import ros.integrate.pkg.psi.ROSPackage;
 
@@ -48,20 +52,29 @@ public class ROSPackageManagerImpl implements ROSPackageManager {
 
     private void init() {
         WriteCommandAction.runWriteCommandAction(project, this::setupLibraries);
+        ROSSettings.getInstance(project).addListener(settings -> {
+                    purgeFlag = true;
+                    dispatchEvents(new ArrayList<>());
+                },
+                BrowserOptions.HistoryKey.EXCLUDED_XMLS.get());
         findAndCachePackages();
         // add a watch to VirtualFileSystem that will trigger this
         project.getMessageBus().connect().subscribe(VirtualFileManager.VFS_CHANGES, new BulkFileListener() {
             @Override
             public void after(@NotNull List<? extends VFileEvent> events) {
-                if(purgeFlag) {
-                    pkgCache.clear();
-                    findAndCachePackages();
-                    purgeFlag = false;
-                } else {
-                    doBulkFileChangeEvents(events);
-                }
+                dispatchEvents(events);
             }
         });
+    }
+
+    private void dispatchEvents(@NotNull List<? extends VFileEvent> events) {
+        if (purgeFlag) {
+            pkgCache.clear();
+            ApplicationManager.getApplication().invokeLater(this::findAndCachePackages);
+            purgeFlag = false;
+        } else {
+            fileAwareEventDispatch(events);
+        }
     }
 
     private void setupLibraries() {
@@ -70,8 +83,10 @@ public class ROSPackageManagerImpl implements ROSPackageManager {
             Library lib = finder.getLibrary(project);
             if (lib != null) {
                 ROSSettings.getInstance(project).addListener(settings ->
-                        WriteCommandAction.runWriteCommandAction(project, (Computable<Boolean>) () ->
-                                purgeFlag = finder.updateLibrary(project, lib)));
+                                WriteCommandAction.runWriteCommandAction(project, (Computable<Boolean>) () ->
+                                        purgeFlag = finder.updateLibrary(project, lib)),
+                        new String[]{BrowserOptions.HistoryKey.EXTRA_SOURCES.get(),
+                                BrowserOptions.HistoryKey.WORKSPACE.get()});
                 Arrays.stream(projectModules).forEach(module -> setDependency(module, lib));
             }
         });
@@ -88,17 +103,18 @@ public class ROSPackageManagerImpl implements ROSPackageManager {
 
     private void findAndCachePackages() {
         // use each package finder to make and cache packages
-        finders.forEach(finder -> finder.findAndCache(project,pkgCache));
+        finders.forEach(finder -> finder.findAndCache(project, pkgCache));
     }
 
-    private void doBulkFileChangeEvents(@NotNull List<? extends VFileEvent> events) {
+    private void fileAwareEventDispatch(@NotNull List<? extends VFileEvent> events) {
         // 1. group by parent dir name (convert to package if possible)
         Set<ROSPackage> affectedPackages = new TreeSet<>();
         List<VFileEvent> affectedOrphans = new SortedList<>(Comparator.comparing(VFileEvent::getPath)),
                 affectedOrphansOld = new SortedList<>(Comparator.comparing(VFileEvent::getPath));
-        affectedOrphansOld.addAll(events); boolean orphansRemainedTheSame = false;
+        affectedOrphansOld.addAll(events);
+        boolean orphansRemainedTheSame = false;
         while (!orphansRemainedTheSame) {
-            affectedOrphansOld.forEach(event -> sortToLists(event,affectedPackages,affectedOrphans));
+            affectedOrphansOld.forEach(event -> sortToLists(event, affectedPackages, affectedOrphans));
             // 2. figure out what happened per package per file & react accordingly (create new package, delete new package, modify details)
             affectedPackages.forEach(this::applyChangesToPackage);
             if (affectedOrphans.containsAll(affectedOrphansOld)) {
@@ -135,9 +151,9 @@ public class ROSPackageManagerImpl implements ROSPackageManager {
          * package moved entirely
          */
         String oldName = pkg.getName();
-        for (ROSPackageFinder finder: finders) {
-            ROSPackageFinder.CacheCommand cmd = finder.investigateChanges(project,pkg);
-            if(cmd == null) {
+        for (ROSPackageFinder finder : finders) {
+            ROSPackageFinder.CacheCommand cmd = finder.investigateChanges(project, pkg);
+            if (cmd == null) {
                 continue;
             }
             switch (cmd) {
@@ -166,10 +182,10 @@ public class ROSPackageManagerImpl implements ROSPackageManager {
                 continue;
             }
             for (PsiDirectory root : pkg.getRoots()) {
-                if(ROSPackageUtil.belongsToRoot(root,event)) {
+                if (ROSPackageUtil.belongsToRoot(root, event)) {
                     affectedPackages.add(pkg);
                     successfulSorts++;
-                    if(ROSPackageUtil.getRequiredSorts(event,root) == successfulSorts) {
+                    if (ROSPackageUtil.getRequiredSorts(event, root) == successfulSorts) {
                         return;
                     }
                 }
@@ -193,8 +209,8 @@ public class ROSPackageManagerImpl implements ROSPackageManager {
     @Nullable
     @Override
     public ROSPackage findPackage(PsiDirectory childDirectory) {
-        for(ROSPackage pkg : pkgCache.values()) {
-            if(ROSPackageUtil.belongToPackage(pkg,childDirectory)) {
+        for (ROSPackage pkg : pkgCache.values()) {
+            if (ROSPackageUtil.belongToPackage(pkg, childDirectory)) {
                 return pkg;
             }
         }
@@ -204,6 +220,24 @@ public class ROSPackageManagerImpl implements ROSPackageManager {
     @Override
     public void updatePackageName(@NotNull ROSPackage pkg, String newName) {
         pkgCache.remove(pkg.getName());
-        pkgCache.put(newName,pkg);
+        pkgCache.put(newName, pkg);
+    }
+
+    @Override
+    public void excludePkgXml(@NotNull XmlFile file) {
+        ROSSettings.getInstance(project).addExcludedXml(file.getVirtualFile().getPath());
+        applyChangesForFile(file);
+    }
+
+    @Override
+    public void includeXml(@NotNull XmlFile file) {
+        ROSSettings.getInstance(project).removeExcludedXml(file.getVirtualFile().getPath());
+        applyChangesForFile(file);
+    }
+
+    private void applyChangesForFile(@NotNull PsiFile file) {
+        project.getMessageBus().syncPublisher(VirtualFileManager.VFS_CHANGES)
+                .after(Collections.singletonList(new VFileContentChangeEvent(this, file.getVirtualFile(),
+                        file.getModificationStamp(), -1, false)));
     }
 }

@@ -2,6 +2,7 @@ package ros.integrate.pkg;
 
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.psi.PsiDirectory;
+import com.intellij.psi.xml.XmlFile;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkg.psi.ROSPackage;
 
@@ -37,4 +38,8 @@ public interface ROSPackageManager extends ProjectComponent {
      * @param newName the new name of the package.
      */
     void updatePackageName(ROSPackage pkg, String newName);
+
+    void excludePkgXml(XmlFile file);
+
+    void includeXml(XmlFile file);
 }

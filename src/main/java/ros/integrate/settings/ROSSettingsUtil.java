@@ -35,10 +35,4 @@ class ROSSettingsUtil {
         }
         return null;
     }
-
-    static List<String> parsePathList(@NotNull String rawPathList) {
-        return Arrays.stream(rawPathList.split("(?<!(:|^)[A-Z]):"))
-                .filter(item -> !item.equals(""))
-                .collect(Collectors.toList());
-    }
 }

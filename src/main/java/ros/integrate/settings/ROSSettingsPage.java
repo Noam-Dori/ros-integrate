@@ -48,6 +48,9 @@ public class ROSSettingsPage implements SearchableConfigurable {
 
     private final JButton resetSourcesButton = new JButton();
 
+    private final PathListTextField excludedXmls = new PathListTextField();
+    private final JBLabel excludedXmlsLabel = new JBLabel();
+
     public ROSSettingsPage(Project project) {
         this.project = project;
         recentsManager = RecentsManager.getInstance(project);
@@ -66,12 +69,14 @@ public class ROSSettingsPage implements SearchableConfigurable {
         reset();
 
         String envVariables = "Environment";
+        String pluginSpecific = "Plugin Specific";
 
         rosSettingsLabel.setText("In here, you can configure your interactions with ROS in the IDE");
         rosRootLabel.setText("ROS Path:");
         workspaceLabel.setText("Workspace:");
         additionalSourcesLabel.setText("Additional Package Paths:");
         resetSourcesButton.setText("Reset to $ROS_PACKAGE_PATH");
+        excludedXmlsLabel.setText("Excluded XML files:");
 
         installBrowserHistory(rosRoot, new BrowserOptions(project)
                 .withTitle("Choose Target Directory")
@@ -84,6 +89,10 @@ public class ROSSettingsPage implements SearchableConfigurable {
                 .withTitle("Modify source path")
                 .withDialogTitle("Configure Paths to Source")
                 .withDescription("This is the a root directory to additional sources outside of the workspace."));
+        excludedXmls.installHistoryAndDialog(recentsManager, new BrowserOptions(project, HistoryKey.EXCLUDED_XMLS)
+                .withTitle("Modify Excluded XMLs")
+                .withDialogTitle("Configure excluded XMLs")
+                .withDescription("These XML files will not be processed by the ROS plugin, and will not get extra context."));
         additionalSources.getChildComponent().getTextEditor().getDocument().addDocumentListener(new DocumentAdapter() {
             @Override
             protected void textChanged(@NotNull DocumentEvent e) {
@@ -104,6 +113,9 @@ public class ROSSettingsPage implements SearchableConfigurable {
                 .addLabeledComponent(workspaceLabel, workspace)
                 .addLabeledComponent(additionalSourcesLabel, additionalSources)
                 .addComponent(resetSourcesButton)
+                .closeSection()
+                .addSection(pluginSpecific)
+                .addLabeledComponent(excludedXmlsLabel, excludedXmls)
                 .getPanel();
     }
 
@@ -129,28 +141,25 @@ public class ROSSettingsPage implements SearchableConfigurable {
     public boolean isModified() {
         return isModified(rosRoot.getChildComponent().getTextEditor(), data.getROSPath())
                 || isModified(workspace.getChildComponent().getTextEditor(), data.getWorkspacePath())
-                || isModified(additionalSources.getChildComponent().getTextEditor(), data.getRawAdditionalSources());
+                || isModified(additionalSources.getChildComponent().getTextEditor(), data.getRawAdditionalSources())
+                || isModified(excludedXmls.getChildComponent().getTextEditor(), data.getRawExcludedXmls());
     }
 
-    private boolean addToHistory(@NotNull TextFieldWithHistoryWithBrowseButton field, HistoryKey historyKey,
-                                 Consumer<String> updateAction, boolean handlesEmpty) {
+    private void addToHistory(@NotNull TextFieldWithHistoryWithBrowseButton field, HistoryKey historyKey,
+                                              Consumer<String> updateAction, boolean handlesEmpty) {
         if (handlesEmpty || !field.getText().isEmpty()) {
-            recentsManager.registerRecentEntry(historyKey.get(), rosRoot.getChildComponent().getText());
+            recentsManager.registerRecentEntry(historyKey.get(), field.getChildComponent().getText());
             updateAction.consume(field.getText());
-            return true;
+            data.triggerListeners(historyKey.get());
         }
-        return false;
     }
 
     @Override
     public void apply() {
-        boolean triggerFlag = addToHistory(rosRoot, HistoryKey.DEFAULT, data::setRosPath, false);
-        triggerFlag |= addToHistory(workspace, HistoryKey.WORKSPACE, data::setWorkspacePath, false);
-        triggerFlag |= addToHistory(additionalSources, HistoryKey.EXTRA_SOURCES, data::setAdditionalSources, true);
-
-        if (triggerFlag) {
-            data.triggerListeners();
-        }
+        addToHistory(rosRoot, HistoryKey.DEFAULT, data::setRosPath, false);
+        addToHistory(workspace, HistoryKey.WORKSPACE, data::setWorkspacePath, false);
+        addToHistory(additionalSources, HistoryKey.EXTRA_SOURCES, data::setAdditionalSources, true);
+        addToHistory(excludedXmls, HistoryKey.EXCLUDED_XMLS, data::setExcludedXmls, true);
     }
 
     @Override
@@ -158,5 +167,6 @@ public class ROSSettingsPage implements SearchableConfigurable {
         rosRoot.setText(data.getROSPath());
         workspace.setText(data.getWorkspacePath());
         additionalSources.setText(data.getRawAdditionalSources());
+        excludedXmls.setText(data.getRawExcludedXmls());
     }
 }

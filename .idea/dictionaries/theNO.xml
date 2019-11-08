@@ -2,6 +2,7 @@
   <dictionary name="theNO">
     <words>
       <w>rospkt</w>
+      <w>xmls</w>
     </words>
   </dictionary>
 </component>
