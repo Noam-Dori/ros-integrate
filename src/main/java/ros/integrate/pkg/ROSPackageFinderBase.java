@@ -91,8 +91,11 @@ public abstract class ROSPackageFinderBase implements ROSPackageFinder {
         removeUnneededChildDirs(directoriesToSearch);
         // 2. do XML parents first and get a list of parent directories, use these to create ROSPackages using original method.
         List<PsiFile> pkgFiles = new LinkedList<>();
-        directoriesToSearch.stream().map(dir -> Arrays.asList(FilenameIndex.getFilesByName(project, PackageXmlUtil.PACKAGE_XML,
-                new GlobalSearchScopesCore.DirectoryScope(project,dir,true)))).forEach(pkgFiles::addAll);
+        directoriesToSearch.stream()
+                .map(dir -> new GlobalSearchScopesCore.DirectoryScope(project,dir,true))
+                .map(scope -> FilenameIndex.getFilesByName(project, PackageXmlUtil.PACKAGE_XML,scope))
+                .map(Arrays::asList)
+                .forEach(pkgFiles::addAll);
         pkgFiles.forEach(xml -> {
             ROSPackage newPkg = investigateXml(xml.getVirtualFile(), project, null);
             if (newPkg != ROSPackage.ORPHAN) {

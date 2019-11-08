@@ -1,5 +1,6 @@
 package ros.integrate.pkg;
 
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
@@ -114,15 +115,17 @@ public class ROSPackageManagerImpl implements ROSPackageManager {
         /* possible things that can happen:
          * new package
          */
-        for (ROSPackageFinder finder: finders) {
-            MultiMap<ROSPackage,VFileEvent> newPackages = finder.investigate(project,events);
-            for (Map.Entry<ROSPackage,Collection<VFileEvent>> newPkg : newPackages.entrySet()) {
-                if(newPkg.getKey() != ROSPackage.ORPHAN) {
-                    pkgCache.putIfAbsent(newPkg.getKey().getName(),newPkg.getKey());
-                    events.removeAll(newPkg.getValue()); // removes associated events from collection.
+        ApplicationManager.getApplication().invokeLater(() -> {
+            for (ROSPackageFinder finder : finders) {
+                MultiMap<ROSPackage, VFileEvent> newPackages = finder.investigate(project, events);
+                for (Map.Entry<ROSPackage, Collection<VFileEvent>> newPkg : newPackages.entrySet()) {
+                    if (newPkg.getKey() != ROSPackage.ORPHAN) {
+                        pkgCache.putIfAbsent(newPkg.getKey().getName(), newPkg.getKey());
+                        events.removeAll(newPkg.getValue()); // removes associated events from collection.
+                    }
                 }
             }
-        }
+        });
     }
 
     private void applyChangesToPackage(@NotNull ROSPackage pkg) {
