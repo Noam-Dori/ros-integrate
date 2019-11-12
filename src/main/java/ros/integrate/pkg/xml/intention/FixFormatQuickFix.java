@@ -6,14 +6,18 @@ import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.xml.XmlFile;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
-import ros.integrate.pkg.ROSPackageManager;
-import ros.integrate.pkg.xml.PackageXmlUtil;
+import ros.integrate.pkg.xml.ROSPackageXml;
 
-public class ExcludePackageXml extends BaseIntentionAction implements LocalQuickFix {
+public class FixFormatQuickFix extends BaseIntentionAction implements LocalQuickFix {
+    private ROSPackageXml pkgXml;
+
+    public FixFormatQuickFix(ROSPackageXml pkgXml) {
+        this.pkgXml = pkgXml;
+    }
+
     @Nls(capitalization = Nls.Capitalization.Sentence)
     @NotNull
     @Override
@@ -21,25 +25,31 @@ public class ExcludePackageXml extends BaseIntentionAction implements LocalQuick
         return "ROS XML";
     }
 
+    @Nls(capitalization = Nls.Capitalization.Sentence)
+    @NotNull
     @Override
-    public void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor) {
-        project.getComponent(ROSPackageManager.class).excludePkgXml((XmlFile) descriptor.getPsiElement()
-                .getContainingFile());
+    public String getName() {
+        return "Fix format";
     }
 
     @NotNull
     @Override
     public String getText() {
-        return "Exclude file from ROS";
+        return getName();
+    }
+
+    @Override
+    public void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor) {
+        pkgXml.setNewFormat();
     }
 
     @Override
     public boolean isAvailable(@NotNull Project project, Editor editor, PsiFile file) {
-        return file instanceof XmlFile && PackageXmlUtil.getWrapper((XmlFile) file) != null;
+        return pkgXml.getFormat() != 2;
     }
 
     @Override
     public void invoke(@NotNull Project project, Editor editor, PsiFile file) throws IncorrectOperationException {
-        project.getComponent(ROSPackageManager.class).excludePkgXml((XmlFile) file);
+        pkgXml.setNewFormat();
     }
 }

@@ -1,6 +1,7 @@
 package ros.integrate.pkg.xml.impl;
 
 import com.intellij.openapi.util.TextRange;
+import com.intellij.psi.XmlElementFactory;
 import com.intellij.psi.xml.XmlAttribute;
 import com.intellij.psi.xml.XmlFile;
 import com.intellij.psi.xml.XmlTag;
@@ -91,5 +92,36 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
             return getRootTextRange();
         }
         return name.getValue().getTextRange();
+    }
+
+    @Override
+    public void setNewFormat() {
+        if (file.getRootTag() == null) {
+            addRootTag();
+        }
+        file.getRootTag().setAttribute("format", "2");
+    }
+
+    @Override
+    public void setPkgName(String pkgName) {
+        if (file.getRootTag() == null) {
+            addRootTag();
+        }
+        XmlTag[] nameTags = file.getRootTag().findSubTags("name");
+        if (nameTags.length == 0) {
+            file.getRootTag().addSubTag(file.getRootTag()
+                    .createChildTag("name", null, pkgName, false), true);
+        } else if (nameTags.length > 1) {
+            nameTags[0].getValue().setText(pkgName);
+            for (int i = 1; i < nameTags.length; i++) {
+                nameTags[i].delete();
+            }
+        } else {
+            nameTags[0].getValue().setText(pkgName);
+        }
+    }
+
+    private void addRootTag() {
+        file.add(XmlElementFactory.getInstance(file.getProject()).createTagFromText("<package>\r\n</package>"));
     }
 }

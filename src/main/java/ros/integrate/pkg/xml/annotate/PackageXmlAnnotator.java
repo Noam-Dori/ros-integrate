@@ -1,5 +1,6 @@
 package ros.integrate.pkg.xml.annotate;
 
+import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.psi.PsiElement;
@@ -7,6 +8,8 @@ import com.intellij.psi.xml.XmlFile;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.xml.PackageXmlUtil;
 import ros.integrate.pkg.xml.ROSPackageXml;
+import ros.integrate.pkg.xml.intention.FixFormatQuickFix;
+import ros.integrate.pkg.xml.intention.FixNameQuickFix;
 
 public class PackageXmlAnnotator implements Annotator {
     @Override
@@ -18,13 +21,16 @@ public class PackageXmlAnnotator implements Annotator {
             }
 
             if (pkgXml.getFormat() == 0) {
-                holder.createErrorAnnotation(pkgXml.getFormatTextRange(),"Invalid package format");
+                Annotation ann = holder.createErrorAnnotation(pkgXml.getFormatTextRange(),"Invalid package format");
+                ann.registerFix(new FixFormatQuickFix(pkgXml));
             }
 
             if (pkgXml.getPkgName() == null) {
-                holder.createErrorAnnotation(pkgXml.getRootTextRange(),"package should give a name to the package");
+                Annotation ann = holder.createErrorAnnotation(pkgXml.getRootTextRange(),"package should give a name to the package");
+                ann.registerFix(new FixNameQuickFix(pkgXml, "Add"));
             } else if (!pkgXml.getPkgName().equals(pkgXml.getPackage().getName())) {
-                holder.createErrorAnnotation(pkgXml.getNameTextRange(),"package name should match its parent directory");
+                Annotation ann = holder.createErrorAnnotation(pkgXml.getNameTextRange(),"package name should match its parent directory");
+                ann.registerFix(new FixNameQuickFix(pkgXml, "Fix"));
             }
         }
     }

@@ -46,4 +46,8 @@ public interface ROSPackageXml {
     TextRange getRootTextRange();
 
     TextRange getNameTextRange();
+
+    void setNewFormat();
+
+    void setPkgName(String name);
 }
