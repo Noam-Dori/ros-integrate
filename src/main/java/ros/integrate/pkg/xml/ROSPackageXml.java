@@ -1,9 +1,11 @@
 package ros.integrate.pkg.xml;
 
 import com.intellij.openapi.util.TextRange;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.xml.XmlFile;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkg.psi.ROSPackage;
 import ros.integrate.pkg.xml.impl.ROSPackageXmlImpl;
 
@@ -50,4 +52,12 @@ public interface ROSPackageXml {
     void setNewFormat();
 
     void setPkgName(String name);
+
+    @Nullable
+    String getVersion();
+
+    @NotNull
+    TextRange getVersionTextRange();
+
+    void setVersion(String newVersion);
 }

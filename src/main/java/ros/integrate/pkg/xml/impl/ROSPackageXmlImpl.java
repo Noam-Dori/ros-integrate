@@ -121,6 +121,46 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
         }
     }
 
+    @Override
+    public String getVersion() {
+        if (file.getRootTag() == null) {
+            return null;
+        }
+        return file.getRootTag().getSubTagText("version");
+    }
+
+    @NotNull
+    @Override
+    public TextRange getVersionTextRange() {
+        if (file.getRootTag() == null) {
+            return file.getTextRange();
+        }
+        XmlTag name = file.getRootTag().findFirstSubTag("version");
+        if (name == null) {
+            return getRootTextRange();
+        }
+        return name.getValue().getTextRange();
+    }
+
+    @Override
+    public void setVersion(String newVersion) {
+        if (file.getRootTag() == null) {
+            addRootTag();
+        }
+        XmlTag[] nameTags = file.getRootTag().findSubTags("version");
+        if (nameTags.length == 0) {
+            file.getRootTag().addSubTag(file.getRootTag()
+                    .createChildTag("version", null, newVersion, false), true);
+        } else if (nameTags.length > 1) {
+            nameTags[0].getValue().setText(newVersion);
+            for (int i = 1; i < nameTags.length; i++) {
+                nameTags[i].delete();
+            }
+        } else {
+            nameTags[0].getValue().setText(newVersion);
+        }
+    }
+
     private void addRootTag() {
         file.add(XmlElementFactory.getInstance(file.getProject()).createTagFromText("<package>\r\n</package>"));
     }
