@@ -8,9 +8,7 @@ import com.intellij.psi.xml.XmlFile;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.xml.PackageXmlUtil;
 import ros.integrate.pkg.xml.ROSPackageXml;
-import ros.integrate.pkg.xml.intention.FixFormatQuickFix;
-import ros.integrate.pkg.xml.intention.FixNameQuickFix;
-import ros.integrate.pkg.xml.intention.FixVersionQuickFix;
+import ros.integrate.pkg.xml.intention.*;
 
 /**
  * enforces rules for package.xml files as specified by https://www.ros.org/reps/rep-0140.html
@@ -57,6 +55,18 @@ public class PackageXmlAnnotator implements Annotator {
                 Annotation ann = holder.createErrorAnnotation(pkgXml.getVersionTextRange(),
                         "Invalid version: versions should be written in the form \"NUMBER.NUMBER.NUMBER\"");
                 ann.registerFix(new FixVersionQuickFix(pkgXml, "Fix"));
+            }
+
+            if (pkgXml.getDescription() == null) {
+                Annotation ann = holder.createErrorAnnotation(pkgXml.getDescriptionTextRange(),
+                        "package should have a description.");
+                ann.registerFix(new AddDescriptionQuickFix(pkgXml));
+            }
+
+            if (pkgXml.getLicences().isEmpty()) {
+                Annotation ann = holder.createErrorAnnotation(pkgXml.getLicenceTextRanges().get(0),
+                        "package should have at least one licence.");
+                ann.registerFix(new AddLicenceQuickFix(pkgXml));
             }
         }
     }

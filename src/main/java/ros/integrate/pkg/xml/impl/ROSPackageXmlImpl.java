@@ -7,10 +7,37 @@ import com.intellij.psi.xml.XmlFile;
 import com.intellij.psi.xml.XmlTag;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkg.psi.ROSPackage;
 import ros.integrate.pkg.xml.ROSPackageXml;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class ROSPackageXmlImpl implements ROSPackageXml {
+    private enum Component {
+        NAME("name"),
+        VERSION("version"),
+        DESCRIPTION("description"),
+        MAINTAINER("maintainer"),
+        LICENCE("license"),
+        AUTHOR("author"),
+        URL("url");
+        String lookup;
+        @Contract(pure = true)
+        String get() {
+            return lookup;
+        }
+        @Contract(pure = true)
+        Component(String lookup) {
+            this.lookup = lookup;
+        }
+    }
+
+
     private XmlFile file;
     private ROSPackage pkg;
 
@@ -67,10 +94,7 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
 
     @Override
     public String getPkgName() {
-        if (file.getRootTag() == null) {
-            return null;
-        }
-        return file.getRootTag().getSubTagText("name");
+        return getTextComponent(Component.NAME);
     }
 
     @Override
@@ -84,14 +108,7 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
 
     @Override
     public TextRange getNameTextRange() {
-        if (file.getRootTag() == null) {
-            return file.getTextRange();
-        }
-        XmlTag name = file.getRootTag().findFirstSubTag("name");
-        if (name == null) {
-            return getRootTextRange();
-        }
-        return name.getValue().getTextRange();
+        return getComponentTextRange(Component.NAME);
     }
 
     @Override
@@ -104,64 +121,133 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
 
     @Override
     public void setPkgName(String pkgName) {
-        if (file.getRootTag() == null) {
-            addRootTag();
-        }
-        XmlTag[] nameTags = file.getRootTag().findSubTags("name");
-        if (nameTags.length == 0) {
-            file.getRootTag().addSubTag(file.getRootTag()
-                    .createChildTag("name", null, pkgName, false), true);
-        } else if (nameTags.length > 1) {
-            nameTags[0].getValue().setText(pkgName);
-            for (int i = 1; i < nameTags.length; i++) {
-                nameTags[i].delete();
-            }
-        } else {
-            nameTags[0].getValue().setText(pkgName);
-        }
+        setComponent(Component.NAME, pkgName);
     }
 
     @Override
     public String getVersion() {
-        if (file.getRootTag() == null) {
-            return null;
-        }
-        return file.getRootTag().getSubTagText("version");
+        return getTextComponent(Component.VERSION);
     }
 
     @NotNull
     @Override
     public TextRange getVersionTextRange() {
-        if (file.getRootTag() == null) {
-            return file.getTextRange();
-        }
-        XmlTag name = file.getRootTag().findFirstSubTag("version");
-        if (name == null) {
-            return getRootTextRange();
-        }
-        return name.getValue().getTextRange();
+        return getComponentTextRange(Component.VERSION);
     }
 
     @Override
     public void setVersion(String newVersion) {
-        if (file.getRootTag() == null) {
-            addRootTag();
-        }
-        XmlTag[] nameTags = file.getRootTag().findSubTags("version");
-        if (nameTags.length == 0) {
-            file.getRootTag().addSubTag(file.getRootTag()
-                    .createChildTag("version", null, newVersion, false), true);
-        } else if (nameTags.length > 1) {
-            nameTags[0].getValue().setText(newVersion);
-            for (int i = 1; i < nameTags.length; i++) {
-                nameTags[i].delete();
-            }
-        } else {
-            nameTags[0].getValue().setText(newVersion);
-        }
+        setComponent(Component.VERSION, newVersion);
+    }
+
+    @Override
+    public String getDescription() {
+        return getTextComponent(Component.DESCRIPTION);
+    }
+
+    @Override
+    public void setDescription(String newDescription) {
+        setComponent(Component.DESCRIPTION, newDescription);
+    }
+
+    @Override
+    public TextRange getDescriptionTextRange() {
+        return getComponentTextRange(Component.DESCRIPTION);
+    }
+
+    @NotNull
+    @Override
+    public List<String> getLicences() {
+        return getTextComponents(Component.LICENCE);
+    }
+
+    @NotNull
+    public List<String> getURLs() {
+        return getTextComponents(Component.URL);
     }
 
     private void addRootTag() {
         file.add(XmlElementFactory.getInstance(file.getProject()).createTagFromText("<package>\r\n</package>"));
+    }
+
+    @Nullable
+    private String getTextComponent(Component component) {
+        if (file.getRootTag() == null) {
+            return null;
+        }
+        return file.getRootTag().getSubTagText(component.get());
+    }
+
+    @NotNull
+    private List<String> getTextComponents(Component component) {
+        if (file.getRootTag() == null) {
+            return new ArrayList<>();
+        }
+        return Arrays.stream(file.getRootTag().findSubTags(component.get()))
+                .map(tag -> tag.getValue().getText())
+                .collect(Collectors.toList());
+    }
+
+    private void setComponent(Component component, String newContent) {
+        if (file.getRootTag() == null) {
+                addRootTag();
+            }
+            XmlTag[] nameTags = file.getRootTag().findSubTags(component.get());
+            if (nameTags.length == 0) {
+                file.getRootTag().addSubTag(file.getRootTag()
+                        .createChildTag(component.get(), null, newContent, false), true);
+        } else if (nameTags.length > 1) {
+            nameTags[0].getValue().setText(newContent);
+            for (int i = 1; i < nameTags.length; i++) {
+                nameTags[i].delete();
+            }
+        } else {
+            nameTags[0].getValue().setText(newContent);
+        }
+    }
+
+    private TextRange getComponentTextRange(Component component) {
+        if (file.getRootTag() == null) {
+            return file.getTextRange();
+        }
+        XmlTag tag = file.getRootTag().findFirstSubTag(component.get());
+        if (tag == null) {
+            return getRootTextRange();
+        }
+        return tag.getValue().getTextRange();
+    }
+
+
+    @NotNull
+    private List<TextRange> getComponentTextRanges(Component component) {
+        if (file.getRootTag() == null) {
+            return Collections.singletonList(file.getTextRange());
+        }
+        List<TextRange> ret = Arrays.stream(file.getRootTag().findSubTags(component.get()))
+                .map(tag -> tag.getValue().getTextRange())
+                .collect(Collectors.toList());
+        return ret.isEmpty() ? Collections.singletonList(getRootTextRange()) : ret;
+    }
+
+    @NotNull
+    @Override
+    public List<TextRange> getLicenceTextRanges() {
+        return getComponentTextRanges(Component.LICENCE);
+    }
+
+    @NotNull
+    @Override
+    public List<TextRange> getURLTextRanges() {
+        return getComponentTextRanges(Component.URL);
+    }
+
+    @Override
+    public void addLicence(String newLicence) {
+        if (file.getRootTag() == null) {
+            addRootTag();
+        }
+        file.getRootTag().addSubTag(file.getRootTag()
+                .createChildTag(Component.LICENCE.get(),
+                        null, newLicence, false), true);
     }
 }

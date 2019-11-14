@@ -1,13 +1,14 @@
 package ros.integrate.pkg.xml;
 
 import com.intellij.openapi.util.TextRange;
-import com.intellij.psi.PsiElement;
 import com.intellij.psi.xml.XmlFile;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkg.psi.ROSPackage;
 import ros.integrate.pkg.xml.impl.ROSPackageXmlImpl;
+
+import java.util.List;
 
 /**
  * A facade class that simplifies interactions with a package.xml file
@@ -60,4 +61,32 @@ public interface ROSPackageXml {
     TextRange getVersionTextRange();
 
     void setVersion(String newVersion);
+
+    String getDescription();
+
+    void setDescription(String newDescription);
+
+    TextRange getDescriptionTextRange();
+
+    @NotNull
+    List<String> getLicences();
+
+    @NotNull
+    List<String> getURLs();
+
+    /**
+     * @return a list with at least length 1 that points towards all text ranges of the license values,
+     *         or if no license is available, to the package tag.
+     */
+    @NotNull
+    List<TextRange> getLicenceTextRanges();
+
+    /**
+     * @return a list with at least length 1 that points towards all text ranges of the license values,
+     *         or if no license is available, to the package tag.
+     */
+    @NotNull
+    List<TextRange> getURLTextRanges();
+
+    void addLicence(String newLicence);
 }
