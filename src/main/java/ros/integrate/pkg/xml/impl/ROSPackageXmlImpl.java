@@ -11,10 +11,7 @@ import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkg.psi.ROSPackage;
 import ros.integrate.pkg.xml.ROSPackageXml;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ROSPackageXmlImpl implements ROSPackageXml {
@@ -27,10 +24,12 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
         AUTHOR("author"),
         URL("url");
         String lookup;
+
         @Contract(pure = true)
         String get() {
             return lookup;
         }
+
         @Contract(pure = true)
         Component(String lookup) {
             this.lookup = lookup;
@@ -190,12 +189,12 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
 
     private void setComponent(Component component, String newContent) {
         if (file.getRootTag() == null) {
-                addRootTag();
-            }
-            XmlTag[] nameTags = file.getRootTag().findSubTags(component.get());
-            if (nameTags.length == 0) {
-                file.getRootTag().addSubTag(file.getRootTag()
-                        .createChildTag(component.get(), null, newContent, false), true);
+            addRootTag();
+        }
+        XmlTag[] nameTags = file.getRootTag().findSubTags(component.get());
+        if (nameTags.length == 0) {
+            file.getRootTag().addSubTag(file.getRootTag()
+                    .createChildTag(component.get(), null, newContent, false), true);
         } else if (nameTags.length > 1) {
             nameTags[0].getValue().setText(newContent);
             for (int i = 1; i < nameTags.length; i++) {
@@ -249,5 +248,92 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
         file.getRootTag().addSubTag(file.getRootTag()
                 .createChildTag(Component.LICENCE.get(),
                         null, newLicence, false), true);
+    }
+
+    @NotNull
+    @Override
+    public List<Contributor> getMaintainers() {
+        return getContributorComponents(Component.MAINTAINER);
+    }
+
+    @NotNull
+    @Override
+    public List<Contributor> getAuthors() {
+        return getContributorComponents(Component.AUTHOR);
+    }
+
+    @NotNull
+    private List<Contributor> getContributorComponents(Component component) {
+        if (file.getRootTag() == null) {
+            return new ArrayList<>();
+        }
+        return Arrays.stream(file.getRootTag().findSubTags(component.get()))
+                .map(tag -> new Contributor(tag.getValue().getText(),
+                        Optional.ofNullable(tag.getAttributeValue("email")).orElse("")))
+                .collect(Collectors.toList());
+    }
+
+    @NotNull
+    @Override
+    public List<TextRange> getMaintainerTextRanges() {
+        return getComponentTextRanges(Component.MAINTAINER);
+    }
+
+    @NotNull
+    @Override
+    public List<TextRange> getAuthorTextRanges() {
+        return getComponentTextRanges(Component.AUTHOR);
+    }
+
+    @Override
+    public void addMaintainer(String name, String email) {
+        if (file.getRootTag() == null) {
+            addRootTag();
+        }
+        XmlTag newTag = file.getRootTag()
+                .createChildTag(Component.MAINTAINER.get(),
+                        null, name, false);
+        newTag.setAttribute("email", email);
+        file.getRootTag().addSubTag(newTag, true);
+    }
+
+    private boolean setContributor(int id, @NotNull Contributor contributor, @NotNull Component component) {
+        XmlTag contribTag = Objects.requireNonNull(file.getRootTag()).findSubTags(component.get())[id];
+        boolean ret = !contributor.getName().equals(contribTag.getValue().getText());
+        XmlTag newTag = file.getRootTag()
+                .createChildTag(component.get(),
+                        null, contributor.getName(), false);
+        newTag.setAttribute("email", contributor.getEmail());
+        contribTag.replace(newTag);
+        return ret;
+    }
+
+    @Override
+    public boolean setAuthor(int id, @NotNull Contributor contributor) {
+        return setContributor(id, contributor, Component.AUTHOR);
+    }
+
+    @Override
+    public boolean setMaintainer(int id, @NotNull Contributor contributor) {
+        return setContributor(id, contributor, Component.MAINTAINER);
+    }
+
+    private void removeComponent(int id, @NotNull Component component) {
+        Objects.requireNonNull(file.getRootTag()).findSubTags(component.get())[id].delete();
+    }
+
+    @Override
+    public void removeAuthor(int id) {
+        removeComponent(id, Component.AUTHOR);
+    }
+
+    @Override
+    public void removeMaintainer(int id) {
+        removeComponent(id, Component.MAINTAINER);
+    }
+
+    @Override
+    public void removeURL(int id) {
+        removeComponent(id, Component.URL);
     }
 }

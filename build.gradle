@@ -20,8 +20,8 @@ dependencies {
 }
 
 intellij {
-    version 'LATEST-EAP-SNAPSHOT'
-//    version '2019.2.3'
+//    version 'LATEST-EAP-SNAPSHOT'
+    version '2019.3'
     updateSinceUntilBuild false
 }
 
@@ -39,7 +39,7 @@ String pluginIndex = 'ros-integrate'
 
 patchPluginXml {
     version pluginVersion
-    sinceBuild 192.5728
+    sinceBuild 193.5233
     pluginDescription """
         A plugin for IntelliJ based IDEs with the purpose of allowing easy use of the ROS framework.
     """

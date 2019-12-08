@@ -39,7 +39,7 @@ public class PackageXmlAnnotator implements Annotator {
 
             if (pkgXml.getPkgName() == null) {
                 Annotation ann = holder.createErrorAnnotation(pkgXml.getRootTextRange(),
-                        "package should give a name to the package");
+                        "package must give a name to the package");
                 ann.registerFix(new FixNameQuickFix(pkgXml, "Add"));
             } else if (!pkgXml.getPkgName().equals(pkgXml.getPackage().getName())) {
                 Annotation ann = holder.createErrorAnnotation(pkgXml.getNameTextRange(),
@@ -49,7 +49,7 @@ public class PackageXmlAnnotator implements Annotator {
 
             if (pkgXml.getVersion() == null) {
                 Annotation ann = holder.createErrorAnnotation(pkgXml.getVersionTextRange(),
-                        "package should have a version.");
+                        "package must have a version.");
                 ann.registerFix(new FixVersionQuickFix(pkgXml, "Add"));
             } else if (!pkgXml.getVersion().matches("\\d+\\.\\d+\\.\\d+")) {
                 Annotation ann = holder.createErrorAnnotation(pkgXml.getVersionTextRange(),
@@ -59,14 +59,27 @@ public class PackageXmlAnnotator implements Annotator {
 
             if (pkgXml.getDescription() == null) {
                 Annotation ann = holder.createErrorAnnotation(pkgXml.getDescriptionTextRange(),
-                        "package should have a description.");
+                        "package must have a description.");
                 ann.registerFix(new AddDescriptionQuickFix(pkgXml));
             }
 
             if (pkgXml.getLicences().isEmpty()) {
                 Annotation ann = holder.createErrorAnnotation(pkgXml.getLicenceTextRanges().get(0),
-                        "package should have at least one licence.");
+                        "package must have at least one licence.");
                 ann.registerFix(new AddLicenceQuickFix(pkgXml));
+            }
+
+            PackageContribAnnotator contribAnn = new PackageContribAnnotator(pkgXml, holder);
+            contribAnn.annNoMaintainers();
+            contribAnn.annBadMaintainer();
+            contribAnn.annBadAuthor();
+
+            for (int i = 0; i < pkgXml.getURLs().size(); i++) {
+                if (pkgXml.getURLs().get(i).isEmpty()) {
+                    Annotation ann = holder.createErrorAnnotation(pkgXml.getURLTextRanges().get(i),
+                            "empty URL");
+                    ann.registerFix(new RemoveURLQuickFix(pkgXml, i));
+                }
             }
         }
     }

@@ -11,11 +11,17 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.xml.ROSPackageXml;
 
-public class AddLicenceQuickFix extends BaseIntentionAction {
+public class DeclareOrphanQuickFix extends BaseIntentionAction {
     private ROSPackageXml pkgXml;
 
-    public AddLicenceQuickFix(ROSPackageXml pkgXml) {
+    public DeclareOrphanQuickFix(ROSPackageXml pkgXml) {
         this.pkgXml = pkgXml;
+    }
+
+    @NotNull
+    @Override
+    public String getText() {
+        return "Declare package as orphan";
     }
 
     @Nls(capitalization = Nls.Capitalization.Sentence)
@@ -25,23 +31,14 @@ public class AddLicenceQuickFix extends BaseIntentionAction {
         return "ROS XML";
     }
 
-    @NotNull
-    @Override
-    public String getText() {
-        return "Add licence";
-    }
-
     @Override
     public boolean isAvailable(@NotNull Project project, Editor editor, PsiFile file) {
-        return pkgXml.getLicences().isEmpty();
+        return pkgXml.getMaintainers().isEmpty();
     }
 
     @Override
-    public void invoke(@NotNull Project project, @NotNull Editor editor, PsiFile file) throws IncorrectOperationException {
-        pkgXml.addLicence("TODO");
-        TextRange range = pkgXml.getLicenceTextRanges().get(0);
-        Caret caret = editor.getCaretModel().getCurrentCaret();
-        caret.moveToOffset(range.getStartOffset());
-        caret.moveCaretRelatively("TODO".length(), 0, true, false);
+    public void invoke(@NotNull Project project, Editor editor, PsiFile file) throws IncorrectOperationException {
+        pkgXml.addMaintainer("Unmaintained see http://wiki.ros.org/MaintenanceGuide#Claiming_Maintainership",
+                "ros-orphaned-packages@googlegroups.com");
     }
 }
