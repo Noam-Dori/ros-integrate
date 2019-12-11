@@ -336,4 +336,12 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
     public void removeURL(int id) {
         removeComponent(id, Component.URL);
     }
+
+    @Override
+    public XmlTag[] findSubTags(String qName) {
+        if (file.getRootTag() == null) {
+            return new XmlTag[0];
+        }
+        return file.getRootTag().findSubTags(qName);
+    }
 }

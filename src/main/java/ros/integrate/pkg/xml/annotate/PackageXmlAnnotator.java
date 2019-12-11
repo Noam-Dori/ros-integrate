@@ -37,31 +37,15 @@ public class PackageXmlAnnotator implements Annotator {
                 ann.registerFix(new FixFormatQuickFix(pkgXml));
             }
 
-            if (pkgXml.getPkgName() == null) {
-                Annotation ann = holder.createErrorAnnotation(pkgXml.getRootTextRange(),
-                        "package must give a name to the package");
-                ann.registerFix(new FixNameQuickFix(pkgXml, "Add"));
-            } else if (!pkgXml.getPkgName().equals(pkgXml.getPackage().getName())) {
-                Annotation ann = holder.createErrorAnnotation(pkgXml.getNameTextRange(),
-                        "package name should match its parent directory");
-                ann.registerFix(new FixNameQuickFix(pkgXml, "Fix"));
-            }
-
-            if (pkgXml.getVersion() == null) {
-                Annotation ann = holder.createErrorAnnotation(pkgXml.getVersionTextRange(),
-                        "package must have a version.");
-                ann.registerFix(new FixVersionQuickFix(pkgXml, "Add"));
-            } else if (!pkgXml.getVersion().matches("\\d+\\.\\d+\\.\\d+")) {
-                Annotation ann = holder.createErrorAnnotation(pkgXml.getVersionTextRange(),
-                        "Invalid version: versions should be written in the form \"NUMBER.NUMBER.NUMBER\"");
-                ann.registerFix(new FixVersionQuickFix(pkgXml, "Fix"));
-            }
-
-            if (pkgXml.getDescription() == null) {
-                Annotation ann = holder.createErrorAnnotation(pkgXml.getDescriptionTextRange(),
-                        "package must have a description.");
-                ann.registerFix(new AddDescriptionQuickFix(pkgXml));
-            }
+            PackageIdAnnotator idAnn = new PackageIdAnnotator(pkgXml, holder);
+            idAnn.annNoName();
+            idAnn.annPkgNameMatch();
+            idAnn.annNoVersion();
+            idAnn.annBadVersion();
+            idAnn.annNoDescription();
+            idAnn.annTooManyNames();
+            idAnn.annTooManyVersions();
+            idAnn.annTooManyDescriptions();
 
             if (pkgXml.getLicences().isEmpty()) {
                 Annotation ann = holder.createErrorAnnotation(pkgXml.getLicenceTextRanges().get(0),

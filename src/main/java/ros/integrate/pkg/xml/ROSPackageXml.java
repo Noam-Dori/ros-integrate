@@ -2,6 +2,7 @@ package ros.integrate.pkg.xml;
 
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.xml.XmlFile;
+import com.intellij.psi.xml.XmlTag;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -67,6 +68,7 @@ public interface ROSPackageXml {
 
     ROSPackage getPackage();
 
+    @Nullable
     String getPkgName();
 
     TextRange getRootTextRange();
@@ -85,6 +87,7 @@ public interface ROSPackageXml {
 
     void setVersion(String newVersion);
 
+    @Nullable
     String getDescription();
 
     void setDescription(String newDescription);
@@ -144,4 +147,6 @@ public interface ROSPackageXml {
     void removeMaintainer(int id);
 
     void removeURL(int id);
+
+    XmlTag[] findSubTags(String qName);
 }
