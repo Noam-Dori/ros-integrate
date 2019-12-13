@@ -1,5 +1,6 @@
 package ros.integrate.pkg.xml.impl;
 
+import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.XmlElementFactory;
 import com.intellij.psi.xml.XmlAttribute;
@@ -16,26 +17,19 @@ import java.util.stream.Collectors;
 
 public class ROSPackageXmlImpl implements ROSPackageXml {
     private enum Component {
-        NAME("name"),
-        VERSION("version"),
-        DESCRIPTION("description"),
-        MAINTAINER("maintainer"),
-        LICENCE("license"),
-        AUTHOR("author"),
-        URL("url");
-        String lookup;
-
-        @Contract(pure = true)
+        NAME,
+        VERSION,
+        DESCRIPTION,
+        MAINTAINER,
+        LICENSE,
+        AUTHOR,
+        URL;
+        
+        @NotNull
         String get() {
-            return lookup;
-        }
-
-        @Contract(pure = true)
-        Component(String lookup) {
-            this.lookup = lookup;
+            return name().toLowerCase();
         }
     }
-
 
     private XmlFile file;
     private ROSPackage pkg;
@@ -157,12 +151,38 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
     @NotNull
     @Override
     public List<String> getLicences() {
-        return getTextComponents(Component.LICENCE);
+        if (file.getRootTag() == null) {
+            return new ArrayList<>();
+        }
+        return Arrays.stream(file.getRootTag().findSubTags(Component.LICENSE.get()))
+                .map(tag -> tag.getValue().getText())
+                .collect(Collectors.toList());
     }
 
     @NotNull
-    public List<String> getURLs() {
-        return getTextComponents(Component.URL);
+    public List<Pair<String, URLType>> getURLs() {
+        if (file.getRootTag() == null) {
+            return new ArrayList<>(0);
+        }
+        XmlTag[] tags = file.getRootTag().findSubTags(Component.URL.get());
+        List<Pair<String, URLType>> ret = new ArrayList<>(tags.length);
+        Arrays.stream(tags).forEach(tag -> ret.add(findURLType(tag)));
+        return ret;
+    }
+
+    @NotNull
+    @Contract("_ -> new")
+    private Pair<String, URLType> findURLType(@NotNull XmlTag tag) {
+        String key = tag.getAttributeValue("type");
+        if (key == null) {
+            key = URLType.WEBSITE.name().toLowerCase();
+        }
+        for (URLType type : URLType.values()) {
+            if (type.name().toLowerCase().equals(key)) {
+                return new Pair<>(tag.getValue().getText(), type);
+            }
+        }
+        return new Pair<>(tag.getValue().getText(), null);
     }
 
     private void addRootTag() {
@@ -175,16 +195,6 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
             return null;
         }
         return file.getRootTag().getSubTagText(component.get());
-    }
-
-    @NotNull
-    private List<String> getTextComponents(Component component) {
-        if (file.getRootTag() == null) {
-            return new ArrayList<>();
-        }
-        return Arrays.stream(file.getRootTag().findSubTags(component.get()))
-                .map(tag -> tag.getValue().getText())
-                .collect(Collectors.toList());
     }
 
     private void setComponent(Component component, String newContent) {
@@ -231,7 +241,7 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
     @NotNull
     @Override
     public List<TextRange> getLicenceTextRanges() {
-        return getComponentTextRanges(Component.LICENCE);
+        return getComponentTextRanges(Component.LICENSE);
     }
 
     @NotNull
@@ -246,7 +256,7 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
             addRootTag();
         }
         file.getRootTag().addSubTag(file.getRootTag()
-                .createChildTag(Component.LICENCE.get(),
+                .createChildTag(Component.LICENSE.get(),
                         null, newLicence, false), true);
     }
 
@@ -335,6 +345,17 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
     @Override
     public void removeURL(int id) {
         removeComponent(id, Component.URL);
+    }
+
+    @Override
+    public void setURL(int id, @NotNull String url, @NotNull URLType type) {
+        XmlTag urlTag = Objects.requireNonNull(file.getRootTag()).findSubTags(Component.URL.get())[id];
+        XmlTag newTag = file.getRootTag().createChildTag(Component.URL.get(),
+                null, url, false);
+        if (type != URLType.WEBSITE) {
+            newTag.setAttribute("type", type.name().toLowerCase());
+        }
+        urlTag.replace(newTag);
     }
 
     @Override

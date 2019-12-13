@@ -1,5 +1,6 @@
 package ros.integrate.pkg.xml;
 
+import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.xml.XmlFile;
 import com.intellij.psi.xml.XmlTag;
@@ -34,6 +35,12 @@ public interface ROSPackageXml {
         public String getName() {
             return name;
         }
+    }
+
+    enum URLType {
+        WEBSITE,
+        BUGTRACKER,
+        REPOSITORY
     }
 
     /**
@@ -98,7 +105,7 @@ public interface ROSPackageXml {
     List<String> getLicences();
 
     @NotNull
-    List<String> getURLs();
+    List<Pair<String, URLType>> getURLs();
 
     /**
      * @return a list with at least length 1 that points towards all text ranges of the license values,
@@ -147,6 +154,13 @@ public interface ROSPackageXml {
     void removeMaintainer(int id);
 
     void removeURL(int id);
+
+    void setURL(int id, @NotNull String url, @NotNull URLType type);
+
+    @SuppressWarnings("unused") // I know, but it is not something obvious
+    default void setURL(int id, @NotNull String url) {
+        setURL(id, url, URLType.WEBSITE);
+    }
 
     XmlTag[] findSubTags(String qName);
 }

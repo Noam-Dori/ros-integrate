@@ -3,15 +3,22 @@ package ros.integrate.pkg.xml.annotate;
 import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
+import com.intellij.openapi.util.Pair;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.xml.XmlFile;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.xml.PackageXmlUtil;
 import ros.integrate.pkg.xml.ROSPackageXml;
-import ros.integrate.pkg.xml.intention.*;
+import ros.integrate.pkg.xml.intention.AddLicenceQuickFix;
+import ros.integrate.pkg.xml.intention.FixFormatQuickFix;
+import ros.integrate.pkg.xml.intention.FixURLQuickFix;
+import ros.integrate.pkg.xml.intention.RemoveURLQuickFix;
+
+import java.util.List;
 
 /**
  * enforces rules for package.xml files as specified by https://www.ros.org/reps/rep-0140.html
+ * Old format is specified by https://www.ros.org/reps/rep-0127.html
  * <b>Notes about implementation:</b>
  * <ul>
  *     <li>The plugin will consider package names NOT to be the one specified in the XML file,
@@ -58,11 +65,17 @@ public class PackageXmlAnnotator implements Annotator {
             contribAnn.annBadMaintainer();
             contribAnn.annBadAuthor();
 
-            for (int i = 0; i < pkgXml.getURLs().size(); i++) {
-                if (pkgXml.getURLs().get(i).isEmpty()) {
+            List<Pair<String,ROSPackageXml.URLType>> urlList = pkgXml.getURLs();
+            for (int i = 0; i < urlList.size(); i++) {
+                if (urlList.get(i).first.isEmpty()) {
                     Annotation ann = holder.createErrorAnnotation(pkgXml.getURLTextRanges().get(i),
                             "empty URL");
                     ann.registerFix(new RemoveURLQuickFix(pkgXml, i));
+                }
+                if (urlList.get(i).second == null) {
+                    Annotation ann = holder.createErrorAnnotation(pkgXml.getURLTextRanges().get(i),
+                            "URL type is unknown");
+                    ann.registerFix(new FixURLQuickFix(pkgXml, i));
                 }
             }
         }
