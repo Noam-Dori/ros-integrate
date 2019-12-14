@@ -9,7 +9,6 @@ import com.intellij.psi.xml.XmlFile;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.xml.PackageXmlUtil;
 import ros.integrate.pkg.xml.ROSPackageXml;
-import ros.integrate.pkg.xml.intention.AddLicenceQuickFix;
 import ros.integrate.pkg.xml.intention.FixFormatQuickFix;
 import ros.integrate.pkg.xml.intention.FixURLQuickFix;
 import ros.integrate.pkg.xml.intention.RemoveURLQuickFix;
@@ -17,8 +16,12 @@ import ros.integrate.pkg.xml.intention.RemoveURLQuickFix;
 import java.util.List;
 
 /**
- * enforces rules for package.xml files as specified by https://www.ros.org/reps/rep-0140.html
- * Old format is specified by https://www.ros.org/reps/rep-0127.html
+ * enforces rules for package.xml files as specified by the manifest REPs:
+ * <ul>
+ *     <li>Format 1 (outdated): https://www.ros.org/reps/rep-0127.html</li>
+ *     <li>Format 2 (current): https://www.ros.org/reps/rep-0140.html</li>
+ *     <li>Format 3 (future): https://www.ros.org/reps/rep-0149.html</li>
+ * </ul>
  * <b>Notes about implementation:</b>
  * <ul>
  *     <li>The plugin will consider package names NOT to be the one specified in the XML file,
@@ -54,11 +57,10 @@ public class PackageXmlAnnotator implements Annotator {
             idAnn.annTooManyVersions();
             idAnn.annTooManyDescriptions();
 
-            if (pkgXml.getLicences().isEmpty()) {
-                Annotation ann = holder.createErrorAnnotation(pkgXml.getLicenceTextRanges().get(0),
-                        "package must have at least one licence.");
-                ann.registerFix(new AddLicenceQuickFix(pkgXml));
-            }
+            PackageLicenseAnnotator licAnn = new PackageLicenseAnnotator(pkgXml, holder);
+            licAnn.annNoLicenses();
+            licAnn.annBadLicenses();
+            licAnn.annTodoLicense();
 
             PackageContribAnnotator contribAnn = new PackageContribAnnotator(pkgXml, holder);
             contribAnn.annNoMaintainers();

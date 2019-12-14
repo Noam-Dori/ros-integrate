@@ -121,7 +121,7 @@ public interface ROSPackageXml {
     @NotNull
     List<TextRange> getURLTextRanges();
 
-    void addLicence(String newLicence);
+    void addLicence(String licenseName);
 
     @NotNull
     List<Contributor> getMaintainers();
@@ -158,9 +158,11 @@ public interface ROSPackageXml {
     void setURL(int id, @NotNull String url, @NotNull URLType type);
 
     @SuppressWarnings("unused") // I know, but it is not something obvious
-    default void setURL(int id, @NotNull String url) {
-        setURL(id, url, URLType.WEBSITE);
-    }
+    default void setURL(int id, @NotNull String url) { setURL(id, url, URLType.WEBSITE); }
+
+    void removeLicense(int id);
+
+    void setLicense(int id, @NotNull String licenseName);
 
     XmlTag[] findSubTags(String qName);
 }

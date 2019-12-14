@@ -251,13 +251,13 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
     }
 
     @Override
-    public void addLicence(String newLicence) {
+    public void addLicence(String licenseName) {
         if (file.getRootTag() == null) {
             addRootTag();
         }
         file.getRootTag().addSubTag(file.getRootTag()
                 .createChildTag(Component.LICENSE.get(),
-                        null, newLicence, false), true);
+                        null, licenseName, false), true);
     }
 
     @NotNull
@@ -356,6 +356,18 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
             newTag.setAttribute("type", type.name().toLowerCase());
         }
         urlTag.replace(newTag);
+    }
+
+    @Override
+    public void removeLicense(int id) {
+        removeComponent(id, Component.LICENSE);
+    }
+
+    @Override
+    public void setLicense(int id, @NotNull String licenseName) {
+        Objects.requireNonNull(file.getRootTag()).findSubTags(Component.LICENSE.get())[id]
+                .replace(file.getRootTag().createChildTag(Component.LICENSE.get(),
+                        null, licenseName, false));
     }
 
     @Override
