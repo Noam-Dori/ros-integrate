@@ -3,6 +3,7 @@ package ros.integrate.pkg.xml;
 import com.intellij.ide.highlighter.XmlFileType;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDirectory;
+import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.search.FileTypeIndex;
 import com.intellij.psi.search.GlobalSearchScope;
@@ -56,10 +57,10 @@ public class PackageXmlUtil {
     }
 
     @Nullable
-    public static ROSPackageXml getWrapper(@NotNull XmlFile rawXml) {
-        ROSPackageManager manager = rawXml.getProject().getComponent(ROSPackageManager.class);
+    public static ROSPackageXml getWrapper(@NotNull PsiFile rawFile) {
+        ROSPackageManager manager = rawFile.getProject().getComponent(ROSPackageManager.class);
         for (ROSPackage pkg : manager.getAllPackages()) {
-            if (pkg.getPackageXml() != null && rawXml.equals(pkg.getPackageXml().getRawXml())) {
+            if (pkg.getPackageXml() != null && rawFile.equals(pkg.getPackageXml().getRawXml())) {
                 return pkg.getPackageXml();
             }
         }

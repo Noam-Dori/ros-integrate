@@ -70,6 +70,8 @@
             <className>ros.integrate.pkg.xml.intention.UndoExcludeXml</className>
             <category>ROS</category>
         </intentionAction>
+
+        <webBrowserUrlProvider implementation="ros.integrate.pkg.xml.ROSLicenseLinkProvider"/>
     </extensions>
 
     <extensions defaultExtensionNs="ros-integrate">
