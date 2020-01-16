@@ -16,15 +16,8 @@ public class ROSLicenseLinkProvider extends WebBrowserUrlProvider {
         if (PackageXmlUtil.getWrapper(request.getFile()) == null) {
             return super.getUrl(request, file);
         }
-        XmlTag tag;
-        if (request.getElement().getParent() instanceof XmlTag) {
-            tag = (XmlTag) request.getElement().getParent();
-        } else if (request.getElement().getParent().getParent() instanceof XmlTag) {
-            tag = (XmlTag) request.getElement().getParent().getParent();
-        } else {
-            tag = null;
-        }
-        if (tag == null) {
+        XmlTag tag = PackageXmlUtil.getParentTag(request.getElement());
+        if (tag == null || !tag.getName().equals("license")) {
             return super.getUrl(request, file);
         }
         String url = ROSLicenses.AVAILABLE_LICENSES.get(tag.getValue().getText());

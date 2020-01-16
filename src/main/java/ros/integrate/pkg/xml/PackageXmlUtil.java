@@ -3,6 +3,7 @@ package ros.integrate.pkg.xml;
 import com.intellij.ide.highlighter.XmlFileType;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDirectory;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.search.FileTypeIndex;
@@ -65,5 +66,17 @@ public class PackageXmlUtil {
             }
         }
         return null;
+    }
+
+    static XmlTag getParentTag(@NotNull PsiElement element) {
+        XmlTag tag;
+        if (element.getParent() instanceof XmlTag) {
+            tag = (XmlTag) element.getParent();
+        } else if (element.getParent().getParent() instanceof XmlTag) {
+            tag = (XmlTag) element.getParent().getParent();
+        } else {
+            tag = null;
+        }
+        return tag;
     }
 }
