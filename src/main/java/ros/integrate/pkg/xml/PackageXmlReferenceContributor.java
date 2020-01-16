@@ -8,6 +8,9 @@ import com.intellij.psi.xml.XmlToken;
 import com.intellij.util.ProcessingContext;
 import org.jetbrains.annotations.NotNull;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 public class PackageXmlReferenceContributor extends PsiReferenceContributor {
     @Override
     public void registerReferenceProviders(@NotNull PsiReferenceRegistrar registrar) {
@@ -28,9 +31,12 @@ public class PackageXmlReferenceContributor extends PsiReferenceContributor {
                 }
                 else if (parentTag.getName().equals("url")) {
                     String url = parentTag.getValue().getText();
-                    return url.isEmpty() ? PsiReference.EMPTY_ARRAY :
-                            new PsiReference[]{new WebReference(element, element.getParent().getTextRange()
-                                    .shiftLeft(element.getTextOffset()), url)};
+                    try {
+                        new URL(url);
+                        return url.isEmpty() ? PsiReference.EMPTY_ARRAY :
+                                new PsiReference[]{new WebReference(element, element.getParent().getTextRange()
+                                        .shiftLeft(element.getTextOffset()), url)};
+                    } catch (MalformedURLException ignored) { }
                 }
                 return PsiReference.EMPTY_ARRAY;
             }
