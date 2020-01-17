@@ -68,15 +68,15 @@ public class PackageXmlUtil {
         return null;
     }
 
+    @Nullable
+    @Contract(pure = true)
     static XmlTag getParentTag(@NotNull PsiElement element) {
-        XmlTag tag;
-        if (element.getParent() instanceof XmlTag) {
-            tag = (XmlTag) element.getParent();
-        } else if (element.getParent().getParent() instanceof XmlTag) {
-            tag = (XmlTag) element.getParent().getParent();
-        } else {
-            tag = null;
+        element = element.getParent();
+        for (int i = 0; i < 3; i++, element = element.getParent()) {
+            if (element instanceof XmlTag) {
+                return (XmlTag) element;
+            }
         }
-        return tag;
+        return null;
     }
 }
