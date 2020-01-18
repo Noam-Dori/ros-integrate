@@ -16,6 +16,7 @@ import com.intellij.psi.xml.XmlTag;
 import com.intellij.psi.xml.XmlToken;
 import com.intellij.util.ProcessingContext;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class PackageXmlCompletionContributor extends CompletionContributor {
     public PackageXmlCompletionContributor() {
@@ -53,50 +54,34 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
 
     private void setCompletionsForTagName(@NotNull ROSPackageXml xmlFile, @NotNull CompletionResultSet resultSet,
                                           CompletionParameters parameters) {
-        resultSet.runRemainingContributors(parameters, result -> {}); // this removes all other entries. Dangerous stuff.
+        resultSet.runRemainingContributors(parameters, result -> {}); // removes all other entries. Dangerous stuff.
         if (xmlFile.getPkgName() == null) {
             resultSet.addElement(LookupElementBuilder.create("name")
-                    .withInsertHandler((insertionContext, item) -> handleName(insertionContext, xmlFile)));
+                    .withInsertHandler((insertionContext, item) ->
+                            handleMoveToData(insertionContext, "name", false, xmlFile.getPackage().getName(), false)));
         }
         if (xmlFile.getVersion() == null) {
             resultSet.addElement(LookupElementBuilder.create("version")
-                    .withInsertHandler((insertionContext, item) -> handleMoveToData(insertionContext,"version",false)));
+                    .withInsertHandler((insertionContext, item) -> handleMoveToData(insertionContext, "version", false)));
         }
         if (xmlFile.getDescription() == null) {
             resultSet.addElement(LookupElementBuilder.create("description")
-                    .withInsertHandler((insertionContext, item) -> handleDescription(insertionContext)));
+                    .withInsertHandler((insertionContext, item) ->
+                            handleMoveToData(insertionContext, "description", false, "", true)));
         }
         resultSet.addElement(LookupElementBuilder.create("url")
-                .withInsertHandler((insertionContext, item) -> handleCompleteAttr(insertionContext, "url")));
+                .withInsertHandler((insertionContext, item) ->
+                        handleCompleteAttr(insertionContext, "url", null)));
         resultSet.addElement(LookupElementBuilder.create("author")
-                .withInsertHandler((insertionContext, item) -> handleCompleteAttr(insertionContext, "author")));
+                .withInsertHandler((insertionContext, item) ->
+                        handleCompleteAttr(insertionContext, "author", null)));
         resultSet.addElement(LookupElementBuilder.create("maintainer")
-                .withInsertHandler((insertionContext, item) -> handleMaintainer(insertionContext)));
+                .withInsertHandler((insertionContext, item) ->
+                        handleCompleteAttr(insertionContext, "maintainer", "email")));
         resultSet.addElement(LookupElementBuilder.create("license")
                 .withInsertHandler((insertionContext, item) ->
-                        handleMoveToData(insertionContext, "license",false)));
+                        handleMoveToData(insertionContext, "license", false)));
 
-    }
-
-    private void handleDescription(@NotNull InsertionContext insertionContext) {
-        CaretModel model = insertionContext.getEditor().getCaretModel();
-        int offset = model.getOffset();
-        String text = insertionContext.getDocument().getText(new TextRange(offset, offset + 1));
-        if ("\r\n".contains(text)) {
-            insertionContext.getDocument().insertString(offset,">\n        \n    </description>");
-        }
-        model.getCurrentCaret().moveCaretRelatively(0,1,false, false);
-    }
-
-    private void handleName(@NotNull InsertionContext insertionContext, @NotNull ROSPackageXml xmlFile) {
-        CaretModel model = insertionContext.getEditor().getCaretModel();
-        int offset = model.getOffset();
-        String text = insertionContext.getDocument().getText(new TextRange(offset, offset + 1)),
-                insert = ">" + xmlFile.getPackage().getName() + "</name>";
-        if ("\r\n".contains(text)) {
-            insertionContext.getDocument().insertString(offset,insert);
-        }
-        model.getCurrentCaret().moveCaretRelatively(insert.length(),0,false, false);
     }
 
     private void setCompletionsForAttrName(@NotNull XmlTag tag, CompletionResultSet resultSet,
@@ -115,38 +100,43 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
         }
     }
 
+
     private static void handleMoveToData(@NotNull InsertionContext insertionContext, String tagName, boolean inAttr) {
+        handleMoveToData(insertionContext, tagName, inAttr, "", false);
+    }
+
+    private static void handleMoveToData(@NotNull InsertionContext insertionContext, String tagName, boolean inAttr,
+                                         @NotNull String data, boolean multiline) {
         CaretModel model = insertionContext.getEditor().getCaretModel();
         if (inAttr) {
             model.getCurrentCaret().moveCaretRelatively(1, 0, false, false);
         }
         int offset = model.getOffset();
-        String text = insertionContext.getDocument().getText(new TextRange(offset, offset + 1));
+        String text = insertionContext.getDocument().getText(new TextRange(offset, offset + 1)),
+                insert = ">" + (multiline ? "\n        " : "") + data +
+                        (multiline ? "\n    " : "") + "</" + tagName + ">";
         if ("\r\n".contains(text)) {
-            insertionContext.getDocument().insertString(offset,"></" + tagName + ">");
+            insertionContext.getDocument().insertString(offset, insert);
         }
-        model.getCurrentCaret().moveCaretRelatively(1,0,false, false);
+        model.getCurrentCaret().moveCaretRelatively(multiline ? 0 : data.isEmpty() ? 1 : insert.length(), 0,
+                false, false);
+        if (multiline) {
+            model.getCurrentCaret().moveCaretRelatively(data.length() + 8, 1, false, false);
+        }
     }
 
-    private void handleCompleteAttr(@NotNull InsertionContext insertionContext, String tagName) {
+    private void handleCompleteAttr(@NotNull InsertionContext insertionContext, @NotNull String tagName, @Nullable String attrName) {
         CaretModel model = insertionContext.getEditor().getCaretModel();
         int offset = model.getOffset();
-        String text = insertionContext.getDocument().getText(new TextRange(offset, offset + 1));
-        if ("\r\n".contains(text)) {
-            insertionContext.getDocument().insertString(offset," ></" + tagName + ">");
+        String nextChar = insertionContext.getDocument().getText(new TextRange(offset, offset + 1)),
+                attrInsert = attrName == null ? "" : attrName + "=\"\"";
+        if ("\r\n".contains(nextChar)) {
+            insertionContext.getDocument().insertString(offset, " " + attrInsert + "></" + tagName + ">");
         }
-        model.getCurrentCaret().moveCaretRelatively(1,0,false, false);
-        newCompletion(insertionContext.getProject(), insertionContext.getEditor());
-    }
-
-    private void handleMaintainer(@NotNull InsertionContext insertionContext) {
-        CaretModel model = insertionContext.getEditor().getCaretModel();
-        int offset = model.getOffset();
-        String text = insertionContext.getDocument().getText(new TextRange(offset, offset + 1));
-        if ("\r\n".contains(text)) {
-            insertionContext.getDocument().insertString(offset," email=\"\"></maintainer>");
+        model.getCurrentCaret().moveCaretRelatively(Math.max(attrInsert.length(), 1), 0, false, false);
+        if (attrName == null) {
+            newCompletion(insertionContext.getProject(), insertionContext.getEditor());
         }
-        model.getCurrentCaret().moveCaretRelatively(8,0,false, false);
     }
 
     private void newCompletion(Project project, Editor editor) {
