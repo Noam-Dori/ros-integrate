@@ -1,6 +1,7 @@
 package ros.integrate.pkg.xml;
 
 import com.intellij.codeInsight.completion.*;
+import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.lang.xml.XMLLanguage;
 import com.intellij.openapi.application.ApplicationManager;
@@ -55,48 +56,77 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
     private void setCompletionsForTagName(@NotNull ROSPackageXml xmlFile, @NotNull CompletionResultSet resultSet,
                                           CompletionParameters parameters) {
         resultSet.runRemainingContributors(parameters, result -> {}); // removes all other entries. Dangerous stuff.
+        InsertHandler<LookupElement> attrHandler =
+                (context, item) -> handleCompleteAttr(context, item.getLookupString(), null),
+                dataHandler = (context, item) -> handleMoveToData(context, item.getLookupString(), false);
         if (xmlFile.getPkgName() == null) {
             resultSet.addElement(LookupElementBuilder.create("name")
-                    .withInsertHandler((insertionContext, item) ->
-                            handleMoveToData(insertionContext, "name", false, xmlFile.getPackage().getName(), false)));
+                    .withInsertHandler((context, item) ->
+                            handleMoveToData(context, "name", false, xmlFile.getPackage().getName(), false)));
         }
         if (xmlFile.getVersion() == null) {
-            resultSet.addElement(LookupElementBuilder.create("version")
-                    .withInsertHandler((insertionContext, item) -> handleMoveToData(insertionContext, "version", false)));
+            resultSet.addElement(LookupElementBuilder.create("version").withInsertHandler((dataHandler)));
         }
         if (xmlFile.getDescription() == null) {
             resultSet.addElement(LookupElementBuilder.create("description")
-                    .withInsertHandler((insertionContext, item) ->
-                            handleMoveToData(insertionContext, "description", false, "", true)));
+                    .withInsertHandler((context, item) ->
+                            handleMoveToData(context, "description", false, "", true)));
         }
-        resultSet.addElement(LookupElementBuilder.create("url")
-                .withInsertHandler((insertionContext, item) ->
-                        handleCompleteAttr(insertionContext, "url", null)));
-        resultSet.addElement(LookupElementBuilder.create("author")
-                .withInsertHandler((insertionContext, item) ->
-                        handleCompleteAttr(insertionContext, "author", null)));
+        resultSet.addElement(LookupElementBuilder.create("url").withInsertHandler(attrHandler));
+        resultSet.addElement(LookupElementBuilder.create("author").withInsertHandler(attrHandler));
         resultSet.addElement(LookupElementBuilder.create("maintainer")
-                .withInsertHandler((insertionContext, item) ->
-                        handleCompleteAttr(insertionContext, "maintainer", "email")));
-        resultSet.addElement(LookupElementBuilder.create("license")
-                .withInsertHandler((insertionContext, item) ->
-                        handleMoveToData(insertionContext, "license", false)));
+                .withInsertHandler((context, item) -> handleCompleteAttr(context, "maintainer", "email")));
+        resultSet.addElement(LookupElementBuilder.create("license").withInsertHandler(dataHandler));
 
     }
 
-    private void setCompletionsForAttrName(@NotNull XmlTag tag, CompletionResultSet resultSet,
+    private void setCompletionsForAttrName(@NotNull XmlTag tag, @NotNull CompletionResultSet resultSet,
                                            CompletionParameters parameters) {
+        resultSet.runRemainingContributors(parameters, result -> {}); // removes all other entries. Dangerous stuff.
+        if (tag.getName().equals("url") && tag.getAttribute("type") == null) {
+            resultSet.addElement(LookupElementBuilder.create("type")
+                    .withInsertHandler((context, item) -> handleAttr(context, true)));
+            resultSet.addElement(LookupElementBuilder.create("").withTailText("default", true)
+                    .withInsertHandler((context, item) -> handleNoAttr(context)));
+        }
+        if (tag.getName().matches("author|maintainer") && tag.getAttribute("email") == null) {
+            resultSet.addElement(LookupElementBuilder.create("email")
+                    .withInsertHandler((context, item) -> handleAttr(context, false)));
+            if (tag.getName().equals("author")) {
+                resultSet.addElement(LookupElementBuilder.create("").withTailText("no email", true)
+                        .withInsertHandler((context, item) -> handleNoAttr(context)));
+            }
+        }
+    }
 
+    private void handleNoAttr(@NotNull InsertionContext insertionContext) {
+        CaretModel model = insertionContext.getEditor().getCaretModel();
+        int offset = model.getOffset();
+        String text = insertionContext.getDocument().getText(new TextRange(offset, offset + 1));
+        insertionContext.getDocument().deleteString(offset - 1, offset);
+        if (text.equals(">")) {
+            model.getCurrentCaret().moveCaretRelatively(1, 0, false, false);
+        }
+    }
+
+    private void handleAttr(@NotNull InsertionContext insertionContext, boolean newCompletion) {
+        CaretModel model = insertionContext.getEditor().getCaretModel();
+        int offset = model.getOffset();
+        insertionContext.getDocument().insertString(offset, "=\"\"");
+        model.getCurrentCaret().moveCaretRelatively(2, 0, false, false);
+        if (newCompletion) {
+            newCompletion(insertionContext.getProject(), insertionContext.getEditor());
+        }
     }
 
     private void addCompletionsForAttrValue(@NotNull XmlTag tag, CompletionResultSet resultSet) {
         if (tag.getName().equals("url")) {
             resultSet.addElement(LookupElementBuilder.create("website")
-                    .withInsertHandler((insertionContext, item) -> handleMoveToData(insertionContext, tag.getName(), true)));
+                    .withInsertHandler((context, item) -> handleMoveToData(context, tag.getName(), true)));
             resultSet.addElement(LookupElementBuilder.create("repository")
-                    .withInsertHandler((insertionContext, item) -> handleMoveToData(insertionContext, tag.getName(), true)));
+                    .withInsertHandler((context, item) -> handleMoveToData(context, tag.getName(), true)));
             resultSet.addElement(LookupElementBuilder.create("bugtracker")
-                    .withInsertHandler((insertionContext, item) -> handleMoveToData(insertionContext, tag.getName(), true)));
+                    .withInsertHandler((context, item) -> handleMoveToData(context, tag.getName(), true)));
         }
     }
 
