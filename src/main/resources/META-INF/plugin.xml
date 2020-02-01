@@ -75,6 +75,7 @@
         </intentionAction>
 
         <webBrowserUrlProvider implementation="ros.integrate.pkg.xml.ROSLicenseLinkProvider"/>
+        <languageInjector implementation="ros.integrate.pkg.xml.ROSPackageXmlInjector"/>
     </extensions>
 
     <extensions defaultExtensionNs="ros-integrate">
