@@ -43,6 +43,12 @@ class PackageIdAnnotator {
         }
     }
 
+    void annNameNotLowercase() {
+        if (name != null && !name.toLowerCase().equals(name)) {
+            holder.createWarningAnnotation(nameTr, "While supported, package names should not have capital letters.");
+        }
+    }
+
     void annPkgNameMatch() {
         if (!pkgXml.getPackage().getName().equals(name)) {
             Annotation ann = holder.createErrorAnnotation(nameTr,

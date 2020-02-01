@@ -49,6 +49,7 @@ public class PackageXmlAnnotator implements Annotator {
 
             PackageIdAnnotator idAnn = new PackageIdAnnotator(pkgXml, holder);
             idAnn.annNoName();
+            idAnn.annNameNotLowercase();
             idAnn.annPkgNameMatch();
             idAnn.annNoVersion();
             idAnn.annBadVersion();
