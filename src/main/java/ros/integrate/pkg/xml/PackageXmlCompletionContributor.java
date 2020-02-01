@@ -46,11 +46,22 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
                             setCompletionsForAttrName(tag, resultSet, parameters);
                         } else if (type.equals(XmlElementType.XML_NAME)) {
                             setCompletionsForTagName(xmlFile, resultSet, parameters);
+                        } else if (type.equals(XmlElementType.XML_DATA_CHARACTERS)) {
+                            addCompletionsForTagValue(tag, xmlFile, resultSet, element);
                         }
-                        // XML_DATA_CHARACTERS: <url type="[website]">[http://example.com]</url>
-                        // these are also split by space-bars. could be useful for licenses
                     }
                 });
+    }
+
+    private void addCompletionsForTagValue(@NotNull XmlTag tag, ROSPackageXml xmlFile, CompletionResultSet resultSet,
+                                           @NotNull XmlToken element) {
+        if (!element.getParent().getFirstChild().equals(element)) {
+            return; // there is a bug where we cannot process XmlText so we only autocomplete on first non-space item
+        }
+        if (tag.getName().equals("license")) { // WebReferences do not get autocompletion
+            ROSLicenses.AVAILABLE_LICENSES.keySet().stream().filter(license -> !xmlFile.getLicences().contains(license))
+                    .map(LookupElementBuilder::create).forEach(resultSet::addElement);
+        }
     }
 
     private void setCompletionsForTagName(@NotNull ROSPackageXml xmlFile, @NotNull CompletionResultSet resultSet,
@@ -153,6 +164,9 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
         if (multiline) {
             model.getCurrentCaret().moveCaretRelatively(data.length() + 8, 1, false, false);
         }
+        if (tagName.equals("license")) {
+            newCompletion(insertionContext.getProject(), insertionContext.getEditor());
+        }
     }
 
     private void handleCompleteAttr(@NotNull InsertionContext insertionContext, @NotNull String tagName, @Nullable String attrName) {
@@ -169,7 +183,7 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
         }
     }
 
-    private void newCompletion(Project project, Editor editor) {
+    private static void newCompletion(Project project, Editor editor) {
         ApplicationManager.getApplication().invokeLater(() -> new CodeCompletionHandlerBase(CompletionType.BASIC, true, false, true)
                 .invokeCompletion(project, editor));
     }
