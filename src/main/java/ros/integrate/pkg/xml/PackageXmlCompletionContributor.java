@@ -6,6 +6,7 @@ import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.lang.xml.XMLLanguage;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.CaretModel;
+import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
@@ -69,7 +70,13 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
         resultSet.runRemainingContributors(parameters, result -> {}); // removes all other entries. Dangerous stuff.
         InsertHandler<LookupElement> attrHandler =
                 (context, item) -> handleCompleteAttr(context, item.getLookupString(), null),
-                dataHandler = (context, item) -> handleMoveToData(context, item.getLookupString(), false);
+                dataHandler = (context, item) -> handleMoveToData(context, item.getLookupString(), false),
+                multilineHandler = (context, item) ->
+                        handleMoveToData(context, item.getLookupString(), false, "", true);
+        if (xmlFile.getRawXml().getRootTag() == null || xmlFile.getRawXml().getRootTag().getName().isEmpty()) {
+            resultSet.addElement(LookupElementBuilder.create("package").withInsertHandler(multilineHandler));
+            return;
+        }
         if (xmlFile.getPkgName() == null) {
             resultSet.addElement(LookupElementBuilder.create("name")
                     .withInsertHandler((context, item) ->
@@ -79,9 +86,7 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
             resultSet.addElement(LookupElementBuilder.create("version").withInsertHandler((dataHandler)));
         }
         if (xmlFile.getDescription() == null) {
-            resultSet.addElement(LookupElementBuilder.create("description")
-                    .withInsertHandler((context, item) ->
-                            handleMoveToData(context, "description", false, "", true)));
+            resultSet.addElement(LookupElementBuilder.create("description").withInsertHandler(multilineHandler));
         }
         resultSet.addElement(LookupElementBuilder.create("url").withInsertHandler(attrHandler));
         resultSet.addElement(LookupElementBuilder.create("author").withInsertHandler(attrHandler));
@@ -152,12 +157,16 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
         if (inAttr) {
             model.getCurrentCaret().moveCaretRelatively(1, 0, false, false);
         }
+        Document doc = insertionContext.getDocument();
         int offset = model.getOffset();
-        String text = insertionContext.getDocument().getText(new TextRange(offset, offset + 1)),
-                insert = ">" + (multiline ? "\n        " : "") + data +
-                        (multiline ? "\n    " : "") + "</" + tagName + ">";
+        String text = insertionContext.getDocument().getTextLength() == offset ? "" :
+                doc.getText(new TextRange(offset, offset + 1)),
+                whitespace = doc.getText(new TextRange(doc.getLineStartOffset(doc.getLineNumber(offset)),offset))
+                        .replaceFirst("[^ ].*",""),
+                insert = ">" + (multiline ? "\n    " + whitespace : "") + data +
+                        (multiline ? "\n" + whitespace : "") + "</" + tagName + ">";
         if ("\r\n".contains(text)) {
-            insertionContext.getDocument().insertString(offset, insert);
+            doc.insertString(offset, insert);
         }
         model.getCurrentCaret().moveCaretRelatively(multiline ? 0 : data.isEmpty() ? 1 : insert.length(), 0,
                 false, false);
