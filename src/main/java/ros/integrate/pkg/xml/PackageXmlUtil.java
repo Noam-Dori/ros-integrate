@@ -17,9 +17,11 @@ import ros.integrate.pkg.ROSPackageManager;
 import ros.integrate.pkg.psi.ROSPackage;
 import ros.integrate.settings.ROSSettings;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class PackageXmlUtil {
     private static final String PACKAGE_XML = "package.xml";
@@ -53,7 +55,7 @@ public class PackageXmlUtil {
         return FileTypeIndex.getFiles(XmlFileType.INSTANCE, scope)
                 .stream().filter(xml -> xml.getName().equals(PackageXmlUtil.PACKAGE_XML))
                 .filter(xml -> !ROSSettings.getInstance(project).getExcludedXmls().contains(xml.getPath()))
-                .map(xml -> (XmlFile)PsiManager.getInstance(project).findFile(xml))
+                .map(xml -> (XmlFile) PsiManager.getInstance(project).findFile(xml))
                 .collect(Collectors.toList());
     }
 
@@ -78,5 +80,11 @@ public class PackageXmlUtil {
             }
         }
         return null;
+    }
+
+    static boolean isDependencyTag(XmlTag parentTag) {
+        return Stream.concat(Arrays.stream(ROSPackageXml.DependencyType.values())
+                .map(dep -> dep.toString().toLowerCase() + "_depend"), Stream.of("depend"))
+                .anyMatch(tagName -> tagName.equals(parentTag.getName()));
     }
 }

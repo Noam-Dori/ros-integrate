@@ -16,11 +16,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-abstract class ROSPackageReferenceBase<T extends PsiElement> extends PsiPolyVariantReferenceBase<T> {
+public abstract class ROSPackageReferenceBase<T extends PsiElement> extends PsiPolyVariantReferenceBase<T> {
 
-    String pkgName;
+    protected String pkgName;
 
-    ROSPackageReferenceBase(@NotNull T element, TextRange range) {
+    protected ROSPackageReferenceBase(@NotNull T element, TextRange range) {
         super(element, range);
     }
 
