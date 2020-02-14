@@ -50,7 +50,7 @@ public enum DependencyType {
 
     public static List<DependencyType> getValidTags(DependencyType depToCover, int format) {
         return Arrays.stream(DependencyType.values())
-                .filter(dep -> Arrays.asList(depToCover.split).contains(depToCover))
+                .filter(dep -> Arrays.asList(dep.split).contains(depToCover))
                 .filter(dep -> dep.relevant(format))
                 .collect(Collectors.toList());
     }

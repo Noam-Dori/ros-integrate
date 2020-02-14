@@ -69,7 +69,7 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
         } else if (PackageXmlUtil.isDependencyTag(tag)) {
             Collection<ROSPackage> packages = tag.getProject().getComponent(ROSPackageManager.class).getAllPackages();
             packages.removeAll(xmlFile.getDependencies(PackageXmlUtil.getDependencyType(tag)));
-            packages.stream().map(LookupElementBuilder::create).forEach(resultSet::addElement);
+            packages.stream().map(pkg -> LookupElementBuilder.create(pkg).withIcon(pkg.getIcon(0))).forEach(resultSet::addElement);
         }
     }
 
