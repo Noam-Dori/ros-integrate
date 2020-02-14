@@ -6,16 +6,21 @@ import com.intellij.psi.XmlElementFactory;
 import com.intellij.psi.xml.XmlAttribute;
 import com.intellij.psi.xml.XmlFile;
 import com.intellij.psi.xml.XmlTag;
+import com.intellij.psi.xml.XmlTagValue;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import ros.integrate.pkg.ROSPackageManager;
 import ros.integrate.pkg.psi.ROSPackage;
+import ros.integrate.pkg.xml.DependencyType;
 import ros.integrate.pkg.xml.ROSPackageXml;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ROSPackageXmlImpl implements ROSPackageXml {
+
     private enum Component {
         NAME,
         VERSION,
@@ -33,10 +38,12 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
 
     private XmlFile file;
     private ROSPackage pkg;
+    private ROSPackageManager pkgManager;
 
     @Contract(pure = true)
     public ROSPackageXmlImpl(@NotNull XmlFile xmlToWrap, @NotNull ROSPackage pkg) {
         file = xmlToWrap;
+        pkgManager = file.getProject().getComponent(ROSPackageManager.class);
         this.pkg = pkg;
     }
 
@@ -49,6 +56,7 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
     @Override
     public void setRawXml(@NotNull XmlFile newXml) {
         file = newXml;
+        pkgManager = file.getProject().getComponent(ROSPackageManager.class);
     }
 
     @Override
@@ -376,5 +384,18 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
             return new XmlTag[0];
         }
         return file.getRootTag().findSubTags(qName);
+    }
+
+    @Override
+    public List<ROSPackage> getDependencies(DependencyType dependencyType) {
+        if (file.getRootTag() == null) {
+            return Collections.emptyList();
+        }
+        Stream<XmlTag> result = Stream.empty();
+        for (DependencyType dep : DependencyType.getValidTags(dependencyType, getFormat())) {
+            result = Stream.concat(result, Stream.of(findSubTags(dep.getTagName())));
+        }
+        return result.map(XmlTag::getValue).map(XmlTagValue::getText)
+                .map(pkgManager::findPackage).collect(Collectors.toList());
     }
 }

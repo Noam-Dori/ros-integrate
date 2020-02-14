@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class PackageXmlUtil {
     private static final String PACKAGE_XML = "package.xml";
@@ -82,9 +81,21 @@ public class PackageXmlUtil {
         return null;
     }
 
-    static boolean isDependencyTag(XmlTag parentTag) {
-        return Stream.concat(Arrays.stream(ROSPackageXml.DependencyType.values())
-                .map(dep -> dep.toString().toLowerCase() + "_depend"), Stream.of("depend"))
-                .anyMatch(tagName -> tagName.equals(parentTag.getName()));
+    static boolean isDependencyTag(@NotNull XmlTag tag) {
+        return Arrays.stream(DependencyType.values()).map(DependencyType::getTagName)
+                .anyMatch(name -> name.equals(tag.getName()));
+    }
+
+    @NotNull
+    static List<String> getDependNames(int format) {
+        return Arrays.stream(DependencyType.values())
+                .filter(dep -> dep.relevant(format))
+                .map(DependencyType::getTagName)
+                .collect(Collectors.toList());
+    }
+
+    static DependencyType getDependencyType(XmlTag tag) {
+        return Arrays.stream(DependencyType.values())
+                .filter(name -> name.getTagName().equals(tag.getName())).findFirst().orElse(null);
     }
 }

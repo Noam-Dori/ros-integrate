@@ -19,6 +19,10 @@ import com.intellij.psi.xml.XmlToken;
 import com.intellij.util.ProcessingContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import ros.integrate.pkg.ROSPackageManager;
+import ros.integrate.pkg.psi.ROSPackage;
+
+import java.util.Collection;
 
 public class PackageXmlCompletionContributor extends CompletionContributor {
     public PackageXmlCompletionContributor() {
@@ -62,6 +66,10 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
         if (tag.getName().equals("license")) { // WebReferences do not get autocompletion
             ROSLicenses.AVAILABLE_LICENSES.keySet().stream().filter(license -> !xmlFile.getLicences().contains(license))
                     .map(LookupElementBuilder::create).forEach(resultSet::addElement);
+        } else if (PackageXmlUtil.isDependencyTag(tag)) {
+            Collection<ROSPackage> packages = tag.getProject().getComponent(ROSPackageManager.class).getAllPackages();
+            packages.removeAll(xmlFile.getDependencies(PackageXmlUtil.getDependencyType(tag)));
+            packages.stream().map(LookupElementBuilder::create).forEach(resultSet::addElement);
         }
     }
 
@@ -93,7 +101,9 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
         resultSet.addElement(LookupElementBuilder.create("maintainer")
                 .withInsertHandler((context, item) -> handleCompleteAttr(context, "maintainer", "email")));
         resultSet.addElement(LookupElementBuilder.create("license").withInsertHandler(dataHandler));
-
+        PackageXmlUtil.getDependNames(xmlFile.getFormat()).stream().map(LookupElementBuilder::create)
+                .map(builder -> builder.withInsertHandler(dataHandler))
+                .forEach(resultSet::addElement);
     }
 
     private void setCompletionsForAttrName(@NotNull XmlTag tag, @NotNull CompletionResultSet resultSet,

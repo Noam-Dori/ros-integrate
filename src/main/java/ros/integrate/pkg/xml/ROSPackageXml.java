@@ -44,19 +44,6 @@ public interface ROSPackageXml {
     }
 
     /**
-     * an enum of all dependency types. null maps to "depend"
-     */
-    enum DependencyType {
-        BUILD,
-        BUILD_EXPORT,
-        BUILDTOOL,
-        BUILDTOOL_EXPORT,
-        EXEC,
-        DOC,
-        TEST
-    }
-
-    /**
      * @return the raw XML file this wrapper manages
      */
     @NotNull
@@ -178,4 +165,6 @@ public interface ROSPackageXml {
     void setLicense(int id, @NotNull String licenseName);
 
     XmlTag[] findSubTags(String qName);
+
+    List<ROSPackage> getDependencies(DependencyType dependencyType);
 }
