@@ -146,13 +146,6 @@ public interface ROSPackage extends PsiCheckedRenameElement, NavigatablePsiEleme
 //    PsiFile getCMakeLists();
 
 //    /**
-//     * @return all the packages this specific package requires to work.
-//     *         An empty array means this package depends on no-one.
-//     */
-//    @NotNull
-//    ROSPackage[] getDependencies();
-
-//    /**
 //     * Returns the list of all files in the package, restricted by the specified scope. (This is
 //     * normally the list of all files in all directories corresponding to the package, but it can
 //     * be modified by custom language plugins which have a different notion of packages.)

@@ -88,6 +88,7 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
         return format.getValueElement().getValueTextRange();
     }
 
+    @NotNull
     @Override
     public ROSPackage getPackage() {
         return pkg;
@@ -98,8 +99,8 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
         return getTextComponent(Component.NAME);
     }
 
-    @Override
-    public TextRange getRootTextRange() {
+    @NotNull
+    private TextRange getRootTextRange() {
         if (file.getRootTag() == null) {
             return file.getTextRange();
         }
@@ -107,6 +108,7 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
                 file.getRootTag().getName().length());
     }
 
+    @NotNull
     @Override
     public TextRange getNameTextRange() {
         return getComponentTextRange(Component.NAME);
@@ -121,7 +123,7 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
     }
 
     @Override
-    public void setPkgName(String pkgName) {
+    public void setPkgName(@NotNull String pkgName) {
         setComponent(Component.NAME, pkgName);
     }
 
@@ -137,7 +139,7 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
     }
 
     @Override
-    public void setVersion(String newVersion) {
+    public void setVersion(@NotNull String newVersion) {
         setComponent(Component.VERSION, newVersion);
     }
 
@@ -147,10 +149,11 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
     }
 
     @Override
-    public void setDescription(String newDescription) {
+    public void setDescription(@NotNull String newDescription) {
         setComponent(Component.DESCRIPTION, newDescription);
     }
 
+    @NotNull
     @Override
     public TextRange getDescriptionTextRange() {
         return getComponentTextRange(Component.DESCRIPTION);
@@ -198,14 +201,14 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
     }
 
     @Nullable
-    private String getTextComponent(Component component) {
+    private String getTextComponent(@NotNull Component component) {
         if (file.getRootTag() == null) {
             return null;
         }
         return file.getRootTag().getSubTagText(component.get());
     }
 
-    private void setComponent(Component component, String newContent) {
+    private void setComponent(@NotNull Component component,@NotNull String newContent) {
         if (file.getRootTag() == null) {
             addRootTag();
         }
@@ -259,7 +262,7 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
     }
 
     @Override
-    public void addLicence(String licenseName) {
+    public void addLicence(@NotNull String licenseName) {
         if (file.getRootTag() == null) {
             addRootTag();
         }
@@ -304,7 +307,7 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
     }
 
     @Override
-    public void addMaintainer(String name, String email) {
+    public void addMaintainer(@NotNull String name, @NotNull String email) {
         if (file.getRootTag() == null) {
             addRootTag();
         }
@@ -378,21 +381,23 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
                         null, licenseName, false));
     }
 
+    @NotNull
     @Override
-    public XmlTag[] findSubTags(String qName) {
+    public XmlTag[] findSubTags(@NotNull String qName) {
         if (file.getRootTag() == null) {
             return new XmlTag[0];
         }
         return file.getRootTag().findSubTags(qName);
     }
 
+    @NotNull
     @Override
-    public List<ROSPackage> getDependencies(DependencyType dependencyType) {
+    public List<ROSPackage> getDependencies(@NotNull DependencyType dependencyType) {
         if (file.getRootTag() == null) {
             return Collections.emptyList();
         }
         Stream<XmlTag> result = Stream.empty();
-        for (DependencyType dep : DependencyType.getValidTags(dependencyType, getFormat())) {
+        for (DependencyType dep : dependencyType.getValidTags(getFormat())) {
             result = Stream.concat(result, Stream.of(findSubTags(dep.getTagName())));
         }
         return result.map(XmlTag::getValue).map(XmlTagValue::getText)

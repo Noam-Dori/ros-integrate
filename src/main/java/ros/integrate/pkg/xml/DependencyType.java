@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * an enum of all dependency types. null maps to "depend"
+ * an enum of all dependency types.
  */
 public enum DependencyType {
     BUILD("build_depend",1),
@@ -48,9 +48,9 @@ public enum DependencyType {
         return tagName;
     }
 
-    public static List<DependencyType> getValidTags(DependencyType depToCover, int format) {
+    public List<DependencyType> getValidTags(int format) {
         return Arrays.stream(DependencyType.values())
-                .filter(dep -> Arrays.asList(dep.split).contains(depToCover))
+                .filter(dep -> Arrays.asList(dep.split).contains(this))
                 .filter(dep -> dep.relevant(format))
                 .collect(Collectors.toList());
     }
