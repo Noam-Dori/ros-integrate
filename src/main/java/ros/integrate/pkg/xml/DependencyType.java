@@ -1,6 +1,7 @@
 package ros.integrate.pkg.xml;
 
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.List;
@@ -48,11 +49,12 @@ public enum DependencyType {
         return tagName;
     }
 
-    public List<DependencyType> getValidTags(int format) {
+    @NotNull
+    public DependencyType[] getValidTags(int format) {
         return Arrays.stream(DependencyType.values())
                 .filter(dep -> Arrays.asList(dep.split).contains(this))
                 .filter(dep -> dep.relevant(format))
-                .collect(Collectors.toList());
+                .toArray(DependencyType[]::new);
     }
 
     @Contract(pure = true)

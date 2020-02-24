@@ -81,6 +81,10 @@ public class PackageXmlAnnotator implements Annotator {
                     ann.registerFix(new FixURLQuickFix(pkgXml, i));
                 }
             }
+
+            PackageDependencyAnnotator depAnn = new PackageDependencyAnnotator(pkgXml, holder);
+            depAnn.annSelfDependency();
+            depAnn.invalidDependencyName();
         }
     }
 }

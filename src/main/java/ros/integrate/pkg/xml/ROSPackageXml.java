@@ -129,7 +129,7 @@ public interface ROSPackageXml {
      * @return a list of all packages this package depends on for the specific task described by the dependency type.
      */
     @NotNull
-    List<ROSPackage> getDependencies(@NotNull DependencyType dependencyType);
+    List<ROSPackage> getDependencies(@Nullable DependencyType dependencyType);
 
     /**
      * @return the package this manifest describes.
@@ -188,6 +188,13 @@ public interface ROSPackageXml {
      */
     @NotNull
     List<TextRange> getAuthorTextRanges();
+
+    /**
+     * @return a list with at least length 1 that points towards all text ranges of the dependency tags,
+     * or if no dependency is available, to the package tag.
+     */
+    @NotNull
+    List<Pair<NamedTextRange, TextRange>> getDependencyTextRanges();
 
     /**
      * updates the format of the package to the latest version (based on your ROS version).
@@ -293,6 +300,12 @@ public interface ROSPackageXml {
      * @param id the identifier of the resource - its index in the list of tags with the same name in the file.
      */
     void removeAuthor(int id);
+
+    /**
+     * removes a dependency
+     * @param id the identifier of the resource - its index in the list of all dependencies in the file.
+     */
+    void removeDependency(int id);
 
     /**
      * wrapper method for {@link XmlTag#findSubTags(String)} of {@link XmlFile#getRootTag()}

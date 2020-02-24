@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkg.ROSPackageManager;
 import ros.integrate.pkg.psi.ROSPackage;
 import ros.integrate.pkg.xml.DependencyType;
+import ros.integrate.pkg.xml.NamedTextRange;
 import ros.integrate.pkg.xml.ROSPackageXml;
 
 import java.util.*;
@@ -306,6 +307,23 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
         return getComponentTextRanges(Component.AUTHOR);
     }
 
+    @NotNull
+    @Override
+    public List<Pair<NamedTextRange, TextRange>> getDependencyTextRanges() {
+        if (file.getRootTag() == null) {
+            return Collections.singletonList(new Pair<>(null, file.getTextRange()));
+        }
+        Stream<XmlTag> result = Stream.empty();
+        for (DependencyType dep : DependencyType.values()) {
+            result = Stream.concat(result, Stream.of(file.getRootTag().findSubTags(dep.getTagName())));
+        }
+        List<Pair<NamedTextRange, TextRange>> ret = result.map(tag ->
+                new Pair<>(new NamedTextRange(tag.getTextOffset() + 1, tag.getTextOffset() + tag.getName().length() + 1,
+                        tag.getName()), tag.getValue().getTextRange()))
+                .collect(Collectors.toList());
+        return ret.isEmpty() ? Collections.singletonList(new Pair<>(null, getRootTextRange())) : ret;
+    }
+
     @Override
     public void addMaintainer(@NotNull String name, @NotNull String email) {
         if (file.getRootTag() == null) {
@@ -375,6 +393,18 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
     }
 
     @Override
+    public void removeDependency(int id) {
+        if (file.getRootTag() == null) {
+            return;
+        }
+        Stream<XmlTag> result = Stream.empty();
+        for (DependencyType dep : DependencyType.values()) {
+            result = Stream.concat(result, Stream.of(file.getRootTag().findSubTags(dep.getTagName())));
+        }
+        result.collect(Collectors.toList()).get(id).delete();
+    }
+
+    @Override
     public void setLicense(int id, @NotNull String licenseName) {
         Objects.requireNonNull(file.getRootTag()).findSubTags(Component.LICENSE.get())[id]
                 .replace(file.getRootTag().createChildTag(Component.LICENSE.get(),
@@ -392,13 +422,14 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
 
     @NotNull
     @Override
-    public List<ROSPackage> getDependencies(@NotNull DependencyType dependencyType) {
+    public List<ROSPackage> getDependencies(@Nullable DependencyType dependencyType) {
         if (file.getRootTag() == null) {
             return Collections.emptyList();
         }
         Stream<XmlTag> result = Stream.empty();
-        for (DependencyType dep : dependencyType.getValidTags(getFormat())) {
-            result = Stream.concat(result, Stream.of(findSubTags(dep.getTagName())));
+        for (DependencyType dep : dependencyType == null ?
+                DependencyType.values() : dependencyType.getValidTags(getFormat())) {
+            result = Stream.concat(result, Stream.of(file.getRootTag().findSubTags(dep.getTagName())));
         }
         return result.map(XmlTag::getValue).map(XmlTagValue::getText)
                 .map(pkgManager::findPackage).collect(Collectors.toList());
