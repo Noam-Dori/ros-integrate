@@ -85,6 +85,8 @@ public class PackageXmlAnnotator implements Annotator {
             PackageDependencyAnnotator depAnn = new PackageDependencyAnnotator(pkgXml, holder);
             depAnn.annSelfDependency();
             depAnn.invalidDependencyName();
+            depAnn.annEmptyDependency();
+            depAnn.annConflictingDependencies();
         }
     }
 }

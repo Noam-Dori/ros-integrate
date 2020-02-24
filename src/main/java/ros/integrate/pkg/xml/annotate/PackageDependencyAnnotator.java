@@ -38,7 +38,7 @@ class PackageDependencyAnnotator {
 
     void annSelfDependency() {
         for (int i = 0; i < dependencies.size(); i++) {
-            if (dependencies.get(i).equals(pkgXml.getPackage())) {
+            if (pkgXml.getPackage().equals(dependencies.get(i))) {
                 Annotation ann = holder.createErrorAnnotation(depTrs.get(i).second,
                         "A package cannot depend on itself.");
                 ann.registerFix(new RemoveDependencyQuickFix(pkgXml, i));
@@ -58,8 +58,22 @@ class PackageDependencyAnnotator {
                         "Dependency tag " + tagName + " may not be used in manifest format " +
                                 pkgXml.getFormat() + ".");
                 ann.registerFix(new RemoveDependencyQuickFix(pkgXml, i));
-//                ann.registerFix(new UpdateDependencyQuickFix(pkgXml, i));
+//                ann.registerFix(new ReformatPackageXmlFix(pkgXml));
             }
         }
+    }
+
+    void annEmptyDependency() {
+        for (int i = 0; i < depTrs.size(); i++) {
+            if (depTrs.get(i).second.getLength() == 0) {
+                Annotation ann = holder.createErrorAnnotation(depTrs.get(i).first,
+                        "Empty dependency tag.");
+                ann.registerFix(new RemoveDependencyQuickFix(pkgXml, i));
+            }
+        }
+    }
+
+    void annConflictingDependencies() {
+        // TODO: 2/24/2020 this can be if they are the exact same if what they cover is conflicting
     }
 }
