@@ -22,6 +22,7 @@ import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkg.ROSPackageManager;
 import ros.integrate.pkg.psi.ROSPackage;
 
+import java.util.Arrays;
 import java.util.Collection;
 
 public class PackageXmlCompletionContributor extends CompletionContributor {
@@ -68,7 +69,8 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
                     .map(LookupElementBuilder::create).forEach(resultSet::addElement);
         } else if (PackageXmlUtil.isDependencyTag(tag)) {
             Collection<ROSPackage> packages = tag.getProject().getComponent(ROSPackageManager.class).getAllPackages();
-            packages.removeAll(xmlFile.getDependencies(PackageXmlUtil.getDependencyType(tag)));
+            Arrays.stream(PackageXmlUtil.getDependencyType(tag).getCoveredDependencies())
+                    .map(xmlFile::getDependencies).forEach(packages::removeAll);
             packages.remove(xmlFile.getPackage());
             packages.stream().map(pkg -> LookupElementBuilder.create(pkg).withIcon(pkg.getIcon(0)))
                     .forEach(resultSet::addElement);

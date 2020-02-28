@@ -131,6 +131,8 @@ public interface ROSPackageXml {
     @NotNull
     List<ROSPackage> getDependencies(@Nullable DependencyType dependencyType);
 
+    List<Pair<DependencyType, ROSPackage>> getDependenciesTyped();
+
     /**
      * @return the package this manifest describes.
      */
@@ -194,7 +196,7 @@ public interface ROSPackageXml {
      * or if no dependency is available, to the package tag.
      */
     @NotNull
-    List<Pair<NamedTextRange, TextRange>> getDependencyTextRanges();
+    List<Pair<TextRange, TextRange>> getDependencyTextRanges();
 
     /**
      * updates the format of the package to the latest version (based on your ROS version).

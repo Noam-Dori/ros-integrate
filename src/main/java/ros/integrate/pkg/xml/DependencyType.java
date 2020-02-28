@@ -49,8 +49,14 @@ public enum DependencyType {
         return tagName;
     }
 
+    @Contract(pure = true)
     @NotNull
-    public DependencyType[] getValidTags(int format) {
+    public DependencyType[] getCoveredDependencies() {
+        return split;
+    }
+
+    @NotNull
+    public DependencyType[] getCoveringTags(int format) {
         return Arrays.stream(DependencyType.values())
                 .filter(dep -> Arrays.asList(dep.split).contains(this))
                 .filter(dep -> dep.relevant(format))

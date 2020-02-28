@@ -13,7 +13,6 @@ import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkg.ROSPackageManager;
 import ros.integrate.pkg.psi.ROSPackage;
 import ros.integrate.pkg.xml.DependencyType;
-import ros.integrate.pkg.xml.NamedTextRange;
 import ros.integrate.pkg.xml.ROSPackageXml;
 
 import java.util.*;
@@ -309,7 +308,7 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
 
     @NotNull
     @Override
-    public List<Pair<NamedTextRange, TextRange>> getDependencyTextRanges() {
+    public List<Pair<TextRange, TextRange>> getDependencyTextRanges() {
         if (file.getRootTag() == null) {
             return Collections.singletonList(new Pair<>(null, file.getTextRange()));
         }
@@ -317,9 +316,9 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
         for (DependencyType dep : DependencyType.values()) {
             result = Stream.concat(result, Stream.of(file.getRootTag().findSubTags(dep.getTagName())));
         }
-        List<Pair<NamedTextRange, TextRange>> ret = result.map(tag ->
-                new Pair<>(new NamedTextRange(tag.getTextOffset() + 1, tag.getTextOffset() + tag.getName().length() + 1,
-                        tag.getName()), tag.getValue().getTextRange()))
+        List<Pair<TextRange, TextRange>> ret = result.map(tag ->
+                new Pair<>(new TextRange(tag.getTextOffset() + 1, tag.getTextOffset() + tag.getName().length() + 1),
+                        tag.getValue().getTextRange()))
                 .collect(Collectors.toList());
         return ret.isEmpty() ? Collections.singletonList(new Pair<>(null, getRootTextRange())) : ret;
     }
@@ -428,10 +427,24 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
         }
         Stream<XmlTag> result = Stream.empty();
         for (DependencyType dep : dependencyType == null ?
-                DependencyType.values() : dependencyType.getValidTags(getFormat())) {
+                DependencyType.values() : dependencyType.getCoveringTags(getFormat())) {
             result = Stream.concat(result, Stream.of(file.getRootTag().findSubTags(dep.getTagName())));
         }
         return result.map(XmlTag::getValue).map(XmlTagValue::getText)
                 .map(pkgManager::findPackage).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Pair<DependencyType, ROSPackage>> getDependenciesTyped() {
+        if (file.getRootTag() == null) {
+            return Collections.emptyList();
+        }
+        Stream<Pair<DependencyType, XmlTag>> result = Stream.empty();
+        for (DependencyType dep : DependencyType.values()) {
+            result = Stream.concat(result, Stream.of(file.getRootTag().findSubTags(dep.getTagName()))
+                    .map(tag -> new Pair<>(dep, tag)));
+        }
+        return result.map(pair -> new Pair<>(pair.first, pkgManager.findPackage(pair.second.getValue().getText())))
+                .collect(Collectors.toList());
     }
 }
