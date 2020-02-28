@@ -131,6 +131,9 @@ public interface ROSPackageXml {
     @NotNull
     List<ROSPackage> getDependencies(@Nullable DependencyType dependencyType);
 
+    /**
+     * @return a list of all packages this package depends on and how the package depends on them.
+     */
     List<Pair<DependencyType, ROSPackage>> getDependenciesTyped();
 
     /**
