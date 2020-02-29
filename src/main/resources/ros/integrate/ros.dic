@@ -4,3 +4,4 @@ pointcloud
 odometry
 bugtracker
 buildtool
+rosdep
