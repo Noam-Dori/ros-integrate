@@ -32,8 +32,8 @@ public class ReformatPackageXmlFix extends BaseIntentionAction implements LocalQ
         put(DependencyType.RUN, 4);
         put(DependencyType.BUILD_EXPORT, 5);
         put(DependencyType.EXEC, 6);
-        put(DependencyType.TEST, 7);
-        put(DependencyType.DOC, 8);
+        put(DependencyType.DOC, 7);
+        put(DependencyType.TEST, 8);
     }};
 
     public ReformatPackageXmlFix(@NotNull ROSPackageXml pkgXml, boolean updateFormat) {
@@ -104,6 +104,10 @@ public class ReformatPackageXmlFix extends BaseIntentionAction implements LocalQ
             pkgXml.getRawXml().getRootTag().delete();
         }
         pkgXml.setFormat(targetFormat);
+        // export
+        // groups
+        // conflict
+        // replace
         dependencies.forEach(pair -> pkgXml.addDependency(pair.first, pair.second));
         authors.forEach(author -> pkgXml.addAuthor(author.getName(), author.getEmail().isEmpty() ? null :
                 author.getEmail()));
