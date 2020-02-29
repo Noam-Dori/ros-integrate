@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.psi.ROSPackage;
 import ros.integrate.pkg.xml.DependencyType;
 import ros.integrate.pkg.xml.ROSPackageXml;
+import ros.integrate.pkg.xml.intention.ReformatPackageXmlFix;
 import ros.integrate.pkg.xml.intention.RemoveDependencyQuickFix;
 
 import java.util.*;
@@ -24,7 +25,7 @@ class PackageDependencyAnnotator {
     private final List<Pair<DependencyType, ROSPackage>> dependencies;
 
     @NotNull
-    private final List<Pair<TextRange,TextRange>> depTrs;
+    private final List<Pair<TextRange, TextRange>> depTrs;
 
     @Contract(pure = true)
     PackageDependencyAnnotator(@NotNull ROSPackageXml pkgXml, @NotNull AnnotationHolder holder) {
@@ -49,14 +50,14 @@ class PackageDependencyAnnotator {
         List<String> relevant = Arrays.stream(DependencyType.values())
                 .filter(dep -> !dep.relevant(pkgXml.getFormat())).map(DependencyType::getTagName)
                 .collect(Collectors.toList());
-        for (int i = 0; i < depTrs.size(); i++) {
+        for (int i = 0; i < dependencies.size(); i++) {
             String tagName = dependencies.get(i).first.getTagName();
             if (relevant.contains(tagName)) {
                 Annotation ann = holder.createErrorAnnotation(depTrs.get(i).first,
                         "Dependency tag " + tagName + " may not be used in manifest format " +
                                 pkgXml.getFormat() + ".");
                 ann.registerFix(new RemoveDependencyQuickFix(pkgXml, i));
-//                ann.registerFix(new ReformatPackageXmlFix(pkgXml));
+                ann.registerFix(new ReformatPackageXmlFix(pkgXml, false));
             }
         }
     }
@@ -93,7 +94,7 @@ class PackageDependencyAnnotator {
             Annotation ann = holder.createErrorAnnotation(depTrs.get(i).second,
                     "Dependency Tag conflicts with another tag in the file.");
             ann.registerFix(new RemoveDependencyQuickFix(pkgXml, i));
-//            ann.registerFix(new ReformatPackageXmlFix(pkgXml));
+            ann.registerFix(new ReformatPackageXmlFix(pkgXml, false));
         });
     }
 }

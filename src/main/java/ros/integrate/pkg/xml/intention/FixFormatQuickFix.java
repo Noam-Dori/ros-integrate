@@ -40,16 +40,16 @@ public class FixFormatQuickFix extends BaseIntentionAction implements LocalQuick
 
     @Override
     public void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor) {
-        pkgXml.setNewFormat();
+        pkgXml.setFormat(ROSPackageXml.getLatestFormat());
     }
 
     @Override
     public boolean isAvailable(@NotNull Project project, Editor editor, PsiFile file) {
-        return pkgXml.getFormat() != 2;
+        return pkgXml.getFormat() != ROSPackageXml.getLatestFormat();
     }
 
     @Override
     public void invoke(@NotNull Project project, Editor editor, PsiFile file) throws IncorrectOperationException {
-        pkgXml.setNewFormat();
+        pkgXml.setFormat(ROSPackageXml.getLatestFormat());
     }
 }

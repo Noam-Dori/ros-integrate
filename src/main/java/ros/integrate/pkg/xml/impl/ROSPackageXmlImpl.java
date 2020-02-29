@@ -1,8 +1,9 @@
 package ros.integrate.pkg.xml.impl;
 
+import com.intellij.ide.highlighter.XmlFileType;
 import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.TextRange;
-import com.intellij.psi.XmlElementFactory;
+import com.intellij.psi.PsiFileFactory;
 import com.intellij.psi.xml.XmlAttribute;
 import com.intellij.psi.xml.XmlFile;
 import com.intellij.psi.xml.XmlTag;
@@ -115,11 +116,11 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
     }
 
     @Override
-    public void setNewFormat() {
+    public void setFormat(int format) {
         if (file.getRootTag() == null) {
             addRootTag();
         }
-        file.getRootTag().setAttribute("format", "2");
+        file.getRootTag().setAttribute("format", String.valueOf(format));
     }
 
     @Override
@@ -197,7 +198,9 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
     }
 
     private void addRootTag() {
-        file.add(XmlElementFactory.getInstance(file.getProject()).createTagFromText("<package>\r\n</package>"));
+        file.getFirstChild().replace(PsiFileFactory.getInstance(file.getProject())
+                .createFileFromText("dummy.xml", XmlFileType.INSTANCE, "<package>\n</package>")
+                .getFirstChild());
     }
 
     @Nullable
@@ -271,6 +274,17 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
                         null, licenseName, false), true);
     }
 
+    @Override
+    public void addURL(@NotNull String url, @NotNull URLType type) {
+        if (file.getRootTag() == null) {
+            addRootTag();
+        }
+        XmlTag newTag = file.getRootTag()
+                .createChildTag(Component.URL.get(), null, url, false);
+        newTag.setAttribute("email", type.name().toLowerCase());
+        file.getRootTag().addSubTag(newTag, true);
+    }
+
     @NotNull
     @Override
     public List<Contributor> getMaintainers() {
@@ -325,13 +339,32 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
 
     @Override
     public void addMaintainer(@NotNull String name, @NotNull String email) {
+        addContributor(name, email, Component.MAINTAINER);
+    }
+
+    @Override
+    public void addAuthor(@NotNull String name, @Nullable String email) {
+        addContributor(name, email, Component.AUTHOR);
+    }
+
+    @Override
+    public void addDependency(@NotNull DependencyType type, @NotNull ROSPackage pkg) {
+        if (file.getRootTag() == null) {
+            addRootTag();
+        }
+        file.getRootTag().addSubTag(file.getRootTag()
+                .createChildTag(type.getTagName(), null, pkg.getName(), false), true);
+    }
+
+    private void addContributor(@NotNull String name, @Nullable String email, Component component) {
         if (file.getRootTag() == null) {
             addRootTag();
         }
         XmlTag newTag = file.getRootTag()
-                .createChildTag(Component.MAINTAINER.get(),
-                        null, name, false);
-        newTag.setAttribute("email", email);
+                .createChildTag(component.get(), null, name, false);
+        if (email != null) {
+            newTag.setAttribute("email", email);
+        }
         file.getRootTag().addSubTag(newTag, true);
     }
 

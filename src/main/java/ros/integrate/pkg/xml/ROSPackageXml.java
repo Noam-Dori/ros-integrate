@@ -47,6 +47,14 @@ public interface ROSPackageXml {
     }
 
     /**
+     * @return the latest format available.
+     */
+    @Contract(pure = true)
+    static int getLatestFormat() {
+        return 3;
+    }
+
+    /**
      * @return the raw XML file this wrapper manages
      */
     @NotNull
@@ -204,8 +212,9 @@ public interface ROSPackageXml {
     /**
      * updates the format of the package to the latest version (based on your ROS version).
      * This does NOT change other tags.
+     * @param format the format to use. to set the latest format, use {@link ROSPackageXml#getLatestFormat()}
      */
-    void setNewFormat();
+    void setFormat(int format);
 
     /**
      * changes the package name in the manifest, nowhere else.
@@ -231,10 +240,19 @@ public interface ROSPackageXml {
      */
     void addLicence(@NotNull String licenseName);
 
-//    void addURL(@NotNull String url, @NotNull URLType type);
+    /**
+     * adds a url
+     * @param url the new url to use.
+     * @param type the type of the URL
+     */
+    void addURL(@NotNull String url, @NotNull URLType type);
 
-//    @SuppressWarnings("unused") // I know, but it is not something obvious
-//    default void addURL(@NotNull String url) { addURL(url, URLType.WEBSITE); }
+    /**
+     * adds a url
+     * @param url the new "website" url to use.
+     */
+    @SuppressWarnings("unused") // I know, but it is not something obvious
+    default void addURL(@NotNull String url) { addURL(url, URLType.WEBSITE); }
 
     /**
      * adds a new maintainer to the package.
@@ -243,7 +261,19 @@ public interface ROSPackageXml {
      */
     void addMaintainer(@NotNull String name, @NotNull String email);
 
-//    void addAuthor(@NotNull String name, @Nullable String email);
+    /**
+     * adds a new author to the package.
+     * @param name the name of the author
+     * @param email the email of the author. if null, no email is added.
+     */
+    void addAuthor(@NotNull String name, @Nullable String email);
+
+    /**
+     * adds a new dependency for this package.
+     * @param type the way this package depends on the new package.
+     * @param pkg the package this one depends on.
+     */
+    void addDependency(@NotNull DependencyType type,@NotNull ROSPackage pkg);
 
     /**
      * changes a license

@@ -21,9 +21,9 @@ public class ROSPktElementFactory {
      * @return a pkt file containing the provided text
      */
     @NotNull
-    private static ROSMsgFile createFile(Project project, String text) {
+    private static ROSPktFile createFile(Project project, String text) {
         String name = "dummy." + ROSMsgFileType.INSTANCE.getDefaultExtension();
-        return (ROSMsgFile) PsiFileFactory.getInstance(project).
+        return (ROSPktFile) PsiFileFactory.getInstance(project).
                 createFileFromText(name, ROSMsgFileType.INSTANCE, text);
     }
 
@@ -46,7 +46,7 @@ public class ROSPktElementFactory {
      * @return an annotation type comment.
      */
     public static ROSPktComment createAnnotation(Project project, String annotationText) {
-        final ROSMsgFile file = createFile(project, ANNOTATION_PREFIX + annotationText);
+        final ROSPktFile file = createFile(project, ANNOTATION_PREFIX + annotationText);
         return (ROSPktComment) file.getFirstChild().getFirstChild();
     }
 
@@ -56,7 +56,7 @@ public class ROSPktElementFactory {
      * @return a psi element holding the CRLF
      */
     public static PsiElement createCRLF(Project project) {
-        final ROSMsgFile file = createFile(project, "\n");
+        final ROSPktFile file = createFile(project, "\n");
         return file.getFirstChild();
     }
 
@@ -68,12 +68,12 @@ public class ROSPktElementFactory {
      */
     @NotNull
     public static ROSPktType createType(Project project, String typeName) {
-        final ROSMsgFile file = createFile(project, typeName + " dummyName");
+        final ROSPktFile file = createFile(project, typeName + " dummyName");
         return (ROSPktType) file.getFirstChild().getFirstChild().getFirstChild();
     }
 
     public static ROSPktLabel createLabel(Project project, String labelName) {
-        final ROSMsgFile file = createFile(project, "dummyName " + labelName);
+        final ROSPktFile file = createFile(project, "dummyName " + labelName);
         return (ROSPktLabel) file.getFirstChild().getFirstChild().getLastChild();
     }
 }
