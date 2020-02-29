@@ -5,7 +5,6 @@
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
          on how to target different products -->
-    <!-- this should be changed to CLion when done -->
     <depends>com.intellij.modules.lang</depends>
 
     <extensionPoints>
@@ -76,6 +75,9 @@
 
         <webBrowserUrlProvider implementation="ros.integrate.pkg.xml.ROSLicenseLinkProvider"/>
         <languageInjector implementation="ros.integrate.pkg.xml.ROSPackageXmlInjector"/>
+        <localInspection language="XML" implementationClass="ros.integrate.pkg.xml.inspection.OutdatedFormatInspection"
+                         level="WEAK WARNING" enabledByDefault="true" shortName="outdated-format"
+                         groupName="ROS" displayName="Outdated manifest format"/>
     </extensions>
 
     <extensions defaultExtensionNs="ros-integrate">

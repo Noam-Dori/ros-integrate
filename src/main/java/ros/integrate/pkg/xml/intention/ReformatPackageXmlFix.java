@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.psi.ROSPackage;
 import ros.integrate.pkg.xml.DependencyType;
+import ros.integrate.pkg.xml.PackageXmlUtil;
 import ros.integrate.pkg.xml.ROSPackageXml;
 import ros.integrate.pkg.xml.ROSPackageXml.Contributor;
 import ros.integrate.pkg.xml.ROSPackageXml.URLType;
@@ -68,7 +69,7 @@ public class ReformatPackageXmlFix extends BaseIntentionAction implements LocalQ
 
     @Override
     public boolean isAvailable(@NotNull Project project, Editor editor, PsiFile file) {
-        return true;
+        return PackageXmlUtil.getWrapper(file) != null;
     }
 
     @Override
