@@ -22,6 +22,7 @@ import javax.swing.event.DocumentEvent;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class ROSSettingsPage implements SearchableConfigurable {
 
@@ -75,7 +76,7 @@ public class ROSSettingsPage implements SearchableConfigurable {
         rosRootLabel.setText("ROS Path:");
         workspaceLabel.setText("Workspace:");
         additionalSourcesLabel.setText("Additional Package Paths:");
-        resetSourcesButton.setText("Reset to $ROS_PACKAGE_PATH");
+        resetSourcesButton.setText("Set to $ROS_PACKAGE_PATH");
         excludedXmlsLabel.setText("Excluded XML files:");
 
         installBrowserHistory(rosRoot, new BrowserOptions(project)
@@ -96,15 +97,12 @@ public class ROSSettingsPage implements SearchableConfigurable {
         additionalSources.getChildComponent().getTextEditor().getDocument().addDocumentListener(new DocumentAdapter() {
             @Override
             protected void textChanged(@NotNull DocumentEvent e) {
-                resetSourcesButton.setEnabled(!Optional.ofNullable(System.getenv("ROS_PACKAGE_PATH"))
-                        .orElse("").equals(additionalSources.getText()));
+                resetSourcesButton.setEnabled(!rosPackagePathEnv().equals(additionalSources.getText()));
             }
         });
         resetSourcesButton.addActionListener(action ->
-                additionalSources.setText(Optional.ofNullable(System.getenv("ROS_PACKAGE_PATH"))
-                        .orElse("")));
-        resetSourcesButton.setEnabled(!Optional.ofNullable(System.getenv("ROS_PACKAGE_PATH"))
-                .orElse("").equals(additionalSources.getText()));
+                additionalSources.setText(rosPackagePathEnv()));
+        resetSourcesButton.setEnabled(!rosPackagePathEnv().equals(additionalSources.getText()));
 
         return SectionedFormBuilder.createFormBuilder()
                 .addComponent(rosSettingsLabel)
@@ -168,5 +166,21 @@ public class ROSSettingsPage implements SearchableConfigurable {
         workspace.setText(data.getWorkspacePath());
         additionalSources.setText(data.getRawAdditionalSources());
         excludedXmls.setText(data.getRawExcludedXmls());
+    }
+
+    private String rosPackagePathEnv() {
+        return PathListUtil.serializePathList(PathListUtil
+                .parsePathList(Optional.ofNullable(System.getenv("ROS_PACKAGE_PATH")).orElse(""))
+                .stream().filter(path -> notChildOf(workspace.getText(), path))
+                .filter(path -> notChildOf(rosRoot.getText(), path))
+                .collect(Collectors.toList()));
+    }
+
+    private static boolean notChildOf(@NotNull String parent, @NotNull String child) {
+        if (!child.startsWith(parent)) {
+            return true;
+        }
+        String diff = child.substring(parent.length());
+        return !diff.isEmpty() && !diff.startsWith("/");
     }
 }

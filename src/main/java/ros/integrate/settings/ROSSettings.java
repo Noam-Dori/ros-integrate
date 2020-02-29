@@ -32,11 +32,10 @@ public class ROSSettings implements PersistentStateComponent<ROSSettings.State> 
             state.rosPath = rosPath.substring(0, rosPath.length() - "/share/ros".length());
         }
 
-        String workspacePath = ROSSettingsUtil.detectWorkspace(project);
-        state.workspacePath = workspacePath == null ? "" : workspacePath;
+        state.workspacePath = Optional.ofNullable(ROSSettingsUtil.detectWorkspace(project)).orElse("");
 
-        String additionalSources = System.getenv("ROS_PACKAGE_PATH");
-        state.additionalSources = additionalSources == null ? "" : additionalSources;
+        // use System.getenv("ROS_PACKAGE_PATH") (with filter) once we no longer need to init from .bashrc
+        state.additionalSources = "";
 
         state.excludedXmls = "";
     }
