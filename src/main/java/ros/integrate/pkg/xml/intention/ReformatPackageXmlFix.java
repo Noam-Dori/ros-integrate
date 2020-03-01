@@ -25,18 +25,6 @@ public class ReformatPackageXmlFix extends BaseIntentionAction implements LocalQ
     private final ROSPackageXml pkgXml;
     private final int targetFormat;
 
-    private Map<DependencyType, Integer> dependencySorting = new HashMap<DependencyType, Integer>() {{
-        put(DependencyType.BUILDTOOL, 0);
-        put(DependencyType.BUILDTOOL_EXPORT, 1);
-        put(DependencyType.DEFAULT, 2);
-        put(DependencyType.BUILD, 3);
-        put(DependencyType.RUN, 4);
-        put(DependencyType.BUILD_EXPORT, 5);
-        put(DependencyType.EXEC, 6);
-        put(DependencyType.DOC, 7);
-        put(DependencyType.TEST, 8);
-    }};
-
     public ReformatPackageXmlFix(@NotNull ROSPackageXml pkgXml, boolean updateFormat) {
         this.pkgXml = pkgXml;
         targetFormat = updateFormat ? ROSPackageXml.getLatestFormat() : pkgXml.getFormat();
@@ -90,7 +78,7 @@ public class ReformatPackageXmlFix extends BaseIntentionAction implements LocalQ
         List<String> licenses = pkgXml.getLicences();
         List<Pair<String, URLType>> urls = pkgXml.getURLs();
         List<Pair<DependencyType, ROSPackage>> dependencies = pkgXml.getDependenciesTyped();
-        // TODO: 2/29/2020 Add groups, conflict, replace, export
+        // TODO: 2/29/2020 Add groups, export
 
         Collections.reverse(authors);
         Collections.reverse(urls);
@@ -107,8 +95,6 @@ public class ReformatPackageXmlFix extends BaseIntentionAction implements LocalQ
         pkgXml.setFormat(targetFormat);
         // export
         // groups
-        // conflict
-        // replace
         dependencies.forEach(pair -> pkgXml.addDependency(pair.first, pair.second));
         authors.forEach(author -> pkgXml.addAuthor(author.getName(), author.getEmail().isEmpty() ? null :
                 author.getEmail()));
@@ -147,7 +133,7 @@ public class ReformatPackageXmlFix extends BaseIntentionAction implements LocalQ
         }
 
         dependencies.sort((o1, o2) -> {
-            int ret = Integer.compare(dependencySorting.get(o1.first),dependencySorting.get(o2.first));
+            int ret = DependencyType.compare(o1.first, o2.first);
             return ret != 0 ? -ret : -o1.second.compareTo(o2.second);
         });
     }
