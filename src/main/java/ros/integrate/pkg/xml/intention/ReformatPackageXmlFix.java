@@ -117,6 +117,9 @@ public class ReformatPackageXmlFix extends BaseIntentionAction implements LocalQ
         dependencies.clear();
         DependencyType[] values = DependencyType.values();
         for (ROSPackage pkg : depTypesForPackage.keySet()) {
+            if (pkg == ROSPackage.ORPHAN) {
+                continue;
+            }
             Set<DependencyType> dependencyTypes = depTypesForPackage.get(pkg);
             dependencyTypes.add(null); // used so that if all elements are removed, the key is not.
             for (int i = values.length - 1; i >= 0; i--) {

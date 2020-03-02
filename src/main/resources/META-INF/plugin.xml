@@ -90,6 +90,10 @@
             <interface-class>ros.integrate.pkg.ROSPackageManager</interface-class>
             <implementation-class>ros.integrate.pkg.ROSPackageManagerImpl</implementation-class>
         </component>
+        <component>
+            <interface-class>ros.integrate.pkg.ROSDepKeyCache</interface-class>
+            <implementation-class>ros.integrate.pkg.ROSDepKeyCacheImpl</implementation-class>
+        </component>
     </project-components>
 
     <actions>

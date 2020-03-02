@@ -11,6 +11,7 @@ import com.intellij.psi.xml.XmlTagValue;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import ros.integrate.pkg.ROSDepKeyCache;
 import ros.integrate.pkg.ROSPackageManager;
 import ros.integrate.pkg.psi.ROSPackage;
 import ros.integrate.pkg.xml.DependencyType;
@@ -40,11 +41,13 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
     private XmlFile file;
     private ROSPackage pkg;
     private ROSPackageManager pkgManager;
+    private ROSDepKeyCache keyCache;
 
     @Contract(pure = true)
     public ROSPackageXmlImpl(@NotNull XmlFile xmlToWrap, @NotNull ROSPackage pkg) {
         file = xmlToWrap;
         pkgManager = file.getProject().getComponent(ROSPackageManager.class);
+        keyCache = file.getProject().getComponent(ROSDepKeyCache.class);
         this.pkg = pkg;
     }
 
@@ -464,7 +467,7 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
             result = Stream.concat(result, Stream.of(file.getRootTag().findSubTags(dep.getTagName())));
         }
         return result.map(XmlTag::getValue).map(XmlTagValue::getText)
-                .map(pkgManager::findPackage).collect(Collectors.toList());
+                .map(this::findPackage).filter(pkg -> !(pkg == ROSPackage.ORPHAN)).collect(Collectors.toList());
     }
 
     @Override
@@ -477,7 +480,13 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
             result = Stream.concat(result, Stream.of(file.getRootTag().findSubTags(dep.getTagName()))
                     .map(tag -> new Pair<>(dep, tag)));
         }
-        return result.map(pair -> new Pair<>(pair.first, pkgManager.findPackage(pair.second.getValue().getText())))
+        return result.map(pair -> new Pair<>(pair.first, findPackage(pair.second.getValue().getText())))
                 .collect(Collectors.toList());
+    }
+
+    @NotNull
+    private ROSPackage findPackage(String name) {
+        return Optional.ofNullable(pkgManager.findPackage(name)).map(Optional::of)
+                .orElseGet(() -> Optional.ofNullable(keyCache.findKey(name))).orElse(ROSPackage.ORPHAN);
     }
 }

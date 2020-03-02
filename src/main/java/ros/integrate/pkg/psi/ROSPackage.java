@@ -7,6 +7,7 @@ import com.intellij.psi.*;
 import com.intellij.psi.impl.PsiElementBase;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.xml.XmlFile;
+import com.intellij.util.ArrayUtil;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -23,7 +24,7 @@ import java.util.Collection;
  * 1. a package.xml file
  * 2. a CMakeLists.txt file which has the {@code catkin_package()} function
  */
-public interface ROSPackage extends PsiCheckedRenameElement, NavigatablePsiElement, PsiDirectoryContainer, Comparable<ROSPackage> {
+public interface ROSPackage extends PsiCheckedRenameElement, NavigatablePsiElement, Comparable<ROSPackage> {
     enum RootType {
         SHARE
     }
@@ -153,6 +154,64 @@ public interface ROSPackage extends PsiCheckedRenameElement, NavigatablePsiEleme
 //    @NotNull
 //    PsiFile[] getFiles(@NotNull GlobalSearchScope scope);
 
+    // implementation specific methods that are default due to this being a package.
+
+    @Override
+    default TextRange getTextRange() {
+        return null;
+    }
+
+    @Override
+    default int getStartOffsetInParent() {
+        return -1;
+    }
+
+    @Override
+    default int getTextLength() {
+        return -1;
+    }
+
+    @Override
+    default int getTextOffset() {
+        return -1;
+    }
+
+    @Override
+    default ASTNode getNode() {
+        return null;
+    }
+
+    @Override
+    default String getText() {
+        return "";
+    }
+
+    @NotNull
+    @Override
+    default char[] textToCharArray() {
+        return ArrayUtil.EMPTY_CHAR_ARRAY;
+    }
+
+    @Nullable
+    @Override
+    default PsiElement findElementAt(int offset) {
+        return null;
+    }
+
+    @NotNull
+    @Override
+    default Language getLanguage() {
+        return Language.ANY;
+    }
+
+    @Nullable
+    @Contract(pure = true)
+    @Override
+    default PsiElement getParent() {
+        return null;
+    }
+
+
     final class ROSOrphanPackage extends PsiElementBase implements ROSPackage {
         private ROSOrphanPackage() {}
 
@@ -221,90 +280,37 @@ public interface ROSPackage extends PsiCheckedRenameElement, NavigatablePsiEleme
         @Override
         public void setPackets(Collection<ROSPktFile> packets) {}
 
-
         @Override
         public void removePackets(Collection<ROSPktFile> packets) {}
 
         @Override
         public void setPackageXml(XmlFile newPackageXml) { }
 
+        @Contract("_ -> fail")
         @Override
-        public void checkSetName(String name) {}
-
-        @NotNull
-        @Override
-        public PsiDirectory[] getDirectories() {
-            return new PsiDirectory[0];
+        public void checkSetName(String name) {
+            throw new IncorrectOperationException("The Orphan package cannot be renamed.");
         }
 
-        @NotNull
-        @Override
-        public PsiDirectory[] getDirectories(@NotNull GlobalSearchScope scope) {
-            return getDirectories();
-        }
-
+        @Contract("_ -> fail")
         @Override
         public PsiElement setName(@NotNull String name) throws IncorrectOperationException {
-            return null;
+            throw new IncorrectOperationException("The Orphan package cannot be renamed.");
         }
 
-        @NotNull
-        @Override
-        public Language getLanguage() {
-            return Language.ANY;
-        }
-
+        @Contract(pure = true)
         @NotNull
         @Override
         public PsiElement[] getChildren() {
             return new PsiElement[0];
         }
 
-        @Override
-        public PsiElement getParent() {
-            return null;
-        }
-
-        @Override
-        public TextRange getTextRange() {
-            return null;
-        }
-
-        @Override
-        public int getStartOffsetInParent() {
-            return 0;
-        }
-
-        @Override
-        public int getTextLength() {
-            return 0;
-        }
-
         @Nullable
+        @Contract(pure = true)
         @Override
-        public PsiElement findElementAt(int offset) {
+        public PsiFile getContainingFile() {
             return null;
         }
 
-        @Override
-        public int getTextOffset() {
-            return 0;
-        }
-
-        @Override
-        public String getText() {
-            return null;
-        }
-
-        @NotNull
-        @Override
-        public char[] textToCharArray() {
-            return new char[0];
-        }
-
-        @Override
-        public ASTNode getNode() {
-            return null;
-        }
     }
 }

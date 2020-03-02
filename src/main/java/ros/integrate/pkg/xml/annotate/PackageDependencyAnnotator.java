@@ -76,6 +76,9 @@ class PackageDependencyAnnotator {
         Set<Integer> trsToAnn = new HashSet<>();
         for (int i = dependencies.size() - 1; i >= 0; i--) {
             Pair<DependencyType, ROSPackage> di = dependencies.get(i), dj;
+            if (di.second == ROSPackage.ORPHAN) {
+                continue;
+            }
             boolean found = false;
             for (int j = i - 1; j >= 0; j--) {
                 dj = dependencies.get(j);

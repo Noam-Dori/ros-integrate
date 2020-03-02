@@ -135,12 +135,15 @@ public interface ROSPackageXml {
     /**
      * @param dependencyType the type of dependency to check
      * @return a list of all packages this package depends on for the specific task described by the dependency type.
+     *         this list removes all orphans from it.
      */
     @NotNull
     List<ROSPackage> getDependencies(@Nullable DependencyType dependencyType);
 
     /**
      * @return a list of all packages this package depends on and how the package depends on them.
+     *         unresolved dependencies have {@link ROSPackage#ORPHAN} as the second value of the pair.
+     *         this is done to enable sync with the text range list.
      */
     List<Pair<DependencyType, ROSPackage>> getDependenciesTyped();
 

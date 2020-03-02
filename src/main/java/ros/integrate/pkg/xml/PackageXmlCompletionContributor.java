@@ -19,6 +19,7 @@ import com.intellij.psi.xml.XmlToken;
 import com.intellij.util.ProcessingContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import ros.integrate.pkg.ROSDepKeyCache;
 import ros.integrate.pkg.ROSPackageManager;
 import ros.integrate.pkg.psi.ROSPackage;
 
@@ -69,6 +70,7 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
                     .map(LookupElementBuilder::create).forEach(resultSet::addElement);
         } else if (PackageXmlUtil.isDependencyTag(tag)) {
             Collection<ROSPackage> packages = tag.getProject().getComponent(ROSPackageManager.class).getAllPackages();
+            packages.addAll(tag.getProject().getComponent(ROSDepKeyCache.class).getAllKeys());
             Arrays.stream(PackageXmlUtil.getDependencyType(tag).getCoveredDependencies())
                     .map(xmlFile::getDependencies).forEach(packages::removeAll);
             packages.remove(xmlFile.getPackage());
@@ -173,8 +175,7 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
         }
         Document doc = insertionContext.getDocument();
         int offset = model.getOffset();
-        String text = insertionContext.getDocument().getTextLength() == offset ? "" :
-                doc.getText(new TextRange(offset, offset + 1)),
+        String text = doc.getTextLength() == offset ? "" : doc.getText(new TextRange(offset, offset + 1)),
                 whitespace = doc.getText(new TextRange(doc.getLineStartOffset(doc.getLineNumber(offset)),offset))
                         .replaceFirst("[^ ].*",""),
                 insert = ">" + (multiline ? "\n    " + whitespace : "") + data +

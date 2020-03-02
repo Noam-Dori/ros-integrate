@@ -13,5 +13,5 @@ public class ROSIcons {
     public static final Icon ACT_FILE = IconLoader.getIcon("/icons/actionFile.png");
     public static final Icon SRC_PKG = IconLoader.getIcon("/icons/srcPackage.svg");
     public static final Icon LIB_PKG = IconLoader.getIcon("/icons/libPackage.svg");
-    public static final Icon DEP_KEY = IconLoader.getIcon("icons/rosdepKey.svg");
+    public static final Icon DEP_KEY = IconLoader.getIcon("/icons/rosdepKey.svg");
 }

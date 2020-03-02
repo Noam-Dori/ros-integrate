@@ -43,13 +43,17 @@ public abstract class ROSPackageReferenceBase<T extends PsiElement> extends PsiP
     @Override
     public ResolveResult[] multiResolve(boolean incompleteCode) {
         List<ResolveResult> ret = new ArrayList<>();
-        Optional.ofNullable(myElement.getProject().getComponent(ROSPackageManager.class).findPackage(pkgName))
-                .ifPresent(pkg -> {
+        resolvePackage().ifPresent(pkg -> {
                     ret.add(new PsiElementResolveResult(pkg));
                     Arrays.stream(pkg.getRoots())
                             .map(PsiElementResolveResult::new)
                             .forEach(ret::add);
                 });
         return ret.toArray(ResolveResult.EMPTY_ARRAY);
+    }
+
+    @NotNull
+    protected Optional<ROSPackage> resolvePackage() {
+        return Optional.ofNullable(myElement.getProject().getComponent(ROSPackageManager.class).findPackage(pkgName));
     }
 }
