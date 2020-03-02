@@ -19,6 +19,7 @@ public class ROSSettings implements PersistentStateComponent<ROSSettings.State> 
         public String workspacePath;
         public String additionalSources;
         public String excludedXmls;
+        public String knownKeys; // TODO: 3/2/2020 Make this configurable in the ROS Settings page.
     }
     private final State state = new State();
     private final MultiMap<String,Consumer<ROSSettings>> listeners = new MultiMap<>();
@@ -38,6 +39,8 @@ public class ROSSettings implements PersistentStateComponent<ROSSettings.State> 
         state.additionalSources = "";
 
         state.excludedXmls = "";
+
+        state.knownKeys = "";
     }
 
     public static ROSSettings getInstance(Project project) {
@@ -131,5 +134,15 @@ public class ROSSettings implements PersistentStateComponent<ROSSettings.State> 
 
     void setExcludedXmls(String excludedXmls) {
         state.excludedXmls = excludedXmls;
+    }
+
+    public List<String> getKnownROSDepKeys() {
+        return Arrays.asList(state.knownKeys.split(":"));
+    }
+
+    public void addKnownROSDepKey(String name) {
+        if (!state.knownKeys.matches("^(.*:)?" + name + "(:.*)?$")) {
+            state.knownKeys = state.knownKeys.concat((state.knownKeys.isEmpty() ? "" : ":") + name);
+        }
     }
 }

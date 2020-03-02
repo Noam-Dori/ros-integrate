@@ -4,14 +4,18 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkg.psi.impl.ROSDepKey;
+import ros.integrate.settings.BrowserOptions;
+import ros.integrate.settings.ROSSettings;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
+import java.util.List;
 import java.util.Properties;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 public class ROSDepKeyCacheImpl implements ROSDepKeyCache {
@@ -19,6 +23,7 @@ public class ROSDepKeyCacheImpl implements ROSDepKeyCache {
 
     private final ConcurrentMap<String, ROSDepKey> keyCache = new ConcurrentHashMap<>();
     private final Project project;
+    private ROSSettings settings;
     private boolean internetAttempted = false,
             offlineMode = true;
 
@@ -39,7 +44,15 @@ public class ROSDepKeyCacheImpl implements ROSDepKeyCache {
     }
 
     private void init() {
-        // TODO load offline stuff from ROSSettings.
+        settings = ROSSettings.getInstance(project);
+        // we do not delete keys when settings change, no reason to.
+        Consumer<ROSSettings> doOfflineCaching = settings -> {
+            List<String> offlineKeys = settings.getKnownROSDepKeys();
+            offlineKeys.stream().map(key -> new ROSDepKey(project, key))
+                .forEach(dep -> keyCache.putIfAbsent(dep.getName(), dep));
+        };
+        settings.addListener(doOfflineCaching, BrowserOptions.HistoryKey.KNOWN_ROSDEP_KEYS.get());
+        doOfflineCaching.accept(settings);
     }
 
     @Nullable
@@ -47,6 +60,7 @@ public class ROSDepKeyCacheImpl implements ROSDepKeyCache {
     public ROSDepKey findKey(@NotNull String name) {
         ROSDepKey ret = keyCache.get(name);
         if (ret != null) {
+            saveKey(ret);
             return ret;
         }
         tryCachingKeys(false);
@@ -57,8 +71,8 @@ public class ROSDepKeyCacheImpl implements ROSDepKeyCache {
         return ret;
     }
 
-    private void saveKey(ROSDepKey ret) {
-        // TODO will be implemented by saving to ROSSettings.
+    private void saveKey(@NotNull ROSDepKey ret) {
+        settings.addKnownROSDepKey(ret.getName());
     }
 
     @NotNull

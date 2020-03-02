@@ -9,7 +9,8 @@ public class BrowserOptions {
         DEFAULT("RECENT_KEYS"),
         WORKSPACE("WORKSPACE"),
         EXTRA_SOURCES("EXTRA_SOURCES"),
-        EXCLUDED_XMLS("EXCLUDED_XMLS");
+        EXCLUDED_XMLS("EXCLUDED_XMLS"),
+        KNOWN_ROSDEP_KEYS("KNOWN_ROSDEP_KEYS");
 
         private final String historyKey;
 

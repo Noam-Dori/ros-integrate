@@ -5,3 +5,5 @@ odometry
 bugtracker
 buildtool
 rosdep
+opencv
+eigen
