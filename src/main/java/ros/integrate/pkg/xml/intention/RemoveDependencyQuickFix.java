@@ -36,7 +36,7 @@ public class RemoveDependencyQuickFix extends BaseIntentionAction {
 
     @Override
     public boolean isAvailable(@NotNull Project project, Editor editor, PsiFile file) {
-        return pkgXml.getDependencies(null).size() > id;
+        return pkgXml.getDependenciesTyped().size() > id;
     }
 
     @Override

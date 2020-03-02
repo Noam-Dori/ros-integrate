@@ -87,6 +87,7 @@ public class PackageXmlAnnotator implements Annotator {
             depAnn.invalidDependencyName();
             depAnn.annEmptyDependency();
             depAnn.annConflictingDependencies();
+            depAnn.annDependencyNotFound();
         }
     }
 }

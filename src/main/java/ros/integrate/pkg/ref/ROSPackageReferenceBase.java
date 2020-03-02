@@ -21,7 +21,7 @@ public abstract class ROSPackageReferenceBase<T extends PsiElement> extends PsiP
     protected String pkgName;
 
     protected ROSPackageReferenceBase(@NotNull T element, TextRange range) {
-        super(element, range);
+        super(element, range, true);
     }
 
     @Nullable

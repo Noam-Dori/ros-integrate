@@ -19,7 +19,8 @@ public class ROSDepKeyCacheImpl implements ROSDepKeyCache {
 
     private final ConcurrentMap<String, ROSDepKey> keyCache = new ConcurrentHashMap<>();
     private final Project project;
-    private boolean internetAttempted = false;
+    private boolean internetAttempted = false,
+            offlineMode = true;
 
     public ROSDepKeyCacheImpl(Project project) {
         this.project = project;
@@ -48,7 +49,7 @@ public class ROSDepKeyCacheImpl implements ROSDepKeyCache {
         if (ret != null) {
             return ret;
         }
-        tryCachingKeys();
+        tryCachingKeys(false);
         ret = keyCache.get(name);
         if (ret != null) {
             saveKey(ret);
@@ -63,16 +64,16 @@ public class ROSDepKeyCacheImpl implements ROSDepKeyCache {
     @NotNull
     @Override
     public Collection<ROSDepKey> getAllKeys() {
-        tryCachingKeys();
+        tryCachingKeys(false);
         return keyCache.values();
     }
 
-    private synchronized void tryCachingKeys() {
-        if (internetAttempted) {
+    private synchronized void tryCachingKeys(boolean force) {
+        if (!force && internetAttempted) {
             return;
         }
         try {
-//            boolean allConnected = true;
+            boolean connectionFailed = false;
             for (String address : getSources()) {
                 try {
                     Scanner scanner = new Scanner(new URL(address).openStream());
@@ -82,10 +83,10 @@ public class ROSDepKeyCacheImpl implements ROSDepKeyCache {
                     }
                 } catch (IOException e) {
                     LOG.warning("Could not fetch rosdep source list: no connection to " + address);
-//                    allConnected = false;
+                    connectionFailed = true;
                 }
             }
-//            onlineMode = allConnected; TODO used for annotation and allowing the user to force caching.
+            offlineMode = connectionFailed;
             internetAttempted = true;
         } catch (IOException e) {
             LOG.severe("could not load configuration file, error: " + e.getMessage());
@@ -110,5 +111,15 @@ public class ROSDepKeyCacheImpl implements ROSDepKeyCache {
             }
         }
         return ret;
+    }
+
+    @Override
+    public boolean inOfflineMode() {
+        return offlineMode;
+    }
+
+    @Override
+    public void forceFetch() {
+        tryCachingKeys(true);
     }
 }

@@ -1,14 +1,17 @@
 package ros.integrate.pkg.xml.annotate;
 
+import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.TextRange;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import ros.integrate.pkg.ROSDepKeyCache;
 import ros.integrate.pkg.psi.ROSPackage;
 import ros.integrate.pkg.xml.DependencyType;
 import ros.integrate.pkg.xml.ROSPackageXml;
+import ros.integrate.pkg.xml.intention.ForceCacheQuickFix;
 import ros.integrate.pkg.xml.intention.ReformatPackageXmlFix;
 import ros.integrate.pkg.xml.intention.RemoveDependencyQuickFix;
 
@@ -99,5 +102,19 @@ class PackageDependencyAnnotator {
             ann.registerFix(new RemoveDependencyQuickFix(pkgXml, i));
             ann.registerFix(new ReformatPackageXmlFix(pkgXml, false));
         });
+    }
+
+    void annDependencyNotFound() {
+        for (int i = 0; i < dependencies.size(); i++) {
+            if (dependencies.get(i).second == ROSPackage.ORPHAN) {
+                Annotation ann = holder.createErrorAnnotation(depTrs.get(i).second,
+                        "Unresolved dependency");
+                ann.setHighlightType(ProblemHighlightType.ERROR);
+                ann.registerFix(new RemoveDependencyQuickFix(pkgXml, i));
+                if (pkgXml.getPackage().getProject().getComponent(ROSDepKeyCache.class).inOfflineMode()) {
+                    ann.registerFix(new ForceCacheQuickFix());
+                }
+            }
+        }
     }
 }
