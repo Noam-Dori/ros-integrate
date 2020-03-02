@@ -49,6 +49,6 @@ public class ROSMsgFileType extends ROSPktFileType {
     @Nullable
     @Override
     public Icon getIcon() {
-        return ROSIcons.MsgFile;
+        return ROSIcons.MSG_FILE;
     }
 }

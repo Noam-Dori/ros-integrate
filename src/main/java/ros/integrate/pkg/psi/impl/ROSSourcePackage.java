@@ -49,7 +49,7 @@ public class ROSSourcePackage extends ROSPackageBase {
     @Nullable
     @Override
     public Icon getIcon(int flags) {
-        return ROSIcons.SrcPkg;
+        return ROSIcons.SRC_PKG;
     }
 
     @Nullable

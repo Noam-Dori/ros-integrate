@@ -29,7 +29,7 @@ public class ROSPktColorSettings implements ColorSettingsPage {
     @Nullable
     @Override
     public Icon getIcon() {
-        return ROSIcons.MsgFile;
+        return ROSIcons.MSG_FILE;
     }
 
     @NotNull

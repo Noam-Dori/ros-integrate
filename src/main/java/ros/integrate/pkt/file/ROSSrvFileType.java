@@ -49,6 +49,6 @@ public class ROSSrvFileType extends ROSPktFileType {
     @Nullable
     @Override
     public Icon getIcon() {
-        return ROSIcons.SrvFile;
+        return ROSIcons.SRV_FILE;
     }
 }

@@ -49,6 +49,6 @@ public class ROSActFileType extends ROSPktFileType {
     @Nullable
     @Override
     public Icon getIcon() {
-        return ROSIcons.ActFile;
+        return ROSIcons.ACT_FILE;
     }
 }

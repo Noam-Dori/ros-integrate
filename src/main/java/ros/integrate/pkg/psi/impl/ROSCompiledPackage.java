@@ -49,7 +49,7 @@ public class ROSCompiledPackage extends ROSPackageBase {
     @Nullable
     @Override
     public Icon getIcon(int flags) {
-        return ROSIcons.LibPkg;
+        return ROSIcons.LIB_PKG;
     }
 
     @Nullable
