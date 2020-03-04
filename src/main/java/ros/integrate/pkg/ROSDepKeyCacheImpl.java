@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.List;
-import java.util.Properties;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -50,6 +49,7 @@ public class ROSDepKeyCacheImpl implements ROSDepKeyCache {
             List<String> offlineKeys = settings.getKnownROSDepKeys();
             offlineKeys.stream().map(key -> new ROSDepKey(project, key))
                 .forEach(dep -> keyCache.putIfAbsent(dep.getName(), dep));
+            offlineMode = internetAttempted = false;
         };
         settings.addListener(doOfflineCaching, BrowserOptions.HistoryKey.KNOWN_ROSDEP_KEYS.get());
         doOfflineCaching.accept(settings);
@@ -86,33 +86,26 @@ public class ROSDepKeyCacheImpl implements ROSDepKeyCache {
         if (!force && internetAttempted) {
             return;
         }
-        try {
-            boolean connectionFailed = false;
-            for (String address : getSources()) {
-                try {
-                    Scanner scanner = new Scanner(new URL(address).openStream());
-                    while (scanner.hasNextLine()) {
-                        String keyName = nextKey(scanner);
-                        keyCache.putIfAbsent(keyName, new ROSDepKey(project, keyName));
-                    }
-                } catch (IOException e) {
-                    LOG.warning("Could not fetch rosdep source list: no connection to " + address);
-                    connectionFailed = true;
+        boolean connectionFailed = false;
+        for (String address : getSources()) {
+            try {
+                Scanner scanner = new Scanner(new URL(address).openStream());
+                while (scanner.hasNextLine()) {
+                    String keyName = nextKey(scanner);
+                    keyCache.putIfAbsent(keyName, new ROSDepKey(project, keyName));
                 }
+            } catch (IOException e) {
+                LOG.warning("Could not fetch rosdep source list: no connection to " + address);
+                connectionFailed = true;
             }
-            offlineMode = connectionFailed;
-            internetAttempted = true;
-        } catch (IOException e) {
-            LOG.severe("could not load configuration file, error: " + e.getMessage());
         }
+        offlineMode = connectionFailed;
+        internetAttempted = true;
     }
 
     @NotNull
-    private String[] getSources() throws IOException {
-        // TODO use ROSSettings here to get sources instead of a .properties file.
-        Properties ret = new Properties();
-        ret.load(this.getClass().getClassLoader().getResourceAsStream("rosdep.properties"));
-        return ret.getProperty("values").split("\""); // " is the standard delimiter for URLs
+    private List<String> getSources() {
+        return settings.getROSDepSources();
     }
 
     @NotNull

@@ -8,11 +8,30 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.logging.Logger;
 
 @State(name = "ROSSettings",storages = @Storage("ros.xml"))
 public class ROSSettings implements PersistentStateComponent<ROSSettings.State> {
+    private static final Logger LOG = Logger.getLogger("#ros.integrate.settings.ROSSettings");
+    private static boolean settingsLoaded = false;
+    private static Properties prop = loadProperties();
+
+    @NotNull
+    private static Properties loadProperties() {
+        Properties ret = new Properties();
+        try {
+            ret.load(ROSSettings.class.getClassLoader().getResourceAsStream("defaults.properties"));
+            settingsLoaded = true;
+        } catch (IOException e) {
+            LOG.warning("could not load configuration file, default values will not be loaded. error: " +
+                    e.getMessage());
+        }
+        return ret;
+    }
+
     @SuppressWarnings("WeakerAccess")
     static class State {
         public String rosPath;
@@ -20,6 +39,7 @@ public class ROSSettings implements PersistentStateComponent<ROSSettings.State> 
         public String additionalSources;
         public String excludedXmls;
         public String knownKeys; // TODO: 3/2/2020 Make this configurable in the ROS Settings page.
+        public String depSources;//  also this
     }
     private final State state = new State();
     private final MultiMap<String,Consumer<ROSSettings>> listeners = new MultiMap<>();
@@ -41,6 +61,13 @@ public class ROSSettings implements PersistentStateComponent<ROSSettings.State> 
         state.excludedXmls = "";
 
         state.knownKeys = "";
+
+        state.depSources = "";
+
+        if (settingsLoaded) {
+            state.depSources = prop.getProperty("depSources"); // " is the standard delimiter for URLs
+            state.knownKeys = prop.getProperty("knownKeys");
+        }
     }
 
     public static ROSSettings getInstance(Project project) {
@@ -140,9 +167,13 @@ public class ROSSettings implements PersistentStateComponent<ROSSettings.State> 
         return Arrays.asList(state.knownKeys.split(":"));
     }
 
-    public void addKnownROSDepKey(String name) {
-        if (!state.knownKeys.matches("^(.*:)?" + name + "(:.*)?$")) {
+    public void addKnownROSDepKey(@NotNull String name) {
+        if (!name.isEmpty() && !state.knownKeys.matches("^(.*:)?" + name + "(:.*)?$")) {
             state.knownKeys = state.knownKeys.concat((state.knownKeys.isEmpty() ? "" : ":") + name);
         }
+    }
+
+    public List<String> getROSDepSources() {
+        return Arrays.asList(state.depSources.split("\""));
     }
 }
