@@ -52,6 +52,12 @@ public class ROSSettingsPage implements SearchableConfigurable {
     private final PathListTextField excludedXmls = new PathListTextField();
     private final JBLabel excludedXmlsLabel = new JBLabel();
 
+    private final PathListTextField knownRosdepKeys = new PathListTextField();
+    private final JBLabel knownRosdepKeysLabel = new JBLabel();
+
+    private final PathListTextField rosdepSources = new PathListTextField();
+    private final JBLabel rosdepSourcesLabel = new JBLabel();
+
     public ROSSettingsPage(Project project) {
         this.project = project;
         recentsManager = RecentsManager.getInstance(project);
@@ -71,6 +77,7 @@ public class ROSSettingsPage implements SearchableConfigurable {
 
         String envVariables = "Environment";
         String pluginSpecific = "Plugin Specific";
+        String rosdep = "Dependencies";
 
         rosSettingsLabel.setText("In here, you can configure your interactions with ROS in the IDE");
         rosRootLabel.setText("ROS Path:");
@@ -78,6 +85,8 @@ public class ROSSettingsPage implements SearchableConfigurable {
         additionalSourcesLabel.setText("Additional Package Paths:");
         resetSourcesButton.setText("Set to $ROS_PACKAGE_PATH");
         excludedXmlsLabel.setText("Excluded XML files:");
+        rosdepSourcesLabel.setText("Online ROSDep Source Lists:");
+        knownRosdepKeysLabel.setText("Known ROSDep Keys:");
 
         installBrowserHistory(rosRoot, new BrowserOptions(project)
                 .withTitle("Choose Target Directory")
@@ -94,6 +103,13 @@ public class ROSSettingsPage implements SearchableConfigurable {
                 .withTitle("Modify Excluded XMLs")
                 .withDialogTitle("Configure excluded XMLs")
                 .withDescription("These XML files will not be processed by the ROS plugin, and will not get extra context."));
+        rosdepSources.installHistoryAndDialog(recentsManager, new BrowserOptions(project, HistoryKey.ROSDEP_SOURCES)
+                .withDialogTitle("Configure ROSDep Lists")
+                .withDelimiter('"')
+                .noFilePaths());
+        knownRosdepKeys.installHistoryAndDialog(recentsManager, new BrowserOptions(project, HistoryKey.KNOWN_ROSDEP_KEYS)
+                .withDialogTitle("Configure Saved ROSDep Keys")
+                .noFilePaths());
         additionalSources.getChildComponent().getTextEditor().getDocument().addDocumentListener(new DocumentAdapter() {
             @Override
             protected void textChanged(@NotNull DocumentEvent e) {
@@ -111,6 +127,10 @@ public class ROSSettingsPage implements SearchableConfigurable {
                 .addLabeledComponent(workspaceLabel, workspace)
                 .addLabeledComponent(additionalSourcesLabel, additionalSources)
                 .addComponent(resetSourcesButton)
+                .closeSection()
+                .addSection(rosdep)
+                .addLabeledComponent(knownRosdepKeysLabel, knownRosdepKeys)
+                .addLabeledComponent(rosdepSourcesLabel, rosdepSources)
                 .closeSection()
                 .addSection(pluginSpecific)
                 .addLabeledComponent(excludedXmlsLabel, excludedXmls)
@@ -140,7 +160,9 @@ public class ROSSettingsPage implements SearchableConfigurable {
         return isModified(rosRoot.getChildComponent().getTextEditor(), data.getROSPath())
                 || isModified(workspace.getChildComponent().getTextEditor(), data.getWorkspacePath())
                 || isModified(additionalSources.getChildComponent().getTextEditor(), data.getRawAdditionalSources())
-                || isModified(excludedXmls.getChildComponent().getTextEditor(), data.getRawExcludedXmls());
+                || isModified(excludedXmls.getChildComponent().getTextEditor(), data.getRawExcludedXmls())
+                || isModified(rosdepSources.getChildComponent().getTextEditor(), data.getRawROSDepSources())
+                || isModified(knownRosdepKeys.getChildComponent().getTextEditor(), data.getRawKnownROSDepKeys());
     }
 
     private void addToHistory(@NotNull TextFieldWithHistoryWithBrowseButton field, HistoryKey historyKey,
@@ -158,6 +180,8 @@ public class ROSSettingsPage implements SearchableConfigurable {
         addToHistory(workspace, HistoryKey.WORKSPACE, data::setWorkspacePath, false);
         addToHistory(additionalSources, HistoryKey.EXTRA_SOURCES, data::setAdditionalSources, true);
         addToHistory(excludedXmls, HistoryKey.EXCLUDED_XMLS, data::setExcludedXmls, true);
+        addToHistory(knownRosdepKeys, HistoryKey.KNOWN_ROSDEP_KEYS, data::setKnownROSDepKeys, true);
+        addToHistory(rosdepSources, HistoryKey.ROSDEP_SOURCES, data::setROSDepSources, true);
     }
 
     @Override
@@ -166,6 +190,8 @@ public class ROSSettingsPage implements SearchableConfigurable {
         workspace.setText(data.getWorkspacePath());
         additionalSources.setText(data.getRawAdditionalSources());
         excludedXmls.setText(data.getRawExcludedXmls());
+        knownRosdepKeys.setText(data.getRawKnownROSDepKeys());
+        rosdepSources.setText(data.getRawROSDepSources());
     }
 
     private String rosPackagePathEnv() {

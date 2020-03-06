@@ -10,6 +10,7 @@ public class BrowserOptions {
         WORKSPACE("WORKSPACE"),
         EXTRA_SOURCES("EXTRA_SOURCES"),
         EXCLUDED_XMLS("EXCLUDED_XMLS"),
+        ROSDEP_SOURCES("ROSDEP_SOURCES"),
         KNOWN_ROSDEP_KEYS("KNOWN_ROSDEP_KEYS");
 
         private final String historyKey;
@@ -28,6 +29,8 @@ public class BrowserOptions {
     final Project project;
 
     String title = "", description = "", dialogTitle = "";
+    char delimiter = ':';
+    boolean addBrowser = true;
     private HistoryKey key = HistoryKey.DEFAULT;
     @Contract(pure = true)
     BrowserOptions(Project project) {
@@ -52,6 +55,16 @@ public class BrowserOptions {
 
     BrowserOptions withDialogTitle(String dialogTitle) {
         this.dialogTitle = dialogTitle;
+        return this;
+    }
+
+    BrowserOptions withDelimiter(@SuppressWarnings("SameParameterValue") char delimiter) {
+        this.delimiter = delimiter;
+        return this;
+    }
+
+    BrowserOptions noFilePaths() {
+        this.addBrowser = false;
         return this;
     }
 

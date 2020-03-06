@@ -19,14 +19,16 @@ class PathListTextField extends TextFieldWithHistoryWithBrowseButton {
         private final PathListTextField parent;
 
         private final PathListTable data;
+        private final BrowserOptions options;
 
         PackagePathDialog(PathListTextField component, BrowserOptions options) {
             super(component, true);
             parent = component;
             data = new PathListTable(options);
+            this.options = options;
 
             setTitle(options.dialogTitle);
-            data.setValues(PathListUtil.parsePathList(component.getText()));
+            data.setValues(PathListUtil.parsePathList(component.getText(), options.delimiter, options.addBrowser));
             display.add(data.getComponent(),BorderLayout.CENTER);
             init();
         }
@@ -41,7 +43,7 @@ class PathListTextField extends TextFieldWithHistoryWithBrowseButton {
         protected void doOKAction() {
             data.stopEditing();
 
-            parent.setPaths(data.getPaths());
+            parent.setPaths(data.getPaths(), options.delimiter);
 
             super.doOKAction();
         }
@@ -59,7 +61,7 @@ class PathListTextField extends TextFieldWithHistoryWithBrowseButton {
         setTextFieldPreferredWidth(CopyFilesOrDirectoriesDialog.MAX_PATH_LENGTH);
     }
 
-    private void setPaths(@NotNull List<String> paths) {
-        setText(PathListUtil.serializePathList(paths));
+    private void setPaths(@NotNull List<String> paths, char delimiter) {
+        setText(PathListUtil.serializePathList(paths, delimiter));
     }
 }

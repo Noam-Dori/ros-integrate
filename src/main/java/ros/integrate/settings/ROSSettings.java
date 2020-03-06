@@ -167,6 +167,15 @@ public class ROSSettings implements PersistentStateComponent<ROSSettings.State> 
         return Arrays.asList(state.knownKeys.split(":"));
     }
 
+    String getRawKnownROSDepKeys() {
+        return state.knownKeys;
+    }
+
+
+    void setKnownROSDepKeys(String knownKeys) {
+        state.knownKeys = knownKeys;
+    }
+
     public void addKnownROSDepKey(@NotNull String name) {
         if (!name.isEmpty() && !state.knownKeys.matches("^(.*:)?" + name + "(:.*)?$")) {
             state.knownKeys = state.knownKeys.concat((state.knownKeys.isEmpty() ? "" : ":") + name);
@@ -175,5 +184,13 @@ public class ROSSettings implements PersistentStateComponent<ROSSettings.State> 
 
     public List<String> getROSDepSources() {
         return Arrays.asList(state.depSources.split("\""));
+    }
+
+    String getRawROSDepSources() {
+        return state.depSources;
+    }
+
+    void setROSDepSources(String sources) {
+        state.depSources = sources;
     }
 }

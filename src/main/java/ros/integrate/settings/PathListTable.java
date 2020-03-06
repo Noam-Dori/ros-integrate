@@ -119,26 +119,30 @@ public class PathListTable extends ListTableWithButtons<PathListTable.Path> {
                 return !getSelection().isEmpty();
             }
         };
-        AnActionButton browseButton = new AnActionButton(UIBundle.message("component.with.browse.button.browse.button.tooltip.text"), AllIcons.Actions.Menu_open) {
-            private final TextFieldWithBrowseButton dummy = new TextFieldWithBrowseButton();
-            private final BrowseFolderActionListener action =
-                    new BrowseFolderActionListener<>(browserOptions.title,
-                            browserOptions.description, dummy, browserOptions.project,
-                            FileChooserDescriptorFactory.createSingleFolderDescriptor(),
-                            TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT);
+        if (browserOptions.addBrowser) {
+            AnActionButton browseButton = new AnActionButton(UIBundle.message("component.with.browse.button.browse.button.tooltip.text"), AllIcons.Actions.Menu_open) {
+                private final TextFieldWithBrowseButton dummy = new TextFieldWithBrowseButton();
+                private final BrowseFolderActionListener action =
+                        new BrowseFolderActionListener<>(browserOptions.title,
+                                browserOptions.description, dummy, browserOptions.project,
+                                FileChooserDescriptorFactory.createSingleFolderDescriptor(),
+                                TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT);
 
-            @Override
-            public void actionPerformed(@NotNull AnActionEvent e) {
-                stopEditing();
-                action.run();
-                getSelection().forEach(path -> path.set(dummy.getText()));
-            }
+                @Override
+                public void actionPerformed(@NotNull AnActionEvent e) {
+                    stopEditing();
+                    action.run();
+                    getSelection().forEach(path -> path.set(dummy.getText()));
+                }
 
-            @Override
-            public boolean isEnabled() {
-                return getSelection().size() == 1;
-            }
-        };
-        return new AnActionButton[]{duplicateButton, browseButton};
+                @Override
+                public boolean isEnabled() {
+                    return getSelection().size() == 1;
+                }
+            };
+            return new AnActionButton[]{duplicateButton, browseButton};
+        } else {
+            return new AnActionButton[]{duplicateButton};
+        }
     }
 }
