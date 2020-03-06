@@ -1,5 +1,7 @@
 package ros.integrate.pkg;
 
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressIndicatorProvider;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -49,7 +51,8 @@ public class ROSDepKeyCacheImpl implements ROSDepKeyCache {
             List<String> offlineKeys = settings.getKnownROSDepKeys();
             offlineKeys.stream().map(key -> new ROSDepKey(project, key))
                 .forEach(dep -> keyCache.putIfAbsent(dep.getName(), dep));
-            offlineMode = internetAttempted = false;
+            internetAttempted = false;
+            offlineMode = true;
         };
         settings.addListener(doOfflineCaching, BrowserOptions.HistoryKey.KNOWN_ROSDEP_KEYS.get());
         doOfflineCaching.accept(settings);
@@ -86,8 +89,12 @@ public class ROSDepKeyCacheImpl implements ROSDepKeyCache {
         if (!force && internetAttempted) {
             return;
         }
+        ProgressIndicator indicator = ProgressIndicatorProvider.getGlobalProgressIndicator();
         boolean connectionFailed = false;
         for (String address : getSources()) {
+            if (indicator != null) {
+                indicator.checkCanceled();
+            }
             try {
                 Scanner scanner = new Scanner(new URL(address).openStream());
                 while (scanner.hasNextLine()) {

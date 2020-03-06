@@ -4,6 +4,9 @@ import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.fileChooser.FileChooserFactory;
 import com.intellij.openapi.options.SearchableConfigurable;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.TextComponentAccessor;
 import com.intellij.refactoring.copy.CopyFilesOrDirectoriesDialog;
@@ -15,6 +18,7 @@ import com.intellij.util.Consumer;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import ros.integrate.pkg.ROSDepKeyCache;
 import ros.integrate.settings.BrowserOptions.HistoryKey;
 
 import javax.swing.*;
@@ -25,6 +29,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class ROSSettingsPage implements SearchableConfigurable {
+    private static final String GET_SOURCES_PROGRESS = "Fetching ROSDep Source Lists";
+
 
     @NotNull
     @Override
@@ -58,6 +64,8 @@ public class ROSSettingsPage implements SearchableConfigurable {
     private final PathListTextField rosdepSources = new PathListTextField();
     private final JBLabel rosdepSourcesLabel = new JBLabel();
 
+    private final JButton fetchSourceListsButton = new JButton();
+
     public ROSSettingsPage(Project project) {
         this.project = project;
         recentsManager = RecentsManager.getInstance(project);
@@ -87,6 +95,7 @@ public class ROSSettingsPage implements SearchableConfigurable {
         excludedXmlsLabel.setText("Excluded XML files:");
         rosdepSourcesLabel.setText("Online ROSDep Source Lists:");
         knownRosdepKeysLabel.setText("Known ROSDep Keys:");
+        fetchSourceListsButton.setText("Fetch ROSDep Source Lists");
 
         installBrowserHistory(rosRoot, new BrowserOptions(project)
                 .withTitle("Choose Target Directory")
@@ -116,9 +125,18 @@ public class ROSSettingsPage implements SearchableConfigurable {
                 resetSourcesButton.setEnabled(!rosPackagePathEnv().equals(additionalSources.getText()));
             }
         });
-        resetSourcesButton.addActionListener(action ->
-                additionalSources.setText(rosPackagePathEnv()));
+        resetSourcesButton.addActionListener(action -> additionalSources.setText(rosPackagePathEnv()));
         resetSourcesButton.setEnabled(!rosPackagePathEnv().equals(additionalSources.getText()));
+        ROSDepKeyCache keyCache = project.getComponent(ROSDepKeyCache.class);
+        fetchSourceListsButton.addActionListener(action -> ProgressManager.getInstance().run(new Task.Backgroundable(
+                project, GET_SOURCES_PROGRESS, true) {
+            @Override
+            public void run(@NotNull ProgressIndicator indicator) {
+                keyCache.forceFetch();
+                fetchSourceListsButton.setEnabled(keyCache.inOfflineMode());
+            }
+        }));
+        fetchSourceListsButton.setEnabled(keyCache.inOfflineMode());
 
         return SectionedFormBuilder.createFormBuilder()
                 .addComponent(rosSettingsLabel)
@@ -131,6 +149,7 @@ public class ROSSettingsPage implements SearchableConfigurable {
                 .addSection(rosdep)
                 .addLabeledComponent(knownRosdepKeysLabel, knownRosdepKeys)
                 .addLabeledComponent(rosdepSourcesLabel, rosdepSources)
+                .addComponent(fetchSourceListsButton)
                 .closeSection()
                 .addSection(pluginSpecific)
                 .addLabeledComponent(excludedXmlsLabel, excludedXmls)
