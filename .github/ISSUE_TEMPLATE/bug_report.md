@@ -23,7 +23,7 @@ Steps to reproduce the behavior:
 **Environment Information:**
  - OS: *add your desktop's operating system e.g. Ubuntu 18.04*
  - IDE: *add the IDE you use and its version e.g. CLion 2019.3.4*
- - Plugin Version: *add the version of this plugin yoou use e.g 0.1.4*
+ - Plugin Version: *add the version of this plugin you use e.g 0.1.4*
  - Related Plugins: *do you use other ROS plugins like [hatchery](https://github.com/duckietown/hatchery)?*
 
 **Stack Trace**

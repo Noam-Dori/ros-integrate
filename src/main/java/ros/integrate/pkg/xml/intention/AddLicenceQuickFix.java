@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.xml.ROSPackageXml;
 
 public class AddLicenceQuickFix extends BaseIntentionAction {
-    private ROSPackageXml pkgXml;
+    private final ROSPackageXml pkgXml;
 
     public AddLicenceQuickFix(ROSPackageXml pkgXml) {
         this.pkgXml = pkgXml;

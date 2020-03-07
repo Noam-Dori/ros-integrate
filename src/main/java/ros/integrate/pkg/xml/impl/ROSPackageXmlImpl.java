@@ -39,9 +39,9 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
     }
 
     private XmlFile file;
-    private ROSPackage pkg;
+    private final ROSPackage pkg;
     private ROSPackageManager pkgManager;
-    private ROSDepKeyCache keyCache;
+    private final ROSDepKeyCache keyCache;
 
     @Contract(pure = true)
     public ROSPackageXmlImpl(@NotNull XmlFile xmlToWrap, @NotNull ROSPackage pkg) {

@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.xml.ROSPackageXml;
 
 public class FixFormatQuickFix extends BaseIntentionAction implements LocalQuickFix {
-    private ROSPackageXml pkgXml;
+    private final ROSPackageXml pkgXml;
 
     public FixFormatQuickFix(ROSPackageXml pkgXml) {
         this.pkgXml = pkgXml;

@@ -49,6 +49,7 @@ public interface ROSPackageXml {
     /**
      * @return the latest format available.
      */
+    @SuppressWarnings("SameReturnValue")
     @Contract(pure = true)
     static int getLatestFormat() {
         return 2;

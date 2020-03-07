@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.xml.ROSPackageXml;
 
 public class FixVersionQuickFix extends BaseIntentionAction {
-    private ROSPackageXml pkgXml;
+    private final ROSPackageXml pkgXml;
 
     public FixVersionQuickFix(ROSPackageXml pkgXml, String prefix) {
         this.pkgXml = pkgXml;

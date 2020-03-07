@@ -34,6 +34,7 @@ public enum DependencyType {
         this.split = split;
     }
 
+    @SuppressWarnings("SameParameterValue")
     @Contract(pure = true)
     DependencyType(String tagName, int ordinal, int sinceFormat, DependencyType... split) {
         this(tagName, ordinal, sinceFormat, -1, split);

@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.xml.ROSPackageXml;
 
 public class AddDescriptionQuickFix extends BaseIntentionAction {
-    private ROSPackageXml pkgXml;
+    private final ROSPackageXml pkgXml;
 
     @Contract(pure = true)
     public AddDescriptionQuickFix(ROSPackageXml pkgXml) {

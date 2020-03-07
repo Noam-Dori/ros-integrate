@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.xml.ROSPackageXml;
 
 public class FixNameQuickFix extends BaseIntentionAction {
-    private ROSPackageXml pkgXml;
+    private final ROSPackageXml pkgXml;
 
     @Contract(pure = true)
     public FixNameQuickFix(ROSPackageXml pkgXml, String prefix) {

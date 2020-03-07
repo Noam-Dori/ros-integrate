@@ -1,10 +1,8 @@
 package ros.integrate.pkg.xml.intention;
 
 import com.intellij.codeInsight.intention.impl.BaseIntentionAction;
-import com.intellij.openapi.editor.Caret;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.Nls;
@@ -12,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.xml.ROSPackageXml;
 
 public class DeclareOrphanQuickFix extends BaseIntentionAction {
-    private ROSPackageXml pkgXml;
+    private final ROSPackageXml pkgXml;
 
     public DeclareOrphanQuickFix(ROSPackageXml pkgXml) {
         this.pkgXml = pkgXml;

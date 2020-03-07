@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 public class ROSSettings implements PersistentStateComponent<ROSSettings.State> {
     private static final Logger LOG = Logger.getLogger("#ros.integrate.settings.ROSSettings");
     private static boolean settingsLoaded = false;
-    private static Properties prop = loadProperties();
+    private static final Properties prop = loadProperties();
 
     @NotNull
     private static Properties loadProperties() {

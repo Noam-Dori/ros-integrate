@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.xml.ROSPackageXml;
 
 public class AddMaintainerQuickFix extends BaseIntentionAction {
-    private ROSPackageXml pkgXml;
+    private final ROSPackageXml pkgXml;
 
     public AddMaintainerQuickFix(ROSPackageXml pkgXml) {
         this.pkgXml = pkgXml;

@@ -23,7 +23,7 @@ public abstract class ROSPackageBase extends PsiElementBase implements ROSPackag
     private static final Logger LOG = Logger.getInstance("#ros.integrate.workspace.ROSPackageBase");
 
     @NotNull
-    private ROSPackageXml pkgXml;
+    private final ROSPackageXml pkgXml;
     @NotNull
     private String name;
     @NotNull
@@ -125,13 +125,13 @@ public abstract class ROSPackageBase extends PsiElementBase implements ROSPackag
     }
 
     @Override
-    public void setPackets(Collection<ROSPktFile> packets) { // yes, we can retain, but we need to modify things in all packets
+    public void setPackets(@NotNull Collection<ROSPktFile> packets) { // yes, we can retain, but we need to modify things in all packets
         removePackets(this.packets);
         addPackets(packets);
     }
 
     @Override
-    public void removePackets(Collection<ROSPktFile> packets) {
+    public void removePackets(@NotNull Collection<ROSPktFile> packets) {
         packets.forEach(pkt -> pkt.setPackage(ORPHAN));
         this.packets.removeAll(packets);
     }

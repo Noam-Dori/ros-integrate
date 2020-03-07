@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Comparator;
 
-public class TreePathComparator implements Comparator<String> {
+class TreePathComparator implements Comparator<String> {
 
     @Override
     public int compare(@NotNull String path1, @NotNull String path2) {

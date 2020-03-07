@@ -1,8 +1,17 @@
 <component name="ProjectDictionaryState">
   <dictionary name="theNO">
     <words>
+      <w>appname</w>
+      <w>dorg</w>
+      <w>endlocal</w>
+      <w>errorlevel</w>
+      <w>evenodd</w>
+      <w>lgpl</w>
       <w>rospkt</w>
+      <w>setlocal</w>
       <w>xmls</w>
+      <w>xwindows</w>
+      <w>zlib</w>
     </words>
   </dictionary>
 </component>

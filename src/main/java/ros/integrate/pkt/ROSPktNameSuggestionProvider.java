@@ -3,6 +3,7 @@ package ros.integrate.pkt;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.codeStyle.SuggestedNameInfo;
 import com.intellij.refactoring.rename.PreferrableNameSuggestionProvider;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkt.psi.ROSPktFile;
 import ros.integrate.pkt.psi.ROSPktTypeBase;
@@ -15,7 +16,7 @@ import java.util.*;
 public class ROSPktNameSuggestionProvider extends PreferrableNameSuggestionProvider {
     @Nullable
     @Override
-    public SuggestedNameInfo getSuggestedNames(PsiElement elementToRename, @Nullable PsiElement psiContext, Set<String> result) {
+    public SuggestedNameInfo getSuggestedNames(@NotNull PsiElement elementToRename, @Nullable PsiElement psiContext, @NotNull Set<String> result) {
         Stack<String> parts = new Stack<>();
         String list = null;
         // for type "ClassType" suggest "type" and "class_type"

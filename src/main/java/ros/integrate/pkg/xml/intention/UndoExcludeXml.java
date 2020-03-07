@@ -27,7 +27,7 @@ public class UndoExcludeXml extends BaseIntentionAction {
 
     @Override
     public boolean isAvailable(@NotNull Project project, Editor editor, PsiFile file) {
-        return file instanceof XmlFile && PackageXmlUtil.getWrapper((XmlFile) file) == null;
+        return file instanceof XmlFile && PackageXmlUtil.getWrapper(file) == null;
     }
 
     @Override
