@@ -1,3 +1,70 @@
+<p>0.1.5</p>
+<ul>
+    <li><b>initial support for package manifests (package.xml files)</b>
+        <ul>
+            <li>package.xml files can be ignored by ROS plugin via intention (it is undoable)</li>
+            <li>excluded package.xml files can also be edited from ROS settings</li>
+            <li>added annotations with fixes for:
+                <ul>
+                    <li>missing name</li>
+                    <li>missing version</li>
+                    <li>missing license</li>
+                    <li>missing description</li>
+                    <li>missing maintainer</li>
+                    <li>invalid format</li>
+                    <li>invalid name</li>
+                    <li>invalid package version</li>
+                    <li>invalid maintainer</li>
+                    <li>invalid author</li>
+                    <li>invalid url</li>
+                    <li>too many name tags</li>
+                    <li>too many description tags</li>
+                    <li>too many version tags</li>
+                    <li>name not matching package name</li>
+                    <li>invalid url type</li>
+                    <li>the todo license</li>
+                    <li>package names with capital letters</li>
+                    <li>self-dependency</li>
+                    <li>unresolved dependency</li>
+                    <li>empty dependency</li>
+                    <li>outdated/predated dependency tags</li>
+                    <li>conflicting dependency tags</li>
+                </ul>
+            </li>
+            <li>added inspections with fixes for:
+                <ul>
+                    <li>outdated format</li>
+                </ul>
+            </li>
+            <li>common licenses are linked to their definition page,
+                which can be navigated to by Ctrl+Click or the "Open in Browser" action</li>
+            <li>the urls also navigate to their website via Ctrl+Click</li>
+            <li>added autocompletion for:
+                <ul>
+                    <li>all tag names save for &lt;export&gt; and format 3's group tags</li>
+                    <li>the URL type attribute (and attribute name)</li>
+                    <li>common licenses</li>
+                    <li>maintainer and author email attribute name</li>
+                    <li>the package tag</li>
+                    <li>dependency values (existing packages and rosdep keys).
+                        Completion is aware of existing dependencies to prevent conflicts</li>
+                </ul>
+            </li>
+            <li>the description tag value is injected with HTML language</li>
+            <li>package names and dependencies are refactor-able just like other package related entities</li>
+        </ul>
+    </li>
+    <li>rosdep keys support (dependencies that are not ROS packages)
+        <ul>
+            <li>loads keys both in an online fashion (fetching source lists)
+                and offline fashion (load from saved cache)</li>
+            <li>saved keys are updated when used and can be modified from settings</li>
+            <li>the source lists are by default the ones used by standard ROS but can be modified from settings</li>
+            <li>rosdep keys are considered packages, and have their own icon</li>
+        </ul>
+    </li>
+    <li>adding messages from another package adds a build dependency to that package (when completion is used)</li>
+</ul>
 <p>0.1.4</p>
 <ul>
     <li><b>The the root workspace directory may now be outside the project.</b>
