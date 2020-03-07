@@ -37,7 +37,7 @@ public class ForceCacheQuickFix extends BaseIntentionAction implements LocalQuic
 
     @Override
     public void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor) {
-        project.getComponent(ROSDepKeyCache.class).forceFetch();
+        project.getService(ROSDepKeyCache.class).forceFetch();
         DaemonCodeAnalyzer.getInstance(project).restart();
     }
 
@@ -48,7 +48,7 @@ public class ForceCacheQuickFix extends BaseIntentionAction implements LocalQuic
 
     @Override
     public void invoke(@NotNull Project project, Editor editor, PsiFile file) throws IncorrectOperationException {
-        project.getComponent(ROSDepKeyCache.class).forceFetch();
+        project.getService(ROSDepKeyCache.class).forceFetch();
         DaemonCodeAnalyzer.getInstance(project).restart();
     }
 }

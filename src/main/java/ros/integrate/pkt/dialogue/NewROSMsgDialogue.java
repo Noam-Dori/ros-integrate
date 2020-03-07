@@ -70,7 +70,7 @@ public class NewROSMsgDialogue extends DialogWrapper {
         targetDir = suggestedPkg == null || !suggestedPkg.isEditable() || suggestedPkg.getMsgRoot() == null ?
                 origFile.getContainingDirectory() : suggestedPkg.getMsgRoot();
         if (targetDir == null) {
-            targetDir = prj.getComponent(ROSPackageManager.class).getAllPackages()
+            targetDir = prj.getService(ROSPackageManager.class).getAllPackages()
                     .stream().filter(pkg -> pkg instanceof ROSSourcePackage)
                     .collect(Collectors.toList()).get(0).getMsgRoot();
         }

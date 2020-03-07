@@ -111,7 +111,7 @@ class PackageDependencyAnnotator {
                         "Unresolved dependency");
                 ann.setHighlightType(ProblemHighlightType.ERROR);
                 ann.registerFix(new RemoveDependencyQuickFix(pkgXml, i));
-                if (pkgXml.getPackage().getProject().getComponent(ROSDepKeyCache.class).inOfflineMode()) {
+                if (pkgXml.getPackage().getProject().getService(ROSDepKeyCache.class).inOfflineMode()) {
                     ann.registerFix(new ForceCacheQuickFix());
                 }
             }

@@ -35,7 +35,7 @@ class ROSPktFieldAnnotator extends ROSPktAnnotatorBase {
                 constant = field.getConst() != null;
         if(equalSign && !constant) {
             int equalSignOffset = equalAST.getTextRange().getEndOffset();
-            holder.createErrorAnnotation(new TextRange(equalSignOffset, equalSignOffset + 1), "expected a constant value for the constant field");
+            holder.createErrorAnnotation(new TextRange(equalSignOffset, equalSignOffset + 1), "Expected a constant value for the constant field");
         }
         if (!equalSign && constant) {
             int labelEndOffset = Objects.requireNonNull(field.getLabel()).getTextRange().getEndOffset();

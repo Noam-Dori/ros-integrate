@@ -46,7 +46,7 @@ public class ROSPktUtil {
      * @return a non-null list containing all message files found via the query.
      */
     static List<ROSMsgFile> findMessages(@NotNull Project project, @Nullable String pkgName, @Nullable ROSMsgFile exclude) {
-        ROSPackageManager manager = project.getComponent(ROSPackageManager.class);
+        ROSPackageManager manager = project.getService(ROSPackageManager.class);
         List<ROSMsgFile> result = new ArrayList<>();
         Collection<ROSPackage> packages;
         if(pkgName == null){
@@ -73,7 +73,7 @@ public class ROSPktUtil {
      */
     @Nullable
     public static ROSMsgFile findMessage(@NotNull Project project, @NotNull String pkgName, @NotNull String msgName) {
-        ROSPackageManager manager = project.getComponent(ROSPackageManager.class);
+        ROSPackageManager manager = project.getService(ROSPackageManager.class);
         final ROSPackage pkg = manager.findPackage(pkgName);
         return pkg != null ? pkg.findPacket(msgName, ROSMsgFile.class) : null;
     }

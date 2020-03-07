@@ -36,28 +36,16 @@ public class ROSPackageManagerImpl implements ROSPackageManager {
 
     public ROSPackageManagerImpl(@NotNull Project project) {
         this.project = project;
-    }
-
-    @Override
-    public void projectOpened() {
         init();
     }
 
-    @Override
-    public void initComponent() {
-        if (project.isInitialized()) {
-            init();
-        }
-    }
-
     private void init() {
-        WriteCommandAction.runWriteCommandAction(project, this::setupLibraries);
+        ApplicationManager.getApplication().invokeLater(() -> {setupLibraries(); findAndCachePackages();});
         ROSSettings.getInstance(project).addListener(settings -> {
                     purgeFlag = true;
                     dispatchEvents(new ArrayList<>());
                 },
                 BrowserOptions.HistoryKey.EXCLUDED_XMLS.get());
-        findAndCachePackages();
         // add a watch to VirtualFileSystem that will trigger this
         project.getMessageBus().connect().subscribe(VirtualFileManager.VFS_CHANGES, new BulkFileListener() {
             @Override
@@ -80,7 +68,8 @@ public class ROSPackageManagerImpl implements ROSPackageManager {
     private void setupLibraries() {
         Module[] projectModules = ModuleManager.getInstance(project).getModules();
         finders.forEach(finder -> {
-            Library lib = finder.getLibrary(project);
+            Library lib = WriteCommandAction.runWriteCommandAction(project, (Computable<Library>) () ->
+                    finder.getLibrary(project));
             if (lib != null) {
                 ROSSettings.getInstance(project).addListener(settings ->
                                 WriteCommandAction.runWriteCommandAction(project, (Computable<Boolean>) () ->

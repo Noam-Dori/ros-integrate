@@ -36,7 +36,7 @@ class PackageContribAnnotator {
     void annNoMaintainers() {
         if (maintainers.isEmpty()) {
             Annotation ann = holder.createErrorAnnotation(maintainerTr.get(0),
-                    "package should have at least one maintainer.");
+                    "Package should have at least one maintainer.");
             ann.registerFix(new AddMaintainerQuickFix(pkgXml));
             ann.registerFix(new DeclareOrphanQuickFix(pkgXml));
         }
@@ -46,10 +46,10 @@ class PackageContribAnnotator {
         for (int i = 0; i < maintainers.size(); i++) {
             Annotation ann = null;
             if (maintainers.get(i).getEmail().isEmpty()) {
-                ann = holder.createErrorAnnotation(maintainerTr.get(i), "maintainer is missing reference email");
+                ann = holder.createErrorAnnotation(maintainerTr.get(i), "Maintainer is missing reference email");
             }
             if (pkgXml.getMaintainers().get(i).getName().isEmpty()) {
-                ann = holder.createErrorAnnotation(maintainerTr.get(i), "maintainer does not have a name");
+                ann = holder.createErrorAnnotation(maintainerTr.get(i), "Maintainer does not have a name");
             }
             if (ann != null) {
                 ann.registerFix(new FixContributorQuickFix(pkgXml, i, ContribType.MAINTAINER));
@@ -63,7 +63,7 @@ class PackageContribAnnotator {
     void annBadAuthor() {
         for (int i = 0; i < authors.size(); i++) {
             if (authors.get(i).getName().isEmpty()) {
-                Annotation ann = holder.createErrorAnnotation(authorTr.get(i), "author does not have a name");
+                Annotation ann = holder.createErrorAnnotation(authorTr.get(i), "Author does not have a name");
                 ann.registerFix(new FixContributorQuickFix(pkgXml, i, ContribType.AUTHOR));
             }
         }

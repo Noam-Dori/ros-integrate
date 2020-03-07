@@ -1,6 +1,5 @@
 package ros.integrate.pkg;
 
-import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.xml.XmlFile;
 import org.jetbrains.annotations.Nullable;
@@ -8,7 +7,7 @@ import ros.integrate.pkg.psi.ROSPackage;
 
 import java.util.Collection;
 
-public interface ROSPackageManager extends ProjectComponent {
+public interface ROSPackageManager {
     /**
      * retrieves all packages in the cache (and tries to find more)
      * @return all packages the project knows about.

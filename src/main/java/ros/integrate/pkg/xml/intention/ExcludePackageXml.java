@@ -23,7 +23,7 @@ public class ExcludePackageXml extends BaseIntentionAction implements LocalQuick
 
     @Override
     public void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor) {
-        project.getComponent(ROSPackageManager.class).excludePkgXml((XmlFile) descriptor.getPsiElement()
+        project.getService(ROSPackageManager.class).excludePkgXml((XmlFile) descriptor.getPsiElement()
                 .getContainingFile());
     }
 
@@ -40,6 +40,6 @@ public class ExcludePackageXml extends BaseIntentionAction implements LocalQuick
 
     @Override
     public void invoke(@NotNull Project project, Editor editor, PsiFile file) throws IncorrectOperationException {
-        project.getComponent(ROSPackageManager.class).excludePkgXml((XmlFile) file);
+        project.getService(ROSPackageManager.class).excludePkgXml((XmlFile) file);
     }
 }

@@ -32,7 +32,7 @@ class PackageLicenseAnnotator {
     void annNoLicenses() {
         if (licenses.isEmpty()) {
             Annotation ann = holder.createErrorAnnotation(licenseTrs.get(0),
-                    "package must have at least one licence.");
+                    "Package must have at least one licence.");
             ann.registerFix(new AddLicenceQuickFix(pkgXml));
         }
     }
@@ -46,14 +46,14 @@ class PackageLicenseAnnotator {
             TextRange tr = licenseTrs.get(i);
             if (license.isEmpty()) {
                 Annotation ann = holder.createErrorAnnotation(tr,
-                        "license tags cannot be empty.");
+                        "License tags cannot be empty.");
                 ann.registerFix(new FixLicenseQuickFix(pkgXml, i));
                 if (licenses.size() > 1) {
                     ann.registerFix(new RemoveLicenseQuickFix(pkgXml, i));
                 }
             } else if (license.contains(",")) {
                 Annotation ann = holder.createWarningAnnotation(tr,
-                        "each license tag must only hold ONE license.");
+                        "Each license tag must only hold ONE license.");
                 ann.registerFix(new SplitLicenseQuickFix(pkgXml, i));
             }
         }

@@ -127,7 +127,7 @@ public class ROSSettingsPage implements SearchableConfigurable {
         });
         resetSourcesButton.addActionListener(action -> additionalSources.setText(rosPackagePathEnv()));
         resetSourcesButton.setEnabled(!rosPackagePathEnv().equals(additionalSources.getText()));
-        ROSDepKeyCache keyCache = project.getComponent(ROSDepKeyCache.class);
+        ROSDepKeyCache keyCache = project.getService(ROSDepKeyCache.class);
         fetchSourceListsButton.addActionListener(action -> ProgressManager.getInstance().run(new Task.Backgroundable(
                 project, GET_SOURCES_PROGRESS, true) {
             @Override

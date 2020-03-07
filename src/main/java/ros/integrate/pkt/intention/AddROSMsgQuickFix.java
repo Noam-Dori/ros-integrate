@@ -59,7 +59,7 @@ public class AddROSMsgQuickFix extends BaseIntentionAction {
         PsiDocumentManager.getInstance(project).commitAllDocuments();
 
         Pair<String, String> fullMsgName = getFullName();
-        ROSPackageManager manager = project.getComponent(ROSPackageManager.class);
+        ROSPackageManager manager = project.getService(ROSPackageManager.class);
         ROSPackage pkg = manager.findPackage(fullMsgName.first);
 
         NewROSMsgDialogue dialogue = new NewROSMsgDialogue(project, pkg, fullMsgName.second, file);

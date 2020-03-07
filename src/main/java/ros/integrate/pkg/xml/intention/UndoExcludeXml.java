@@ -32,6 +32,6 @@ public class UndoExcludeXml extends BaseIntentionAction {
 
     @Override
     public void invoke(@NotNull Project project, Editor editor, PsiFile file) throws IncorrectOperationException {
-        project.getComponent(ROSPackageManager.class).includeXml((XmlFile) file);
+        project.getService(ROSPackageManager.class).includeXml((XmlFile) file);
     }
 }

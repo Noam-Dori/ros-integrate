@@ -40,7 +40,7 @@ public abstract class ROSPackageBase extends PsiElementBase implements ROSPackag
     }
 
     private ROSPackageManager getPackageManager() {
-        return project.getComponent(ROSPackageManager.class);
+        return project.getService(ROSPackageManager.class);
     }
 
     @Override

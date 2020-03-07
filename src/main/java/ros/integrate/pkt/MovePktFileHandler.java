@@ -31,7 +31,7 @@ public class MovePktFileHandler extends MoveFileHandler {
     public void prepareMovedFile(PsiFile file, PsiDirectory moveDestination, Map<PsiElement, PsiElement> oldToNewMap) {
         // add mapping from old pkg to new pkg
         ROSPackage oldPkg = pkt(file).getPackage();
-        ROSPackage newPkg = file.getProject().getComponent(ROSPackageManager.class).findPackage(moveDestination);
+        ROSPackage newPkg = file.getProject().getService(ROSPackageManager.class).findPackage(moveDestination);
         oldToNewMap.put(oldPkg, newPkg);
         // trigger references, auto-updating them.
         for (ROSPktFieldBase field : pkt(file).getFields(ROSPktFieldBase.class, true)) {

@@ -30,18 +30,7 @@ public class ROSDepKeyCacheImpl implements ROSDepKeyCache {
 
     public ROSDepKeyCacheImpl(Project project) {
         this.project = project;
-    }
-
-    @Override
-    public void projectOpened() {
         init();
-    }
-
-    @Override
-    public void initComponent() {
-        if (project.isInitialized()) {
-            init();
-        }
     }
 
     private void init() {

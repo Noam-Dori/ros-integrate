@@ -54,6 +54,6 @@ public abstract class ROSPackageReferenceBase<T extends PsiElement> extends PsiP
 
     @NotNull
     protected Optional<ROSPackage> resolvePackage() {
-        return Optional.ofNullable(myElement.getProject().getComponent(ROSPackageManager.class).findPackage(pkgName));
+        return Optional.ofNullable(myElement.getProject().getService(ROSPackageManager.class).findPackage(pkgName));
     }
 }

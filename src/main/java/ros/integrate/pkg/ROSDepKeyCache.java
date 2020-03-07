@@ -1,6 +1,5 @@
 package ros.integrate.pkg;
 
-import com.intellij.openapi.components.ProjectComponent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkg.psi.impl.ROSDepKey;
@@ -24,7 +23,7 @@ import java.util.Collection;
  *     (even if it failed connecting)</li>
  * </ol>
  */
-public interface ROSDepKeyCache extends ProjectComponent {
+public interface ROSDepKeyCache {
 
     /**
      * attempts to find a key with the given name

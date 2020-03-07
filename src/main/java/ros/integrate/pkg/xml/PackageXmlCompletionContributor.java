@@ -69,8 +69,8 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
             ROSLicenses.AVAILABLE_LICENSES.keySet().stream().filter(license -> !xmlFile.getLicences().contains(license))
                     .map(LookupElementBuilder::create).forEach(resultSet::addElement);
         } else if (PackageXmlUtil.isDependencyTag(tag)) {
-            Collection<ROSPackage> packages = tag.getProject().getComponent(ROSPackageManager.class).getAllPackages();
-            packages.addAll(tag.getProject().getComponent(ROSDepKeyCache.class).getAllKeys());
+            Collection<ROSPackage> packages = tag.getProject().getService(ROSPackageManager.class).getAllPackages();
+            packages.addAll(tag.getProject().getService(ROSDepKeyCache.class).getAllKeys());
             Arrays.stream(PackageXmlUtil.getDependencyType(tag).getCoveredDependencies())
                     .map(xmlFile::getDependencies).forEach(packages::removeAll);
             packages.remove(xmlFile.getPackage());

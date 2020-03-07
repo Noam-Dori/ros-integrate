@@ -46,8 +46,8 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
     @Contract(pure = true)
     public ROSPackageXmlImpl(@NotNull XmlFile xmlToWrap, @NotNull ROSPackage pkg) {
         file = xmlToWrap;
-        pkgManager = file.getProject().getComponent(ROSPackageManager.class);
-        keyCache = file.getProject().getComponent(ROSDepKeyCache.class);
+        pkgManager = file.getProject().getService(ROSPackageManager.class);
+        keyCache = file.getProject().getService(ROSDepKeyCache.class);
         this.pkg = pkg;
     }
 
@@ -60,7 +60,7 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
     @Override
     public void setRawXml(@NotNull XmlFile newXml) {
         file = newXml;
-        pkgManager = file.getProject().getComponent(ROSPackageManager.class);
+        pkgManager = file.getProject().getService(ROSPackageManager.class);
     }
 
     @Override

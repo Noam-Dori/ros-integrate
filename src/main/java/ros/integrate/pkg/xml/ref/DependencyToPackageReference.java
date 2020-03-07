@@ -29,6 +29,6 @@ public class DependencyToPackageReference extends ROSPackageReferenceBase<XmlTag
     @Override
     protected Optional<ROSPackage> resolvePackage() {
         return super.resolvePackage().map(Optional::of).orElseGet(() -> Optional.ofNullable(myElement.getProject()
-                .getComponent(ROSDepKeyCache.class).findKey(pkgName)));
+                .getService(ROSDepKeyCache.class).findKey(pkgName)));
     }
 }

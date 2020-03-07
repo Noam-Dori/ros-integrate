@@ -15,7 +15,7 @@ public class ROSPackageIconProvider extends IconProvider {
     @Override
     public Icon getIcon(@NotNull PsiElement element, int flags) {
         if(element instanceof PsiDirectory) {
-            ROSPackage pkg = element.getProject().getComponent(ROSPackageManager.class).findPackage((PsiDirectory) element);
+            ROSPackage pkg = element.getProject().getService(ROSPackageManager.class).findPackage((PsiDirectory) element);
             return pkg != null &&
                     search(pkg.getRoots(), (PsiDirectory) element)
                     ? pkg.getIcon(flags) : null;

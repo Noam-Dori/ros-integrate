@@ -72,7 +72,7 @@ public class PackageXmlAnnotator implements Annotator {
             for (int i = 0; i < urlList.size(); i++) {
                 if (urlList.get(i).first.isEmpty()) {
                     Annotation ann = holder.createErrorAnnotation(pkgXml.getURLTextRanges().get(i),
-                            "empty URL");
+                            "Empty URL");
                     ann.registerFix(new RemoveURLQuickFix(pkgXml, i));
                 }
                 if (urlList.get(i).second == null) {

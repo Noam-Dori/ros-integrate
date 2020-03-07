@@ -38,7 +38,7 @@ class PackageIdAnnotator {
 
     void annNoName() {
         if (name == null) {
-            Annotation ann = holder.createErrorAnnotation(nameTr, "package must give a name to the package");
+            Annotation ann = holder.createErrorAnnotation(nameTr, "Package must give a name to the package");
             ann.registerFix(new FixNameQuickFix(pkgXml, "Add"));
         }
     }
@@ -52,7 +52,7 @@ class PackageIdAnnotator {
     void annPkgNameMatch() {
         if (!pkgXml.getPackage().getName().equals(name)) {
             Annotation ann = holder.createErrorAnnotation(nameTr,
-                    "package name should match its parent directory");
+                    "Package name should match its parent directory");
             ann.registerFix(new FixNameQuickFix(pkgXml, "Fix"));
         }
     }
@@ -60,7 +60,7 @@ class PackageIdAnnotator {
     void annNoVersion() {
         if (version == null) {
             Annotation ann = holder.createErrorAnnotation(versionTr,
-                    "package must have a version.");
+                    "Package must have a version.");
             ann.registerFix(new FixVersionQuickFix(pkgXml, "Add"));
         }
     }
@@ -76,7 +76,7 @@ class PackageIdAnnotator {
     void annNoDescription() {
         if (description == null) {
             Annotation ann = holder.createErrorAnnotation(descriptionTr,
-                    "package must have a description.");
+                    "Package must have a description.");
             ann.registerFix(new AddDescriptionQuickFix(pkgXml));
         }
     }

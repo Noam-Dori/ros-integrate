@@ -60,7 +60,7 @@ public class PackageXmlUtil {
 
     @Nullable
     public static ROSPackageXml getWrapper(@NotNull PsiFile rawFile) {
-        ROSPackageManager manager = rawFile.getProject().getComponent(ROSPackageManager.class);
+        ROSPackageManager manager = rawFile.getProject().getService(ROSPackageManager.class);
         for (ROSPackage pkg : manager.getAllPackages()) {
             if (pkg.getPackageXml() != null && rawFile.equals(pkg.getPackageXml().getRawXml())) {
                 return pkg.getPackageXml();
