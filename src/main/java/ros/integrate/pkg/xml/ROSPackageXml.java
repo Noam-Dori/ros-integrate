@@ -51,7 +51,7 @@ public interface ROSPackageXml {
      */
     @Contract(pure = true)
     static int getLatestFormat() {
-        return 3;
+        return 2;
     }
 
     /**
