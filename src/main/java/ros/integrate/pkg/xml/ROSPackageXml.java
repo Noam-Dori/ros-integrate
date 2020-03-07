@@ -275,8 +275,9 @@ public interface ROSPackageXml {
      * adds a new dependency for this package.
      * @param type the way this package depends on the new package.
      * @param pkg the package this one depends on.
+     * @param checkRepeating also check whether or not the dependency exists already before adding this new one
      */
-    void addDependency(@NotNull DependencyType type,@NotNull ROSPackage pkg);
+    void addDependency(@NotNull DependencyType type,@NotNull ROSPackage pkg, boolean checkRepeating);
 
     /**
      * changes a license

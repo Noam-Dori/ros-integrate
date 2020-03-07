@@ -95,7 +95,7 @@ public class ReformatPackageXmlFix extends BaseIntentionAction implements LocalQ
         pkgXml.setFormat(targetFormat);
         // export
         // groups
-        dependencies.forEach(pair -> pkgXml.addDependency(pair.first, pair.second));
+        dependencies.forEach(pair -> pkgXml.addDependency(pair.first, pair.second, false));
         authors.forEach(author -> pkgXml.addAuthor(author.getName(), author.getEmail().isEmpty() ? null :
                 author.getEmail()));
         urls.forEach(url -> pkgXml.addURL(url.first, url.second));

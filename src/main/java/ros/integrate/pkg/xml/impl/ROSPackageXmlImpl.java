@@ -351,9 +351,19 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
     }
 
     @Override
-    public void addDependency(@NotNull DependencyType type, @NotNull ROSPackage pkg) {
+    public void addDependency(@NotNull DependencyType type, @NotNull ROSPackage pkg, boolean checkRepeating) {
         if (file.getRootTag() == null) {
             addRootTag();
+        }
+        if (checkRepeating) {
+            Set<DependencyType> types = new HashSet<>();
+            getDependenciesTyped().stream().filter(pair -> pair.second == pkg)
+                    .map(pair -> pair.first).map(DependencyType::getCoveredDependencies)
+                    .map(Arrays::asList).forEach(types::addAll);
+            types.retainAll(Arrays.asList(type.getCoveredDependencies()));
+            if (!types.isEmpty()) {
+                return;
+            }
         }
         file.getRootTag().addSubTag(file.getRootTag()
                 .createChildTag(type.getTagName(), null, pkg.getName(), false), true);

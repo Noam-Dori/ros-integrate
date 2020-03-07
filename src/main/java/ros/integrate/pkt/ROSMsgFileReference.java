@@ -14,6 +14,7 @@ import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import ros.integrate.pkg.xml.DependencyType;
 import ros.integrate.pkt.psi.*;
 import ros.integrate.pkg.ROSPackageManager;
 import ros.integrate.pkg.psi.ROSPackage;
@@ -21,6 +22,7 @@ import ros.integrate.pkg.psi.ROSPackage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * a class defining the references of {@link ros.integrate.pkt.psi.ROSPktTypeBase} to {@link ROSMsgFile}
@@ -138,8 +140,10 @@ public class ROSMsgFileReference extends PsiReferenceBase<PsiElement> implements
         // remove prev. package references if they exist
         context.getDocument().deleteString(model.getVisualLineStart(), model.getOffset());
         // add new ref.
-        if (!msg.getPackage().getName().equals(((ROSPktFile) context.getFile()).getPackage().getName()) &&
-            !isFirstHeader(msg)) {
+        ROSPackage thisPackage = ((ROSPktFile) context.getFile()).getPackage();
+        if (!msg.getPackage().getName().equals(thisPackage.getName()) && !isFirstHeader(msg)) {
+            Optional.ofNullable(thisPackage.getPackageXml()).ifPresent(pkgXml ->
+                    pkgXml.addDependency(DependencyType.BUILD, msg.getPackage(), true));
             context.getDocument().insertString(model.getOffset(), msg.getPackage().getName() + "/");
         }
         model.getCurrentCaret().moveCaretRelatively(msg.getQualifiedName().length(), 0, false, false);
