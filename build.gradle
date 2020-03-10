@@ -34,7 +34,7 @@ sourceSets {
     }
 }
 
-String pluginVersion = '0.1.5'
+String pluginVersion = '0.1.6'
 String pluginIndex = 'ros-integrate'
 String changes = new File("changelog.html").text
 
