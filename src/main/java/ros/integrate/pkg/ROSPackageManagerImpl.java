@@ -15,7 +15,6 @@ import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.xml.XmlFile;
-import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.containers.MultiMap;
 import com.intellij.util.containers.SortedList;
 import org.jetbrains.annotations.NotNull;
@@ -25,10 +24,11 @@ import ros.integrate.settings.ROSSettings;
 import ros.integrate.pkg.psi.ROSPackage;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 public class ROSPackageManagerImpl implements ROSPackageManager {
-    private final ConcurrentMap<String, ROSPackage> pkgCache = ContainerUtil.createConcurrentSoftValueMap();
+    private final ConcurrentMap<String, ROSPackage> pkgCache = new ConcurrentHashMap<>();
     private final Project project;
 
     private static final List<ROSPackageFinder> finders = ROSPackageFinder.EP_NAME.getExtensionList();
