@@ -30,11 +30,11 @@ public class PackageXmlReferenceContributor extends PsiReferenceContributor {
                 String name = ((XmlTag)element).getName(), value = ((XmlTag)element).getValue().getText();
                 if (name.equals("license")) {
                     String url = ROSLicenses.AVAILABLE_LICENSES.get(value);
-                    return url == null || url.isEmpty() ? PsiReference.EMPTY_ARRAY : getWebReference(element);
+                    return url == null || url.isEmpty() ? PsiReference.EMPTY_ARRAY : getWebReference(element, url);
                 } else if (name.equals("url")) {
                     try {
                         new URL(value);
-                        return value.isEmpty() ? PsiReference.EMPTY_ARRAY : getWebReference(element);
+                        return value.isEmpty() ? PsiReference.EMPTY_ARRAY : getWebReference(element, value);
                     } catch (MalformedURLException ignored) {
                     }
                 } else if (PackageXmlUtil.isDependencyTag((XmlTag) element)) {
@@ -48,9 +48,9 @@ public class PackageXmlReferenceContributor extends PsiReferenceContributor {
     }
 
     @NotNull
-    @Contract("_ -> new")
-    private static PsiReference[] getWebReference(@NotNull PsiElement element) {
+    @Contract("_,_ -> new")
+    private static PsiReference[] getWebReference(@NotNull PsiElement element, @NotNull String url) {
         TextRange valueTr = ((XmlTag)element).getValue().getTextRange();
-        return new PsiReference[]{new WebReference(element, valueTr.shiftLeft(element.getTextOffset()))};
+        return new PsiReference[]{new WebReference(element, valueTr.shiftLeft(element.getTextOffset()), url)};
     }
 }
