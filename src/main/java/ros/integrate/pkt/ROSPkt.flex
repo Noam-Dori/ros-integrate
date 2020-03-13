@@ -101,9 +101,9 @@ FLOAT={NUMBER}+(\.)?{NUMBER}*|{NUMBER}*(\.)?{NUMBER}+
 
 <START_INT_CONST,START_INT_CONST_FRAG> -\.?                 { yybegin(END_LINE); return ROSPktTypes.STRING;}
 
-<START_INT_CONST,START_INT_CONST_FRAG> -/(({FLOAT}(\ {LINE_COMMENT})?)?)
+<START_INT_CONST,START_INT_CONST_FRAG> -/(({FLOAT}({WHITE_SPACE}+{LINE_COMMENT})?)?)
                                                             { yybegin(NEG_NUM); return ROSPktTypes.NEG_OPERATOR; }
-<NEG_NUM,START_INT_CONST,START_INT_CONST_FRAG> {FLOAT}/((\ {LINE_COMMENT})?)
+<NEG_NUM,START_INT_CONST,START_INT_CONST_FRAG> {FLOAT}/(({WHITE_SPACE}+{LINE_COMMENT})?)
                                                             { yybegin(END_INT_CONST); return ROSPktTypes.NUMBER;}
 
 <START_INT_CONST> {STR_CONST}                               { yybegin(END_LINE); return ROSPktTypes.STRING;}

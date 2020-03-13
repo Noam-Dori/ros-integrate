@@ -121,7 +121,7 @@ public class ROSPktTypeAnnotator extends ROSPktAnnotatorBase {
      * @return true if the annotation was activated, false if not.
      */
     boolean annBadTypeConst(boolean isRemoveIntentionActive, @NotNull ROSPktConst constant) {
-        String numericalRegex = "(bool)|(string)|((uint|int)(8|16|32|64))|(float(32|64))";
+        String numericalRegex = "(bool)|(string)|((uint|int)(8|16|32|64))|(float(32|64))|(byte)|(char)";
         if (!type.raw().getText().matches(numericalRegex)) { // a very simple regex
             TextRange range = constant.getTextRange();
             Annotation ann = holder.createErrorAnnotation(range, "Only the built-in string and numerical types may be assigned a constant.");

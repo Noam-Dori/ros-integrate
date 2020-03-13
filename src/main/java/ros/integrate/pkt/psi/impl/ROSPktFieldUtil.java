@@ -36,11 +36,11 @@ class ROSPktFieldUtil {
                 i64 = MaxValue.INT64.nameEquals(type),
                 i32 = MaxValue.INT32.nameEquals(type),
                 i16 = MaxValue.INT16.nameEquals(type),
-                i8 = MaxValue.INT8.nameEquals(type),
+                i8 = MaxValue.INT8.nameEquals(type) || "byte".equals(type),
                 ui64 = "uint64".equals(type),
                 ui32 = MaxValue.UINT32.nameEquals(type),
                 ui16 = MaxValue.UINT16.nameEquals(type),
-                ui8 = MaxValue.UINT8.nameEquals(type),
+                ui8 = MaxValue.UINT8.nameEquals(type) || "char".equals(type),
                 str = "string".equals(type),
                 ret = false;
         try {
