@@ -1,9 +1,11 @@
 package ros.integrate.pkt;
 
+import com.intellij.codeInsight.completion.CodeCompletionHandlerBase;
+import com.intellij.codeInsight.completion.CompletionType;
 import com.intellij.codeInsight.completion.InsertionContext;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
-import com.intellij.codeInsight.lookup.LookupManager;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.CaretModel;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.project.Project;
@@ -76,7 +78,7 @@ public class ROSMsgFileReference extends PsiReferenceBase<PsiElement> implements
     public Object[] getVariants() {
         Project project = myElement.getProject();
         List<LookupElement> variants = new ArrayList<>();
-        addMessageVariants(project, variants, null);
+        addMessageVariants(project, variants);
         addPackageVariants(project, variants);
         return variants.toArray();
     }
@@ -86,37 +88,34 @@ public class ROSMsgFileReference extends PsiReferenceBase<PsiElement> implements
             for (final ROSPackage pkg : project.getService(ROSPackageManager.class).getAllPackages()) {
                 if (pkg.getPackets(GlobalSearchScope.allScope(project)).length > 0) {
                     variants.add(LookupElementBuilder.createWithIcon(pkg)
-                            .withInsertHandler((context, item) -> addSlash(context, project, pkg))
+                            .withInsertHandler((context, item) -> addSlash(context, project))
                     );
                 }
             }
         }
     }
 
-    private void addSlash(@NotNull InsertionContext context, @NotNull Project project, @NotNull ROSPackage pkg) {
+    private void addSlash(@NotNull InsertionContext context, @NotNull Project project) {
         CaretModel model = context.getEditor().getCaretModel();
         Document document = context.getDocument();
         final String prevName;
 
-        if(document.getTextLength() > model.getOffset() && document.getText(new TextRange(model.getOffset(),model.getOffset() + 1)).equals("/")) {
-            prevName = document.getText(new TextRange(model.getOffset() + 1, model.getVisualLineEnd())).replaceAll("( .*)?\n?","");
+        if (document.getTextLength() > model.getOffset() && document.getText(new TextRange(model.getOffset(), model.getOffset() + 1)).equals("/")) {
+            prevName = document.getText(new TextRange(model.getOffset() + 1, model.getVisualLineEnd())).replaceAll("( .*)?\n?", "");
             model.getCurrentCaret().moveCaretRelatively(prevName.length() + 1, 0, false, false);
         } else {
             document.insertString(model.getOffset(), "/");
             model.getCurrentCaret().moveCaretRelatively(1, 0, false, false);
-            prevName = "";
         }
 
-        List<LookupElement> variants = new ArrayList<>();
-        addMessageVariants(project, variants, pkg.getName());
-
-        LookupManager.getInstance(project).showLookup(context.getEditor(), variants.toArray(LookupElement.EMPTY_ARRAY),prevName);
+        ApplicationManager.getApplication().invokeLater(() -> new CodeCompletionHandlerBase(CompletionType.BASIC, true, false, true)
+                .invokeCompletion(project, context.getEditor()));
     }
 
-    private void addMessageVariants(@NotNull Project project, List<LookupElement> variants, @Nullable String forcedPkg) {
+    private void addMessageVariants(@NotNull Project project, List<LookupElement> variants) {
         PsiFile containingFile = myElement.getContainingFile().getOriginalFile();
         ROSMsgFile thisAsExclude = containingFile instanceof ROSMsgFile ? (ROSMsgFile) containingFile : null;
-        final String lookupPkg = forcedPkg != null ? forcedPkg : explicitPackage ? pkgName : null;
+        final String lookupPkg = explicitPackage ? pkgName : null;
         for (final ROSMsgFile msg : ROSPktUtil.findMessages(project, lookupPkg, thisAsExclude)) {
             if (msg.getPacketName().length() > 0) {
                 variants.add(LookupElementBuilder.create(msg.getPacketName())
