@@ -79,7 +79,9 @@ public class ROSWorkspacePackageFinder extends ROSPackageFinderBase {
         ROSSettings settings = ROSSettings.getInstance(project);
         Map<String, OrderRootType> paths = new HashMap<>();
         settings.getAdditionalSources().forEach(path -> paths.put(path, OrderRootType.CLASSES));
-        paths.put(settings.getWorkspacePath(), OrderRootType.SOURCES);
+        if (!settings.getWorkspacePath().isEmpty()) {
+            paths.put(settings.getWorkspacePath(), OrderRootType.SOURCES);
+        }
         for (Map.Entry<String, OrderRootType> entry : paths.entrySet()) {
             VirtualFile root = VirtualFileManager.getInstance()
                     .findFileByUrl(VirtualFileManager.constructUrl(LocalFileSystem.PROTOCOL, entry.getKey()));

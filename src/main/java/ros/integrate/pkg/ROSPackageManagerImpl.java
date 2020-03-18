@@ -72,8 +72,10 @@ public class ROSPackageManagerImpl implements ROSPackageManager {
                     finder.getLibrary(project));
             if (lib != null) {
                 ROSSettings.getInstance(project).addListener(settings ->
-                                WriteCommandAction.runWriteCommandAction(project, (Computable<Boolean>) () ->
-                                        purgeFlag = finder.updateLibrary(project, lib)),
+                                WriteCommandAction.runWriteCommandAction(project, () -> {
+                                    purgeFlag = finder.updateLibrary(project, lib);
+                                    dispatchEvents(new ArrayList<>());
+                                }),
                         new String[]{BrowserOptions.HistoryKey.EXTRA_SOURCES.get(),
                                 BrowserOptions.HistoryKey.WORKSPACE.get()});
                 Arrays.stream(projectModules).forEach(module -> setDependency(module, lib));

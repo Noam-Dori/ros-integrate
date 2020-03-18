@@ -21,6 +21,7 @@ import ros.integrate.pkg.psi.ROSPackage;
 import ros.integrate.pkg.psi.impl.ROSCompiledPackage;
 
 import java.util.*;
+import java.util.function.BiFunction;
 
 import static ros.integrate.pkg.psi.impl.ROSCompiledPackage.RootType;
 
@@ -66,41 +67,48 @@ public class ROSCompiledPackageFinder extends ROSPackageFinderBase {
     @NotNull
     @Override
     public Library getLibrary(Project project) {
-        String url = VirtualFileManager.constructUrl(LocalFileSystem.PROTOCOL,
-                ROSSettings.getInstance(project).getROSPath());
         LibraryTable table = LibraryTablesRegistrar.getInstance().getLibraryTable(project);
         Library lib = table.getLibraryByName("ROS");
         if (lib != null) {
             table.removeLibrary(lib);
         }
         lib = table.createLibrary("ROS");
-        Library.ModifiableModel model = lib.getModifiableModel();
-        VirtualFile file = VirtualFileManager.getInstance().findFileByUrl(url);
-        if (file != null) {
-            model.addRoot(file, OrderRootType.CLASSES); // note: OrderRootType.SOURCES also works, but will not show in external libraries.
-            model.commit();
-        }
+        String rosPath = ROSSettings.getInstance(project).getROSPath();
+        addPath(lib, rosPath, (model, url) -> true);
 
         return lib;
     }
 
     @Override
     public boolean updateLibrary(Project project, @NotNull Library lib) {
+        return addPath(lib, ROSSettings.getInstance(project).getROSPath(), (model, newUrl) -> {
+            if (!Arrays.asList(model.getUrls(OrderRootType.CLASSES)).contains(newUrl)) {
+                Arrays.stream(model.getUrls(OrderRootType.CLASSES))
+                        .forEach(modelUrl -> model.removeRoot(modelUrl, OrderRootType.CLASSES));
+                return true;
+            } else {
+                return false;
+            }
+        });
+    }
+
+    private boolean addPath(@NotNull Library lib, @NotNull String path,
+                            @NotNull BiFunction<Library.ModifiableModel, String, Boolean> predicate) {
         Library.ModifiableModel model = lib.getModifiableModel();
-        String newUrl = VirtualFileManager.constructUrl(LocalFileSystem.PROTOCOL,
-                ROSSettings.getInstance(project).getROSPath());
-        if (!Arrays.asList(model.getUrls(OrderRootType.CLASSES)).contains(newUrl)) {
-            Arrays.stream(model.getUrls(OrderRootType.CLASSES))
-                    .forEach(modelUrl -> model.removeRoot(modelUrl, OrderRootType.CLASSES));
-            VirtualFile newFile = VirtualFileManager.getInstance().findFileByUrl(newUrl);
-            if (newFile != null) {
-                model.addRoot(newFile, OrderRootType.CLASSES);
+        String url = VirtualFileManager.constructUrl(LocalFileSystem.PROTOCOL, path);
+        if (!predicate.apply(model, url)) {
+            return false;
+        }
+        if (!path.isEmpty()) {
+            VirtualFile file = VirtualFileManager.getInstance().findFileByUrl(url);
+            if (file != null) {
+                // note: OrderRootType.SOURCES also works, but will not show in external libraries.
+                model.addRoot(file, OrderRootType.CLASSES);
                 model.commit();
             }
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
     boolean notInFinder(@NotNull VirtualFile vFile, @NotNull Project project) {

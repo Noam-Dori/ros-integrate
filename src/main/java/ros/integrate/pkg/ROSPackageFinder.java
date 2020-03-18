@@ -77,6 +77,12 @@ public interface ROSPackageFinder {
     @Nullable
     Library getLibrary(Project project);
 
+    /**
+     * updates a library
+     * @param project the project the finder will update a library for
+     * @param lib the library to update
+     * @return true if updating packages requires a purge, false otherwise.
+     */
     boolean updateLibrary(Project project, @NotNull Library lib);
 
     enum CacheCommand {

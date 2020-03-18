@@ -184,23 +184,21 @@ public class ROSSettingsPage implements SearchableConfigurable {
                 || isModified(knownRosdepKeys.getChildComponent().getTextEditor(), data.getRawKnownROSDepKeys());
     }
 
-    private void addToHistory(@NotNull TextFieldWithHistoryWithBrowseButton field, HistoryKey historyKey,
-                                              Consumer<String> updateAction, boolean handlesEmpty) {
-        if (handlesEmpty || !field.getText().isEmpty()) {
-            recentsManager.registerRecentEntry(historyKey.get(), field.getChildComponent().getText());
-            updateAction.consume(field.getText());
-            data.triggerListeners(historyKey.get());
-        }
+    private void addToHistory(@NotNull TextFieldWithHistoryWithBrowseButton field, @NotNull HistoryKey historyKey,
+                              @NotNull Consumer<String> updateAction) {
+        recentsManager.registerRecentEntry(historyKey.get(), field.getChildComponent().getText());
+        updateAction.consume(field.getText());
+        data.triggerListeners(historyKey.get());
     }
 
     @Override
     public void apply() {
-        addToHistory(rosRoot, HistoryKey.DEFAULT, data::setRosPath, false);
-        addToHistory(workspace, HistoryKey.WORKSPACE, data::setWorkspacePath, false);
-        addToHistory(additionalSources, HistoryKey.EXTRA_SOURCES, data::setAdditionalSources, true);
-        addToHistory(excludedXmls, HistoryKey.EXCLUDED_XMLS, data::setExcludedXmls, true);
-        addToHistory(knownRosdepKeys, HistoryKey.KNOWN_ROSDEP_KEYS, data::setKnownROSDepKeys, true);
-        addToHistory(rosdepSources, HistoryKey.ROSDEP_SOURCES, data::setROSDepSources, true);
+        addToHistory(rosRoot, HistoryKey.DEFAULT, data::setRosPath);
+        addToHistory(workspace, HistoryKey.WORKSPACE, data::setWorkspacePath);
+        addToHistory(additionalSources, HistoryKey.EXTRA_SOURCES, data::setAdditionalSources);
+        addToHistory(excludedXmls, HistoryKey.EXCLUDED_XMLS, data::setExcludedXmls);
+        addToHistory(knownRosdepKeys, HistoryKey.KNOWN_ROSDEP_KEYS, data::setKnownROSDepKeys);
+        addToHistory(rosdepSources, HistoryKey.ROSDEP_SOURCES, data::setROSDepSources);
     }
 
     @Override

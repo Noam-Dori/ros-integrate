@@ -82,6 +82,7 @@ public class ROSSettings implements PersistentStateComponent<ROSSettings.State> 
 
     @Override
     public void loadState(@NotNull State state) {
+        //noinspection UnstableApiUsage
         XmlSerializerUtil.getAccessors(State.class).forEach(accessor ->
                 Optional.ofNullable(accessor.read(state))
                         .ifPresent(val -> accessor.set(this.state, val)));
