@@ -11,6 +11,7 @@ import ros.integrate.pkg.ROSDepKeyCache;
 import ros.integrate.pkg.psi.ROSPackage;
 import ros.integrate.pkg.xml.DependencyType;
 import ros.integrate.pkg.xml.ROSPackageXml;
+import ros.integrate.pkg.xml.ROSPackageXml.Dependency;
 import ros.integrate.pkg.xml.intention.ForceCacheQuickFix;
 import ros.integrate.pkg.xml.intention.ReformatPackageXmlFix;
 import ros.integrate.pkg.xml.intention.RemoveDependencyQuickFix;
@@ -25,7 +26,7 @@ class PackageDependencyAnnotator {
     private final AnnotationHolder holder;
 
     @NotNull
-    private final List<Pair<DependencyType, ROSPackage>> dependencies;
+    private final List<Dependency> dependencies;
 
     @NotNull
     private final List<Pair<TextRange, TextRange>> depTrs;
@@ -34,13 +35,13 @@ class PackageDependencyAnnotator {
     PackageDependencyAnnotator(@NotNull ROSPackageXml pkgXml, @NotNull AnnotationHolder holder) {
         this.holder = holder;
         this.pkgXml = pkgXml;
-        dependencies = pkgXml.getDependenciesTyped();
+        dependencies = pkgXml.getDependencies(null);
         depTrs = pkgXml.getDependencyTextRanges();
     }
 
     void annSelfDependency() {
         for (int i = 0; i < dependencies.size(); i++) {
-            if (pkgXml.getPackage().equals(dependencies.get(i).second)) {
+            if (pkgXml.getPackage().equals(dependencies.get(i).getPackage())) {
                 Annotation ann = holder.createErrorAnnotation(depTrs.get(i).second,
                         "A package cannot depend on itself.");
                 ann.registerFix(new RemoveDependencyQuickFix(pkgXml, i));
@@ -54,7 +55,7 @@ class PackageDependencyAnnotator {
                 .filter(dep -> !dep.relevant(pkgXml.getFormat())).map(DependencyType::getTagName)
                 .collect(Collectors.toList());
         for (int i = 0; i < dependencies.size(); i++) {
-            String tagName = dependencies.get(i).first.getTagName();
+            String tagName = dependencies.get(i).getType().getTagName();
             if (relevant.contains(tagName)) {
                 Annotation ann = holder.createErrorAnnotation(depTrs.get(i).first,
                         "Dependency tag " + tagName + " may not be used in manifest format " +
@@ -78,16 +79,16 @@ class PackageDependencyAnnotator {
     void annConflictingDependencies() {
         Set<Integer> trsToAnn = new HashSet<>();
         for (int i = dependencies.size() - 1; i >= 0; i--) {
-            Pair<DependencyType, ROSPackage> di = dependencies.get(i), dj;
-            if (di.second == ROSPackage.ORPHAN) {
+            Dependency di = dependencies.get(i), dj;
+            if (di.getPackage() == ROSPackage.ORPHAN) {
                 continue;
             }
             boolean found = false;
             for (int j = i - 1; j >= 0; j--) {
                 dj = dependencies.get(j);
-                Set<DependencyType> allCovered = new HashSet<>(Arrays.asList(dj.first.getCoveredDependencies()));
-                allCovered.retainAll(Arrays.asList(di.first.getCoveredDependencies()));
-                if (dj.second.equals(di.second) && !allCovered.isEmpty()) {
+                Set<DependencyType> allCovered = new HashSet<>(Arrays.asList(dj.getType().getCoveredDependencies()));
+                allCovered.retainAll(Arrays.asList(di.getType().getCoveredDependencies()));
+                if (dj.getPackage().equals(di.getPackage()) && !allCovered.isEmpty()) {
                     trsToAnn.add(j);
                     found = true;
                 }
@@ -106,7 +107,7 @@ class PackageDependencyAnnotator {
 
     void annDependencyNotFound() {
         for (int i = 0; i < dependencies.size(); i++) {
-            if (dependencies.get(i).second == ROSPackage.ORPHAN) {
+            if (dependencies.get(i).getPackage() == ROSPackage.ORPHAN) {
                 Annotation ann = holder.createErrorAnnotation(depTrs.get(i).second,
                         "Unresolved dependency");
                 ann.setHighlightType(ProblemHighlightType.ERROR);

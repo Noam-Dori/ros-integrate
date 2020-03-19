@@ -16,7 +16,9 @@ import ros.integrate.pkg.xml.DependencyType;
 import ros.integrate.pkg.xml.PackageXmlUtil;
 import ros.integrate.pkg.xml.ROSPackageXml;
 import ros.integrate.pkg.xml.ROSPackageXml.Contributor;
+import ros.integrate.pkg.xml.ROSPackageXml.Dependency;
 import ros.integrate.pkg.xml.ROSPackageXml.URLType;
+import ros.integrate.pkg.xml.VersionRange;
 
 import java.util.*;
 
@@ -77,7 +79,7 @@ public class ReformatPackageXmlFix extends BaseIntentionAction implements LocalQ
                 authors = pkgXml.getAuthors();
         List<String> licenses = pkgXml.getLicences();
         List<Pair<String, URLType>> urls = pkgXml.getURLs();
-        List<Pair<DependencyType, ROSPackage>> dependencies = pkgXml.getDependenciesTyped();
+        List<Dependency> dependencies = pkgXml.getDependencies(null);
         // TODO: 2/29/2020 Add groups, export
 
         Collections.reverse(authors);
@@ -95,7 +97,8 @@ public class ReformatPackageXmlFix extends BaseIntentionAction implements LocalQ
         pkgXml.setFormat(targetFormat);
         // export
         // groups
-        dependencies.forEach(pair -> pkgXml.addDependency(pair.first, pair.second, false));
+        dependencies.forEach(dependency -> pkgXml.addDependency(dependency.getType(), dependency.getPackage(),
+                dependency.getVersionRange(), false));
         authors.forEach(author -> pkgXml.addAuthor(author.getName(), author.getEmail().isEmpty() ? null :
                 author.getEmail()));
         urls.forEach(url -> pkgXml.addURL(url.first, url.second));
@@ -106,18 +109,24 @@ public class ReformatPackageXmlFix extends BaseIntentionAction implements LocalQ
         name.ifPresent(pkgXml::setPkgName);
     }
 
-    private void updateDependencies(@NotNull List<Pair<DependencyType, ROSPackage>> dependencies) {
+    private void updateDependencies(@NotNull List<Dependency> dependencies) {
         // get actual dependency types
         HashMultimap<ROSPackage, DependencyType> depTypesForPackage = HashMultimap.create();
-        dependencies.forEach(pair -> depTypesForPackage.putAll(pair.second,
-                Arrays.asList(pair.first.getCoveredDependencies())));
+        Map<ROSPackage, VersionRange> versionRangeForPackage = new HashMap<>();
+        dependencies.forEach(dependency -> {
+            depTypesForPackage.putAll(dependency.getPackage(), Arrays.asList(dependency.getType()
+                    .getCoveredDependencies()));
+            versionRangeForPackage.put(dependency.getPackage(), dependency.getVersionRange()
+                    .intersect(versionRangeForPackage.get(dependency.getPackage())));
+        });
 
         // reform dependency types to actual dependencies.
         // Latter dependencies are grouped ones and should be prioritised.
         dependencies.clear();
         DependencyType[] values = DependencyType.values();
         for (ROSPackage pkg : depTypesForPackage.keySet()) {
-            if (pkg == ROSPackage.ORPHAN) {
+            VersionRange versionRange = versionRangeForPackage.get(pkg);
+            if (pkg == ROSPackage.ORPHAN || versionRange == null) {
                 continue;
             }
             Set<DependencyType> dependencyTypes = depTypesForPackage.get(pkg);
@@ -129,15 +138,15 @@ public class ReformatPackageXmlFix extends BaseIntentionAction implements LocalQ
                 }
                 List<DependencyType> coveredDependencyTypes = Arrays.asList(dep.getCoveredDependencies());
                 if (dependencyTypes.containsAll(coveredDependencyTypes)) {
-                    dependencies.add(new Pair<>(dep, pkg));
+                    dependencies.add(new Dependency(dep, pkg, versionRange));
                     dependencyTypes.removeAll(coveredDependencyTypes);
                 }
             }
         }
 
         dependencies.sort((o1, o2) -> {
-            int ret = DependencyType.compare(o1.first, o2.first);
-            return ret != 0 ? -ret : -o1.second.compareTo(o2.second);
+            int ret = DependencyType.compare(o1.getType(), o2.getType());
+            return ret != 0 ? -ret : -o1.getPackage().compareTo(o2.getPackage());
         });
     }
 }

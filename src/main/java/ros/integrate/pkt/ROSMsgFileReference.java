@@ -17,6 +17,7 @@ import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkg.xml.DependencyType;
+import ros.integrate.pkg.xml.VersionRange;
 import ros.integrate.pkt.psi.*;
 import ros.integrate.pkg.ROSPackageManager;
 import ros.integrate.pkg.psi.ROSPackage;
@@ -142,7 +143,7 @@ public class ROSMsgFileReference extends PsiReferenceBase<PsiElement> implements
         ROSPackage thisPackage = ((ROSPktFile) context.getFile()).getPackage();
         if (!msg.getPackage().getName().equals(thisPackage.getName()) && !isFirstHeader(msg)) {
             Optional.ofNullable(thisPackage.getPackageXml()).ifPresent(pkgXml ->
-                    pkgXml.addDependency(DependencyType.BUILD, msg.getPackage(), true));
+                    pkgXml.addDependency(DependencyType.BUILD, msg.getPackage(), VersionRange.any(), true));
             context.getDocument().insertString(model.getOffset(), msg.getPackage().getName() + "/");
         }
         model.getCurrentCaret().moveCaretRelatively(msg.getQualifiedName().length(), 0, false, false);

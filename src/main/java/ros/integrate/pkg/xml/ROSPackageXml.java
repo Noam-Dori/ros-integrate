@@ -22,7 +22,7 @@ public interface ROSPackageXml {
      */
     class Contributor {
         @NotNull
-        final String name, email;
+        private final String name, email;
 
         public Contributor(@NotNull String name, @NotNull String email) {
             this.email = email;
@@ -37,6 +37,37 @@ public interface ROSPackageXml {
         @NotNull
         public String getName() {
             return name;
+        }
+    }
+
+    class Dependency {
+        @NotNull
+        private final DependencyType type;
+        @SuppressWarnings("StatefulEp")
+        @NotNull
+        private final ROSPackage pkg;
+        @NotNull
+        private final VersionRange versionRange;
+
+        public Dependency(@NotNull DependencyType type, @NotNull ROSPackage pkg, @NotNull VersionRange range) {
+            this.type = type;
+            this.pkg = pkg;
+            this.versionRange = range;
+        }
+
+        @NotNull
+        public DependencyType getType() {
+            return type;
+        }
+
+        @NotNull
+        public ROSPackage getPackage() {
+            return pkg;
+        }
+
+        @NotNull
+        public VersionRange getVersionRange() {
+            return versionRange;
         }
     }
 
@@ -134,19 +165,12 @@ public interface ROSPackageXml {
     List<Contributor> getAuthors();
 
     /**
-     * @param dependencyType the type of dependency to check
+     * @param dependencyType the type of dependency to check, null to search for all types.
      * @return a list of all packages this package depends on for the specific task described by the dependency type.
      *         this list removes all orphans from it.
      */
     @NotNull
-    List<ROSPackage> getDependencies(@Nullable DependencyType dependencyType);
-
-    /**
-     * @return a list of all packages this package depends on and how the package depends on them.
-     *         unresolved dependencies have {@link ROSPackage#ORPHAN} as the second value of the pair.
-     *         this is done to enable sync with the text range list.
-     */
-    List<Pair<DependencyType, ROSPackage>> getDependenciesTyped();
+    List<Dependency> getDependencies(@Nullable DependencyType dependencyType);
 
     /**
      * @return the package this manifest describes.
@@ -277,8 +301,11 @@ public interface ROSPackageXml {
      * @param type the way this package depends on the new package.
      * @param pkg the package this one depends on.
      * @param checkRepeating also check whether or not the dependency exists already before adding this new one
+     * @param versionRange what versions of the package are required?
      */
-    void addDependency(@NotNull DependencyType type,@NotNull ROSPackage pkg, boolean checkRepeating);
+    void addDependency(@NotNull DependencyType type, @NotNull ROSPackage pkg,
+                       @NotNull VersionRange versionRange,
+                       boolean checkRepeating);
 
     /**
      * changes a license

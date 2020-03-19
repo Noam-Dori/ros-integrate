@@ -3,8 +3,6 @@ package ros.integrate.pkg.xml;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
-
 /**
  * an enum of all dependency types.
  */
@@ -55,14 +53,6 @@ public enum DependencyType {
     @NotNull
     public DependencyType[] getCoveredDependencies() {
         return split;
-    }
-
-    @NotNull
-    public DependencyType[] getCoveringTags(int format) {
-        return Arrays.stream(DependencyType.values())
-                .filter(dep -> Arrays.asList(dep.split).contains(this))
-                .filter(dep -> dep.relevant(format))
-                .toArray(DependencyType[]::new);
     }
 
     @Contract(pure = true)

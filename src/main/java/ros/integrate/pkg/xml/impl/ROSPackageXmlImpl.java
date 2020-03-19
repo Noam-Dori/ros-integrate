@@ -7,7 +7,6 @@ import com.intellij.psi.PsiFileFactory;
 import com.intellij.psi.xml.XmlAttribute;
 import com.intellij.psi.xml.XmlFile;
 import com.intellij.psi.xml.XmlTag;
-import com.intellij.psi.xml.XmlTagValue;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -16,6 +15,7 @@ import ros.integrate.pkg.ROSPackageManager;
 import ros.integrate.pkg.psi.ROSPackage;
 import ros.integrate.pkg.xml.DependencyType;
 import ros.integrate.pkg.xml.ROSPackageXml;
+import ros.integrate.pkg.xml.VersionRange;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -351,22 +351,37 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
     }
 
     @Override
-    public void addDependency(@NotNull DependencyType type, @NotNull ROSPackage pkg, boolean checkRepeating) {
+    public void addDependency(@NotNull DependencyType type, @NotNull ROSPackage pkg,
+                              @NotNull VersionRange versionRange,
+                              boolean checkRepeating) {
         if (file.getRootTag() == null) {
             addRootTag();
         }
         if (checkRepeating) {
             Set<DependencyType> types = new HashSet<>();
-            getDependenciesTyped().stream().filter(pair -> pair.second == pkg)
-                    .map(pair -> pair.first).map(DependencyType::getCoveredDependencies)
+            getDependencies(null).stream().filter(dep -> dep.getPackage() == pkg)
+                    .map(Dependency::getType).map(DependencyType::getCoveredDependencies)
                     .map(Arrays::asList).forEach(types::addAll);
             types.retainAll(Arrays.asList(type.getCoveredDependencies()));
             if (!types.isEmpty()) {
                 return;
             }
         }
-        file.getRootTag().addSubTag(file.getRootTag()
-                .createChildTag(type.getTagName(), null, pkg.getName(), false), true);
+        XmlTag newTag = file.getRootTag()
+                .createChildTag(type.getTagName(), null, pkg.getName(), false);
+        if (!versionRange.isNotValid()) {
+            if (versionRange.getMax() != null) {
+                if (versionRange.getMax().equals(versionRange.getMin())) {
+                    newTag.setAttribute("version_eq", versionRange.getMax());
+                } else {
+                    newTag.setAttribute("version_lt" + (versionRange.isStrictMax() ? "" : "e"), versionRange.getMax());
+                }
+            }
+            if (versionRange.getMin() != null && !versionRange.getMin().equals(versionRange.getMax())) {
+                newTag.setAttribute("version_gt" + (versionRange.isStrictMin() ? "" : "e"), versionRange.getMin());
+            }
+        }
+        file.getRootTag().addSubTag(newTag, true);
     }
 
     private void addContributor(@NotNull String name, @Nullable String email, Component component) {
@@ -467,21 +482,7 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
 
     @NotNull
     @Override
-    public List<ROSPackage> getDependencies(@Nullable DependencyType dependencyType) {
-        if (file.getRootTag() == null) {
-            return Collections.emptyList();
-        }
-        Stream<XmlTag> result = Stream.empty();
-        for (DependencyType dep : dependencyType == null ?
-                DependencyType.values() : dependencyType.getCoveringTags(getFormat())) {
-            result = Stream.concat(result, Stream.of(file.getRootTag().findSubTags(dep.getTagName())));
-        }
-        return result.map(XmlTag::getValue).map(XmlTagValue::getText)
-                .map(this::findPackage).filter(pkg -> !(pkg == ROSPackage.ORPHAN)).collect(Collectors.toList());
-    }
-
-    @Override
-    public List<Pair<DependencyType, ROSPackage>> getDependenciesTyped() {
+    public List<Dependency> getDependencies(@Nullable DependencyType dependencyType) {
         if (file.getRootTag() == null) {
             return Collections.emptyList();
         }
@@ -490,13 +491,40 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
             result = Stream.concat(result, Stream.of(file.getRootTag().findSubTags(dep.getTagName()))
                     .map(tag -> new Pair<>(dep, tag)));
         }
-        return result.map(pair -> new Pair<>(pair.first, findPackage(pair.second.getValue().getText())))
-                .collect(Collectors.toList());
+        return result.map(pair -> new Dependency(pair.first, findPackage(pair.second.getValue().getText()),
+                getVersionRange(pair.second))).collect(Collectors.toList());
     }
 
     @NotNull
     private ROSPackage findPackage(String name) {
         return Optional.ofNullable(pkgManager.findPackage(name)).map(Optional::of)
                 .orElseGet(() -> Optional.ofNullable(keyCache.findKey(name))).orElse(ROSPackage.ORPHAN);
+    }
+
+    @NotNull
+    @Contract("_ -> new")
+    private VersionRange getVersionRange(@NotNull XmlTag tag) {
+        String attrValue = tag.getAttributeValue("version_eq");
+        if (attrValue != null) {
+            return VersionRange.exactVersion(attrValue);
+        }
+        VersionRange.Builder builder = new VersionRange.Builder();
+        attrValue = tag.getAttributeValue("version_lt");
+        if (attrValue != null) {
+            builder.max(attrValue, true);
+        }
+        attrValue = tag.getAttributeValue("version_lte");
+        if (attrValue != null) {
+            builder.max(attrValue, false);
+        }
+        attrValue = tag.getAttributeValue("version_gt");
+        if (attrValue != null) {
+            builder.min(attrValue, true);
+        }
+        attrValue = tag.getAttributeValue("version_gte");
+        if (attrValue != null) {
+            builder.min(attrValue, false);
+        }
+        return builder.build();
     }
 }
