@@ -113,36 +113,55 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
                 .withInsertHandler((context, item) -> handleCompleteAttr(context, "maintainer", "email")));
         resultSet.addElement(LookupElementBuilder.create("license").withInsertHandler(dataHandler));
         PackageXmlUtil.getDependNames(xmlFile.getFormat()).stream().map(LookupElementBuilder::create)
-                .map(builder -> builder.withInsertHandler(dataHandler))
+                .map(builder -> builder.withInsertHandler(attrHandler))
                 .forEach(resultSet::addElement);
     }
 
     private void setCompletionsForAttrName(@NotNull XmlTag tag, @NotNull CompletionResultSet resultSet,
                                            CompletionParameters parameters) {
+        InsertHandler<LookupElement> anyValueHandler = (context, item) -> handleAttr(context, false);
         resultSet.runRemainingContributors(parameters, result -> {}); // removes all other entries. Dangerous stuff.
         if (tag.getName().equals("url") && tag.getAttribute("type") == null) {
             resultSet.addElement(LookupElementBuilder.create("type")
                     .withInsertHandler((context, item) -> handleAttr(context, true)));
             resultSet.addElement(LookupElementBuilder.create("").withTailText("default", true)
-                    .withInsertHandler((context, item) -> handleNoAttr(context)));
+                    .withInsertHandler((context, item) -> handleNoAttr(context, false)));
         }
         if (tag.getName().matches("author|maintainer") && tag.getAttribute("email") == null) {
-            resultSet.addElement(LookupElementBuilder.create("email")
-                    .withInsertHandler((context, item) -> handleAttr(context, false)));
+            resultSet.addElement(LookupElementBuilder.create("email").withInsertHandler(anyValueHandler));
             if (tag.getName().equals("author")) {
                 resultSet.addElement(LookupElementBuilder.create("").withTailText("no email", true)
-                        .withInsertHandler((context, item) -> handleNoAttr(context)));
+                        .withInsertHandler((context, item) -> handleNoAttr(context, false)));
             }
+        }
+        if (PackageXmlUtil.isDependencyTag(tag)) {
+            VersionRange range = PackageXmlUtil.getVersionRange(tag);
+            if (range.getMin() == null && range.getMax() == null) {
+                resultSet.addElement(LookupElementBuilder.create("version_eq").withInsertHandler(anyValueHandler));
+            }
+            if (range.getMin() == null) {
+                resultSet.addElement(LookupElementBuilder.create("version_gt").withInsertHandler(anyValueHandler));
+                resultSet.addElement(LookupElementBuilder.create("version_gte").withInsertHandler(anyValueHandler));
+            }
+            if (range.getMax() == null) {
+                resultSet.addElement(LookupElementBuilder.create("version_lt").withInsertHandler(anyValueHandler));
+                resultSet.addElement(LookupElementBuilder.create("version_lte").withInsertHandler(anyValueHandler));
+            }
+            resultSet.addElement(LookupElementBuilder.create("").withTailText("move to name", true)
+                    .withInsertHandler((context, item) -> handleNoAttr(context, true)));
         }
     }
 
-    private void handleNoAttr(@NotNull InsertionContext insertionContext) {
+    private void handleNoAttr(@NotNull InsertionContext insertionContext, boolean newCompletion) {
         CaretModel model = insertionContext.getEditor().getCaretModel();
         int offset = model.getOffset();
         String text = insertionContext.getDocument().getText(new TextRange(offset, offset + 1));
         insertionContext.getDocument().deleteString(offset - 1, offset);
         if (text.equals(">")) {
             model.getCurrentCaret().moveCaretRelatively(1, 0, false, false);
+        }
+        if (newCompletion) {
+            newCompletion(insertionContext.getProject(), insertionContext.getEditor());
         }
     }
 

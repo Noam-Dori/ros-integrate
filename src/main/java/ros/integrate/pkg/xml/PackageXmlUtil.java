@@ -98,4 +98,31 @@ public class PackageXmlUtil {
         return Arrays.stream(DependencyType.values())
                 .filter(name -> name.getTagName().equals(tag.getName())).findFirst().orElse(null);
     }
+
+    @NotNull
+    @Contract("_ -> new")
+    public static VersionRange getVersionRange(@NotNull XmlTag tag) {
+        String attrValue = tag.getAttributeValue("version_eq");
+        if (attrValue != null) {
+            return VersionRange.exactVersion(attrValue);
+        }
+        VersionRange.Builder builder = new VersionRange.Builder();
+        attrValue = tag.getAttributeValue("version_lt");
+        if (attrValue != null) {
+            builder.max(attrValue, true);
+        }
+        attrValue = tag.getAttributeValue("version_lte");
+        if (attrValue != null) {
+            builder.max(attrValue, false);
+        }
+        attrValue = tag.getAttributeValue("version_gt");
+        if (attrValue != null) {
+            builder.min(attrValue, true);
+        }
+        attrValue = tag.getAttributeValue("version_gte");
+        if (attrValue != null) {
+            builder.min(attrValue, false);
+        }
+        return builder.build();
+    }
 }
