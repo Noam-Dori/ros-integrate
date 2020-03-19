@@ -128,4 +128,9 @@ public class ROSDepKey extends PsiElementBase implements ROSPackage {
 
     @Override
     public void setPackageXml(XmlFile newPackageXml) {}
+
+    @Override
+    public String toString() {
+        return "ROSDepKey{\"" + name + "\"}";
+    }
 }

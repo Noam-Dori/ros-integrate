@@ -11,6 +11,9 @@ public interface ROSPackageManager {
     /**
      * retrieves all packages in the cache (and tries to find more)
      * @return all packages the project knows about.
+     * @apiNote note that is is only a VIEW into the available packages and may only be read.
+     * If you want to run changes in a calculation, you must copy this collection.
+     * @implNote Only finders can modify the contents of the package manager.
      */
     Collection<ROSPackage> getAllPackages();
 

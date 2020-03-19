@@ -25,6 +25,8 @@ import ros.integrate.pkg.psi.ROSPackage;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.stream.Collectors;
 
 public class PackageXmlCompletionContributor extends CompletionContributor {
     public PackageXmlCompletionContributor() {
@@ -69,10 +71,13 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
             ROSLicenses.AVAILABLE_LICENSES.keySet().stream().filter(license -> !xmlFile.getLicences().contains(license))
                     .map(LookupElementBuilder::create).forEach(resultSet::addElement);
         } else if (PackageXmlUtil.isDependencyTag(tag)) {
-            Collection<ROSPackage> packages = tag.getProject().getService(ROSPackageManager.class).getAllPackages();
+            Collection<ROSPackage> packages = new HashSet<>();
+            packages.addAll(tag.getProject().getService(ROSPackageManager.class).getAllPackages());
             packages.addAll(tag.getProject().getService(ROSDepKeyCache.class).getAllKeys());
             Arrays.stream(PackageXmlUtil.getDependencyType(tag).getCoveredDependencies())
-                    .map(xmlFile::getDependencies).forEach(packages::removeAll);
+                    .map(xmlFile::getDependencies).map(dep -> dep.stream().map(ROSPackageXml.Dependency::getPackage)
+                    .collect(Collectors.toList()))
+                    .forEach(packages::removeAll);
             packages.remove(xmlFile.getPackage());
             packages.stream().map(pkg -> LookupElementBuilder.create(pkg).withIcon(pkg.getIcon(0)))
                     .forEach(resultSet::addElement);

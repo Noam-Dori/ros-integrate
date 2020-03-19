@@ -88,7 +88,9 @@ public class ROSDepKeyCacheImpl implements ROSDepKeyCache {
                 Scanner scanner = new Scanner(new URL(address).openStream());
                 while (scanner.hasNextLine()) {
                     String keyName = nextKey(scanner);
-                    keyCache.putIfAbsent(keyName, new ROSDepKey(project, keyName));
+                    if (!keyName.isEmpty()) {
+                        keyCache.putIfAbsent(keyName, new ROSDepKey(project, keyName));
+                    }
                 }
             } catch (IOException e) {
                 LOG.warning("Could not fetch rosdep source list: no connection to " + address);
