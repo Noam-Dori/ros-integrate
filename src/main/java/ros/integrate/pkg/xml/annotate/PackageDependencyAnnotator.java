@@ -12,9 +12,7 @@ import ros.integrate.pkg.psi.ROSPackage;
 import ros.integrate.pkg.xml.DependencyType;
 import ros.integrate.pkg.xml.ROSPackageXml;
 import ros.integrate.pkg.xml.ROSPackageXml.Dependency;
-import ros.integrate.pkg.xml.intention.ForceCacheQuickFix;
-import ros.integrate.pkg.xml.intention.ReformatPackageXmlFix;
-import ros.integrate.pkg.xml.intention.RemoveDependencyQuickFix;
+import ros.integrate.pkg.xml.intention.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -119,14 +117,14 @@ class PackageDependencyAnnotator {
         }
     }
 
-    void annInvaliDependencyVersionAttr() {
+    void annInvalidDependencyVersionAttr() {
         for (int i = 0; i < dependencies.size(); i++) {
             Dependency dep = dependencies.get(i);
             if (dep.getPackage() != ROSPackage.ORPHAN && dep.getVersionRange().isNotValid()) {
-                Annotation ann = holder.createErrorAnnotation(depTrs.get(i).second,
+                Annotation ann = holder.createErrorAnnotation(depTrs.get(i).first,
                         "Invalid version restriction(s).");
-//                ann.registerFix(new RemoveVersionRestrictionFix(pkgXml, i));
-//                ann.registerFix(new FixDependencyQuickFix(pkgXml, i));
+                ann.registerFix(new AmputateDependencyQuickFix(pkgXml, i));
+                ann.registerFix(new FixDependencyQuickFix(pkgXml, i));
             }
         }
     }

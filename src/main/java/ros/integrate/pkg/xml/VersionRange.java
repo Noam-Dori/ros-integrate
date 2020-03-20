@@ -19,6 +19,7 @@ public class VersionRange {
 
         public VersionRange exactVersion(String version) {
             ret.max = ret.min = version;
+            ret.strictMax = ret.strictMin = false;
             return ret;
         }
 

@@ -345,6 +345,13 @@ public interface ROSPackageXml {
     boolean setAuthor(int id, @NotNull Contributor contributor);
 
     /**
+     * changes a dependency
+     * @param id the identifier of the resource - its index in the list of tags with the same name in the file.
+     * @param dependency the new dependency to use
+     */
+    void setDependency(int id, @NotNull Dependency dependency);
+
+    /**
      * removes a license
      * @param id the identifier of the resource - its index in the list of tags with the same name in the file.
      */

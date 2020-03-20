@@ -370,19 +370,23 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
         }
         XmlTag newTag = file.getRootTag()
                 .createChildTag(type.getTagName(), null, pkg.getName(), false);
-        if (!versionRange.isNotValid()) {
-            if (versionRange.getMax() != null) {
-                if (versionRange.getMax().equals(versionRange.getMin())) {
-                    newTag.setAttribute("version_eq", versionRange.getMax());
+        addVersionRangeToDep(newTag, versionRange);
+        file.getRootTag().addSubTag(newTag, true);
+    }
+
+    void addVersionRangeToDep(XmlTag depTag, @NotNull VersionRange range) {
+        if (!range.isNotValid()) {
+            if (range.getMax() != null) {
+                if (range.getMax().equals(range.getMin())) {
+                    depTag.setAttribute("version_eq", range.getMax());
                 } else {
-                    newTag.setAttribute("version_lt" + (versionRange.isStrictMax() ? "" : "e"), versionRange.getMax());
+                    depTag.setAttribute("version_lt" + (range.isStrictMax() ? "" : "e"), range.getMax());
                 }
             }
-            if (versionRange.getMin() != null && !versionRange.getMin().equals(versionRange.getMax())) {
-                newTag.setAttribute("version_gt" + (versionRange.isStrictMin() ? "" : "e"), versionRange.getMin());
+            if (range.getMin() != null && !range.getMin().equals(range.getMax())) {
+                depTag.setAttribute("version_gt" + (range.isStrictMin() ? "" : "e"), range.getMin());
             }
         }
-        file.getRootTag().addSubTag(newTag, true);
     }
 
     private void addContributor(@NotNull String name, @Nullable String email, Component component) {
@@ -411,6 +415,20 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
     @Override
     public boolean setAuthor(int id, @NotNull Contributor contributor) {
         return setContributor(id, contributor, Component.AUTHOR);
+    }
+
+    @Override
+    public void setDependency(int id, @NotNull Dependency dependency) {
+        XmlTag root = Objects.requireNonNull(file.getRootTag());
+        Stream<XmlTag> result = Stream.empty();
+        for (DependencyType depType : DependencyType.values()) {
+            result = Stream.concat(result, Stream.of(root.findSubTags(depType.getTagName())));
+        }
+        XmlTag oldTag = result.collect(Collectors.toList()).get(id);
+        XmlTag newTag = root.createChildTag(dependency.getType().getTagName(), null,
+                dependency.getPackage().getName(), false);
+        addVersionRangeToDep(newTag, dependency.getVersionRange());
+        oldTag.replace(newTag);
     }
 
     @Override

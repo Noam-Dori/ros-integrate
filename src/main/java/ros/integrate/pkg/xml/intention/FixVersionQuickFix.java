@@ -33,31 +33,6 @@ public class FixVersionQuickFix extends BaseIntentionAction {
 
     @Override
     public void invoke(@NotNull Project project, Editor editor, PsiFile file) throws IncorrectOperationException {
-        String current = pkgXml.getVersion();
-        if (current == null) {
-            pkgXml.setVersion("1.0.0");
-            return;
-        }
-        String[] sections = current.split("\\.");
-        StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < 3; i++) {
-            builder.append(getNumber(sections, i));
-        }
-        pkgXml.setVersion(builder.toString());
-    }
-
-    @NotNull
-    private String getNumber(@NotNull String[] sections, int idx) {
-        String num;
-        if (sections.length <= idx || !sections[idx].matches("0|[1-9][0-9]*")) {
-            if (idx == 0) {
-                num = "1";
-            } else {
-                num = "0";
-            }
-        } else {
-            num = Integer.valueOf(sections[idx]).toString();
-        }
-        return num + (idx == 2 ? "" : ".");
+        pkgXml.setVersion(VersionRepairUtil.repairVersion(pkgXml.getVersion()));
     }
 }

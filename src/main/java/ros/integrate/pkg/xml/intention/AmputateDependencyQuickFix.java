@@ -1,0 +1,56 @@
+package ros.integrate.pkg.xml.intention;
+
+import com.intellij.codeInsight.intention.impl.BaseIntentionAction;
+import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.project.Project;
+import com.intellij.psi.PsiFile;
+import com.intellij.util.IncorrectOperationException;
+import org.jetbrains.annotations.Nls;
+import org.jetbrains.annotations.NotNull;
+import ros.integrate.pkg.xml.ROSPackageXml;
+import ros.integrate.pkg.xml.VersionRange;
+
+import java.util.Optional;
+
+public class AmputateDependencyQuickFix extends BaseIntentionAction {
+    @NotNull
+    private final ROSPackageXml pkgXml;
+    private final int id;
+
+    public AmputateDependencyQuickFix(@NotNull ROSPackageXml pkgXml, int id) {
+        this.pkgXml = pkgXml;
+        this.id = id;
+    }
+
+    @Nls(capitalization = Nls.Capitalization.Sentence)
+    @NotNull
+    @Override
+    public String getText() {
+        return "Remove version attributes";
+    }
+
+    @Nls(capitalization = Nls.Capitalization.Sentence)
+    @NotNull
+    @Override
+    public String getFamilyName() {
+        return "ROS XML";
+    }
+
+    @Override
+    public boolean isAvailable(@NotNull Project project, Editor editor, PsiFile file) {
+        return pkgXml.getDependencies(null).get(id).getVersionRange().isNotValid();
+    }
+
+    @Override
+    public void invoke(@NotNull Project project, Editor editor, PsiFile file) throws IncorrectOperationException {
+        ROSPackageXml.Dependency dep = pkgXml.getDependencies(null).get(id);
+        VersionRange range = dep.getVersionRange();
+        VersionRange.Builder newBuilder = new VersionRange.Builder();
+        if (Optional.ofNullable(range.getMin()).orElse("").matches(VersionRange.VERSION_REGEX)) {
+            newBuilder.min(range.getMin(), range.isStrictMin());
+        } else if (Optional.ofNullable(range.getMax()).orElse("").matches(VersionRange.VERSION_REGEX)) {
+            newBuilder.max(range.getMax(), range.isStrictMax());
+        }
+        pkgXml.setDependency(id, new ROSPackageXml.Dependency(dep.getType(), dep.getPackage(), newBuilder.build()));
+    }
+}
