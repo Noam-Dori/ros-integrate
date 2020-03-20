@@ -4,11 +4,6 @@ import com.intellij.codeInsight.completion.*;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.lang.xml.XMLLanguage;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.editor.CaretModel;
-import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.TextRange;
 import com.intellij.patterns.PlatformPatterns;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.xml.XmlAttribute;
@@ -92,15 +87,15 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
         }); // removes all other entries. Dangerous stuff.
         InsertHandler<LookupElement> attrHandler =
                 new AttributeNameHandler(null),
-                dataHandler = new MoveToDataHandler("", false),
-                multilineHandler = new MoveToDataHandler("", false, "", true, false);
+                dataHandler = new TagDataHandler("", false),
+                multilineHandler = new TagDataHandler("", false, "", true, false);
         if (xmlFile.getRawXml().getRootTag() == null || xmlFile.getRawXml().getRootTag().getName().isEmpty()) {
             resultSet.addElement(LookupElementBuilder.create("package").withInsertHandler(multilineHandler));
             return;
         }
         if (xmlFile.getPkgName() == null) {
             resultSet.addElement(LookupElementBuilder.create("name")
-                    .withInsertHandler(new MoveToDataHandler("", false, xmlFile.getPackage().getName(), false, false)));
+                    .withInsertHandler(new TagDataHandler("", false, xmlFile.getPackage().getName(), false, false)));
         }
         if (xmlFile.getVersion() == null) {
             resultSet.addElement(LookupElementBuilder.create("version").withInsertHandler(dataHandler));
@@ -113,7 +108,7 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
         resultSet.addElement(LookupElementBuilder.create("maintainer")
                 .withInsertHandler(new AttributeNameHandler("email")));
         resultSet.addElement(LookupElementBuilder.create("license")
-                .withInsertHandler(new MoveToDataHandler("", false, "", false, true)));
+                .withInsertHandler(new TagDataHandler("", false, "", false, true)));
         PackageXmlUtil.getDependNames(xmlFile.getFormat()).stream().map(LookupElementBuilder::create)
                 .map(builder -> builder.withInsertHandler(attrHandler))
                 .forEach(resultSet::addElement);
@@ -121,19 +116,19 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
 
     private void setCompletionsForAttrName(@NotNull XmlTag tag, @NotNull CompletionResultSet resultSet,
                                            CompletionParameters parameters) {
-        InsertHandler<LookupElement> anyValueHandler = (context, item) -> handleAttr(context, false);
+        InsertHandler<LookupElement> anyValueHandler = new AttributeValueHandler(false);
         resultSet.runRemainingContributors(parameters, result -> {}); // removes all other entries. Dangerous stuff.
         if (tag.getName().equals("url") && tag.getAttribute("type") == null) {
             resultSet.addElement(LookupElementBuilder.create("type")
-                    .withInsertHandler((context, item) -> handleAttr(context, true)));
+                    .withInsertHandler(new AttributeValueHandler(true)));
             resultSet.addElement(LookupElementBuilder.create("").withTailText("default", true)
-                    .withInsertHandler((context, item) -> handleNoAttr(context, false)));
+                    .withInsertHandler(new SkipAttributeHandler(false)));
         }
         if (tag.getName().matches("author|maintainer") && tag.getAttribute("email") == null) {
             resultSet.addElement(LookupElementBuilder.create("email").withInsertHandler(anyValueHandler));
             if (tag.getName().equals("author")) {
                 resultSet.addElement(LookupElementBuilder.create("").withTailText("no email", true)
-                        .withInsertHandler((context, item) -> handleNoAttr(context, false)));
+                        .withInsertHandler(new SkipAttributeHandler(false)));
             }
         }
         if (PackageXmlUtil.isDependencyTag(tag)) {
@@ -150,30 +145,7 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
                 resultSet.addElement(LookupElementBuilder.create("version_lte").withInsertHandler(anyValueHandler));
             }
             resultSet.addElement(LookupElementBuilder.create("").withTailText("move to name", true)
-                    .withInsertHandler((context, item) -> handleNoAttr(context, true)));
-        }
-    }
-
-    private void handleNoAttr(@NotNull InsertionContext insertionContext, boolean newCompletion) {
-        CaretModel model = insertionContext.getEditor().getCaretModel();
-        int offset = model.getOffset();
-        String text = insertionContext.getDocument().getText(new TextRange(offset, offset + 1));
-        insertionContext.getDocument().deleteString(offset - 1, offset);
-        if (text.equals(">")) {
-            model.getCurrentCaret().moveCaretRelatively(1, 0, false, false);
-        }
-        if (newCompletion) {
-            newCompletion(insertionContext.getProject(), insertionContext.getEditor());
-        }
-    }
-
-    private void handleAttr(@NotNull InsertionContext insertionContext, boolean newCompletion) {
-        CaretModel model = insertionContext.getEditor().getCaretModel();
-        int offset = model.getOffset();
-        insertionContext.getDocument().insertString(offset, "=\"\"");
-        model.getCurrentCaret().moveCaretRelatively(2, 0, false, false);
-        if (newCompletion) {
-            newCompletion(insertionContext.getProject(), insertionContext.getEditor());
+                    .withInsertHandler(new SkipAttributeHandler(true)));
         }
     }
 
@@ -181,13 +153,8 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
         if (tag.getName().equals("url")) {
             for (ROSPackageXml.URLType type : ROSPackageXml.URLType.values()) {
                 resultSet.addElement(LookupElementBuilder.create(type.name().toLowerCase())
-                        .withInsertHandler(new MoveToDataHandler(tag.getName(), true)));
+                        .withInsertHandler(new TagDataHandler(tag.getName(), true)));
             }
         }
-    }
-
-    private static void newCompletion(Project project, Editor editor) {
-        ApplicationManager.getApplication().invokeLater(() -> new CodeCompletionHandlerBase(CompletionType.BASIC, true, false, true)
-                .invokeCompletion(project, editor));
     }
 }

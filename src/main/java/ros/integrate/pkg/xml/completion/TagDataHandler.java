@@ -13,7 +13,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import org.jetbrains.annotations.NotNull;
 
-class MoveToDataHandler implements InsertHandler<LookupElement> {
+class TagDataHandler implements InsertHandler<LookupElement> {
     @NotNull
     private final String tagName, data;
     private final boolean inAttr, multiline, newCompletion;
@@ -25,8 +25,8 @@ class MoveToDataHandler implements InsertHandler<LookupElement> {
      * @param multiline should the tag be multiline?
      * @param newCompletion trigger a new Completion?
      */
-    MoveToDataHandler(@NotNull String tagName, boolean inAttr, @NotNull String data,
-                      boolean multiline, boolean newCompletion) {
+    TagDataHandler(@NotNull String tagName, boolean inAttr, @NotNull String data,
+                   boolean multiline, boolean newCompletion) {
         this.tagName = tagName;
         this.data = data;
         this.inAttr = inAttr;
@@ -34,7 +34,7 @@ class MoveToDataHandler implements InsertHandler<LookupElement> {
         this.newCompletion = newCompletion;
     }
 
-    MoveToDataHandler(@NotNull String tagName, boolean inAttr) {
+    TagDataHandler(@NotNull String tagName, boolean inAttr) {
         this(tagName, inAttr, "", false, false);
     }
 
