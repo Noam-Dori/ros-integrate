@@ -8,7 +8,7 @@ import java.util.Properties;
 import java.util.function.Supplier;
 import java.util.logging.Logger;
 
-class ROSLicenses {
+public class ROSLicenses {
     private static final Logger LOG = Logger.getLogger("ros.integrate.pkg.xml.ROSLicenses");
 
     private static final Supplier<Properties> f = () -> {
@@ -20,5 +20,5 @@ class ROSLicenses {
         }
         return ret;
     };
-    static final Map<String, String> AVAILABLE_LICENSES = Maps.fromProperties(f.get());
+    public static final Map<String, String> AVAILABLE_LICENSES = Maps.fromProperties(f.get());
 }

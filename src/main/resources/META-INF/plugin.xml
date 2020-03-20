@@ -63,7 +63,7 @@
         <!-- ROS workspace & package -->
         <psi.referenceContributor language="ROSPkt" implementation="ros.integrate.pkg.ref.ROSPktTypeReferenceContributor"/>
         <psi.referenceContributor language="XML" implementation="ros.integrate.pkg.xml.PackageXmlReferenceContributor"/>
-        <completion.contributor language="XML" implementationClass="ros.integrate.pkg.xml.PackageXmlCompletionContributor"
+        <completion.contributor language="XML" implementationClass="ros.integrate.pkg.xml.completion.PackageXmlCompletionContributor"
                                 order="before xmlNonFirst"/>
         <iconProvider implementation="ros.integrate.pkg.ROSPackageIconProvider" order="first"/>
 

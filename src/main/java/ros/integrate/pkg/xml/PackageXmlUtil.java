@@ -71,7 +71,7 @@ public class PackageXmlUtil {
 
     @Nullable
     @Contract(pure = true)
-    static XmlTag getParentTag(@NotNull PsiElement element) {
+    public static XmlTag getParentTag(@NotNull PsiElement element) {
         element = element.getParent();
         for (int i = 0; i < 3; i++, element = element.getParent()) {
             if (element instanceof XmlTag) {
@@ -81,20 +81,20 @@ public class PackageXmlUtil {
         return null;
     }
 
-    static boolean isDependencyTag(@NotNull XmlTag tag) {
+    public static boolean isDependencyTag(@NotNull XmlTag tag) {
         return Arrays.stream(DependencyType.values()).map(DependencyType::getTagName)
                 .anyMatch(name -> name.equals(tag.getName()));
     }
 
     @NotNull
-    static List<String> getDependNames(int format) {
+    public static List<String> getDependNames(int format) {
         return Arrays.stream(DependencyType.values())
                 .filter(dep -> dep.relevant(format))
                 .map(DependencyType::getTagName)
                 .collect(Collectors.toList());
     }
 
-    static DependencyType getDependencyType(XmlTag tag) {
+    public static DependencyType getDependencyType(XmlTag tag) {
         return Arrays.stream(DependencyType.values())
                 .filter(name -> name.getTagName().equals(tag.getName())).findFirst().orElse(null);
     }

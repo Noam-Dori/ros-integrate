@@ -1,4 +1,4 @@
-package ros.integrate.pkg.xml;
+package ros.integrate.pkg.xml.completion;
 
 import com.intellij.codeInsight.completion.*;
 import com.intellij.codeInsight.lookup.LookupElement;
@@ -6,7 +6,6 @@ import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.lang.xml.XMLLanguage;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.CaretModel;
-import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
@@ -22,6 +21,10 @@ import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkg.ROSDepKeyCache;
 import ros.integrate.pkg.ROSPackageManager;
 import ros.integrate.pkg.psi.ROSPackage;
+import ros.integrate.pkg.xml.PackageXmlUtil;
+import ros.integrate.pkg.xml.ROSLicenses;
+import ros.integrate.pkg.xml.ROSPackageXml;
+import ros.integrate.pkg.xml.VersionRange;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -86,23 +89,22 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
 
     private void setCompletionsForTagName(@NotNull ROSPackageXml xmlFile, @NotNull CompletionResultSet resultSet,
                                           CompletionParameters parameters) {
-        resultSet.runRemainingContributors(parameters, result -> {}); // removes all other entries. Dangerous stuff.
+        resultSet.runRemainingContributors(parameters, result -> {
+        }); // removes all other entries. Dangerous stuff.
         InsertHandler<LookupElement> attrHandler =
                 (context, item) -> handleCompleteAttr(context, item.getLookupString(), null),
-                dataHandler = (context, item) -> handleMoveToData(context, item.getLookupString(), false),
-                multilineHandler = (context, item) ->
-                        handleMoveToData(context, item.getLookupString(), false, "", true);
+                dataHandler = new MoveToDataHandler("", false),
+                multilineHandler = new MoveToDataHandler("", false, "", true, false);
         if (xmlFile.getRawXml().getRootTag() == null || xmlFile.getRawXml().getRootTag().getName().isEmpty()) {
             resultSet.addElement(LookupElementBuilder.create("package").withInsertHandler(multilineHandler));
             return;
         }
         if (xmlFile.getPkgName() == null) {
             resultSet.addElement(LookupElementBuilder.create("name")
-                    .withInsertHandler((context, item) ->
-                            handleMoveToData(context, "name", false, xmlFile.getPackage().getName(), false)));
+                    .withInsertHandler(new MoveToDataHandler("", false, xmlFile.getPackage().getName(), false, false)));
         }
         if (xmlFile.getVersion() == null) {
-            resultSet.addElement(LookupElementBuilder.create("version").withInsertHandler((dataHandler)));
+            resultSet.addElement(LookupElementBuilder.create("version").withInsertHandler(dataHandler));
         }
         if (xmlFile.getDescription() == null) {
             resultSet.addElement(LookupElementBuilder.create("description").withInsertHandler(multilineHandler));
@@ -111,7 +113,8 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
         resultSet.addElement(LookupElementBuilder.create("author").withInsertHandler(attrHandler));
         resultSet.addElement(LookupElementBuilder.create("maintainer")
                 .withInsertHandler((context, item) -> handleCompleteAttr(context, "maintainer", "email")));
-        resultSet.addElement(LookupElementBuilder.create("license").withInsertHandler(dataHandler));
+        resultSet.addElement(LookupElementBuilder.create("license")
+                .withInsertHandler(new MoveToDataHandler("", false, "", false, true)));
         PackageXmlUtil.getDependNames(xmlFile.getFormat()).stream().map(LookupElementBuilder::create)
                 .map(builder -> builder.withInsertHandler(attrHandler))
                 .forEach(resultSet::addElement);
@@ -177,43 +180,10 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
 
     private void addCompletionsForAttrValue(@NotNull XmlTag tag, CompletionResultSet resultSet) {
         if (tag.getName().equals("url")) {
-            resultSet.addElement(LookupElementBuilder.create("website")
-                    .withInsertHandler((context, item) -> handleMoveToData(context, tag.getName(), true)));
-            resultSet.addElement(LookupElementBuilder.create("repository")
-                    .withInsertHandler((context, item) -> handleMoveToData(context, tag.getName(), true)));
-            resultSet.addElement(LookupElementBuilder.create("bugtracker")
-                    .withInsertHandler((context, item) -> handleMoveToData(context, tag.getName(), true)));
-        }
-    }
-
-
-    private static void handleMoveToData(@NotNull InsertionContext insertionContext, String tagName, boolean inAttr) {
-        handleMoveToData(insertionContext, tagName, inAttr, "", false);
-    }
-
-    private static void handleMoveToData(@NotNull InsertionContext insertionContext, String tagName, boolean inAttr,
-                                         @NotNull String data, boolean multiline) {
-        CaretModel model = insertionContext.getEditor().getCaretModel();
-        if (inAttr) {
-            model.getCurrentCaret().moveCaretRelatively(1, 0, false, false);
-        }
-        Document doc = insertionContext.getDocument();
-        int offset = model.getOffset();
-        String text = doc.getTextLength() == offset ? "" : doc.getText(new TextRange(offset, offset + 1)),
-                whitespace = doc.getText(new TextRange(doc.getLineStartOffset(doc.getLineNumber(offset)),offset))
-                        .replaceFirst("[^ ].*",""),
-                insert = ">" + (multiline ? "\n    " + whitespace : "") + data +
-                        (multiline ? "\n" + whitespace : "") + "</" + tagName + ">";
-        if ("\r\n".contains(text)) {
-            doc.insertString(offset, insert);
-        }
-        model.getCurrentCaret().moveCaretRelatively(multiline ? 0 : data.isEmpty() ? 1 : insert.length(), 0,
-                false, false);
-        if (multiline) {
-            model.getCurrentCaret().moveCaretRelatively(data.length() + 8, 1, false, false);
-        }
-        if (tagName.equals("license")) {
-            newCompletion(insertionContext.getProject(), insertionContext.getEditor());
+            for (ROSPackageXml.URLType type : ROSPackageXml.URLType.values()) {
+                resultSet.addElement(LookupElementBuilder.create(type.name().toLowerCase())
+                        .withInsertHandler(new MoveToDataHandler(tag.getName(), true)));
+            }
         }
     }
 
