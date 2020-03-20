@@ -8,6 +8,7 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.search.FileTypeIndex;
 import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.psi.xml.XmlAttribute;
 import com.intellij.psi.xml.XmlFile;
 import com.intellij.psi.xml.XmlTag;
 import org.jetbrains.annotations.Contract;
@@ -70,7 +71,6 @@ public class PackageXmlUtil {
     }
 
     @Nullable
-    @Contract(pure = true)
     public static XmlTag getParentTag(@NotNull PsiElement element) {
         element = element.getParent();
         for (int i = 0; i < 3; i++, element = element.getParent()) {
@@ -124,5 +124,16 @@ public class PackageXmlUtil {
             builder.min(attrValue, false);
         }
         return builder.build();
+    }
+
+    @Nullable
+    public static String getAttributeName(PsiElement element) {
+        element = element.getParent();
+        for (int i = 0; i < 3; i++, element = element.getParent()) {
+            if (element instanceof XmlAttribute) {
+                return ((XmlAttribute) element).getName();
+            }
+        }
+        return null;
     }
 }

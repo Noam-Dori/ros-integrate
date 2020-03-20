@@ -12,6 +12,7 @@ import com.intellij.psi.xml.XmlTag;
 import com.intellij.psi.xml.XmlToken;
 import com.intellij.util.ProcessingContext;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkg.ROSDepKeyCache;
 import ros.integrate.pkg.ROSPackageManager;
 import ros.integrate.pkg.psi.ROSPackage;
@@ -23,6 +24,7 @@ import ros.integrate.pkg.xml.VersionRange;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class PackageXmlCompletionContributor extends CompletionContributor {
@@ -47,7 +49,7 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
                             return;
                         }
                         if (type.equals(XmlElementType.XML_ATTRIBUTE_VALUE_TOKEN)) {
-                            addCompletionsForAttrValue(tag, resultSet);
+                            addCompletionsForAttrValue(tag, resultSet, PackageXmlUtil.getAttributeName(element));
                         } else if (type.equals(XmlElementType.XML_NAME) && element.getParent() instanceof XmlAttribute) {
                             setCompletionsForAttrName(tag, resultSet, parameters);
                         } else if (type.equals(XmlElementType.XML_NAME)) {
@@ -116,11 +118,11 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
 
     private void setCompletionsForAttrName(@NotNull XmlTag tag, @NotNull CompletionResultSet resultSet,
                                            CompletionParameters parameters) {
-        InsertHandler<LookupElement> anyValueHandler = new AttributeValueHandler(false);
+        InsertHandler<LookupElement> anyValueHandler = new AttributeValueHandler(false),
+                completeValueHandler = new AttributeValueHandler(true);
         resultSet.runRemainingContributors(parameters, result -> {}); // removes all other entries. Dangerous stuff.
         if (tag.getName().equals("url") && tag.getAttribute("type") == null) {
-            resultSet.addElement(LookupElementBuilder.create("type")
-                    .withInsertHandler(new AttributeValueHandler(true)));
+            resultSet.addElement(LookupElementBuilder.create("type").withInsertHandler(completeValueHandler));
             resultSet.addElement(LookupElementBuilder.create("").withTailText("default", true)
                     .withInsertHandler(new SkipAttributeHandler(false)));
         }
@@ -134,26 +136,47 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
         if (PackageXmlUtil.isDependencyTag(tag)) {
             VersionRange range = PackageXmlUtil.getVersionRange(tag);
             if (range.getMin() == null && range.getMax() == null) {
-                resultSet.addElement(LookupElementBuilder.create("version_eq").withInsertHandler(anyValueHandler));
+                resultSet.addElement(LookupElementBuilder.create("version_eq").withInsertHandler(completeValueHandler));
             }
             if (range.getMin() == null) {
-                resultSet.addElement(LookupElementBuilder.create("version_gt").withInsertHandler(anyValueHandler));
-                resultSet.addElement(LookupElementBuilder.create("version_gte").withInsertHandler(anyValueHandler));
+                resultSet.addElement(LookupElementBuilder.create("version_gt").withInsertHandler(completeValueHandler));
+                resultSet.addElement(LookupElementBuilder.create("version_gte").withInsertHandler(completeValueHandler));
             }
             if (range.getMax() == null) {
-                resultSet.addElement(LookupElementBuilder.create("version_lt").withInsertHandler(anyValueHandler));
-                resultSet.addElement(LookupElementBuilder.create("version_lte").withInsertHandler(anyValueHandler));
+                resultSet.addElement(LookupElementBuilder.create("version_lt").withInsertHandler(completeValueHandler));
+                resultSet.addElement(LookupElementBuilder.create("version_lte").withInsertHandler(completeValueHandler));
             }
             resultSet.addElement(LookupElementBuilder.create("").withTailText("move to name", true)
                     .withInsertHandler(new SkipAttributeHandler(true)));
         }
     }
 
-    private void addCompletionsForAttrValue(@NotNull XmlTag tag, CompletionResultSet resultSet) {
+    private void addCompletionsForAttrValue(@NotNull XmlTag tag, @NotNull CompletionResultSet resultSet,
+                                            @Nullable String attributeName) {
+        InsertHandler<LookupElement> tagDataHandler = new TagDataHandler(tag.getName(), true);
         if (tag.getName().equals("url")) {
             for (ROSPackageXml.URLType type : ROSPackageXml.URLType.values()) {
                 resultSet.addElement(LookupElementBuilder.create(type.name().toLowerCase())
-                        .withInsertHandler(new TagDataHandler(tag.getName(), true)));
+                        .withInsertHandler(tagDataHandler));
+            }
+        }
+        if (PackageXmlUtil.isDependencyTag(tag)) {
+            String pkgVersion = Optional.ofNullable(tag.getProject().getService(ROSPackageManager.class)
+                    .findPackage(tag.getValue().getText())).map(ROSPackage::getPackageXml)
+                    .map(ROSPackageXml::getVersion).orElse("");
+            if ("version_eq".equals(attributeName)) {
+                resultSet.addElement(LookupElementBuilder.create("1.0.0").withInsertHandler(tagDataHandler));
+                if (!pkgVersion.isEmpty()) {
+                    resultSet.addElement(LookupElementBuilder.create(pkgVersion).withInsertHandler(tagDataHandler));
+                }
+            }
+            if (attributeName != null && attributeName.matches("version_[lg]te?")) {
+                resultSet.addElement(LookupElementBuilder.create("1.0.0")
+                        .withInsertHandler(new AttributeNameHandler()));
+                if (!pkgVersion.isEmpty()) {
+                    resultSet.addElement(LookupElementBuilder.create(pkgVersion)
+                            .withInsertHandler(new AttributeNameHandler()));
+                }
             }
         }
     }

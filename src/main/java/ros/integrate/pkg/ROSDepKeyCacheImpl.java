@@ -11,6 +11,7 @@ import ros.integrate.settings.ROSSettings;
 
 import java.io.IOException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.Collection;
 import java.util.List;
 import java.util.Scanner;
@@ -74,7 +75,7 @@ public class ROSDepKeyCacheImpl implements ROSDepKeyCache {
         return keyCache.values();
     }
 
-    private synchronized void tryCachingKeys(boolean force) {
+    private void tryCachingKeys(boolean force) {
         if (!force && internetAttempted) {
             return;
         }
@@ -85,7 +86,12 @@ public class ROSDepKeyCacheImpl implements ROSDepKeyCache {
                 indicator.checkCanceled();
             }
             try {
-                Scanner scanner = new Scanner(new URL(address).openStream());
+                URLConnection con = new URL(address).openConnection();
+                if (!force) {
+                    con.setConnectTimeout(100);
+                    con.setReadTimeout(1000);
+                }
+                Scanner scanner = new Scanner(con.getInputStream());
                 while (scanner.hasNextLine()) {
                     String keyName = nextKey(scanner);
                     if (!keyName.isEmpty()) {
@@ -93,7 +99,7 @@ public class ROSDepKeyCacheImpl implements ROSDepKeyCache {
                     }
                 }
             } catch (IOException e) {
-                LOG.warning("Could not fetch rosdep source list: no connection to " + address);
+                LOG.warning("Could not fetch rosdep source list: failed connection to " + address);
                 connectionFailed = true;
             }
         }

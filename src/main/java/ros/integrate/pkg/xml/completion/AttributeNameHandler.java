@@ -16,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
 class AttributeNameHandler implements InsertHandler<LookupElement> {
     @Nullable
     private final String forcedAttrName;
+    private final boolean inAttr;
 
     /**
      * @param forcedAttrName leave null if the user may select an attribute.
@@ -23,6 +24,15 @@ class AttributeNameHandler implements InsertHandler<LookupElement> {
      */
     AttributeNameHandler(@Nullable String forcedAttrName) {
         this.forcedAttrName = forcedAttrName;
+        inAttr = false;
+    }
+
+    /**
+     * use this to handle moving to another attribute name from completing an attribute value.
+     */
+    AttributeNameHandler() {
+        this.forcedAttrName = null;
+        inAttr = true;
     }
 
     @Override
@@ -37,6 +47,10 @@ class AttributeNameHandler implements InsertHandler<LookupElement> {
         }
         model.getCurrentCaret().moveCaretRelatively(Math.max(attrInsert.length(), 1), 0, false, false);
         if (forcedAttrName == null) {
+            if (inAttr) {
+                context.getDocument().insertString(model.getOffset()," ");
+                model.getCurrentCaret().moveCaretRelatively(1, 0, false, false);
+            }
             newCompletion(context.getProject(), context.getEditor());
         }
     }
