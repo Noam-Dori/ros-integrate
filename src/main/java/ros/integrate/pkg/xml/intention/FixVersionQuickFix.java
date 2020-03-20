@@ -8,6 +8,7 @@ import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.xml.ROSPackageXml;
+import ros.integrate.pkg.xml.VersionRange;
 
 public class FixVersionQuickFix extends BaseIntentionAction {
     private final ROSPackageXml pkgXml;
@@ -27,7 +28,7 @@ public class FixVersionQuickFix extends BaseIntentionAction {
     @Override
     public boolean isAvailable(@NotNull Project project, Editor editor, PsiFile file) {
         String version = pkgXml.getVersion();
-        return version == null || !version.matches("\\d+\\.\\d+\\.\\d+");
+        return version == null || !version.matches(VersionRange.VERSION_REGEX);
     }
 
     @Override
@@ -48,7 +49,7 @@ public class FixVersionQuickFix extends BaseIntentionAction {
     @NotNull
     private String getNumber(@NotNull String[] sections, int idx) {
         String num;
-        if (sections.length <= idx || !sections[idx].matches("\\d+")) {
+        if (sections.length <= idx || !sections[idx].matches("0|[1-9][0-9]*")) {
             if (idx == 0) {
                 num = "1";
             } else {

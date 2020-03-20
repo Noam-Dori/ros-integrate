@@ -7,7 +7,7 @@ import javax.annotation.Nullable;
 import java.util.Arrays;
 
 public class VersionRange {
-    private static final String VERSION_REGEX = "(0|[1-9][0-9]*)(\\.(0|[1-9][0-9]*)){2}";
+    public static final String VERSION_REGEX = "(0|[1-9][0-9]*)(\\.(0|[1-9][0-9]*)){2}";
 
     public static class Builder {
         @NotNull

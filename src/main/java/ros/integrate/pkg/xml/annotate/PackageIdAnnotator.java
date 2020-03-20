@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkg.xml.ROSPackageXml;
+import ros.integrate.pkg.xml.VersionRange;
 import ros.integrate.pkg.xml.intention.AddDescriptionQuickFix;
 import ros.integrate.pkg.xml.intention.FixNameQuickFix;
 import ros.integrate.pkg.xml.intention.FixVersionQuickFix;
@@ -66,7 +67,7 @@ class PackageIdAnnotator {
     }
 
     void annBadVersion() {
-        if (version != null && !version.matches("\\d+\\.\\d+\\.\\d+")) {
+        if (version != null && !version.matches(VersionRange.VERSION_REGEX)) {
             Annotation ann = holder.createErrorAnnotation(versionTr,
                     "Invalid version: versions should be written in the form \"NUMBER.NUMBER.NUMBER\"");
             ann.registerFix(new FixVersionQuickFix(pkgXml, "Fix"));

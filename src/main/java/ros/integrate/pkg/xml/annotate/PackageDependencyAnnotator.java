@@ -49,7 +49,7 @@ class PackageDependencyAnnotator {
         }
     }
 
-    void invalidDependencyName() {
+    void annInvalidDependencyName() {
         // get invalid tag names
         List<String> relevant = Arrays.stream(DependencyType.values())
                 .filter(dep -> !dep.relevant(pkgXml.getFormat())).map(DependencyType::getTagName)
@@ -115,6 +115,18 @@ class PackageDependencyAnnotator {
                 if (pkgXml.getPackage().getProject().getService(ROSDepKeyCache.class).inOfflineMode()) {
                     ann.registerFix(new ForceCacheQuickFix());
                 }
+            }
+        }
+    }
+
+    void annInvaliDependencyVersionAttr() {
+        for (int i = 0; i < dependencies.size(); i++) {
+            Dependency dep = dependencies.get(i);
+            if (dep.getPackage() != ROSPackage.ORPHAN && dep.getVersionRange().isNotValid()) {
+                Annotation ann = holder.createErrorAnnotation(depTrs.get(i).second,
+                        "Invalid version restriction(s).");
+//                ann.registerFix(new RemoveVersionRestrictionFix(pkgXml, i));
+//                ann.registerFix(new FixDependencyQuickFix(pkgXml, i));
             }
         }
     }
