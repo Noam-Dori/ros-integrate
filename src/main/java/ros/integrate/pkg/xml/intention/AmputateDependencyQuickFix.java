@@ -38,7 +38,7 @@ public class AmputateDependencyQuickFix extends BaseIntentionAction {
 
     @Override
     public boolean isAvailable(@NotNull Project project, Editor editor, PsiFile file) {
-        return pkgXml.getDependencies(null).get(id).getVersionRange().isNotValid();
+        return pkgXml.getDependencies(null).size() > id;
     }
 
     @Override

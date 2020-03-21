@@ -5,6 +5,7 @@ import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.TextRange;
+import com.intellij.psi.xml.XmlTag;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.ROSDepKeyCache;
@@ -16,6 +17,7 @@ import ros.integrate.pkg.xml.intention.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 class PackageDependencyAnnotator {
     @NotNull
@@ -123,6 +125,32 @@ class PackageDependencyAnnotator {
             if (dep.getPackage() != ROSPackage.ORPHAN && dep.getVersionRange().isNotValid()) {
                 Annotation ann = holder.createErrorAnnotation(depTrs.get(i).first,
                         "Invalid version restriction(s).");
+                ann.registerFix(new AmputateDependencyQuickFix(pkgXml, i));
+                ann.registerFix(new FixDependencyQuickFix(pkgXml, i));
+            }
+        }
+    }
+
+    void annConflictingVersionAttr() {
+        if (dependencies.size() == 0) {
+            return;
+        }
+        Stream<XmlTag> result = Stream.empty();
+        for (DependencyType dep : DependencyType.values()) {
+            result = Stream.concat(result, Stream.of(Objects.requireNonNull(pkgXml.getRawXml().getRootTag())
+                    .findSubTags(dep.getTagName())));
+        }
+        List<XmlTag> rawDependencies = result.collect(Collectors.toList());
+        for (int i = 0; i < rawDependencies.size(); i++) {
+            XmlTag dep = rawDependencies.get(i);
+            boolean hasLt = dep.getAttribute("version_lt") != null,
+                    hasLte = dep.getAttribute("version_lte") != null,
+                    hasGt = dep.getAttribute("version_gt") != null,
+                    hasGte = dep.getAttribute("version_gte") != null,
+                    hasEq = dep.getAttribute("version_eq") != null;
+            if (hasGt && hasGte || hasLt && hasLte || hasEq && (hasGt || hasGte || hasLt || hasLte)) {
+                Annotation ann = holder.createErrorAnnotation(depTrs.get(i).first,
+                        "Conflicting version restrictions.");
                 ann.registerFix(new AmputateDependencyQuickFix(pkgXml, i));
                 ann.registerFix(new FixDependencyQuickFix(pkgXml, i));
             }
