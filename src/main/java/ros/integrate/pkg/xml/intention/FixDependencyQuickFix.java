@@ -1,6 +1,8 @@
 package ros.integrate.pkg.xml.intention;
 
 import com.intellij.codeInsight.intention.impl.BaseIntentionAction;
+import com.intellij.codeInspection.LocalQuickFix;
+import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
@@ -10,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.xml.ROSPackageXml;
 import ros.integrate.pkg.xml.VersionRange;
 
-public class FixDependencyQuickFix extends BaseIntentionAction {
+public class FixDependencyQuickFix extends BaseIntentionAction implements LocalQuickFix {
     @NotNull
     private final ROSPackageXml pkgXml;
     private final int id;
@@ -41,6 +43,15 @@ public class FixDependencyQuickFix extends BaseIntentionAction {
 
     @Override
     public void invoke(@NotNull Project project, Editor editor, PsiFile file) throws IncorrectOperationException {
+        doFix();
+    }
+
+    @Override
+    public void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor) {
+        doFix();
+    }
+
+    private void doFix() {
         ROSPackageXml.Dependency dep = pkgXml.getDependencies(null).get(id);
         VersionRange range = dep.getVersionRange();
         VersionRange.Builder newBuilder = new VersionRange.Builder();
@@ -62,5 +73,12 @@ public class FixDependencyQuickFix extends BaseIntentionAction {
             }
         }
         pkgXml.setDependency(id, new ROSPackageXml.Dependency(dep.getType(), dep.getPackage(), newBuilder.build()));
+    }
+
+    @Nls(capitalization = Nls.Capitalization.Sentence)
+    @NotNull
+    @Override
+    public String getName() {
+        return getText();
     }
 }
