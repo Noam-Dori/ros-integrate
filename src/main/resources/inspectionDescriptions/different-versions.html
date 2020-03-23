@@ -1,0 +1,25 @@
+<html>
+<body>
+<p>Checks if there are multiple dependency tags that point to the same package
+    but with different version restrictions.</p>
+<!-- tooltip end -->
+<p>
+    For example:
+    <code>
+        <br/>
+        &lt;depend&gt;catkin&lt;/depend&gt;
+        <br/>
+        &lt;test_depend version_gte="1.0.0"&gt;catkin&lt;/depend&gt;
+        <br/>
+    </code>
+    has two dependencies but require somewhat different versions (one can work with any version of <code>catkin</code>
+    while the other requires <code>catkin</code> to be at least version 1.0.0
+</p>
+<p>This inspection offers two ways to fix this:</p>
+<ol>
+    <li>Reformat the entire file. This will also change the version restriction to match the versions common to all tags.
+    If no such common version exists, the dependencies will be removed.</li>
+    <li>Remove the dependency tag(s).</li>
+</ol>
+</body>
+</html>

@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
+import java.util.Objects;
 
 public class VersionRange {
     public static final String VERSION_REGEX = "(0|[1-9][0-9]*)(\\.(0|[1-9][0-9]*)){2}";
@@ -152,5 +153,21 @@ public class VersionRange {
 
     public boolean isStrictMin() {
         return strictMin;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof VersionRange)) return false;
+        VersionRange range = (VersionRange) o;
+        return isStrictMin() == range.isStrictMin() &&
+                isStrictMax() == range.isStrictMax() &&
+                Objects.equals(getMin(), range.getMin()) &&
+                Objects.equals(getMax(), range.getMax());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getMin(), getMax(), isStrictMin(), isStrictMax());
     }
 }

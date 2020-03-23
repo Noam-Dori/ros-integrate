@@ -82,6 +82,9 @@
         <localInspection language="XML" implementationClass="ros.integrate.pkg.xml.inspection.OutdatedFormatInspection"
                          level="WEAK WARNING" enabledByDefault="true" shortName="outdated-format"
                          groupName="ROS" displayName="Outdated manifest format"/>
+        <localInspection language="XML" implementationClass="ros.integrate.pkg.xml.inspection.DifferentDependencyVersionInspection"
+                         level="WARNING" enabledByDefault="true" shortName="different-versions"
+                         groupName="ROS" displayName="Different dependency versions"/>
     </extensions>
 
     <extensions defaultExtensionNs="ros-integrate">
