@@ -506,7 +506,8 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
             return Collections.emptyList();
         }
         Stream<Pair<DependencyType, XmlTag>> result = Stream.empty();
-        for (DependencyType dep : DependencyType.values()) {
+        for (DependencyType dep : dependencyType == null ?
+                DependencyType.values() : dependencyType.getCoveringTags(getFormat())) {
             result = Stream.concat(result, Stream.of(file.getRootTag().findSubTags(dep.getTagName()))
                     .map(tag -> new Pair<>(dep, tag)));
         }
