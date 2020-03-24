@@ -12,14 +12,18 @@ import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.xml.ROSPackageXml;
 import ros.integrate.pkg.xml.VersionRange;
 
+import java.util.Optional;
+
 public class FixDependencyQuickFix extends BaseIntentionAction implements LocalQuickFix {
     @NotNull
     private final ROSPackageXml pkgXml;
     private final int id;
+    private final boolean stringFix;
 
-    public FixDependencyQuickFix(@NotNull ROSPackageXml pkgXml, int id) {
+    public FixDependencyQuickFix(@NotNull ROSPackageXml pkgXml, int id, boolean strongFix) {
         this.pkgXml = pkgXml;
         this.id = id;
+        this.stringFix = strongFix;
     }
 
     @Nls(capitalization = Nls.Capitalization.Sentence)
@@ -70,6 +74,17 @@ public class FixDependencyQuickFix extends BaseIntentionAction implements LocalQ
             } else {
                 newBuilder.max(newMin, range.isStrictMin());
                 newBuilder.min(newMax, range.isStrictMax());
+            }
+        }
+        String depVersion = Optional.ofNullable(dep.getPackage().getPackageXml()).map(ROSPackageXml::getVersion)
+                .orElse(null);
+        if (stringFix && depVersion != null && !newBuilder.build().contains(depVersion)) {
+            VersionRange.Builder check = new VersionRange.Builder(newBuilder);
+            check.min(depVersion, false);
+            if (check.build().isNotValid()) {
+                newBuilder.max(depVersion, false);
+            } else {
+                newBuilder.min(depVersion, false);
             }
         }
         pkgXml.setDependency(id, new ROSPackageXml.Dependency(dep.getType(), dep.getPackage(), newBuilder.build()));

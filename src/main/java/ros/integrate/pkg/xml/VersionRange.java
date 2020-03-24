@@ -18,6 +18,14 @@ public class VersionRange {
             ret = any();
         }
 
+        public Builder(@NotNull Builder other) {
+            ret = any();
+            ret.min = other.ret.min;
+            ret.max = other.ret.max;
+            ret.strictMax = other.ret.strictMax;
+            ret.strictMin = other.ret.strictMin;
+        }
+
         public VersionRange exactVersion(String version) {
             ret.max = ret.min = version;
             ret.strictMax = ret.strictMin = false;

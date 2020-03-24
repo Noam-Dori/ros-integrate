@@ -126,7 +126,7 @@ class PackageDependencyAnnotator {
                 Annotation ann = holder.createErrorAnnotation(depTrs.get(i).first,
                         "Invalid version restriction(s).");
                 ann.registerFix(new AmputateDependencyQuickFix(pkgXml, i));
-                ann.registerFix(new FixDependencyQuickFix(pkgXml, i));
+                ann.registerFix(new FixDependencyQuickFix(pkgXml, i, false));
             }
         }
     }
@@ -152,7 +152,7 @@ class PackageDependencyAnnotator {
                 Annotation ann = holder.createErrorAnnotation(depTrs.get(i).first,
                         "Conflicting version restrictions.");
                 ann.registerFix(new AmputateDependencyQuickFix(pkgXml, i));
-                ann.registerFix(new FixDependencyQuickFix(pkgXml, i));
+                ann.registerFix(new FixDependencyQuickFix(pkgXml, i, false));
             }
         }
     }

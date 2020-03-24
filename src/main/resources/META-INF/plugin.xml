@@ -87,7 +87,7 @@
                          groupName="ROS" displayName="Different dependency versions"/>
         <localInspection language="XML" implementationClass="ros.integrate.pkg.xml.inspection.OutdatedDependencyInspection"
                          level="ERROR" enabledByDefault="true" shortName="outdated-dependency"
-                         groupName="ROS" displayName="Package does not match Specified Versions"/>
+                         groupName="ROS" displayName="Package does not match specified versions"/>
     </extensions>
 
     <extensions defaultExtensionNs="ros-integrate">

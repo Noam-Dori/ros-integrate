@@ -38,8 +38,7 @@ public class OutdatedDependencyInspection extends LocalInspectionTool {
         }
         trsToAnn.forEach(i -> ret.add(manager.createProblemDescriptor(file, depTrs.get(i).second, getDisplayName(),
                 ProblemHighlightType.GENERIC_ERROR_OR_WARNING, isOnTheFly,
-                // TODO change intention so that it modifies the restriction to include current version
-                new FixDependencyQuickFix(pkgXml, i/*, true*/),
+                new FixDependencyQuickFix(pkgXml, i, true),
                 new RemoveDependencyQuickFix(pkgXml, i))));
         return ret.toArray(ProblemDescriptor.EMPTY_ARRAY);
     }
