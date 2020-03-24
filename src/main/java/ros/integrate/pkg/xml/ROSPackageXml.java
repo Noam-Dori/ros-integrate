@@ -21,6 +21,9 @@ public interface ROSPackageXml {
      * helper class describing contributors: authors or maintainers
      */
     class Contributor {
+        public static final String EMAIL_REGEX =
+                "[-a-zA-Z0-9_%+]+(\\.[-a-zA-Z0-9_%+]+)*@[-a-zA-Z0-9%]+(\\.[-a-zA-Z0-9%]+)*\\.[a-zA-Z]{2,}";
+
         @NotNull
         private final String name, email;
 

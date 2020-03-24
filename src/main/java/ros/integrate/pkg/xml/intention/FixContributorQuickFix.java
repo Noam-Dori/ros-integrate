@@ -11,7 +11,6 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.xml.ROSPackageXml;
-import ros.integrate.pkg.xml.ROSPackageXml.Contributor;
 
 public class FixContributorQuickFix extends BaseIntentionAction {
 
@@ -43,8 +42,7 @@ public class FixContributorQuickFix extends BaseIntentionAction {
 
     @Override
     public boolean isAvailable(@NotNull Project project, Editor editor, PsiFile file) {
-        Contributor contrib = type.get(pkgXml, id);
-        return contrib.getName().isEmpty() || contrib.getEmail().isEmpty();
+        return id < (type == ContribType.AUTHOR ? pkgXml.getAuthors() : pkgXml.getMaintainers()).size();
     }
 
     @Override

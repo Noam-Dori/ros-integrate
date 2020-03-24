@@ -407,7 +407,9 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
         XmlTag newTag = file.getRootTag()
                 .createChildTag(component.get(),
                         null, contributor.getName(), false);
-        newTag.setAttribute("email", contributor.getEmail());
+        if (!contributor.getEmail().isEmpty()) {
+            newTag.setAttribute("email", contributor.getEmail());
+        }
         contribTag.replace(newTag);
         return ret;
     }

@@ -44,11 +44,14 @@ class PackageContribAnnotator {
 
     void annBadMaintainer() {
         for (int i = 0; i < maintainers.size(); i++) {
+            Contributor maintainer = maintainers.get(i);
             Annotation ann = null;
-            if (maintainers.get(i).getEmail().isEmpty()) {
+            if (maintainer.getEmail().isEmpty()) {
                 ann = holder.createErrorAnnotation(maintainerTr.get(i), "Maintainer is missing reference email");
+            } else if (!maintainer.getEmail().matches(Contributor.EMAIL_REGEX)) {
+                ann = holder.createErrorAnnotation(maintainerTr.get(i), "Maintainer email is invalid");
             }
-            if (pkgXml.getMaintainers().get(i).getName().isEmpty()) {
+            if (maintainer.getName().isEmpty()) {
                 ann = holder.createErrorAnnotation(maintainerTr.get(i), "Maintainer does not have a name");
             }
             if (ann != null) {
@@ -62,9 +65,15 @@ class PackageContribAnnotator {
 
     void annBadAuthor() {
         for (int i = 0; i < authors.size(); i++) {
-            if (authors.get(i).getName().isEmpty()) {
+            Contributor author = authors.get(i);
+            if (author.getName().isEmpty()) {
                 Annotation ann = holder.createErrorAnnotation(authorTr.get(i), "Author does not have a name");
                 ann.registerFix(new FixContributorQuickFix(pkgXml, i, ContribType.AUTHOR));
+                ann.registerFix(new RemoveContributorFix(pkgXml, i, ContribType.AUTHOR));
+            } else if (!author.getEmail().matches(Contributor.EMAIL_REGEX)) {
+                Annotation ann = holder.createErrorAnnotation(authorTr.get(i), "Author email is invalid");
+                ann.registerFix(new FixContributorQuickFix(pkgXml, i, ContribType.AUTHOR));
+                ann.registerFix(new RemoveContributorFix(pkgXml, i, ContribType.AUTHOR));
             }
         }
     }

@@ -86,6 +86,9 @@ public class VersionRange {
         Integer[] minParts = Arrays.stream(shouldMin.split("\\.")).map(Integer::valueOf).toArray(Integer[]::new),
                 maxParts = Arrays.stream(shouldMax.split("\\.")).map(Integer::valueOf).toArray(Integer[]::new);
         for (int i = 0; i < maxParts.length; i++) {
+            if (maxParts[i] > minParts[i]) {
+                return true;
+            }
             if (maxParts[i] < minParts[i]) {
                 return false;
             }
@@ -177,5 +180,13 @@ public class VersionRange {
     @Override
     public int hashCode() {
         return Objects.hash(getMin(), getMax(), isStrictMin(), isStrictMax());
+    }
+
+    @Override
+    public String toString() {
+        return (strictMin ? "(" : "[") +
+                (min == null ? "INF" : min) + "," +
+                (max == null ? "INF" : max) +
+                (strictMax ? ")" : "]");
     }
 }
