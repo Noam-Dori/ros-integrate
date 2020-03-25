@@ -39,6 +39,16 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
         }
     }
 
+    private static final List<String> TAG_NAMES = findTagNames();
+
+    private static List<String> findTagNames() {
+        List<DependencyType> dependencyTypes = Arrays.asList(DependencyType.values());
+        dependencyTypes.sort(DependencyType::compare);
+        return Stream.concat(Stream.of(Component.values()).map(Component::get),
+                dependencyTypes.stream().map(DependencyType::getTagName))
+                .collect(Collectors.toList());
+    }
+
     private XmlFile file;
     private final ROSPackage pkg;
     private ROSPackageManager pkgManager;
@@ -221,8 +231,8 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
         }
         XmlTag[] nameTags = file.getRootTag().findSubTags(component.get());
         if (nameTags.length == 0) {
-            file.getRootTag().addSubTag(file.getRootTag()
-                    .createChildTag(component.get(), null, newContent, false), true);
+            addLevel2Tag(file.getRootTag().createChildTag(component.get(), null, newContent,
+                    false));
         } else if (nameTags.length > 1) {
             nameTags[0].getValue().setText(newContent);
             for (int i = 1; i < nameTags.length; i++) {
@@ -273,9 +283,8 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
         if (file.getRootTag() == null) {
             addRootTag();
         }
-        file.getRootTag().addSubTag(file.getRootTag()
-                .createChildTag(Component.LICENSE.get(),
-                        null, licenseName, false), true);
+        addLevel2Tag(file.getRootTag().createChildTag(Component.LICENSE.get(), null, licenseName,
+                false));
     }
 
     @Override
@@ -286,7 +295,7 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
         XmlTag newTag = file.getRootTag()
                 .createChildTag(Component.URL.get(), null, url, false);
         newTag.setAttribute("email", type.name().toLowerCase());
-        file.getRootTag().addSubTag(newTag, true);
+        addLevel2Tag(newTag);
     }
 
     @NotNull
@@ -371,7 +380,7 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
         XmlTag newTag = file.getRootTag()
                 .createChildTag(type.getTagName(), null, pkg.getName(), false);
         addVersionRangeToDep(newTag, versionRange);
-        file.getRootTag().addSubTag(newTag, true);
+        addLevel2Tag(newTag);
     }
 
     void addVersionRangeToDep(XmlTag depTag, @NotNull VersionRange range) {
@@ -398,7 +407,26 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
         if (email != null) {
             newTag.setAttribute("email", email);
         }
-        file.getRootTag().addSubTag(newTag, true);
+        addLevel2Tag(newTag);
+    }
+
+    private void addLevel2Tag(XmlTag newTag) {
+        if (file.getRootTag() == null) {
+            addRootTag();
+        }
+        // find tag to add thing after
+        int ordinal = TAG_NAMES.indexOf(newTag.getName());
+        XmlTag anchor;
+        do {
+            XmlTag[] found = file.getRootTag().findSubTags(TAG_NAMES.get(ordinal));
+            anchor = found.length == 0 ? null : found[found.length - 1];
+            ordinal--;
+        } while (ordinal >= 0 && anchor == null);
+        if (anchor == null) {
+            file.getRootTag().addSubTag(newTag, true);
+        } else {
+            file.getRootTag().addAfter(newTag, anchor);
+        }
     }
 
     private boolean setContributor(int id, @NotNull Contributor contributor, @NotNull Component component) {

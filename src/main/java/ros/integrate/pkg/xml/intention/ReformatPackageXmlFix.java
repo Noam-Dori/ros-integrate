@@ -90,23 +90,23 @@ public class ReformatPackageXmlFix extends BaseIntentionAction implements LocalQ
         // step 2: group dependencies based on format. drop those that cannot fit.
         updateDependencies(dependencies);
 
-        // step 3: add back all info, ordered.
+        // step 3: add back all info. Ordering is taken care of in ROSPackageXml
         if (pkgXml.getRawXml().getRootTag() != null) {
             pkgXml.getRawXml().getRootTag().delete();
         }
         pkgXml.setFormat(targetFormat);
-        // export
-        // groups
-        dependencies.forEach(dependency -> pkgXml.addDependency(dependency.getType(), dependency.getPackage(),
-                dependency.getVersionRange(), false));
+        name.ifPresent(pkgXml::setPkgName);
+        version.ifPresent(pkgXml::setVersion);
+        description.ifPresent(pkgXml::setDescription);
+        maintainers.forEach(maintainer -> pkgXml.addMaintainer(maintainer.getName(), maintainer.getEmail()));
+        licenses.forEach(pkgXml::addLicence);
+        urls.forEach(url -> pkgXml.addURL(url.first, url.second));
         authors.forEach(author -> pkgXml.addAuthor(author.getName(), author.getEmail().isEmpty() ? null :
                 author.getEmail()));
-        urls.forEach(url -> pkgXml.addURL(url.first, url.second));
-        licenses.forEach(pkgXml::addLicence);
-        maintainers.forEach(maintainer -> pkgXml.addMaintainer(maintainer.getName(), maintainer.getEmail()));
-        description.ifPresent(pkgXml::setDescription);
-        version.ifPresent(pkgXml::setVersion);
-        name.ifPresent(pkgXml::setPkgName);
+        dependencies.forEach(dependency -> pkgXml.addDependency(dependency.getType(), dependency.getPackage(),
+                dependency.getVersionRange(), false));
+        // groups
+        // export
     }
 
     private void updateDependencies(@NotNull List<Dependency> dependencies) {
@@ -143,10 +143,5 @@ public class ReformatPackageXmlFix extends BaseIntentionAction implements LocalQ
                 }
             }
         }
-
-        dependencies.sort((o1, o2) -> {
-            int ret = DependencyType.compare(o1.getType(), o2.getType());
-            return ret != 0 ? -ret : -o1.getPackage().compareTo(o2.getPackage());
-        });
     }
 }
