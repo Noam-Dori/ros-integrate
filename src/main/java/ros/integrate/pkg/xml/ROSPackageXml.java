@@ -176,6 +176,12 @@ public interface ROSPackageXml {
     List<Dependency> getDependencies(@Nullable DependencyType dependencyType);
 
     /**
+     * @return the entire tag containing data for 3rd party processing.
+     */
+    @Nullable
+    XmlTag getExport();
+
+    /**
      * @return the package this manifest describes.
      */
     @NotNull
@@ -264,6 +270,12 @@ public interface ROSPackageXml {
      * @param newDescription the new description to use, may be HTML and use CDATA
      */
     void setDescription(@NotNull String newDescription);
+
+    /**
+     * changes/adds an export tag.
+     * @param newExport the new export tag.
+     */
+    void setExport(@NotNull XmlTag newExport);
 
     /**
      * adds a new license to the package

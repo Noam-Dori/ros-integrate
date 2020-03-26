@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ROSPackageXmlImpl implements ROSPackageXml {
+    private static final String EXPORT = "export", FORMAT = "format", EMAIL = "email";
 
     private enum Component {
         NAME,
@@ -44,8 +45,8 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
     private static List<String> findTagNames() {
         List<DependencyType> dependencyTypes = Arrays.asList(DependencyType.values());
         dependencyTypes.sort(DependencyType::compare);
-        return Stream.concat(Stream.of(Component.values()).map(Component::get),
-                dependencyTypes.stream().map(DependencyType::getTagName))
+        return Stream.concat(Stream.concat(Stream.of(Component.values()).map(Component::get),
+                dependencyTypes.stream().map(DependencyType::getTagName)), Stream.of(EXPORT))
                 .collect(Collectors.toList());
     }
 
@@ -79,7 +80,7 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
         if (file.getRootTag() == null) {
             return 0;
         }
-        XmlAttribute format = file.getRootTag().getAttribute("format");
+        XmlAttribute format = file.getRootTag().getAttribute(FORMAT);
         if (format == null || format.getValue() == null) {
             return 1;
         }
@@ -96,7 +97,7 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
         if (file.getRootTag() == null) {
             return file.getTextRange();
         }
-        XmlAttribute format = file.getRootTag().getAttribute("format");
+        XmlAttribute format = file.getRootTag().getAttribute(FORMAT);
         if (format == null || format.getValueElement() == null) {
             return getRootTextRange();
         }
@@ -134,7 +135,7 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
         if (file.getRootTag() == null) {
             addRootTag();
         }
-        file.getRootTag().setAttribute("format", String.valueOf(format));
+        file.getRootTag().setAttribute(FORMAT, String.valueOf(format));
     }
 
     @Override
@@ -294,7 +295,7 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
         }
         XmlTag newTag = file.getRootTag()
                 .createChildTag(Component.URL.get(), null, url, false);
-        newTag.setAttribute("email", type.name().toLowerCase());
+        newTag.setAttribute(EMAIL, type.name().toLowerCase());
         addLevel2Tag(newTag);
     }
 
@@ -317,7 +318,7 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
         }
         return Arrays.stream(file.getRootTag().findSubTags(component.get()))
                 .map(tag -> new Contributor(tag.getValue().getText(),
-                        Optional.ofNullable(tag.getAttributeValue("email")).orElse("")))
+                        Optional.ofNullable(tag.getAttributeValue(EMAIL)).orElse("")))
                 .collect(Collectors.toList());
     }
 
@@ -405,7 +406,7 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
         XmlTag newTag = file.getRootTag()
                 .createChildTag(component.get(), null, name, false);
         if (email != null) {
-            newTag.setAttribute("email", email);
+            newTag.setAttribute(EMAIL, email);
         }
         addLevel2Tag(newTag);
     }
@@ -436,7 +437,7 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
                 .createChildTag(component.get(),
                         null, contributor.getName(), false);
         if (!contributor.getEmail().isEmpty()) {
-            newTag.setAttribute("email", contributor.getEmail());
+            newTag.setAttribute(EMAIL, contributor.getEmail());
         }
         contribTag.replace(newTag);
         return ret;
@@ -549,5 +550,28 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
     private ROSPackage findPackage(String name) {
         return Optional.ofNullable(pkgManager.findPackage(name)).map(Optional::of)
                 .orElseGet(() -> Optional.ofNullable(keyCache.findKey(name))).orElse(ROSPackage.ORPHAN);
+    }
+
+    @Nullable
+    @Override
+    public XmlTag getExport() {
+        if (file.getRootTag() == null) {
+            return null;
+        }
+        return file.getRootTag().findFirstSubTag(EXPORT);
+    }
+
+    @Override
+    public void setExport(@NotNull XmlTag exportToRead) {
+        if (file.getRootTag() == null) {
+            addRootTag();
+        }
+        XmlTag oldExport = getExport(), newExport = file.getRootTag()
+                .createChildTag(EXPORT, null, exportToRead.getValue().getText(), false);
+        if (oldExport == null) {
+            addLevel2Tag(newExport);
+        } else {
+            oldExport.replace(newExport);
+        }
     }
 }

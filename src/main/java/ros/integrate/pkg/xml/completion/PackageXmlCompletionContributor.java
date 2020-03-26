@@ -114,6 +114,9 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
         PackageXmlUtil.getDependNames(xmlFile.getFormat()).stream().map(LookupElementBuilder::create)
                 .map(builder -> builder.withInsertHandler(attrHandler))
                 .forEach(resultSet::addElement);
+        if (xmlFile.getExport() == null) {
+            resultSet.addElement(LookupElementBuilder.create("export").withInsertHandler(multilineHandler));
+        }
     }
 
     private void setCompletionsForAttrName(@NotNull XmlTag tag, @NotNull CompletionResultSet resultSet,
