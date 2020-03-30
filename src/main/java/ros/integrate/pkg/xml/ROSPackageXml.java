@@ -179,7 +179,7 @@ public interface ROSPackageXml {
      * @return the entire tag containing data for 3rd party processing.
      */
     @Nullable
-    XmlTag getExport();
+    ExportTag getExport();
 
     /**
      * @return the package this manifest describes.

@@ -8,18 +8,14 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Pair;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.xml.XmlTag;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.psi.ROSPackage;
-import ros.integrate.pkg.xml.DependencyType;
-import ros.integrate.pkg.xml.PackageXmlUtil;
-import ros.integrate.pkg.xml.ROSPackageXml;
+import ros.integrate.pkg.xml.*;
 import ros.integrate.pkg.xml.ROSPackageXml.Contributor;
 import ros.integrate.pkg.xml.ROSPackageXml.Dependency;
 import ros.integrate.pkg.xml.ROSPackageXml.URLType;
-import ros.integrate.pkg.xml.VersionRange;
 
 import java.util.*;
 
@@ -82,7 +78,7 @@ public class ReformatPackageXmlFix extends BaseIntentionAction implements LocalQ
         List<Pair<String, URLType>> urls = pkgXml.getURLs();
         List<Dependency> dependencies = pkgXml.getDependencies(null);
         // TODO: 2/29/2020 Add group
-        Optional<XmlTag> export = Optional.ofNullable(pkgXml.getExport());
+        Optional<ExportTag> export = Optional.ofNullable(pkgXml.getExport());
 
         // step 2: group dependencies based on format. drop those that cannot fit.
         updateDependencies(dependencies);
@@ -103,7 +99,7 @@ public class ReformatPackageXmlFix extends BaseIntentionAction implements LocalQ
         dependencies.forEach(dependency -> pkgXml.addDependency(dependency.getType(), dependency.getPackage(),
                 dependency.getVersionRange(), false));
         // groups
-        export.ifPresent(pkgXml::setExport);
+        export.map(ExportTag::getRawTag).ifPresent(pkgXml::setExport);
     }
 
     private void updateDependencies(@NotNull List<Dependency> dependencies) {

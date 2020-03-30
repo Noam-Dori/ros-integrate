@@ -9,6 +9,7 @@
 
     <extensionPoints>
         <extensionPoint name="packageFinder" interface="ros.integrate.pkg.ROSPackageFinder"/>
+        <extensionPoint name="exportLangHelper" interface="ros.integrate.pkg.xml.annotate.ExportLangHelper"/>
     </extensionPoints>
 
     <extensions defaultExtensionNs="com.intellij">
@@ -88,6 +89,9 @@
         <localInspection language="XML" implementationClass="ros.integrate.pkg.xml.inspection.OutdatedDependencyInspection"
                          level="ERROR" enabledByDefault="true" shortName="outdated-dependency"
                          groupName="ROS" displayName="Package does not match specified versions"/>
+        <localInspection language="XML" implementationClass="ros.integrate.pkg.xml.inspection.InvalidMessageGeneratorInspection"
+                         level="WARNING" enabledByDefault="false" shortName="invalid-generator"
+                         groupName="ROS" displayName="Package does not generate messages for language"/>
     </extensions>
 
     <extensions defaultExtensionNs="ros-integrate">

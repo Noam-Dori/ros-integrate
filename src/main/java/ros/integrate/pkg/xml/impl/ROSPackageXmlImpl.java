@@ -13,10 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkg.ROSDepKeyCache;
 import ros.integrate.pkg.ROSPackageManager;
 import ros.integrate.pkg.psi.ROSPackage;
-import ros.integrate.pkg.xml.DependencyType;
-import ros.integrate.pkg.xml.PackageXmlUtil;
-import ros.integrate.pkg.xml.ROSPackageXml;
-import ros.integrate.pkg.xml.VersionRange;
+import ros.integrate.pkg.xml.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -554,11 +551,12 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
 
     @Nullable
     @Override
-    public XmlTag getExport() {
+    public ExportTag getExport() {
         if (file.getRootTag() == null) {
             return null;
         }
-        return file.getRootTag().findFirstSubTag(EXPORT);
+        return Optional.ofNullable(file.getRootTag().findFirstSubTag(EXPORT))
+                .map(tag -> new ExportTagImpl(tag, this)).orElse(null);
     }
 
     @Override
@@ -566,8 +564,9 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
         if (file.getRootTag() == null) {
             addRootTag();
         }
-        XmlTag oldExport = getExport(), newExport = file.getRootTag()
-                .createChildTag(EXPORT, null, exportToRead.getValue().getText(), false);
+        XmlTag oldExport = Optional.ofNullable(getExport()).map(ExportTag::getRawTag).orElse(null),
+                newExport = file.getRootTag().createChildTag(EXPORT, null, exportToRead.getValue()
+                        .getText(), false);
         if (oldExport == null) {
             addLevel2Tag(newExport);
         } else {
