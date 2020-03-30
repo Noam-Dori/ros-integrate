@@ -16,10 +16,7 @@ import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkg.ROSDepKeyCache;
 import ros.integrate.pkg.ROSPackageManager;
 import ros.integrate.pkg.psi.ROSPackage;
-import ros.integrate.pkg.xml.PackageXmlUtil;
-import ros.integrate.pkg.xml.ROSLicenses;
-import ros.integrate.pkg.xml.ROSPackageXml;
-import ros.integrate.pkg.xml.VersionRange;
+import ros.integrate.pkg.xml.*;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -53,12 +50,21 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
                         } else if (type.equals(XmlElementType.XML_NAME) && element.getParent() instanceof XmlAttribute) {
                             setCompletionsForAttrName(tag, resultSet, parameters);
                         } else if (type.equals(XmlElementType.XML_NAME)) {
-                            setCompletionsForTagName(xmlFile, resultSet, parameters);
+                            setCompletionsForTagName(getLevel(tag), tag.getParentTag(), xmlFile, resultSet, parameters);
                         } else if (type.equals(XmlElementType.XML_DATA_CHARACTERS)) {
                             addCompletionsForTagValue(tag, xmlFile, resultSet, element);
                         }
                     }
                 });
+    }
+
+    private int getLevel(@NotNull XmlTag tag) {
+        int i = -1;
+        while (tag != null) {
+            tag = tag.getParentTag();
+            i++;
+        }
+        return i;
     }
 
     private void addCompletionsForTagValue(@NotNull XmlTag tag, ROSPackageXml xmlFile, CompletionResultSet resultSet,
@@ -83,39 +89,57 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
         }
     }
 
-    private void setCompletionsForTagName(@NotNull ROSPackageXml xmlFile, @NotNull CompletionResultSet resultSet,
-                                          CompletionParameters parameters) {
+    private void setCompletionsForTagName(int level, @Nullable XmlTag parentTag, @NotNull ROSPackageXml xmlFile,
+                                          @NotNull CompletionResultSet resultSet, CompletionParameters parameters) {
         resultSet.runRemainingContributors(parameters, result -> {
         }); // removes all other entries. Dangerous stuff.
         InsertHandler<LookupElement> attrHandler =
                 new AttributeNameHandler(null),
                 dataHandler = new TagDataHandler("", false),
                 multilineHandler = new TagDataHandler("", false, "", true, false);
-        if (xmlFile.getRawXml().getRootTag() == null || xmlFile.getRawXml().getRootTag().getName().isEmpty()) {
-            resultSet.addElement(LookupElementBuilder.create("package").withInsertHandler(multilineHandler));
-            return;
-        }
-        if (xmlFile.getPkgName() == null) {
-            resultSet.addElement(LookupElementBuilder.create("name")
-                    .withInsertHandler(new TagDataHandler("", false, xmlFile.getPackage().getName(), false, false)));
-        }
-        if (xmlFile.getVersion() == null) {
-            resultSet.addElement(LookupElementBuilder.create("version").withInsertHandler(dataHandler));
-        }
-        if (xmlFile.getDescription() == null) {
-            resultSet.addElement(LookupElementBuilder.create("description").withInsertHandler(multilineHandler));
-        }
-        resultSet.addElement(LookupElementBuilder.create("url").withInsertHandler(attrHandler));
-        resultSet.addElement(LookupElementBuilder.create("author").withInsertHandler(attrHandler));
-        resultSet.addElement(LookupElementBuilder.create("maintainer")
-                .withInsertHandler(new AttributeNameHandler("email")));
-        resultSet.addElement(LookupElementBuilder.create("license")
-                .withInsertHandler(new TagDataHandler("", false, "", false, true)));
-        PackageXmlUtil.getDependNames(xmlFile.getFormat()).stream().map(LookupElementBuilder::create)
-                .map(builder -> builder.withInsertHandler(attrHandler))
-                .forEach(resultSet::addElement);
-        if (xmlFile.getExport() == null) {
-            resultSet.addElement(LookupElementBuilder.create("export").withInsertHandler(multilineHandler));
+        switch (level) {
+            case 0: {
+                if (xmlFile.getRawXml().getRootTag() == null || xmlFile.getRawXml().getRootTag().getName().isEmpty()) {
+                    resultSet.addElement(LookupElementBuilder.create("package").withInsertHandler(multilineHandler));
+                }
+                return;
+            }
+            case 1: {
+                if (xmlFile.getPkgName() == null) {
+                    resultSet.addElement(LookupElementBuilder.create("name")
+                            .withInsertHandler(new TagDataHandler("", false, xmlFile.getPackage().getName(), false, false)));
+                }
+                if (xmlFile.getVersion() == null) {
+                    resultSet.addElement(LookupElementBuilder.create("version").withInsertHandler(dataHandler));
+                }
+                if (xmlFile.getDescription() == null) {
+                    resultSet.addElement(LookupElementBuilder.create("description").withInsertHandler(multilineHandler));
+                }
+                resultSet.addElement(LookupElementBuilder.create("url").withInsertHandler(attrHandler));
+                resultSet.addElement(LookupElementBuilder.create("author").withInsertHandler(attrHandler));
+                resultSet.addElement(LookupElementBuilder.create("maintainer")
+                        .withInsertHandler(new AttributeNameHandler("email")));
+                resultSet.addElement(LookupElementBuilder.create("license")
+                        .withInsertHandler(new TagDataHandler("", false, "", false, true)));
+                PackageXmlUtil.getDependNames(xmlFile.getFormat()).stream().map(LookupElementBuilder::create)
+                        .map(builder -> builder.withInsertHandler(attrHandler))
+                        .forEach(resultSet::addElement);
+                if (xmlFile.getExport() == null) {
+                    resultSet.addElement(LookupElementBuilder.create("export").withInsertHandler(multilineHandler));
+                }
+                return;
+            }
+            case 2: {
+                if (parentTag != null && parentTag.getName().equals("export")) {
+                    ExportTag export = xmlFile.getExport();
+                    if (export != null && export.getMessageGenerator() == null) {
+                        resultSet.addElement(LookupElementBuilder.create("message_generator")
+                                .withInsertHandler(dataHandler));
+                    }
+                }
+                return;
+            }
+            default:
         }
     }
 
