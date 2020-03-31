@@ -130,11 +130,15 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
                 return;
             }
             case 2: {
-                if (parentTag != null && parentTag.getName().equals("export")) {
-                    ExportTag export = xmlFile.getExport();
-                    if (export != null && export.getMessageGenerator() == null) {
+                ExportTag export = xmlFile.getExport();
+                if (parentTag != null && parentTag.getName().equals("export") && export != null) {
+                    if (export.getMessageGenerator() == null) {
                         resultSet.addElement(LookupElementBuilder.create("message_generator")
                                 .withInsertHandler(dataHandler));
+                    }
+                    if (!export.isArchitectureIndependent()) {
+                        resultSet.addElement(LookupElementBuilder.create("architecture_independent")
+                                .withInsertHandler(new EmptyTagHandler()));
                     }
                 }
                 return;

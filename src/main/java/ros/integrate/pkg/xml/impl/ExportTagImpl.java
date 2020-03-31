@@ -9,7 +9,8 @@ import ros.integrate.pkg.xml.ExportTag;
 import ros.integrate.pkg.xml.ROSPackageXml;
 
 public class ExportTagImpl implements ExportTag {
-    private static final String MESSAGE_GENERATOR = "message_generator";
+    private static final String MESSAGE_GENERATOR = "message_generator",
+            ARCHITECTURE_INDEPENDENT = "architecture_independent";
 
     @NotNull
     private final XmlTag tag;
@@ -56,5 +57,10 @@ public class ExportTagImpl implements ExportTag {
             return new TextRange(found.getTextOffset() + 1, found.getTextOffset() + 1 + MESSAGE_GENERATOR.length());
         }
         return found.getValue().getTextRange();
+    }
+
+    @Override
+    public boolean isArchitectureIndependent() {
+        return tag.findFirstSubTag(ARCHITECTURE_INDEPENDENT) != null;
     }
 }

@@ -17,4 +17,6 @@ public interface ExportTag {
 
     @NotNull
     TextRange getMessageGeneratorTextRange();
+
+    boolean isArchitectureIndependent();
 }
