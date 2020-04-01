@@ -60,7 +60,20 @@ public class ExportTagImpl implements ExportTag {
     }
 
     @Override
-    public boolean isArchitectureIndependent() {
+    public boolean markedArchitectureIndependent() {
         return tag.findFirstSubTag(ARCHITECTURE_INDEPENDENT) != null;
+    }
+
+    @Override
+    public TextRange getArchitectureIndependentTextRange() {
+        XmlTag found = tag.findFirstSubTag(ARCHITECTURE_INDEPENDENT);
+        if (found == null) {
+            return getRootTextRange();
+        }
+        if (found.getValue().getText().isEmpty()) {
+            return new TextRange(found.getTextOffset() + 1, found.getTextOffset() + 1 +
+                    ARCHITECTURE_INDEPENDENT.length());
+        }
+        return found.getValue().getTextRange();
     }
 }

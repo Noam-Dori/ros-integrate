@@ -18,5 +18,8 @@ public interface ExportTag {
     @NotNull
     TextRange getMessageGeneratorTextRange();
 
-    boolean isArchitectureIndependent();
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    boolean markedArchitectureIndependent();
+
+    TextRange getArchitectureIndependentTextRange();
 }

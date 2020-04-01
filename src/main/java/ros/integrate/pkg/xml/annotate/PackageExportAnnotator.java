@@ -6,7 +6,7 @@ import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkg.xml.ExportTag;
 import ros.integrate.pkg.xml.ROSPackageXml;
 
-import java.util.List;
+import java.util.Arrays;
 import java.util.Optional;
 
 public class PackageExportAnnotator {
@@ -37,6 +37,25 @@ public class PackageExportAnnotator {
         if (export.getRawTag().findSubTags("message_generator").length > 1) {
             holder.createWarningAnnotation(export.getMessageGeneratorTextRange(),
                     "Each package may only generate code for one language at most");
+        }
+    }
+
+    public void annNonEmptyArchitectureIndependentTags() {
+        if (export == null) {
+            return;
+        }
+        Arrays.stream(export.getRawTag().findSubTags("architecture_independent"))
+                .filter(tag -> !tag.isEmpty()).forEach(tag ->
+                holder.createWarningAnnotation(tag.getValue().getTextRange(), "Tag should be empty."));
+    }
+
+    public void annTooManyArchitectureIndependentTags() {
+        if (export == null) {
+            return;
+        }
+        if (export.getRawTag().findSubTags("architecture_independent").length > 1) {
+            holder.createWarningAnnotation(export.getArchitectureIndependentTextRange(),
+                    "Duplicate architecture independent tags found.");
         }
     }
 }

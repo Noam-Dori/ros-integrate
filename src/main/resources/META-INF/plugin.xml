@@ -92,6 +92,9 @@
         <localInspection language="XML" implementationClass="ros.integrate.pkg.xml.inspection.InvalidMessageGeneratorInspection"
                          level="WARNING" enabledByDefault="false" shortName="invalid-generator"
                          groupName="ROS" displayName="Package does not generate messages for language"/>
+        <localInspection language="XML" implementationClass="ros.integrate.pkg.xml.inspection.NotArchitectureIndependentInspection"
+                         level="WARNING" enabledByDefault="true" shortName="not-architecture-independent"
+                         groupName="ROS" displayName="Package is incorrectly marked architecture independent"/>
     </extensions>
 
     <extensions defaultExtensionNs="ros-integrate">

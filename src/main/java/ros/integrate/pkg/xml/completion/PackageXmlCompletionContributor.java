@@ -136,7 +136,7 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
                         resultSet.addElement(LookupElementBuilder.create("message_generator")
                                 .withInsertHandler(dataHandler));
                     }
-                    if (!export.isArchitectureIndependent()) {
+                    if (!export.markedArchitectureIndependent()) {
                         resultSet.addElement(LookupElementBuilder.create("architecture_independent")
                                 .withInsertHandler(new EmptyTagHandler()));
                     }
