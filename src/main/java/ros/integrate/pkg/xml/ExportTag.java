@@ -22,4 +22,12 @@ public interface ExportTag {
     boolean markedArchitectureIndependent();
 
     TextRange getArchitectureIndependentTextRange();
+
+    @Nullable
+    String deprecatedMessage();
+
+    boolean isMetapackage();
+
+    @Nullable
+    String getBuildType();
 }

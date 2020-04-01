@@ -10,7 +10,10 @@ import ros.integrate.pkg.xml.ROSPackageXml;
 
 public class ExportTagImpl implements ExportTag {
     private static final String MESSAGE_GENERATOR = "message_generator",
-            ARCHITECTURE_INDEPENDENT = "architecture_independent";
+            ARCHITECTURE_INDEPENDENT = "architecture_independent",
+            DEPRECATED = "deprecated",
+            METAPACKAGE = "metapackage",
+            BUILD_TYPE = "build_type";
 
     @NotNull
     private final XmlTag tag;
@@ -75,5 +78,22 @@ public class ExportTagImpl implements ExportTag {
                     ARCHITECTURE_INDEPENDENT.length());
         }
         return found.getValue().getTextRange();
+    }
+
+    @Nullable
+    @Override
+    public String deprecatedMessage() {
+        return tag.getSubTagText(DEPRECATED);
+    }
+
+    @Override
+    public boolean isMetapackage() {
+        return tag.findFirstSubTag(METAPACKAGE) != null;
+    }
+
+    @Nullable
+    @Override
+    public String getBuildType() {
+        return tag.getSubTagText(BUILD_TYPE);
     }
 }

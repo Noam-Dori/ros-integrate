@@ -96,7 +96,8 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
         InsertHandler<LookupElement> attrHandler =
                 new AttributeNameHandler(null),
                 dataHandler = new TagDataHandler("", false),
-                multilineHandler = new TagDataHandler("", false, "", true, false);
+                multilineHandler = new TagDataHandler("", false, "", true, false),
+                dataWithCompletionHandler = new TagDataHandler("", false, "", false, true);
         switch (level) {
             case 0: {
                 if (xmlFile.getRawXml().getRootTag() == null || xmlFile.getRawXml().getRootTag().getName().isEmpty()) {
@@ -120,7 +121,7 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
                 resultSet.addElement(LookupElementBuilder.create("maintainer")
                         .withInsertHandler(new AttributeNameHandler("email")));
                 resultSet.addElement(LookupElementBuilder.create("license")
-                        .withInsertHandler(new TagDataHandler("", false, "", false, true)));
+                        .withInsertHandler(dataWithCompletionHandler));
                 PackageXmlUtil.getDependNames(xmlFile.getFormat()).stream().map(LookupElementBuilder::create)
                         .map(builder -> builder.withInsertHandler(attrHandler))
                         .forEach(resultSet::addElement);
@@ -139,6 +140,18 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
                     if (!export.markedArchitectureIndependent()) {
                         resultSet.addElement(LookupElementBuilder.create("architecture_independent")
                                 .withInsertHandler(new EmptyTagHandler()));
+                    }
+                    if (export.deprecatedMessage() == null) {
+                        resultSet.addElement(LookupElementBuilder.create("deprecated")
+                                .withInsertHandler(multilineHandler));
+                    }
+                    if (!export.isMetapackage()) {
+                        resultSet.addElement(LookupElementBuilder.create("metapackage")
+                                .withInsertHandler(new EmptyTagHandler()));
+                    }
+                    if (export.getBuildType() == null) {
+                        resultSet.addElement(LookupElementBuilder.create("build_type")
+                                .withInsertHandler(dataWithCompletionHandler));
                     }
                 }
                 return;

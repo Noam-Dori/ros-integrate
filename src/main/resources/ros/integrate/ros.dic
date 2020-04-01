@@ -7,3 +7,4 @@ buildtool
 rosdep
 opencv
 eigen
+metapackage
