@@ -1,0 +1,16 @@
+<!-- included by /META-INF/plugin.xml -->
+<idea-plugin>
+    <name>ROS Support</name>
+    <vendor email="TheNODO55@gmail.com">Noam Dori</vendor>
+    <id>ros-integrate</id>
+
+    <extensionPoints>
+        <extensionPoint name="packageFinder" interface="ros.integrate.pkg.ROSPackageFinder"/>
+        <extensionPoint name="exportLangHelper" interface="ros.integrate.pkg.xml.annotate.ExportLangHelper"/>
+    </extensionPoints>
+
+    <extensions defaultExtensionNs="ros-integrate">
+        <packageFinder implementation="ros.integrate.pkg.ROSWorkspacePackageFinder"/>
+        <packageFinder implementation="ros.integrate.pkg.ROSCompiledPackageFinder"/>
+    </extensions>
+</idea-plugin>

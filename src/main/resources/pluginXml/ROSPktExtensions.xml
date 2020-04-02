@@ -1,0 +1,44 @@
+<!-- included by /META-INF/plugin.xml -->
+<idea-plugin>
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- ROS packet file definitions -->
+        <fileType name="ROSMsg" implementationClass="ros.integrate.pkt.file.ROSMsgFileType"
+                  language="ROSPkt" extensions="msg" fieldName="INSTANCE"/>
+        <fileType name="ROSSrv" implementationClass="ros.integrate.pkt.file.ROSSrvFileType"
+                  language="ROSPkt" extensions="srv" fieldName="INSTANCE"/>
+        <fileType name="ROSAct" implementationClass="ros.integrate.pkt.file.ROSActFileType"
+                  language="ROSPkt" extensions="action" fieldName="INSTANCE"/>
+
+        <!-- language features -->
+        <lang.parserDefinition language="ROSPkt" implementationClass="ros.integrate.pkt.lang.ROSPktParserDefinition"/>
+        <lang.syntaxHighlighterFactory language="ROSPkt" implementationClass="ros.integrate.pkt.highlight.ROSPktSyntaxHighlighterFactory"/>
+        <lang.commenter language="ROSPkt" implementationClass="ros.integrate.pkt.ROSPktCommenter"/>
+        <lang.refactoringSupport language="ROSPkt" implementationClass="ros.integrate.pkt.ROSPktRefactoringSupportProvider"/>
+        <lang.braceMatcher language="ROSPkt" implementationClass="ros.integrate.pkt.ROSPktBraceMatcher"/>
+        <lang.elementManipulator forClass="ros.integrate.pkt.psi.ROSPktType"
+                                 implementationClass="ros.integrate.pkt.ROSPktTypeElementManipulator"/>
+        <psi.referenceContributor language="ROSPkt" implementation="ros.integrate.pkt.ROSMsgFileReferenceContributor"/>
+        <psi.referenceContributor language="ROSPkt" implementation="ros.integrate.pkg.ref.ROSPktTypeReferenceContributor"/>
+        <completion.contributor language="ROSPkt" implementationClass="ros.integrate.pkt.ROSPktCompletionContributor"/>
+        <spellchecker.support language="ROSPkt" implementationClass="ros.integrate.pkt.ROSPktSpellcheckingStrategy"/>
+        <colorSettingsPage implementation="ros.integrate.pkt.highlight.ROSPktColorSettings"/>
+        <nameSuggestionProvider implementation="ros.integrate.pkt.ROSPktNameSuggestionProvider" />
+        <moveFileHandler implementation="ros.integrate.pkt.MovePktFileHandler"/>
+        <renameHandler implementation="ros.integrate.pkt.ROSPktTypeInplaceRenameHandler"/>
+
+        <!-- language inspections and annotations -->
+        <annotator language="ROSPkt" implementationClass="ros.integrate.pkt.annotate.ROSPktAnnotator"/>
+        <localInspection language="ROSPkt" implementationClass="ros.integrate.pkt.inspection.CamelCaseInspection"
+                         level="WARNING" enabledByDefault="true" shortName="type-not-camelcase"
+                         groupName="ROS" displayName="Type not in PascalCase"/>
+        <localInspection language="ROSPkt" implementationClass="ros.integrate.pkt.inspection.DeprecatedTypeInspection"
+                         level="WARNING" enabledByDefault="true" shortName="deprecated-type"
+                         groupName="ROS" displayName="Deprecated type"/>
+        <localInspection language="ROSPkt" implementationClass="ros.integrate.pkt.inspection.AvoidStdMsgsInspection"
+                         level="WARNING" enabledByDefault="true" shortName="avoid-std-msgs"
+                         groupName="ROS" displayName="Redundant std_msg type"/>
+        <localInspection language="ROSPkt" implementationClass="ros.integrate.pkt.inspection.RedundantStampingInspection"
+                         level="WEAK WARNING" enabledByDefault="true" shortName="redundant-stamping"
+                         groupName="ROS" displayName="Redundant header stamp"/>
+    </extensions>
+</idea-plugin>

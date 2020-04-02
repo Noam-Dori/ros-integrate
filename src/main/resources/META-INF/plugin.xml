@@ -1,108 +1,22 @@
-<idea-plugin>
-    <id>ros-integrate</id>
-    <name>ROS Support</name>
-    <vendor email="TheNODO55@gmail.com">Noam Dori</vendor>
+<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude">
 
-    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
-         on how to target different products -->
-    <depends>com.intellij.modules.lang</depends>
+    <xi:include href="/pluginXml/dependencies.xml" xpointer="xpointer(/idea-plugin/*)"/>
 
-    <extensionPoints>
-        <extensionPoint name="packageFinder" interface="ros.integrate.pkg.ROSPackageFinder"/>
-        <extensionPoint name="exportLangHelper" interface="ros.integrate.pkg.xml.annotate.ExportLangHelper"/>
-    </extensionPoints>
+    <!-- extensions defined (and sometimes used) by this plugin. note that identifies are also here. -->
+    <xi:include href="/pluginXml/ROSPluginExtensions.xml" xpointer="xpointer(/idea-plugin/*)"/>
 
     <extensions defaultExtensionNs="com.intellij">
-        <spellchecker.bundledDictionaryProvider implementation="ros.integrate.ROSBundledDictionaryProvider"/>
+        <!-- misc. features not specific to the plugin model. -->
+        <xi:include href="/pluginXml/generalExtensions.xml" xpointer="xpointer(/idea-plugin/extensions/*)"/>
 
-        <projectConfigurable instance="ros.integrate.settings.ROSSettingsPage" groupId="language" id="ROS"
-                             displayName="ROS"/>
-        <projectService serviceImplementation="ros.integrate.settings.ROSSettings"/>
-        <projectService serviceInterface="ros.integrate.pkg.ROSPackageManager"
-                serviceImplementation="ros.integrate.pkg.ROSPackageManagerImpl"/>
-        <projectService serviceInterface="ros.integrate.pkg.ROSDepKeyCache"
-                        serviceImplementation="ros.integrate.pkg.ROSDepKeyCacheImpl"/>
+        <!-- features defining the language used for packet files (*.msg, *.srv, *.action), and their functions. -->
+        <xi:include href="/pluginXml/ROSPktExtensions.xml" xpointer="xpointer(/idea-plugin/extensions/*)"/>
 
-        <!-- ROS packet files -->
-        <fileType name="ROSMsg" implementationClass="ros.integrate.pkt.file.ROSMsgFileType"
-                  language="ROSPkt" extensions="msg" fieldName="INSTANCE"/>
-        <fileType name="ROSSrv" implementationClass="ros.integrate.pkt.file.ROSSrvFileType"
-                  language="ROSPkt" extensions="srv" fieldName="INSTANCE"/>
-        <fileType name="ROSAct" implementationClass="ros.integrate.pkt.file.ROSActFileType"
-                  language="ROSPkt" extensions="action" fieldName="INSTANCE"/>
+        <!-- features implementing the package model used throughout ROS. -->
+        <xi:include href="/pluginXml/ROSPackageExtensions.xml" xpointer="xpointer(/idea-plugin/extensions/*)"/>
 
-        <!-- ROS packet Language -->
-        <lang.parserDefinition language="ROSPkt" implementationClass="ros.integrate.pkt.lang.ROSPktParserDefinition"/>
-        <lang.syntaxHighlighterFactory language="ROSPkt" implementationClass="ros.integrate.pkt.highlight.ROSPktSyntaxHighlighterFactory"/>
-        <lang.commenter language="ROSPkt" implementationClass="ros.integrate.pkt.ROSPktCommenter"/>
-        <lang.refactoringSupport language="ROSPkt" implementationClass="ros.integrate.pkt.ROSPktRefactoringSupportProvider"/>
-        <lang.braceMatcher language="ROSPkt" implementationClass="ros.integrate.pkt.ROSPktBraceMatcher"/>
-        <lang.elementManipulator forClass="ros.integrate.pkt.psi.ROSPktType"
-                                 implementationClass="ros.integrate.pkt.ROSPktTypeElementManipulator"/>
-        <colorSettingsPage implementation="ros.integrate.pkt.highlight.ROSPktColorSettings"/>
-        <completion.contributor language="ROSPkt" implementationClass="ros.integrate.pkt.ROSPktCompletionContributor"/>
-        <annotator language="ROSPkt" implementationClass="ros.integrate.pkt.annotate.ROSPktAnnotator"/>
-        <nameSuggestionProvider implementation="ros.integrate.pkt.ROSPktNameSuggestionProvider" />
-        <psi.referenceContributor language="ROSPkt" implementation="ros.integrate.pkt.ROSMsgFileReferenceContributor"/>
-        <spellchecker.support language="ROSPkt" implementationClass="ros.integrate.pkt.ROSPktSpellcheckingStrategy"/>
-        <moveFileHandler implementation="ros.integrate.pkt.MovePktFileHandler"/>
-        <renameHandler implementation="ros.integrate.pkt.ROSPktTypeInplaceRenameHandler"/>
+        <!-- features implementing the manifests of ROS packages, named package.xml. -->
+        <xi:include href="/pluginXml/ROSPkgXmlExtensions.xml" xpointer="xpointer(/idea-plugin/extensions/*)"/>
 
-        <localInspection language="ROSPkt" implementationClass="ros.integrate.pkt.inspection.CamelCaseInspection"
-                         level="WARNING" enabledByDefault="true" shortName="type-not-camelcase"
-                         groupName="ROS" displayName="Type not in PascalCase"/>
-        <localInspection language="ROSPkt" implementationClass="ros.integrate.pkt.inspection.DeprecatedTypeInspection"
-                         level="WARNING" enabledByDefault="true" shortName="deprecated-type"
-                         groupName="ROS" displayName="Deprecated type"/>
-        <localInspection language="ROSPkt" implementationClass="ros.integrate.pkt.inspection.AvoidStdMsgsInspection"
-                         level="WARNING" enabledByDefault="true" shortName="avoid-std-msgs"
-                         groupName="ROS" displayName="Redundant std_msg type"/>
-        <localInspection language="ROSPkt" implementationClass="ros.integrate.pkt.inspection.RedundantStampingInspection"
-                         level="WEAK WARNING" enabledByDefault="true" shortName="redundant-stamping"
-                         groupName="ROS" displayName="Redundant header stamp"/>
-
-        <!-- ROS workspace & package -->
-        <psi.referenceContributor language="ROSPkt" implementation="ros.integrate.pkg.ref.ROSPktTypeReferenceContributor"/>
-        <psi.referenceContributor language="XML" implementation="ros.integrate.pkg.xml.PackageXmlReferenceContributor"/>
-        <completion.contributor language="XML" implementationClass="ros.integrate.pkg.xml.completion.PackageXmlCompletionContributor"
-                                order="before xmlNonFirst"/>
-        <iconProvider implementation="ros.integrate.pkg.ROSPackageIconProvider" order="first"/>
-
-        <annotator language="XML" implementationClass="ros.integrate.pkg.xml.annotate.PackageXmlAnnotator"/>
-        <intentionAction>
-            <className>ros.integrate.pkg.xml.intention.ExcludePackageXml</className>
-            <category>ROS</category>
-        </intentionAction>
-        <intentionAction>
-            <className>ros.integrate.pkg.xml.intention.UndoExcludeXml</className>
-            <category>ROS</category>
-        </intentionAction>
-
-        <webBrowserUrlProvider implementation="ros.integrate.pkg.xml.ROSLicenseLinkProvider"/>
-        <languageInjector implementation="ros.integrate.pkg.xml.ROSPackageXmlInjector"/>
-        <localInspection language="XML" implementationClass="ros.integrate.pkg.xml.inspection.OutdatedFormatInspection"
-                         level="WEAK WARNING" enabledByDefault="true" shortName="outdated-format"
-                         groupName="ROS" displayName="Outdated manifest format"/>
-        <localInspection language="XML" implementationClass="ros.integrate.pkg.xml.inspection.DifferentDependencyVersionInspection"
-                         level="WARNING" enabledByDefault="true" shortName="different-versions"
-                         groupName="ROS" displayName="Different dependency versions"/>
-        <localInspection language="XML" implementationClass="ros.integrate.pkg.xml.inspection.OutdatedDependencyInspection"
-                         level="ERROR" enabledByDefault="true" shortName="outdated-dependency"
-                         groupName="ROS" displayName="Package does not match specified versions"/>
-        <localInspection language="XML" implementationClass="ros.integrate.pkg.xml.inspection.InvalidMessageGeneratorInspection"
-                         level="WARNING" enabledByDefault="false" shortName="invalid-generator"
-                         groupName="ROS" displayName="Package does not generate messages for language"/>
-        <localInspection language="XML" implementationClass="ros.integrate.pkg.xml.inspection.NotArchitectureIndependentInspection"
-                         level="WARNING" enabledByDefault="true" shortName="not-architecture-independent"
-                         groupName="ROS" displayName="Package is incorrectly marked architecture independent"/>
     </extensions>
-
-    <extensions defaultExtensionNs="ros-integrate">
-        <packageFinder implementation="ros.integrate.pkg.ROSWorkspacePackageFinder"/>
-        <packageFinder implementation="ros.integrate.pkg.ROSCompiledPackageFinder"/>
-    </extensions>
-
-    <actions>
-        <!-- Add your actions here -->
-    </actions>
 </idea-plugin>

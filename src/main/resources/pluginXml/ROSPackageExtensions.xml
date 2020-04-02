@@ -1,0 +1,13 @@
+<!-- included by /META-INF/plugin.xml -->
+<idea-plugin>
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- package / rosdep indexers: they find packages and add them to the model -->
+        <projectService serviceInterface="ros.integrate.pkg.ROSPackageManager"
+                        serviceImplementation="ros.integrate.pkg.ROSPackageManagerImpl"/>
+        <projectService serviceInterface="ros.integrate.pkg.ROSDepKeyCache"
+                        serviceImplementation="ros.integrate.pkg.ROSDepKeyCacheImpl"/>
+
+        <!-- model features -->
+        <iconProvider implementation="ros.integrate.pkg.ROSPackageIconProvider" order="first"/>
+    </extensions>
+</idea-plugin>

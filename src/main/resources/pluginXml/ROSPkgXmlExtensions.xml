@@ -1,0 +1,38 @@
+<!-- included by /META-INF/plugin.xml -->
+<idea-plugin>
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- language features -->
+        <psi.referenceContributor language="XML" implementation="ros.integrate.pkg.xml.PackageXmlReferenceContributor"/>
+        <completion.contributor language="XML" implementationClass="ros.integrate.pkg.xml.completion.PackageXmlCompletionContributor"
+                                order="before xmlNonFirst"/>
+        <webBrowserUrlProvider implementation="ros.integrate.pkg.xml.ROSLicenseLinkProvider"/>
+        <languageInjector implementation="ros.integrate.pkg.xml.ROSPackageXmlInjector"/>
+
+        <intentionAction>
+            <className>ros.integrate.pkg.xml.intention.ExcludePackageXml</className>
+            <category>ROS</category>
+        </intentionAction>
+        <intentionAction>
+            <className>ros.integrate.pkg.xml.intention.UndoExcludeXml</className>
+            <category>ROS</category>
+        </intentionAction>
+
+        <!-- language inspections and annotations -->
+        <annotator language="XML" implementationClass="ros.integrate.pkg.xml.annotate.PackageXmlAnnotator"/>
+        <localInspection language="XML" implementationClass="ros.integrate.pkg.xml.inspection.OutdatedFormatInspection"
+                         level="WEAK WARNING" enabledByDefault="true" shortName="outdated-format"
+                         groupName="ROS" displayName="Outdated manifest format"/>
+        <localInspection language="XML" implementationClass="ros.integrate.pkg.xml.inspection.DifferentDependencyVersionInspection"
+                         level="WARNING" enabledByDefault="true" shortName="different-versions"
+                         groupName="ROS" displayName="Different dependency versions"/>
+        <localInspection language="XML" implementationClass="ros.integrate.pkg.xml.inspection.OutdatedDependencyInspection"
+                         level="ERROR" enabledByDefault="true" shortName="outdated-dependency"
+                         groupName="ROS" displayName="Package does not match specified versions"/>
+        <localInspection language="XML" implementationClass="ros.integrate.pkg.xml.inspection.InvalidMessageGeneratorInspection"
+                         level="WARNING" enabledByDefault="false" shortName="invalid-generator"
+                         groupName="ROS" displayName="Package does not generate messages for language"/>
+        <localInspection language="XML" implementationClass="ros.integrate.pkg.xml.inspection.NotArchitectureIndependentInspection"
+                         level="WARNING" enabledByDefault="true" shortName="not-architecture-independent"
+                         groupName="ROS" displayName="Package is incorrectly marked architecture independent"/>
+    </extensions>
+</idea-plugin>
