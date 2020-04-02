@@ -1,5 +1,6 @@
 package ros.integrate.pkg.xml.annotate;
 
+import com.intellij.codeInsight.daemon.impl.analysis.RemoveTagIntentionFix;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.psi.xml.XmlTag;
 import org.jetbrains.annotations.NotNull;
@@ -27,7 +28,8 @@ class PackageExportAnnotator {
         }
         XmlTag[] foundTags = export.getRawTag().findSubTags(tagName);
         for (int i = 1; i < foundTags.length; i++) {
-            holder.createWarningAnnotation(foundTags[i].getTextRange(), message);
+            holder.createWarningAnnotation(foundTags[i].getTextRange(), message)
+                    .registerFix(new RemoveTagIntentionFix(tagName, foundTags[i]));
         }
     }
 
@@ -39,7 +41,8 @@ class PackageExportAnnotator {
                 .filter(tag -> emptyFails ? tag.getValue().getText().isEmpty() : !tag.isEmpty())
                 .forEach(tag -> holder.createWarningAnnotation(
                         emptyFails ? tag.getTextRange() : tag.getValue().getTextRange(),
-                        "Tag " + tagName + " should " + (emptyFails ? "not " : "") + "be empty."));
+                        "Tag " + tagName + " should " + (emptyFails ? "not " : "") + "be empty.")
+                        .registerFix(new RemoveTagIntentionFix(tagName, tag)));
     }
 
     void annEmptyMessageGenerator() {
@@ -51,7 +54,7 @@ class PackageExportAnnotator {
     }
 
     void annNonEmptyArchitectureIndependentTags() {
-        emptinessCheckFailed("architecture_independent",false);
+        emptinessCheckFailed("architecture_independent", false);
     }
 
     void annMultipleArchitectureIndependentTags() {
