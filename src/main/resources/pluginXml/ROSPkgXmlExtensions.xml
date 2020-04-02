@@ -34,5 +34,8 @@
         <localInspection language="XML" implementationClass="ros.integrate.pkg.xml.inspection.NotArchitectureIndependentInspection"
                          level="WARNING" enabledByDefault="true" shortName="not-architecture-independent"
                          groupName="ROS" displayName="Package is incorrectly marked architecture independent"/>
+        <localInspection language="XML" implementationClass="ros.integrate.pkg.xml.inspection.DeprecatedPackageInspection"
+                         level="WARNING" enabledByDefault="true" shortName="deprecated-package"
+                         groupName="ROS" displayName="Package is marked as deprecated"/>
     </extensions>
 </idea-plugin>
