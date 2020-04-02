@@ -93,9 +93,14 @@ public class PackageXmlAnnotator implements Annotator {
 
             PackageExportAnnotator expAnn = new PackageExportAnnotator(pkgXml, holder);
             expAnn.annEmptyMessageGenerator();
-            expAnn.annTooManyMessageGenerators();
-            expAnn.annTooManyArchitectureIndependentTags();
+            expAnn.annEmptyBuildType();
             expAnn.annNonEmptyArchitectureIndependentTags();
+            expAnn.annNonEmptyMetapackageTag();
+            expAnn.annMultipleMessageGenerators();
+            expAnn.annMultipleBuildTypes();
+            expAnn.annMultipleArchitectureIndependentTags();
+            expAnn.annMultipleMetapackageTags();
+            expAnn.annMultipleDeprecated();
         }
     }
 }

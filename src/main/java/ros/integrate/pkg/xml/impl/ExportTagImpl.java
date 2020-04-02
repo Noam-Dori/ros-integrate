@@ -67,6 +67,7 @@ public class ExportTagImpl implements ExportTag {
         return tag.findFirstSubTag(ARCHITECTURE_INDEPENDENT) != null;
     }
 
+    @NotNull
     @Override
     public TextRange getArchitectureIndependentTextRange() {
         XmlTag found = tag.findFirstSubTag(ARCHITECTURE_INDEPENDENT);

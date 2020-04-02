@@ -21,6 +21,7 @@ public interface ExportTag {
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     boolean markedArchitectureIndependent();
 
+    @NotNull
     TextRange getArchitectureIndependentTextRange();
 
     @Nullable

@@ -1,15 +1,15 @@
 package ros.integrate.pkg.xml.annotate;
 
 import com.intellij.lang.annotation.AnnotationHolder;
+import com.intellij.psi.xml.XmlTag;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkg.xml.ExportTag;
 import ros.integrate.pkg.xml.ROSPackageXml;
 
 import java.util.Arrays;
-import java.util.Optional;
 
-public class PackageExportAnnotator {
+class PackageExportAnnotator {
     @Nullable
     private final ExportTag export;
 
@@ -21,41 +21,60 @@ public class PackageExportAnnotator {
         this.holder = holder;
     }
 
-    public void annEmptyMessageGenerator() {
+    private void tooManyTag(String tagName, String message) {
         if (export == null) {
             return;
         }
-        if (Optional.ofNullable(export.getMessageGenerator()).map(String::isEmpty).orElse(false)) {
-            holder.createWarningAnnotation(export.getMessageGeneratorTextRange(),"Empty Message Generator");
+        XmlTag[] foundTags = export.getRawTag().findSubTags(tagName);
+        for (int i = 1; i < foundTags.length; i++) {
+            holder.createWarningAnnotation(foundTags[i].getTextRange(), message);
         }
     }
 
-    public void annTooManyMessageGenerators() {
+    private void emptinessCheckFailed(String tagName, boolean emptyFails) {
         if (export == null) {
             return;
         }
-        if (export.getRawTag().findSubTags("message_generator").length > 1) {
-            holder.createWarningAnnotation(export.getMessageGeneratorTextRange(),
-                    "Each package may only generate code for one language at most");
-        }
+        Arrays.stream(export.getRawTag().findSubTags(tagName))
+                .filter(tag -> emptyFails ? tag.getValue().getText().isEmpty() : !tag.isEmpty())
+                .forEach(tag -> holder.createWarningAnnotation(
+                        emptyFails ? tag.getTextRange() : tag.getValue().getTextRange(),
+                        "Tag " + tagName + " should " + (emptyFails ? "not " : "") + "be empty."));
     }
 
-    public void annNonEmptyArchitectureIndependentTags() {
-        if (export == null) {
-            return;
-        }
-        Arrays.stream(export.getRawTag().findSubTags("architecture_independent"))
-                .filter(tag -> !tag.isEmpty()).forEach(tag ->
-                holder.createWarningAnnotation(tag.getValue().getTextRange(), "Tag should be empty."));
+    void annEmptyMessageGenerator() {
+        emptinessCheckFailed("message_generator", true);
     }
 
-    public void annTooManyArchitectureIndependentTags() {
-        if (export == null) {
-            return;
-        }
-        if (export.getRawTag().findSubTags("architecture_independent").length > 1) {
-            holder.createWarningAnnotation(export.getArchitectureIndependentTextRange(),
-                    "Duplicate architecture independent tags found.");
-        }
+    void annMultipleMessageGenerators() {
+        tooManyTag("message_generator", "Each package may only generate code for one language at most.");
+    }
+
+    void annNonEmptyArchitectureIndependentTags() {
+        emptinessCheckFailed("architecture_independent",false);
+    }
+
+    void annMultipleArchitectureIndependentTags() {
+        tooManyTag("architecture_independent", "Multiple architecture independent annotations found.");
+    }
+
+    void annMultipleDeprecated() {
+        tooManyTag("deprecated", "Multiple deprecation messages found.");
+    }
+
+    void annNonEmptyMetapackageTag() {
+        emptinessCheckFailed("metapackage", false);
+    }
+
+    void annMultipleMetapackageTags() {
+        tooManyTag("metapackage", "Multiple metapackage annotations found.");
+    }
+
+    void annEmptyBuildType() {
+        emptinessCheckFailed("build_type", true);
+    }
+
+    void annMultipleBuildTypes() {
+        tooManyTag("build_type", "A package may only have one build type.");
     }
 }
