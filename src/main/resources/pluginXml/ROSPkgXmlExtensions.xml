@@ -40,5 +40,8 @@
         <localInspection language="XML" implementationClass="ros.integrate.pkg.xml.inspection.MetapackageDependencyInspection"
                          level="WARNING" enabledByDefault="true" shortName="metapackage-dependency"
                          groupName="ROS" displayName="Concrete packages may not depend on metapackages"/>
+        <localInspection language="XML" implementationClass="ros.integrate.pkg.xml.inspection.ForbiddenMetapackageDependencyInspection"
+                         level="WARNING" enabledByDefault="true" shortName="forbidden-metapackage-dependency"
+                         groupName="ROS" displayName="Metapackage dependency restriction"/>
     </extensions>
 </idea-plugin>
