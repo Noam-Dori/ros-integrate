@@ -43,5 +43,8 @@
         <localInspection language="XML" implementationClass="ros.integrate.pkg.xml.inspection.ForbiddenMetapackageDependencyInspection"
                          level="WARNING" enabledByDefault="true" shortName="forbidden-metapackage-dependency"
                          groupName="ROS" displayName="Metapackage dependency restriction"/>
+        <localInspection language="XML" implementationClass="ros.integrate.pkg.xml.inspection.UnknownBuildTypeInspection"
+                         level="WEAK WARNING" enabledByDefault="true" shortName="unknown-build-type"
+                         groupName="ROS" displayName="Unknown build type"/>
     </extensions>
 </idea-plugin>
