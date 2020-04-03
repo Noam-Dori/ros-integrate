@@ -37,5 +37,8 @@
         <localInspection language="XML" implementationClass="ros.integrate.pkg.xml.inspection.DeprecatedPackageInspection"
                          level="WARNING" enabledByDefault="true" shortName="deprecated-package"
                          groupName="ROS" displayName="Package is marked as deprecated"/>
+        <localInspection language="XML" implementationClass="ros.integrate.pkg.xml.inspection.MetapackageDependencyInspection"
+                         level="WARNING" enabledByDefault="true" shortName="metapackage-dependency"
+                         groupName="ROS" displayName="Concrete packages may not depend on metapackages"/>
     </extensions>
 </idea-plugin>
