@@ -17,14 +17,30 @@ import ros.integrate.pkg.ROSDepKeyCache;
 import ros.integrate.pkg.ROSPackageManager;
 import ros.integrate.pkg.psi.ROSPackage;
 import ros.integrate.pkg.xml.*;
+import ros.integrate.settings.ROSSettings;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Optional;
+import java.io.IOException;
+import java.util.*;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class PackageXmlCompletionContributor extends CompletionContributor {
+    private static final Logger LOG = Logger.getLogger("#ros.integrate.pkg.xml.completion.PackageXmlCompletionContributor");
+    private static final String[] BUILD_TYPES = loadBuildTypes();
+
+    @NotNull
+    private static String[] loadBuildTypes() {
+        Properties ret = new Properties();
+        try {
+            ret.load(ROSSettings.class.getClassLoader().getResourceAsStream("defaults.properties"));
+            return ret.getProperty("buildTypes").split(":");
+        } catch (IOException e) {
+            LOG.warning("could not load configuration file, default values will not be loaded. error: " +
+                    e.getMessage());
+        }
+        return new String[0];
+    }
+
     public PackageXmlCompletionContributor() {
         extend(CompletionType.BASIC,
                 PlatformPatterns.psiElement(XmlToken.class).withLanguage(XMLLanguage.INSTANCE),
@@ -85,6 +101,9 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
                     .forEach(packages::removeAll);
             packages.remove(xmlFile.getPackage());
             packages.stream().map(pkg -> LookupElementBuilder.create(pkg).withIcon(pkg.getIcon(0)))
+                    .forEach(resultSet::addElement);
+        } else if (tag.getName().equals("build_type")) {
+            Arrays.stream(BUILD_TYPES).map(LookupElementBuilder::create).map(LookupElementBuilder::bold)
                     .forEach(resultSet::addElement);
         }
     }

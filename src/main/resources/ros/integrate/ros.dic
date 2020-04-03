@@ -8,3 +8,4 @@ rosdep
 opencv
 eigen
 metapackage
+ament
