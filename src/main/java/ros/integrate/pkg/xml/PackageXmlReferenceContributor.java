@@ -1,9 +1,11 @@
 package ros.integrate.pkg.xml;
 
+import com.intellij.openapi.paths.PathReferenceManager;
 import com.intellij.openapi.paths.WebReference;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.patterns.PlatformPatterns;
 import com.intellij.psi.*;
+import com.intellij.psi.xml.XmlAttributeValue;
 import com.intellij.psi.xml.XmlTag;
 import com.intellij.util.ProcessingContext;
 import org.jetbrains.annotations.Contract;
@@ -13,6 +15,7 @@ import ros.integrate.pkg.xml.ref.NameXmlToPackageReference;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Optional;
 
 public class PackageXmlReferenceContributor extends PsiReferenceContributor {
 
@@ -41,6 +44,20 @@ public class PackageXmlReferenceContributor extends PsiReferenceContributor {
                     return new PsiReference[]{new DependencyToPackageReference((XmlTag) element)};
                 } else if (name.equals("name")) {
                     return new PsiReference[]{new NameXmlToPackageReference((XmlTag) element, pkgXml)};
+                }
+                return PsiReference.EMPTY_ARRAY;
+            }
+        });
+        registrar.registerReferenceProvider(PlatformPatterns.psiElement(XmlAttributeValue.class), new PsiReferenceProvider() {
+            @NotNull
+            @Override
+            public PsiReference[] getReferencesByElement(@NotNull PsiElement element, @NotNull ProcessingContext context) {
+                if (PackageXmlUtil.getWrapper(element.getContainingFile().getOriginalFile()) == null) {
+                    return PsiReference.EMPTY_ARRAY;
+                }
+                if (Optional.ofNullable(PackageXmlUtil.getParentTag(element)).map(XmlTag::getName)
+                        .orElse("").equals("license")) {
+                    return PathReferenceManager.getInstance().createReferences(element, true);
                 }
                 return PsiReference.EMPTY_ARRAY;
             }

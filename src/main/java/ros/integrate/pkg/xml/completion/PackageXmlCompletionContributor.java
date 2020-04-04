@@ -4,12 +4,14 @@ import com.intellij.codeInsight.completion.*;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.lang.xml.XMLLanguage;
+import com.intellij.openapi.paths.PathReferenceManager;
 import com.intellij.patterns.PlatformPatterns;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.xml.XmlAttribute;
 import com.intellij.psi.xml.XmlElementType;
 import com.intellij.psi.xml.XmlTag;
 import com.intellij.psi.xml.XmlToken;
+import com.intellij.util.EmptyConsumer;
 import com.intellij.util.ProcessingContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -64,7 +66,7 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
                         if (type.equals(XmlElementType.XML_ATTRIBUTE_VALUE_TOKEN)) {
                             addCompletionsForAttrValue(tag, resultSet, PackageXmlUtil.getAttributeName(element));
                         } else if (type.equals(XmlElementType.XML_NAME) && element.getParent() instanceof XmlAttribute) {
-                            setCompletionsForAttrName(tag, resultSet, parameters);
+                            setCompletionsForAttrName(tag, xmlFile, resultSet, parameters);
                         } else if (type.equals(XmlElementType.XML_NAME)) {
                             setCompletionsForTagName(getLevel(tag), tag.getParentTag(), xmlFile, resultSet, parameters);
                         } else if (type.equals(XmlElementType.XML_DATA_CHARACTERS)) {
@@ -110,10 +112,8 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
 
     private void setCompletionsForTagName(int level, @Nullable XmlTag parentTag, @NotNull ROSPackageXml xmlFile,
                                           @NotNull CompletionResultSet resultSet, CompletionParameters parameters) {
-        resultSet.runRemainingContributors(parameters, result -> {
-        }); // removes all other entries. Dangerous stuff.
-        InsertHandler<LookupElement> attrHandler =
-                new AttributeNameHandler(null),
+        resultSet.runRemainingContributors(parameters, EmptyConsumer.getInstance()); // removes all other entries. Dangerous stuff.
+        InsertHandler<LookupElement> attrHandler = new AttributeNameHandler(null),
                 dataHandler = new TagDataHandler("", false),
                 multilineHandler = new TagDataHandler("", false, "", true, false),
                 dataWithCompletionHandler = new TagDataHandler("", false, "", false, true);
@@ -130,7 +130,8 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
                             .withInsertHandler(new TagDataHandler("", false, xmlFile.getPackage().getName(), false, false)));
                 }
                 if (xmlFile.getVersion() == null) {
-                    resultSet.addElement(LookupElementBuilder.create("version").withInsertHandler(dataHandler));
+                    resultSet.addElement(LookupElementBuilder.create("version")
+                            .withInsertHandler(xmlFile.getFormat() >= 3 ? attrHandler : dataHandler));
                 }
                 if (xmlFile.getDescription() == null) {
                     resultSet.addElement(LookupElementBuilder.create("description").withInsertHandler(multilineHandler));
@@ -140,7 +141,7 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
                 resultSet.addElement(LookupElementBuilder.create("maintainer")
                         .withInsertHandler(new AttributeNameHandler("email")));
                 resultSet.addElement(LookupElementBuilder.create("license")
-                        .withInsertHandler(dataWithCompletionHandler));
+                        .withInsertHandler(xmlFile.getFormat() >= 3 ? attrHandler : dataWithCompletionHandler));
                 PackageXmlUtil.getDependNames(xmlFile.getFormat()).stream().map(LookupElementBuilder::create)
                         .map(builder -> builder.withInsertHandler(attrHandler))
                         .forEach(resultSet::addElement);
@@ -179,11 +180,21 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
         }
     }
 
-    private void setCompletionsForAttrName(@NotNull XmlTag tag, @NotNull CompletionResultSet resultSet,
+    private void setCompletionsForAttrName(@NotNull XmlTag tag, ROSPackageXml xmlFile, @NotNull CompletionResultSet resultSet,
                                            CompletionParameters parameters) {
         InsertHandler<LookupElement> anyValueHandler = new AttributeValueHandler(false),
                 completeValueHandler = new AttributeValueHandler(true);
-        resultSet.runRemainingContributors(parameters, result -> {}); // removes all other entries. Dangerous stuff.
+        resultSet.runRemainingContributors(parameters, EmptyConsumer.getInstance()); // removes all other entries. Dangerous stuff.
+        if (tag.getName().equals("version") && xmlFile.getFormat() >= 3) {
+            resultSet.addElement(LookupElementBuilder.create("compatibility").withInsertHandler(completeValueHandler));
+            resultSet.addElement(LookupElementBuilder.create("").withTailText("default", true)
+                    .withInsertHandler(new SkipAttributeHandler(false)));
+        }
+        if (tag.getName().equals("license") && xmlFile.getFormat() >= 3) {
+            resultSet.addElement(LookupElementBuilder.create("file").withInsertHandler(completeValueHandler));
+            resultSet.addElement(LookupElementBuilder.create("").withTailText("no file", true)
+                        .withInsertHandler(new SkipAttributeHandler(true)));
+        }
         if (tag.getName().equals("url") && tag.getAttribute("type") == null) {
             resultSet.addElement(LookupElementBuilder.create("type").withInsertHandler(completeValueHandler));
             resultSet.addElement(LookupElementBuilder.create("").withTailText("default", true)
