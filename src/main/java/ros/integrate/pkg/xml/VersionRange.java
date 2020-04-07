@@ -32,16 +32,21 @@ public class VersionRange {
             return ret;
         }
 
-        public void max(String version, boolean strict) {
+        @NotNull
+        public Builder max(String version, boolean strict) {
             ret.max = version;
             ret.strictMax = strict;
+            return this;
         }
 
-        public void min(String version, boolean strict) {
+        @NotNull
+        public Builder min(String version, boolean strict) {
             ret.min = version;
             ret.strictMin = strict;
+            return this;
         }
 
+        @NotNull
         public VersionRange build() {
             return ret;
         }
@@ -96,6 +101,7 @@ public class VersionRange {
         return true;
     }
 
+    @Nullable
     public VersionRange intersect(VersionRange other) {
         if (other == null) {
             other = any();

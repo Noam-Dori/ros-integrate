@@ -38,7 +38,7 @@ public class AddLicenceQuickFix extends BaseIntentionAction {
 
     @Override
     public void invoke(@NotNull Project project, @NotNull Editor editor, PsiFile file) throws IncorrectOperationException {
-        pkgXml.addLicence("TODO");
+        pkgXml.addLicence("TODO", null);
         TextRange range = pkgXml.getLicenceTextRanges().get(0);
         Caret caret = editor.getCaretModel().getCurrentCaret();
         caret.moveToOffset(range.getStartOffset());

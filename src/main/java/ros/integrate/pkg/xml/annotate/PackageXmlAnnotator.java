@@ -53,6 +53,7 @@ public class PackageXmlAnnotator implements Annotator {
             idAnn.annPkgNameMatch();
             idAnn.annNoVersion();
             idAnn.annBadVersion();
+            idAnn.annBadVersionCompatibility();
             idAnn.annNoDescription();
             idAnn.annTooManyNames();
             idAnn.annTooManyVersions();

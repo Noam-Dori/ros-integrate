@@ -43,7 +43,7 @@ public class FixLicenseQuickFix extends BaseIntentionAction {
 
     @Override
     public void invoke(@NotNull Project project, @NotNull Editor editor, PsiFile file) throws IncorrectOperationException {
-        pkgXml.setLicense(id, "TODO");
+        pkgXml.setLicense(id, new ROSPackageXml.License("TODO", pkgXml.getLicences().get(id).getFile()));
         TextRange range = pkgXml.getLicenceTextRanges().get(id);
         Caret caret = editor.getCaretModel().getCurrentCaret();
         caret.moveToOffset(range.getStartOffset());

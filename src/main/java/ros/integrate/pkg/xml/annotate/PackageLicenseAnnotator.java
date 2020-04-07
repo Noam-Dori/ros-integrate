@@ -5,6 +5,7 @@ import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.openapi.util.TextRange;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.xml.ROSPackageXml;
+import ros.integrate.pkg.xml.ROSPackageXml.License;
 import ros.integrate.pkg.xml.intention.AddLicenceQuickFix;
 import ros.integrate.pkg.xml.intention.FixLicenseQuickFix;
 import ros.integrate.pkg.xml.intention.RemoveLicenseQuickFix;
@@ -18,7 +19,7 @@ class PackageLicenseAnnotator {
     @NotNull
     private final AnnotationHolder holder;
     @NotNull
-    private final List<String> licenses;
+    private final List<License> licenses;
     @NotNull
     private final List<TextRange> licenseTrs;
 
@@ -42,16 +43,16 @@ class PackageLicenseAnnotator {
             return;
         }
         for (int i = 0; i < licenses.size(); i++) {
-            String license = licenses.get(i);
+            License license = licenses.get(i);
             TextRange tr = licenseTrs.get(i);
-            if (license.isEmpty()) {
+            if (license.getValue().isEmpty()) {
                 Annotation ann = holder.createErrorAnnotation(tr,
                         "License tags cannot be empty.");
                 ann.registerFix(new FixLicenseQuickFix(pkgXml, i));
                 if (licenses.size() > 1) {
                     ann.registerFix(new RemoveLicenseQuickFix(pkgXml, i));
                 }
-            } else if (license.contains(",")) {
+            } else if (license.getValue().contains(",")) {
                 Annotation ann = holder.createWarningAnnotation(tr,
                         "Each license tag must only hold ONE license.");
                 ann.registerFix(new SplitLicenseQuickFix(pkgXml, i));
@@ -64,9 +65,9 @@ class PackageLicenseAnnotator {
             return;
         }
         for (int i = 0; i < licenses.size(); i++) {
-            String license = licenses.get(i);
+            License license = licenses.get(i);
             TextRange tr = licenseTrs.get(i);
-            if (license.matches("TODO")) {
+            if (license.getValue().matches("TODO")) {
                 Annotation ann = holder.createWeakWarningAnnotation(tr,
                         "This only acts a placeholder for an actual license, please choose one");
                 if (licenses.size() > 1) {

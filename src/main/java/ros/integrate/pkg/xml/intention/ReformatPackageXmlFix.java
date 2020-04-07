@@ -70,11 +70,11 @@ public class ReformatPackageXmlFix extends BaseIntentionAction implements LocalQ
     private void reformatManifest() {
         // step 1: get all data in pkg xml
         Optional<String> name = Optional.ofNullable(pkgXml.getPkgName()),
-                version = Optional.ofNullable(pkgXml.getVersion()),
                 description = Optional.ofNullable(pkgXml.getDescription());
+        Optional<ROSPackageXml.Version> version = Optional.ofNullable(pkgXml.getVersion());
         List<Contributor> maintainers = pkgXml.getMaintainers(),
                 authors = pkgXml.getAuthors();
-        List<String> licenses = pkgXml.getLicences();
+        List<ROSPackageXml.License> licenses = pkgXml.getLicences();
         List<Pair<String, URLType>> urls = pkgXml.getURLs();
         List<Dependency> dependencies = pkgXml.getDependencies(null);
         // TODO: 2/29/2020 Add group
@@ -92,7 +92,7 @@ public class ReformatPackageXmlFix extends BaseIntentionAction implements LocalQ
         version.ifPresent(pkgXml::setVersion);
         description.ifPresent(pkgXml::setDescription);
         maintainers.forEach(maintainer -> pkgXml.addMaintainer(maintainer.getName(), maintainer.getEmail()));
-        licenses.forEach(pkgXml::addLicence);
+        licenses.forEach(license -> pkgXml.addLicence(license.getValue(), license.getFile()));
         urls.forEach(url -> pkgXml.addURL(url.first, url.second));
         authors.forEach(author -> pkgXml.addAuthor(author.getName(), author.getEmail().isEmpty() ? null :
                 author.getEmail()));

@@ -18,12 +18,12 @@ public class FixDependencyQuickFix extends BaseIntentionAction implements LocalQ
     @NotNull
     private final ROSPackageXml pkgXml;
     private final int id;
-    private final boolean stringFix;
+    private final boolean strongFix;
 
     public FixDependencyQuickFix(@NotNull ROSPackageXml pkgXml, int id, boolean strongFix) {
         this.pkgXml = pkgXml;
         this.id = id;
-        this.stringFix = strongFix;
+        this.strongFix = strongFix;
     }
 
     @Nls(capitalization = Nls.Capitalization.Sentence)
@@ -77,8 +77,11 @@ public class FixDependencyQuickFix extends BaseIntentionAction implements LocalQ
             }
         }
         String depVersion = Optional.ofNullable(dep.getPackage().getPackageXml()).map(ROSPackageXml::getVersion)
-                .orElse(null);
-        if (stringFix && depVersion != null && !newBuilder.build().contains(depVersion)) {
+                .map(ROSPackageXml.Version::getValue).orElse(null);
+        String compatibilityVersion = Optional.ofNullable(dep.getPackage().getPackageXml())
+                .map(ROSPackageXml::getVersion).map(ROSPackageXml.Version::getCompatibility).orElse(depVersion);
+        if (strongFix && depVersion != null && newBuilder.build().intersect(new VersionRange.Builder()
+        .min(compatibilityVersion, false).max(depVersion, false).build()) != null) {
             VersionRange.Builder check = new VersionRange.Builder(newBuilder);
             check.min(depVersion, false);
             if (check.build().isNotValid()) {

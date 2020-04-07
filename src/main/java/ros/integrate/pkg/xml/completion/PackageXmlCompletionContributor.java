@@ -4,7 +4,6 @@ import com.intellij.codeInsight.completion.*;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.lang.xml.XMLLanguage;
-import com.intellij.openapi.paths.PathReferenceManager;
 import com.intellij.patterns.PlatformPatterns;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.xml.XmlAttribute;
@@ -91,7 +90,9 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
             return; // there is a bug where we cannot process XmlText so we only autocomplete on first non-space item
         }
         if (tag.getName().equals("license")) { // WebReferences do not get autocompletion
-            ROSLicenses.AVAILABLE_LICENSES.keySet().stream().filter(license -> !xmlFile.getLicences().contains(license))
+            List<String> xmlLicenses = xmlFile.getLicences().stream()
+                    .map(ROSPackageXml.License::getValue).collect(Collectors.toList());
+            ROSLicenses.AVAILABLE_LICENSES.keySet().stream().filter(license -> !xmlLicenses.contains(license))
                     .map(LookupElementBuilder::create).forEach(resultSet::addElement);
         } else if (PackageXmlUtil.isDependencyTag(tag)) {
             Collection<ROSPackage> packages = new HashSet<>();
@@ -185,12 +186,12 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
         InsertHandler<LookupElement> anyValueHandler = new AttributeValueHandler(false),
                 completeValueHandler = new AttributeValueHandler(true);
         resultSet.runRemainingContributors(parameters, EmptyConsumer.getInstance()); // removes all other entries. Dangerous stuff.
-        if (tag.getName().equals("version") && xmlFile.getFormat() >= 3) {
+        if (tag.getName().equals("version") && tag.getAttribute("compatibility") == null && xmlFile.getFormat() >= 3) {
             resultSet.addElement(LookupElementBuilder.create("compatibility").withInsertHandler(completeValueHandler));
             resultSet.addElement(LookupElementBuilder.create("").withTailText("default", true)
                     .withInsertHandler(new SkipAttributeHandler(false)));
         }
-        if (tag.getName().equals("license") && xmlFile.getFormat() >= 3) {
+        if (tag.getName().equals("license") && tag.getAttribute("file") == null && xmlFile.getFormat() >= 3) {
             resultSet.addElement(LookupElementBuilder.create("file").withInsertHandler(completeValueHandler));
             resultSet.addElement(LookupElementBuilder.create("").withTailText("no file", true)
                         .withInsertHandler(new SkipAttributeHandler(true)));
@@ -237,7 +238,7 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
         if (PackageXmlUtil.isDependencyTag(tag)) {
             String pkgVersion = Optional.ofNullable(tag.getProject().getService(ROSPackageManager.class)
                     .findPackage(tag.getValue().getText())).map(ROSPackage::getPackageXml)
-                    .map(ROSPackageXml::getVersion).orElse("");
+                    .map(ROSPackageXml::getVersion).map(ROSPackageXml.Version::getValue).orElse("");
             if ("version_eq".equals(attributeName)) {
                 resultSet.addElement(LookupElementBuilder.create("1.0.0").withInsertHandler(tagDataHandler));
                 if (!pkgVersion.isEmpty()) {

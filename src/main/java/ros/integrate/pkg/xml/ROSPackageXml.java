@@ -17,6 +17,33 @@ import java.util.List;
  */
 public interface ROSPackageXml {
 
+    class Version {
+        @NotNull
+        private final String version;
+        @Nullable
+        private final String compatibility;
+
+        public Version(@NotNull String value, @Nullable String compatibility) {
+            version = value;
+            this.compatibility = compatibility;
+        }
+
+        @NotNull
+        public String getCompatibility() {
+            return compatibility == null ? version : compatibility;
+        }
+
+        @Nullable
+        public String getRawCompatibility() {
+            return compatibility;
+        }
+
+        @NotNull
+        public String getValue() {
+            return version;
+        }
+    }
+
     /**
      * helper class describing contributors: authors or maintainers
      */
@@ -40,6 +67,28 @@ public interface ROSPackageXml {
         @NotNull
         public String getName() {
             return name;
+        }
+    }
+
+    class License {
+        @NotNull
+        private final String license;
+        @Nullable
+        private final String file;
+
+        public License(@NotNull String value, @Nullable String file) {
+            license = value;
+            this.file = file;
+        }
+
+        @Nullable
+        public String getFile() {
+            return file == null ? license : file;
+        }
+
+        @NotNull
+        public String getValue() {
+            return license;
         }
     }
 
@@ -135,7 +184,7 @@ public interface ROSPackageXml {
      * @return the version string of this package, format NUMBER.NUMBER.NUMBER
      */
     @Nullable
-    String getVersion();
+    Version getVersion();
 
     /**
      * @return gets the entire description string, which may be in HTML format
@@ -147,7 +196,7 @@ public interface ROSPackageXml {
      * @return a list of all licenses in the package.
      */
     @NotNull
-    List<String> getLicences();
+    List<License> getLicences();
 
     /**
      * @return a list of all URLs added to the package with their type (type is non-null)
@@ -261,9 +310,9 @@ public interface ROSPackageXml {
 
     /**
      * changes the version of the package.
-     * @param newVersion the new version string to use
+     * @param version the new version to use
      */
-    void setVersion(@NotNull String newVersion);
+    void setVersion(@NotNull Version version);
 
     /**
      * changes the description of the package.
@@ -280,8 +329,9 @@ public interface ROSPackageXml {
     /**
      * adds a new license to the package
      * @param licenseName the name of the new license, use licenses.properties for reference
+     * @param file A path relative to the <code>package.xml</code> file containing the full license text.
      */
-    void addLicence(@NotNull String licenseName);
+    void addLicence(@NotNull String licenseName, @Nullable String file);
 
     /**
      * adds a url
@@ -325,9 +375,9 @@ public interface ROSPackageXml {
     /**
      * changes a license
      * @param id the identifier of the resource - its index in the list of tags with the same name in the file.
-     * @param licenseName the new license to use.
+     * @param license the new license to use.
      */
-    void setLicense(int id, @NotNull String licenseName);
+    void setLicense(int id, @NotNull License license);
 
     /**
      * changes a url

@@ -41,10 +41,11 @@ public class SplitLicenseQuickFix extends BaseIntentionAction {
 
     @Override
     public void invoke(@NotNull Project project, Editor editor, PsiFile file) throws IncorrectOperationException {
-        String[] allLicenses = pkgXml.getLicences().get(id).split(",");
+        String[] allLicenses = pkgXml.getLicences().get(id).getValue().split(",");
+        String licenseFile = pkgXml.getLicences().get(id).getFile();
         pkgXml.removeLicense(id);
         for (String license : allLicenses) {
-            pkgXml.addLicence(license);
+            pkgXml.addLicence(license, licenseFile);
         }
     }
 }

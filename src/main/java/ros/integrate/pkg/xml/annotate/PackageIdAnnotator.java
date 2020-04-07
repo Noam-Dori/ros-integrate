@@ -22,7 +22,9 @@ class PackageIdAnnotator {
     @NotNull
     private final TextRange nameTr, versionTr, descriptionTr;
     @Nullable
-    private final String name, version, description;
+    private final String name, description;
+    @Nullable
+    private final ROSPackageXml.Version version;
 
     @Contract(pure = true)
     PackageIdAnnotator(@NotNull ROSPackageXml pkgXml, @NotNull AnnotationHolder holder) {
@@ -67,9 +69,18 @@ class PackageIdAnnotator {
     }
 
     void annBadVersion() {
-        if (version != null && !version.matches(VersionRange.VERSION_REGEX)) {
+        if (version != null && !version.getValue().matches(VersionRange.VERSION_REGEX)) {
             Annotation ann = holder.createErrorAnnotation(versionTr,
                     "Invalid version: versions should be written in the form \"NUMBER.NUMBER.NUMBER\"");
+            ann.registerFix(new FixVersionQuickFix(pkgXml, "Fix"));
+        }
+    }
+
+    void annBadVersionCompatibility() {
+        if (version != null && version.getRawCompatibility() != null &&
+                !version.getRawCompatibility().matches(VersionRange.VERSION_REGEX)) {
+            Annotation ann = holder.createErrorAnnotation(versionTr,
+                    "Invalid version compatibility: versions should be written in the form \"NUMBER.NUMBER.NUMBER\"");
             ann.registerFix(new FixVersionQuickFix(pkgXml, "Fix"));
         }
     }

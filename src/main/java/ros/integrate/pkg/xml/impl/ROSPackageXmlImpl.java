@@ -20,7 +20,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ROSPackageXmlImpl implements ROSPackageXml {
-    private static final String EXPORT = "export", FORMAT = "format", EMAIL = "email";
+    private static final String EXPORT = "export", FORMAT = "format", EMAIL = "email", COMPATIBILITY = "compatibility",
+    FILE = "file";
 
     private enum Component {
         NAME,
@@ -141,8 +142,11 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
     }
 
     @Override
-    public String getVersion() {
-        return getTextComponent(Component.VERSION);
+    public Version getVersion() {
+        return Optional.ofNullable(file.getRootTag())
+                .map(root -> root.findFirstSubTag(Component.VERSION.get()))
+                .map(tag -> new Version(tag.getValue().getText(), tag.getAttributeValue(COMPATIBILITY)))
+                .orElse(null);
     }
 
     @NotNull
@@ -152,8 +156,10 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
     }
 
     @Override
-    public void setVersion(@NotNull String newVersion) {
-        setComponent(Component.VERSION, newVersion);
+    public void setVersion(@NotNull Version newVersion) {
+        setComponent(Component.VERSION, newVersion.getValue(),
+                Optional.ofNullable(newVersion.getRawCompatibility()).map(value -> new Pair<>(COMPATIBILITY, value))
+                        .orElse(null));
     }
 
     @Override
@@ -174,12 +180,12 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
 
     @NotNull
     @Override
-    public List<String> getLicences() {
+    public List<License> getLicences() {
         if (file.getRootTag() == null) {
             return new ArrayList<>();
         }
         return Arrays.stream(file.getRootTag().findSubTags(Component.LICENSE.get()))
-                .map(tag -> tag.getValue().getText())
+                .map(tag -> new License(tag.getValue().getText(), tag.getAttributeValue(FILE)))
                 .collect(Collectors.toList());
     }
 
@@ -223,21 +229,36 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
         return file.getRootTag().getSubTagText(component.get());
     }
 
-    private void setComponent(@NotNull Component component,@NotNull String newContent) {
+    private void setComponent(@NotNull Component component, @NotNull String newContent) {
+        setComponent(component, newContent, null);
+    }
+
+    private void setComponent(@NotNull Component component, @NotNull String newContent,
+                              @Nullable Pair<String, String> attribute) {
         if (file.getRootTag() == null) {
             addRootTag();
         }
         XmlTag[] nameTags = file.getRootTag().findSubTags(component.get());
         if (nameTags.length == 0) {
-            addLevel2Tag(file.getRootTag().createChildTag(component.get(), null, newContent,
-                    false));
+            XmlTag newTag = file.getRootTag().createChildTag(component.get(), null, newContent,
+                    false);
+            if (attribute != null) {
+                newTag.setAttribute(attribute.first, attribute.second);
+            }
+            addLevel2Tag(newTag);
         } else if (nameTags.length > 1) {
             nameTags[0].getValue().setText(newContent);
+            if (attribute != null) {
+                nameTags[0].setAttribute(attribute.first, attribute.second);
+            }
             for (int i = 1; i < nameTags.length; i++) {
                 nameTags[i].delete();
             }
         } else {
             nameTags[0].getValue().setText(newContent);
+            if (attribute != null) {
+                nameTags[0].setAttribute(attribute.first, attribute.second);
+            }
         }
     }
 
@@ -277,12 +298,16 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
     }
 
     @Override
-    public void addLicence(@NotNull String licenseName) {
+    public void addLicence(@NotNull String licenseName, @Nullable String licenseFile) {
         if (file.getRootTag() == null) {
             addRootTag();
         }
-        addLevel2Tag(file.getRootTag().createChildTag(Component.LICENSE.get(), null, licenseName,
-                false));
+        XmlTag newTag = file.getRootTag()
+                .createChildTag(Component.LICENSE.get(), null, licenseName, false);
+        if (licenseFile != null) {
+            newTag.setAttribute(FILE, licenseFile);
+        }
+        addLevel2Tag(newTag);
     }
 
     @Override
@@ -512,10 +537,14 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
     }
 
     @Override
-    public void setLicense(int id, @NotNull String licenseName) {
-        Objects.requireNonNull(file.getRootTag()).findSubTags(Component.LICENSE.get())[id]
-                .replace(file.getRootTag().createChildTag(Component.LICENSE.get(),
-                        null, licenseName, false));
+    public void setLicense(int id, @NotNull License license) {
+        XmlTag newTag = Objects.requireNonNull(this.file.getRootTag())
+                .createChildTag(Component.LICENSE.get(), null, license.getValue(), false);
+        if (license.getFile() != null) {
+            newTag.setAttribute(FILE, license.getFile());
+        }
+        file.getRootTag().findSubTags(Component.LICENSE.get())[id]
+                .replace(newTag);
     }
 
     @NotNull

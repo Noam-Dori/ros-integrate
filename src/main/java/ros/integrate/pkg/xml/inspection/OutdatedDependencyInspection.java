@@ -31,7 +31,7 @@ public class OutdatedDependencyInspection extends LocalInspectionTool {
         for (int i = dependencies.size() - 1; i >= 0; i--) {
             ROSPackageXml.Dependency di = dependencies.get(i);
             String version = Optional.ofNullable(di.getPackage().getPackageXml()).map(ROSPackageXml::getVersion)
-                    .orElse(null);
+                    .map(ROSPackageXml.Version::getValue).orElse(null);
             if (version != null && !di.getVersionRange().contains(version)) {
                 trsToAnn.add(i);
             }
