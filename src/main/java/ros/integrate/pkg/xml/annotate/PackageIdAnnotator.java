@@ -10,9 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkg.xml.ROSPackageXml;
 import ros.integrate.pkg.xml.VersionRange;
-import ros.integrate.pkg.xml.intention.AddDescriptionQuickFix;
-import ros.integrate.pkg.xml.intention.FixNameQuickFix;
-import ros.integrate.pkg.xml.intention.FixVersionQuickFix;
+import ros.integrate.pkg.xml.intention.*;
 
 class PackageIdAnnotator {
     @NotNull
@@ -112,6 +110,20 @@ class PackageIdAnnotator {
                 Annotation ann = holder.createErrorAnnotation(subTags[i],"Too many " + compName + " tags.");
                 ann.registerFix(new RemoveTagIntentionFix(compName, subTags[i]));
             }
+        }
+    }
+
+    void annCompatibilityHigherThanVersion() {
+        if (version == null || !version.getValue().matches(VersionRange.VERSION_REGEX)
+                || !version.getCompatibility().matches(VersionRange.VERSION_REGEX)) {
+            return;
+        }
+        if (new VersionRange.Builder().min(version.getCompatibility(), false)
+                .max(version.getValue(), false).build().isNotValid()) {
+            Annotation ann = holder.createErrorAnnotation(versionTr,
+                    "Invalid version tag: compatibility is higher than version.");
+            ann.registerFix(new RemoveCompatibilityFix(pkgXml));
+            ann.registerFix(new FlipVersionCompatibilityFix(pkgXml));
         }
     }
 }

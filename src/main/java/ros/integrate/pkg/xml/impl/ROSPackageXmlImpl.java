@@ -21,7 +21,7 @@ import java.util.stream.Stream;
 
 public class ROSPackageXmlImpl implements ROSPackageXml {
     private static final String EXPORT = "export", FORMAT = "format", EMAIL = "email", COMPATIBILITY = "compatibility",
-    FILE = "file";
+            FILE = "file";
 
     private enum Component {
         NAME,
@@ -31,7 +31,7 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
         LICENSE,
         AUTHOR,
         URL;
-        
+
         @NotNull
         String get() {
             return name().toLowerCase();
@@ -158,8 +158,9 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
     @Override
     public void setVersion(@NotNull Version newVersion) {
         setComponent(Component.VERSION, newVersion.getValue(),
-                Optional.ofNullable(newVersion.getRawCompatibility()).map(value -> new Pair<>(COMPATIBILITY, value))
-                        .orElse(null));
+                Optional.ofNullable(newVersion.getRawCompatibility())
+                        .filter(compatibility -> !newVersion.getValue().equals(compatibility))
+                        .map(value -> new Pair<>(COMPATIBILITY, value)).orElse(null));
     }
 
     @Override
@@ -250,6 +251,10 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
             nameTags[0].getValue().setText(newContent);
             if (attribute != null) {
                 nameTags[0].setAttribute(attribute.first, attribute.second);
+            } else {
+                for (XmlAttribute attr : nameTags[0].getAttributes()) {
+                    attr.delete();
+                }
             }
             for (int i = 1; i < nameTags.length; i++) {
                 nameTags[i].delete();
@@ -258,6 +263,10 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
             nameTags[0].getValue().setText(newContent);
             if (attribute != null) {
                 nameTags[0].setAttribute(attribute.first, attribute.second);
+            } else {
+                for (XmlAttribute attr : nameTags[0].getAttributes()) {
+                    attr.delete();
+                }
             }
         }
     }

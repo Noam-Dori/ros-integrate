@@ -80,8 +80,10 @@ public class FixDependencyQuickFix extends BaseIntentionAction implements LocalQ
                 .map(ROSPackageXml.Version::getValue).orElse(null);
         String compatibilityVersion = Optional.ofNullable(dep.getPackage().getPackageXml())
                 .map(ROSPackageXml::getVersion).map(ROSPackageXml.Version::getCompatibility).orElse(depVersion);
-        if (strongFix && depVersion != null && newBuilder.build().intersect(new VersionRange.Builder()
-        .min(compatibilityVersion, false).max(depVersion, false).build()) != null) {
+        VersionRange depRange = new VersionRange.Builder()
+                .min(compatibilityVersion, false).max(depVersion, false).build();
+        if (strongFix && depVersion != null && !depRange.isNotValid() &&
+                newBuilder.build().intersect(depRange) != null) {
             VersionRange.Builder check = new VersionRange.Builder(newBuilder);
             check.min(depVersion, false);
             if (check.build().isNotValid()) {

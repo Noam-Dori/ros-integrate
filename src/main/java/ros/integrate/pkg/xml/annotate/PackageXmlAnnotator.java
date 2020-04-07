@@ -54,6 +54,7 @@ public class PackageXmlAnnotator implements Annotator {
             idAnn.annNoVersion();
             idAnn.annBadVersion();
             idAnn.annBadVersionCompatibility();
+            idAnn.annCompatibilityHigherThanVersion();
             idAnn.annNoDescription();
             idAnn.annTooManyNames();
             idAnn.annTooManyVersions();
