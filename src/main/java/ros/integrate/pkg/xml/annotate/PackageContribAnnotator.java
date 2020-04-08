@@ -2,7 +2,7 @@ package ros.integrate.pkg.xml.annotate;
 
 import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
-import com.intellij.openapi.util.TextRange;
+import ros.integrate.pkg.xml.TagTextRange;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.xml.ROSPackageXml;
 import ros.integrate.pkg.xml.ROSPackageXml.Contributor;
@@ -20,7 +20,7 @@ class PackageContribAnnotator {
     @NotNull
     private final List<Contributor> maintainers, authors;
     @NotNull
-    private final List<TextRange> maintainerTr, authorTr;
+    private final List<TagTextRange> maintainerTr, authorTr;
     @NotNull
     private final AnnotationHolder holder;
 
@@ -47,12 +47,14 @@ class PackageContribAnnotator {
             Contributor maintainer = maintainers.get(i);
             Annotation ann = null;
             if (maintainer.getEmail().isEmpty()) {
-                ann = holder.createErrorAnnotation(maintainerTr.get(i), "Maintainer is missing reference email");
+                ann = holder.createErrorAnnotation(maintainerTr.get(i).name(),
+                        "Maintainer is missing reference email");
             } else if (!maintainer.getEmail().matches(Contributor.EMAIL_REGEX)) {
-                ann = holder.createErrorAnnotation(maintainerTr.get(i), "Maintainer email is invalid");
+                ann = holder.createErrorAnnotation(maintainerTr.get(i).attrValue("email"),
+                        "Maintainer email is invalid");
             }
             if (maintainer.getName().isEmpty()) {
-                ann = holder.createErrorAnnotation(maintainerTr.get(i), "Maintainer does not have a name");
+                ann = holder.createErrorAnnotation(maintainerTr.get(i).name(), "Maintainer does not have a name");
             }
             if (ann != null) {
                 ann.registerFix(new FixContributorQuickFix(pkgXml, i, ContribType.MAINTAINER));
@@ -67,11 +69,12 @@ class PackageContribAnnotator {
         for (int i = 0; i < authors.size(); i++) {
             Contributor author = authors.get(i);
             if (author.getName().isEmpty()) {
-                Annotation ann = holder.createErrorAnnotation(authorTr.get(i), "Author does not have a name");
+                Annotation ann = holder.createErrorAnnotation(authorTr.get(i).name(), "Author does not have a name");
                 ann.registerFix(new FixContributorQuickFix(pkgXml, i, ContribType.AUTHOR));
                 ann.registerFix(new RemoveContributorFix(pkgXml, i, ContribType.AUTHOR));
             } else if (!author.getEmail().matches(Contributor.EMAIL_REGEX)) {
-                Annotation ann = holder.createErrorAnnotation(authorTr.get(i), "Author email is invalid");
+                Annotation ann = holder.createErrorAnnotation(authorTr.get(i).attrValue("email"),
+                        "Author email is invalid");
                 ann.registerFix(new FixContributorQuickFix(pkgXml, i, ContribType.AUTHOR));
                 ann.registerFix(new RemoveContributorFix(pkgXml, i, ContribType.AUTHOR));
             }

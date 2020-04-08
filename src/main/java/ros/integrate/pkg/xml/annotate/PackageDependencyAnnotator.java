@@ -3,8 +3,8 @@ package ros.integrate.pkg.xml.annotate;
 import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
-import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.TextRange;
+import ros.integrate.pkg.xml.TagTextRange;
 import com.intellij.psi.xml.XmlTag;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -29,7 +29,7 @@ class PackageDependencyAnnotator {
     private final List<Dependency> dependencies;
 
     @NotNull
-    private final List<Pair<TextRange, TextRange>> depTrs;
+    private final List<TagTextRange> depTrs;
 
     @Contract(pure = true)
     PackageDependencyAnnotator(@NotNull ROSPackageXml pkgXml, @NotNull AnnotationHolder holder) {
@@ -42,7 +42,7 @@ class PackageDependencyAnnotator {
     void annSelfDependency() {
         for (int i = 0; i < dependencies.size(); i++) {
             if (pkgXml.getPackage().equals(dependencies.get(i).getPackage())) {
-                Annotation ann = holder.createErrorAnnotation(depTrs.get(i).second,
+                Annotation ann = holder.createErrorAnnotation(depTrs.get(i).value(),
                         "A package cannot depend on itself.");
                 ann.registerFix(new RemoveDependencyQuickFix(pkgXml, i));
             }
@@ -57,7 +57,7 @@ class PackageDependencyAnnotator {
         for (int i = 0; i < dependencies.size(); i++) {
             String tagName = dependencies.get(i).getType().getTagName();
             if (relevant.contains(tagName)) {
-                Annotation ann = holder.createErrorAnnotation(depTrs.get(i).first,
+                Annotation ann = holder.createErrorAnnotation(depTrs.get(i).name(),
                         "Dependency tag " + tagName + " may not be used in manifest format " +
                                 pkgXml.getFormat() + ".");
                 ann.registerFix(new RemoveDependencyQuickFix(pkgXml, i));
@@ -68,8 +68,8 @@ class PackageDependencyAnnotator {
 
     void annEmptyDependency() {
         for (int i = 0; i < dependencies.size(); i++) {
-            if (depTrs.get(i).second.getLength() == 0) {
-                Annotation ann = holder.createErrorAnnotation(depTrs.get(i).first,
+            if (dependencies.get(i).getPackage().getName().length() == 0) {
+                Annotation ann = holder.createErrorAnnotation(depTrs.get(i).name(),
                         "Empty dependency tag.");
                 ann.registerFix(new RemoveDependencyQuickFix(pkgXml, i));
             }
@@ -98,7 +98,7 @@ class PackageDependencyAnnotator {
             }
         }
         trsToAnn.forEach(i -> {
-            Annotation ann = holder.createErrorAnnotation(depTrs.get(i).second,
+            Annotation ann = holder.createErrorAnnotation(depTrs.get(i).value(),
                     "Dependency Tag conflicts with another tag in the file.");
             ann.registerFix(new RemoveDependencyQuickFix(pkgXml, i));
             ann.registerFix(new ReformatPackageXmlFix(pkgXml, false));
@@ -108,7 +108,7 @@ class PackageDependencyAnnotator {
     void annDependencyNotFound() {
         for (int i = 0; i < dependencies.size(); i++) {
             if (dependencies.get(i).getPackage() == ROSPackage.ORPHAN) {
-                Annotation ann = holder.createErrorAnnotation(depTrs.get(i).second,
+                Annotation ann = holder.createErrorAnnotation(depTrs.get(i).value(),
                         "Unresolved dependency");
                 ann.setHighlightType(ProblemHighlightType.ERROR);
                 ann.registerFix(new RemoveDependencyQuickFix(pkgXml, i));
@@ -123,10 +123,12 @@ class PackageDependencyAnnotator {
         for (int i = 0; i < dependencies.size(); i++) {
             Dependency dep = dependencies.get(i);
             if (dep.getPackage() != ROSPackage.ORPHAN && dep.getVersionRange().isNotValid()) {
-                Annotation ann = holder.createErrorAnnotation(depTrs.get(i).first,
-                        "Invalid version restriction(s).");
-                ann.registerFix(new AmputateDependencyQuickFix(pkgXml, i));
-                ann.registerFix(new FixDependencyQuickFix(pkgXml, i, false));
+                for (TextRange tr : depTrs.get(i).attrQuery(null,
+                        "version_lt","version_lte","version_gt","version_gte","version_eq")) {
+                    Annotation ann = holder.createErrorAnnotation(tr, "Invalid version restriction(s).");
+                    ann.registerFix(new AmputateDependencyQuickFix(pkgXml, i));
+                    ann.registerFix(new FixDependencyQuickFix(pkgXml, i, false));
+                }
             }
         }
     }
@@ -148,11 +150,28 @@ class PackageDependencyAnnotator {
                     hasGt = dep.getAttribute("version_gt") != null,
                     hasGte = dep.getAttribute("version_gte") != null,
                     hasEq = dep.getAttribute("version_eq") != null;
-            if (hasGt && hasGte || hasLt && hasLte || hasEq && (hasGt || hasGte || hasLt || hasLte)) {
-                Annotation ann = holder.createErrorAnnotation(depTrs.get(i).first,
-                        "Conflicting version restrictions.");
-                ann.registerFix(new AmputateDependencyQuickFix(pkgXml, i));
-                ann.registerFix(new FixDependencyQuickFix(pkgXml, i, false));
+            List<TextRange> raised = new ArrayList<>(4);
+            TagTextRange queryable = depTrs.get(i);
+            if (hasEq && (hasGt || hasGte || hasLt || hasLte)) {
+                raised = queryable.attrQuery(TagTextRange.Prefix.NAME,
+                        "version_lt","version_lte","version_gt","version_gte","version_eq");
+            } else {
+                if (hasGt && hasGte) {
+                    raised.add(queryable.attrName("version_gt"));
+                    raised.add(queryable.attrName("version_gte"));
+                }
+                if (hasLt && hasLte) {
+                    raised.add(queryable.attrName("version_lt"));
+                    raised.add(queryable.attrName("version_lte"));
+                }
+            }
+            if (raised.size() > 1) {
+                for (TextRange tr : raised) {
+                    Annotation ann = holder.createErrorAnnotation(tr,
+                            "Conflicting version restrictions.");
+                    ann.registerFix(new AmputateDependencyQuickFix(pkgXml, i));
+                    ann.registerFix(new FixDependencyQuickFix(pkgXml, i, false));
+                }
             }
         }
     }

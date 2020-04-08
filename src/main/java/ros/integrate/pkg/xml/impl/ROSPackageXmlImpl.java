@@ -114,17 +114,15 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
     }
 
     @NotNull
-    private TextRange getRootTextRange() {
-        if (file.getRootTag() == null) {
-            return file.getTextRange();
-        }
-        return new TextRange(file.getRootTag().getTextOffset() + 1, file.getRootTag().getTextOffset() + 1 +
+    private TagTextRange getRootTextRange() {
+        return file.getRootTag() == null ? new TagTextRange(file.getTextRange()) :
+                new TagTextRange(file.getRootTag().getTextOffset() + 1, file.getRootTag().getTextOffset() + 1 +
                 file.getRootTag().getName().length());
     }
 
     @NotNull
     @Override
-    public TextRange getNameTextRange() {
+    public TagTextRange getNameTextRange() {
         return getComponentTextRange(Component.NAME);
     }
 
@@ -151,7 +149,7 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
 
     @NotNull
     @Override
-    public TextRange getVersionTextRange() {
+    public TagTextRange getVersionTextRange() {
         return getComponentTextRange(Component.VERSION);
     }
 
@@ -175,7 +173,7 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
 
     @NotNull
     @Override
-    public TextRange getDescriptionTextRange() {
+    public TagTextRange getDescriptionTextRange() {
         return getComponentTextRange(Component.DESCRIPTION);
     }
 
@@ -271,38 +269,31 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
         }
     }
 
-    private TextRange getComponentTextRange(Component component) {
-        if (file.getRootTag() == null) {
-            return file.getTextRange();
-        }
-        XmlTag tag = file.getRootTag().findFirstSubTag(component.get());
-        if (tag == null) {
-            return getRootTextRange();
-        }
-        return tag.getValue().getTextRange();
+    private TagTextRange getComponentTextRange(Component component) {
+        return Optional.ofNullable(file.getRootTag()).map(root -> root.findFirstSubTag(component.get()))
+                .map(TagTextRange::new).orElse(getRootTextRange());
     }
 
 
     @NotNull
-    private List<TextRange> getComponentTextRanges(Component component) {
+    private List<TagTextRange> getComponentTextRanges(Component component) {
         if (file.getRootTag() == null) {
-            return Collections.singletonList(file.getTextRange());
+            return Collections.singletonList(getRootTextRange());
         }
-        List<TextRange> ret = Arrays.stream(file.getRootTag().findSubTags(component.get()))
-                .map(tag -> tag.getValue().getTextRange())
+        List<TagTextRange> ret = Arrays.stream(file.getRootTag().findSubTags(component.get())).map(TagTextRange::new)
                 .collect(Collectors.toList());
         return ret.isEmpty() ? Collections.singletonList(getRootTextRange()) : ret;
     }
 
     @NotNull
     @Override
-    public List<TextRange> getLicenceTextRanges() {
+    public List<TagTextRange> getLicenceTextRanges() {
         return getComponentTextRanges(Component.LICENSE);
     }
 
     @NotNull
     @Override
-    public List<TextRange> getURLTextRanges() {
+    public List<TagTextRange> getURLTextRanges() {
         return getComponentTextRanges(Component.URL);
     }
 
@@ -355,31 +346,28 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
 
     @NotNull
     @Override
-    public List<TextRange> getMaintainerTextRanges() {
+    public List<TagTextRange> getMaintainerTextRanges() {
         return getComponentTextRanges(Component.MAINTAINER);
     }
 
     @NotNull
     @Override
-    public List<TextRange> getAuthorTextRanges() {
+    public List<TagTextRange> getAuthorTextRanges() {
         return getComponentTextRanges(Component.AUTHOR);
     }
 
     @NotNull
     @Override
-    public List<Pair<TextRange, TextRange>> getDependencyTextRanges() {
+    public List<TagTextRange> getDependencyTextRanges() {
         if (file.getRootTag() == null) {
-            return Collections.singletonList(new Pair<>(null, file.getTextRange()));
+            return Collections.singletonList(getRootTextRange());
         }
         Stream<XmlTag> result = Stream.empty();
         for (DependencyType dep : DependencyType.values()) {
             result = Stream.concat(result, Stream.of(file.getRootTag().findSubTags(dep.getTagName())));
         }
-        List<Pair<TextRange, TextRange>> ret = result.map(tag ->
-                new Pair<>(new TextRange(tag.getTextOffset() + 1, tag.getTextOffset() + tag.getName().length() + 1),
-                        tag.getValue().getTextRange()))
-                .collect(Collectors.toList());
-        return ret.isEmpty() ? Collections.singletonList(new Pair<>(null, getRootTextRange())) : ret;
+        List<TagTextRange> ret = result.map(TagTextRange::new).collect(Collectors.toList());
+        return ret.isEmpty() ? Collections.singletonList(getRootTextRange()) : ret;
     }
 
     @Override

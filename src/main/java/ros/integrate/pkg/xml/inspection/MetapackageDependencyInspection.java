@@ -4,14 +4,13 @@ import com.intellij.codeInspection.InspectionManager;
 import com.intellij.codeInspection.LocalInspectionTool;
 import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.codeInspection.ProblemHighlightType;
-import com.intellij.openapi.util.Pair;
-import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkg.xml.ExportTag;
 import ros.integrate.pkg.xml.PackageXmlUtil;
 import ros.integrate.pkg.xml.ROSPackageXml;
+import ros.integrate.pkg.xml.TagTextRange;
 import ros.integrate.pkg.xml.intention.RemoveDependencyQuickFix;
 
 import java.util.ArrayList;
@@ -27,13 +26,13 @@ public class MetapackageDependencyInspection extends LocalInspectionTool {
             return null;
         }
         List<ROSPackageXml.Dependency> dependencies = pkgXml.getDependencies(null);
-        List<Pair<TextRange, TextRange>> depTrs = pkgXml.getDependencyTextRanges();
+        List<TagTextRange> depTrs = pkgXml.getDependencyTextRanges();
         List<ProblemDescriptor> ret = new ArrayList<>();
         for (int i = dependencies.size() - 1; i >= 0; i--) {
             ROSPackageXml target = dependencies.get(i).getPackage().getPackageXml();
             if (Optional.ofNullable(target).map(ROSPackageXml::getExport)
                     .map(ExportTag::isMetapackage).orElse(false)) {
-                ret.add(manager.createProblemDescriptor(file, depTrs.get(i).second, getDisplayName(),
+                ret.add(manager.createProblemDescriptor(file, depTrs.get(i).value(), getDisplayName(),
                         ProblemHighlightType.GENERIC_ERROR_OR_WARNING, isOnTheFly,
                         new RemoveDependencyQuickFix(pkgXml, i)));
             }

@@ -3,12 +3,12 @@ package ros.integrate.pkg.xml.annotate;
 import com.intellij.codeInsight.daemon.impl.analysis.RemoveTagIntentionFix;
 import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
-import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.xml.XmlTag;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkg.xml.ROSPackageXml;
+import ros.integrate.pkg.xml.TagTextRange;
 import ros.integrate.pkg.xml.VersionRange;
 import ros.integrate.pkg.xml.intention.*;
 
@@ -18,11 +18,12 @@ class PackageIdAnnotator {
     @NotNull
     private final AnnotationHolder holder;
     @NotNull
-    private final TextRange nameTr, versionTr, descriptionTr;
+    private final TagTextRange nameTr, versionTr, descriptionTr;
     @Nullable
     private final String name, description;
     @Nullable
     private final ROSPackageXml.Version version;
+    private final int format;
 
     @Contract(pure = true)
     PackageIdAnnotator(@NotNull ROSPackageXml pkgXml, @NotNull AnnotationHolder holder) {
@@ -34,6 +35,7 @@ class PackageIdAnnotator {
         name = pkgXml.getPkgName();
         version = pkgXml.getVersion();
         description = pkgXml.getDescription();
+        format = pkgXml.getFormat();
     }
 
 
@@ -46,13 +48,14 @@ class PackageIdAnnotator {
 
     void annNameNotLowercase() {
         if (name != null && !name.toLowerCase().equals(name)) {
-            holder.createWarningAnnotation(nameTr, "While supported, package names should not have capital letters.");
+            holder.createWarningAnnotation(nameTr.value(),
+                    "While supported, package names should not have capital letters.");
         }
     }
 
     void annPkgNameMatch() {
         if (!pkgXml.getPackage().getName().equals(name)) {
-            Annotation ann = holder.createErrorAnnotation(nameTr,
+            Annotation ann = holder.createErrorAnnotation(nameTr.value(),
                     "Package name should match its parent directory");
             ann.registerFix(new FixNameQuickFix(pkgXml, "Fix"));
         }
@@ -68,16 +71,16 @@ class PackageIdAnnotator {
 
     void annBadVersion() {
         if (version != null && !version.getValue().matches(VersionRange.VERSION_REGEX)) {
-            Annotation ann = holder.createErrorAnnotation(versionTr,
+            Annotation ann = holder.createErrorAnnotation(versionTr.value(),
                     "Invalid version: versions should be written in the form \"NUMBER.NUMBER.NUMBER\"");
             ann.registerFix(new FixVersionQuickFix(pkgXml, "Fix"));
         }
     }
 
     void annBadVersionCompatibility() {
-        if (version != null && version.getRawCompatibility() != null &&
+        if (format >= 3 && version != null && version.getRawCompatibility() != null &&
                 !version.getRawCompatibility().matches(VersionRange.VERSION_REGEX)) {
-            Annotation ann = holder.createErrorAnnotation(versionTr,
+            Annotation ann = holder.createErrorAnnotation(versionTr.attrValue("compatibility"),
                     "Invalid version compatibility: versions should be written in the form \"NUMBER.NUMBER.NUMBER\"");
             ann.registerFix(new FixVersionQuickFix(pkgXml, "Fix"));
         }
@@ -114,13 +117,13 @@ class PackageIdAnnotator {
     }
 
     void annCompatibilityHigherThanVersion() {
-        if (version == null || !version.getValue().matches(VersionRange.VERSION_REGEX)
+        if (format < 3 || version == null || !version.getValue().matches(VersionRange.VERSION_REGEX)
                 || !version.getCompatibility().matches(VersionRange.VERSION_REGEX)) {
             return;
         }
         if (new VersionRange.Builder().min(version.getCompatibility(), false)
                 .max(version.getValue(), false).build().isNotValid()) {
-            Annotation ann = holder.createErrorAnnotation(versionTr,
+            Annotation ann = holder.createErrorAnnotation(versionTr.name(),
                     "Invalid version tag: compatibility is higher than version.");
             ann.registerFix(new RemoveCompatibilityFix(pkgXml));
             ann.registerFix(new FlipVersionCompatibilityFix(pkgXml));

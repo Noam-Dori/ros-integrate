@@ -57,7 +57,7 @@ public class PackageXmlReferenceContributor extends PsiReferenceContributor {
                 }
                 if (Optional.ofNullable(PackageXmlUtil.getParentTag(element)).map(XmlTag::getName)
                         .orElse("").equals("license")) {
-                    return PathReferenceManager.getInstance().createReferences(element, true);
+                    return PathReferenceManager.getInstance().createReferences(element, false);
                 }
                 return PsiReference.EMPTY_ARRAY;
             }

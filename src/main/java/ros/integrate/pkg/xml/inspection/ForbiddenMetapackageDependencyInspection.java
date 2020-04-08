@@ -4,8 +4,6 @@ import com.intellij.codeInspection.InspectionManager;
 import com.intellij.codeInspection.LocalInspectionTool;
 import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.codeInspection.ProblemHighlightType;
-import com.intellij.openapi.util.Pair;
-import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -13,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkg.xml.DependencyType;
 import ros.integrate.pkg.xml.PackageXmlUtil;
 import ros.integrate.pkg.xml.ROSPackageXml;
+import ros.integrate.pkg.xml.TagTextRange;
 import ros.integrate.pkg.xml.intention.RemoveDependencyQuickFix;
 
 import java.util.ArrayList;
@@ -33,7 +32,7 @@ public class ForbiddenMetapackageDependencyInspection extends LocalInspectionToo
             return null;
         }
         List<ROSPackageXml.Dependency> dependencies = pkgXml.getDependencies(null);
-        List<Pair<TextRange, TextRange>> depTrs = pkgXml.getDependencyTextRanges();
+        List<TagTextRange> depTrs = pkgXml.getDependencyTextRanges();
         List<ProblemDescriptor> ret = new ArrayList<>();
         Integer firstBuildtoolDependency = null;
         boolean buildtoolWarningRaised = false;
@@ -62,9 +61,9 @@ public class ForbiddenMetapackageDependencyInspection extends LocalInspectionToo
 
     private void raiseWarning(int i, DependencyType targetType, @NotNull List<ProblemDescriptor> ret,
                               @NotNull InspectionManager manager,
-                              PsiFile file, @NotNull List<Pair<TextRange, TextRange>> depTrs,
+                              PsiFile file, @NotNull List<TagTextRange> depTrs,
                               boolean isOnTheFly, ROSPackageXml pkgXml, boolean typeNotAllowed) {
-        ret.add(manager.createProblemDescriptor(file, depTrs.get(i).second, getMessage(targetType, typeNotAllowed),
+        ret.add(manager.createProblemDescriptor(file, depTrs.get(i).name(), getMessage(targetType, typeNotAllowed),
                 ProblemHighlightType.GENERIC_ERROR_OR_WARNING, isOnTheFly,
                 new RemoveDependencyQuickFix(pkgXml, i)));
     }

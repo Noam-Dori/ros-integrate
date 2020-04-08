@@ -83,7 +83,7 @@ public class FixDependencyQuickFix extends BaseIntentionAction implements LocalQ
         VersionRange depRange = new VersionRange.Builder()
                 .min(compatibilityVersion, false).max(depVersion, false).build();
         if (strongFix && depVersion != null && !depRange.isNotValid() &&
-                newBuilder.build().intersect(depRange) != null) {
+                newBuilder.build().intersect(depRange) == null) {
             VersionRange.Builder check = new VersionRange.Builder(newBuilder);
             check.min(depVersion, false);
             if (check.build().isNotValid()) {

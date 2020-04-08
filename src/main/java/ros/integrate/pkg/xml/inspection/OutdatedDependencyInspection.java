@@ -4,13 +4,13 @@ import com.intellij.codeInspection.InspectionManager;
 import com.intellij.codeInspection.LocalInspectionTool;
 import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.codeInspection.ProblemHighlightType;
-import com.intellij.openapi.util.Pair;
-import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkg.xml.PackageXmlUtil;
 import ros.integrate.pkg.xml.ROSPackageXml;
+import ros.integrate.pkg.xml.TagTextRange;
+import ros.integrate.pkg.xml.VersionRange;
 import ros.integrate.pkg.xml.intention.FixDependencyQuickFix;
 import ros.integrate.pkg.xml.intention.RemoveDependencyQuickFix;
 
@@ -25,18 +25,23 @@ public class OutdatedDependencyInspection extends LocalInspectionTool {
             return null;
         }
         List<ROSPackageXml.Dependency> dependencies = pkgXml.getDependencies(null);
-        List<Pair<TextRange, TextRange>> depTrs = pkgXml.getDependencyTextRanges();
+        List<TagTextRange> depTrs = pkgXml.getDependencyTextRanges();
         List<ProblemDescriptor> ret = new ArrayList<>();
         Set<Integer> trsToAnn = new HashSet<>();
         for (int i = dependencies.size() - 1; i >= 0; i--) {
-            ROSPackageXml.Dependency di = dependencies.get(i);
-            String version = Optional.ofNullable(di.getPackage().getPackageXml()).map(ROSPackageXml::getVersion)
+            ROSPackageXml.Dependency dep = dependencies.get(i);
+            String depVersion = Optional.ofNullable(dep.getPackage().getPackageXml()).map(ROSPackageXml::getVersion)
                     .map(ROSPackageXml.Version::getValue).orElse(null);
-            if (version != null && !di.getVersionRange().contains(version)) {
+            String compatibilityVersion = Optional.ofNullable(dep.getPackage().getPackageXml())
+                    .map(ROSPackageXml::getVersion).map(ROSPackageXml.Version::getCompatibility).orElse(depVersion);
+            VersionRange depRange = new VersionRange.Builder()
+                    .min(compatibilityVersion, false).max(depVersion, false).build();
+            if (depVersion != null && !depRange.isNotValid() &&
+                    dep.getVersionRange().intersect(depRange) == null) {
                 trsToAnn.add(i);
             }
         }
-        trsToAnn.forEach(i -> ret.add(manager.createProblemDescriptor(file, depTrs.get(i).second, getDisplayName(),
+        trsToAnn.forEach(i -> ret.add(manager.createProblemDescriptor(file, depTrs.get(i).value(), getDisplayName(),
                 ProblemHighlightType.GENERIC_ERROR_OR_WARNING, isOnTheFly,
                 new FixDependencyQuickFix(pkgXml, i, true),
                 new RemoveDependencyQuickFix(pkgXml, i))));

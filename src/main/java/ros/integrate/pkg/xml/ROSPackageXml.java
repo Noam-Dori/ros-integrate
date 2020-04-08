@@ -83,7 +83,7 @@ public interface ROSPackageXml {
 
         @Nullable
         public String getFile() {
-            return file == null ? license : file;
+            return file;
         }
 
         @NotNull
@@ -135,7 +135,7 @@ public interface ROSPackageXml {
     @SuppressWarnings("SameReturnValue")
     @Contract(pure = true)
     static int getLatestFormat() {
-        return 2;
+        return 3;
     }
 
     /**
@@ -246,54 +246,54 @@ public interface ROSPackageXml {
      * @return the text range of the name tag, or if it is not available, the root tag.
      */
     @NotNull
-    TextRange getNameTextRange();
+    TagTextRange getNameTextRange();
 
     /**
      * @return the text range of the version tag, or if it is not available, the root tag.
      */
     @NotNull
-    TextRange getVersionTextRange();
+    TagTextRange getVersionTextRange();
 
     /**
      * @return the text range of the description tag, or if it is not available, the root tag.
      */
     @NotNull
-    TextRange getDescriptionTextRange();
+    TagTextRange getDescriptionTextRange();
 
     /**
      * @return a list with at least length 1 that points towards all text ranges of the license values,
      * or if no license is available, to the package tag.
      */
     @NotNull
-    List<TextRange> getLicenceTextRanges();
+    List<TagTextRange> getLicenceTextRanges();
 
     /**
      * @return a list with at least length 1 that points towards all text ranges of the license values,
      * or if no license is available, to the package tag.
      */
     @NotNull
-    List<TextRange> getURLTextRanges();
+    List<TagTextRange> getURLTextRanges();
 
     /**
      * @return a list with at least length 1 that points towards all text ranges of the maintainer tags,
      * or if no maintainer is available, to the package tag.
      */
     @NotNull
-    List<TextRange> getMaintainerTextRanges();
+    List<TagTextRange> getMaintainerTextRanges();
 
     /**
      * @return a list with at least length 1 that points towards all text ranges of the author tags,
      * or if no author is available, to the package tag.
      */
     @NotNull
-    List<TextRange> getAuthorTextRanges();
+    List<TagTextRange> getAuthorTextRanges();
 
     /**
      * @return a list with at least length 1 that points towards all text ranges of the dependency tags,
      * or if no dependency is available, to the package tag.
      */
     @NotNull
-    List<Pair<TextRange, TextRange>> getDependencyTextRanges();
+    List<TagTextRange> getDependencyTextRanges();
 
     /**
      * updates the format of the package to the latest version (based on your ROS version).

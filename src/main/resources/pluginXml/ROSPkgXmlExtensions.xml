@@ -46,5 +46,8 @@
         <localInspection language="XML" implementationClass="ros.integrate.pkg.xml.inspection.UnknownBuildTypeInspection"
                          level="WEAK WARNING" enabledByDefault="true" shortName="unknown-build-type"
                          groupName="ROS" displayName="Unknown build type"/>
+        <localInspection language="XML" implementationClass="ros.integrate.pkg.xml.inspection.UnusedFeatureInspection"
+                         level="WARNING" enabledByDefault="true" shortName="unused-feature"
+                         groupName="ROS" displayName="Unused future feature"/>
     </extensions>
 </idea-plugin>

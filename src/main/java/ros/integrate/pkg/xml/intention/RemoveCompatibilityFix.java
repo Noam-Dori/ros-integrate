@@ -1,6 +1,8 @@
 package ros.integrate.pkg.xml.intention;
 
 import com.intellij.codeInsight.intention.impl.BaseIntentionAction;
+import com.intellij.codeInspection.LocalQuickFix;
+import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
@@ -12,7 +14,7 @@ import ros.integrate.pkg.xml.ROSPackageXml.Version;
 
 import java.util.Objects;
 
-public class RemoveCompatibilityFix extends BaseIntentionAction {
+public class RemoveCompatibilityFix extends BaseIntentionAction implements LocalQuickFix {
     private ROSPackageXml pkgXml;
 
     public RemoveCompatibilityFix(ROSPackageXml pkgXml) {
@@ -24,6 +26,11 @@ public class RemoveCompatibilityFix extends BaseIntentionAction {
     @Override
     public String getFamilyName() {
         return "ROS XML";
+    }
+
+    @Override
+    public void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor) {
+        doFix();
     }
 
     @Nls(capitalization = Nls.Capitalization.Sentence)
@@ -40,6 +47,10 @@ public class RemoveCompatibilityFix extends BaseIntentionAction {
 
     @Override
     public void invoke(@NotNull Project project, Editor editor, PsiFile file) throws IncorrectOperationException {
+        doFix();
+    }
+
+    private void doFix() {
         pkgXml.setVersion(new Version(Objects.requireNonNull(pkgXml.getVersion()).getValue(), null));
     }
 }
