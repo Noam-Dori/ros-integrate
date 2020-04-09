@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.xml.ref.DependencyToPackageReference;
 import ros.integrate.pkg.xml.ref.NameXmlToPackageReference;
+import ros.integrate.settings.ROSSettings;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -32,7 +33,8 @@ public class PackageXmlReferenceContributor extends PsiReferenceContributor {
                 }
                 String name = ((XmlTag)element).getName(), value = ((XmlTag)element).getValue().getText();
                 if (name.equals("license")) {
-                    String url = ROSLicenses.AVAILABLE_LICENSES.get(value);
+                    String url = ROSLicenses.AVAILABLE_LICENSES.get(value)
+                            .getLink(ROSSettings.getInstance(element.getProject()).getLicenseLinkType());
                     return url == null || url.isEmpty() ? PsiReference.EMPTY_ARRAY : getWebReference(element, url);
                 } else if (name.equals("url")) {
                     try {

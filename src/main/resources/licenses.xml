@@ -1,0 +1,128 @@
+<?xml version="1.0" ?>
+<!-- license entities contain:
+     1. a link to the official opensource site (if they are opensource license)
+     2. a link to TL;DR Legal summary of the license (if it exists)
+     3. a link to the raw license file that can be used to insert the license into the project.
+     4. a list of names that are applicable as copyright notices in the work.
+        note that most copyrights here require a file. -->
+<licences>
+    <license link="https://opensource.org/licenses/Apache-2.0"
+             file="https://www.apache.org/licenses/LICENSE-2.0.txt"
+             tldr="https://tldrlegal.com/license/apache-license-2.0-(apache-2.0)">
+        <name>Apache-2.0</name>
+        <fileRequired/>
+    </license>
+    <license link="https://opensource.org/licenses/BSD-3-Clause"
+             file="https://spdx.org/licenses/BSD-3-Clause.txt"
+             tldr="https://tldrlegal.com/license/bsd-3-clause-license-(revised)">
+        <name>BSD</name>
+        <name>BSD-3</name>
+        <fileRequired/>
+    </license>
+    <license link="https://opensource.org/licenses/BSD-2-Clause"
+             file="https://spdx.org/licenses/BSD-2-Clause.txt"
+             tldr="https://tldrlegal.com/license/bsd-2-clause-license-(freebsd)">
+        <name>BSD-2</name>
+        <fileRequired/>
+    </license>
+    <license link="https://opensource.org/licenses/0BSD"
+             file="https://spdx.org/licenses/0BSD.txt"
+             tldr="https://tldrlegal.com/license/bsd-0-clause-license">
+        <name>BSD-0</name>
+    </license>
+    <license link="https://opensource.org/licenses/BSL-1.0"
+             file="https://www.boost.org/LICENSE_1_0.txt"
+             tldr="https://tldrlegal.com/license/boost-software-license-1.0-explained">
+        <name>Boost</name>
+        <name>Boost Software License</name>
+        <name>BSL-1.0</name>
+        <fileRequired/>
+    </license>
+    <license link="https://opensource.org/licenses/GPL-2.0"
+             file="https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt"
+             tldr="https://tldrlegal.com/license/gnu-general-public-license-v2">
+        <name>GPL-2.0</name>
+        <name>GPLv2</name>
+        <fileRequired/>
+    </license>
+    <license link="https://opensource.org/licenses/GPL-3.0"
+             file="https://www.gnu.org/licenses/gpl-3.0.txt"
+             tldr="https://tldrlegal.com/license/gnu-general-public-license-v3-(gpl-3)">
+        <name>GPL-3.0</name>
+        <name>GPLv3</name>
+        <fileRequired/>
+    </license>
+    <license link="https://opensource.org/licenses/LGPL-2.1"
+             file="https://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt"
+             tldr="https://tldrlegal.com/license/gnu-lesser-general-public-license-v2.1-(lgpl-2.1)">
+        <name>LGPL-2.1</name>
+        <name>LGPLv2.1</name>
+        <fileRequired/>
+    </license>
+    <license link="https://opensource.org/licenses/LGPL-3.0"
+             file="https://www.gnu.org/licenses/lgpl-3.0.txt"
+             tldr="https://tldrlegal.com/license/gnu-lesser-general-public-license-v3-(lgpl-3)">
+        <name>LGPL-3.0</name>
+        <name>LGPLv3</name>
+        <fileRequired/>
+    </license>
+    <license link="https://opensource.org/licenses/MIT"
+             file="https://spdx.org/licenses/MIT.txt"
+             tldr="https://tldrlegal.com/license/mit-license">
+        <name>MIT</name>
+        <fileRequired/>
+    </license>
+    <license link="https://opensource.org/licenses/MPL-1.1"
+             file="https://www.mozilla.org/media/MPL/1.1/index.0c5913925d40.txt"
+             tldr="https://tldrlegal.com/license/mozilla-public-license-1.1-(mpl-1.1)">
+        <name>Mozilla</name>
+        <name>Mozilla Public License Version 1.1</name>
+        <name>MPL-1.1</name>
+        <fileRequired/>
+    </license>
+    <license link="https://opensource.org/licenses/MPL-1.0"
+             file="https://website-archive.mozilla.org/www.mozilla.org/mpl/MPL/1.0/index.txt"
+             tldr="https://tldrlegal.com/license/mozilla-public-license-1.0-(mpl-1.0)">
+        <name>MPL-1.0</name>
+        <fileRequired/>
+    </license>
+    <license link="https://opensource.org/licenses/MPL-2.0"
+             file="https://www.mozilla.org/media/MPL/2.0/index.815ca599c9df.txt"
+             tldr="https://tldrlegal.com/license/mozilla-public-license-2.0-(mpl-2)">
+        <name>MPL-2.0</name>
+        <fileRequired/>
+    </license>
+    <license link="https://opensource.org/licenses/WXwindows"
+             file="https://www.gnu.org/licenses/old-licenses/lgpl-2.0.txt"
+             tldr="https://tldrlegal.com/license/wxwindows-library-license-(wxwindows)">
+        <!-- the WX exceptions are not required, so only LGPL is added as link -->
+        <name>wxWindows</name>
+        <name>WXwindows</name>
+        <fileRequired/>
+    </license>
+    <license link="https://opensource.org/licenses/Python-2.0"
+             file="https://spdx.org/licenses/Python-2.0.txt"
+             tldr="https://tldrlegal.com/license/python-license-2.0">
+        <name>Python</name>
+        <name>Python-2.0</name>
+        <fileRequired/>
+    </license>
+    <license link="https://opensource.org/licenses/Zlib"
+             file="https://spdx.org/licenses/Zlib.txt"
+             tldr="https://tldrlegal.com/license/zlib-libpng-license-(zlib)">
+        <name>Zlib</name>
+        <name>ZLib</name>
+    </license>
+    <license link="https://creativecommons.org/publicdomain/zero/1.0/"
+             file="https://spdx.org/licenses/CC0-1.0.txt"
+             tldr="https://tldrlegal.com/license/creative-commons-cc0-1.0-universal">
+        <name>CC0</name>
+    </license>
+    <license link="https://en.wikipedia.org/wiki/Public-domain-equivalent_license">
+        <name>Public Domain</name>
+    </license>
+    <license link="https://en.wikipedia.org/wiki/Proprietary_software">
+        <name>Proprietary</name>
+        <fileRequired/>
+    </license>
+</licences>

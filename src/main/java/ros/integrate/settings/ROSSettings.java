@@ -38,6 +38,7 @@ public class ROSSettings implements PersistentStateComponent<ROSSettings.State> 
         public String workspacePath;
         public String additionalSources;
         public String excludedXmls;
+        public String licenseLinkType;
         public String knownKeys;
         public String depSources;
     }
@@ -60,6 +61,8 @@ public class ROSSettings implements PersistentStateComponent<ROSSettings.State> 
 
         state.excludedXmls = "";
 
+        state.licenseLinkType = "";
+
         state.knownKeys = "";
 
         state.depSources = "";
@@ -67,6 +70,7 @@ public class ROSSettings implements PersistentStateComponent<ROSSettings.State> 
         if (settingsLoaded) {
             state.depSources = prop.getProperty("depSources"); // " is the standard delimiter for URLs
             state.knownKeys = prop.getProperty("knownKeys");
+            state.licenseLinkType = prop.getProperty("licenseLinkType");
         }
     }
 
@@ -193,5 +197,13 @@ public class ROSSettings implements PersistentStateComponent<ROSSettings.State> 
 
     void setROSDepSources(String sources) {
         state.depSources = sources;
+    }
+
+    public String getLicenseLinkType() {
+        return state.licenseLinkType;
+    }
+
+    public void setLicenseLinkType(String licenseLinkType) {
+        state.licenseLinkType = licenseLinkType;
     }
 }

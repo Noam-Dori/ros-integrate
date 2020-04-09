@@ -11,7 +11,8 @@ public class BrowserOptions {
         EXTRA_SOURCES("EXTRA_SOURCES"),
         EXCLUDED_XMLS("EXCLUDED_XMLS"),
         ROSDEP_SOURCES("ROSDEP_SOURCES"),
-        KNOWN_ROSDEP_KEYS("KNOWN_ROSDEP_KEYS");
+        KNOWN_ROSDEP_KEYS("KNOWN_ROSDEP_KEYS"),
+        LICENSE_LINK_TYPE("LICENSE_LINK_TYPE");
 
         private final String historyKey;
 

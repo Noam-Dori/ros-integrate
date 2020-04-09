@@ -8,6 +8,7 @@ import com.intellij.util.Url;
 import com.intellij.util.Urls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import ros.integrate.settings.ROSSettings;
 
 public class ROSLicenseLinkProvider extends WebBrowserUrlProvider {
     @Nullable
@@ -20,7 +21,8 @@ public class ROSLicenseLinkProvider extends WebBrowserUrlProvider {
         if (tag == null || !tag.getName().equals("license")) {
             return super.getUrl(request, file);
         }
-        String url = ROSLicenses.AVAILABLE_LICENSES.get(tag.getValue().getText());
+        String url = ROSLicenses.AVAILABLE_LICENSES.get(tag.getValue().getText())
+                .getLink(ROSSettings.getInstance(tag.getProject()).getLicenseLinkType());
         return url != null && !url.isEmpty() ? Urls.newUnparsable(url) : null;
     }
 

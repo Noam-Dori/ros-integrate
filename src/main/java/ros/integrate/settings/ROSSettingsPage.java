@@ -8,6 +8,7 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.TextComponentAccessor;
 import com.intellij.refactoring.copy.CopyFilesOrDirectoriesDialog;
 import com.intellij.ui.DocumentAdapter;
@@ -19,6 +20,7 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkg.ROSDepKeyCache;
+import ros.integrate.pkg.xml.ROSLicenses;
 import ros.integrate.settings.BrowserOptions.HistoryKey;
 
 import javax.swing.*;
@@ -58,6 +60,9 @@ public class ROSSettingsPage implements SearchableConfigurable {
     private final PathListTextField excludedXmls = new PathListTextField();
     private final JBLabel excludedXmlsLabel = new JBLabel();
 
+    private final ComboBox<String> licenseLinkType = new ComboBox<>(ROSLicenses.LicenseEntity.getLinkTypeOptions());
+    private final JBLabel licenseLinkTypeLabel = new JBLabel();
+
     private final PathListTextField knownRosdepKeys = new PathListTextField();
     private final JBLabel knownRosdepKeysLabel = new JBLabel();
 
@@ -93,6 +98,7 @@ public class ROSSettingsPage implements SearchableConfigurable {
         additionalSourcesLabel.setText("Additional Package Paths:");
         resetSourcesButton.setText("Set to $ROS_PACKAGE_PATH");
         excludedXmlsLabel.setText("Excluded XML files:");
+        licenseLinkTypeLabel.setText("License Details Preference:");
         rosdepSourcesLabel.setText("Online ROSDep Source Lists:");
         knownRosdepKeysLabel.setText("Known ROSDep Keys:");
         fetchSourceListsButton.setText("Fetch ROSDep Source Lists");
@@ -153,6 +159,7 @@ public class ROSSettingsPage implements SearchableConfigurable {
                 .closeSection()
                 .addSection(pluginSpecific)
                 .addLabeledComponent(excludedXmlsLabel, excludedXmls)
+                .addLabeledComponent(licenseLinkTypeLabel, licenseLinkType)
                 .getPanel();
     }
 
@@ -180,6 +187,7 @@ public class ROSSettingsPage implements SearchableConfigurable {
                 || isModified(workspace.getChildComponent().getTextEditor(), data.getWorkspacePath())
                 || isModified(additionalSources.getChildComponent().getTextEditor(), data.getRawAdditionalSources())
                 || isModified(excludedXmls.getChildComponent().getTextEditor(), data.getRawExcludedXmls())
+                || isModified(licenseLinkType, data.getLicenseLinkType())
                 || isModified(rosdepSources.getChildComponent().getTextEditor(), data.getRawROSDepSources())
                 || isModified(knownRosdepKeys.getChildComponent().getTextEditor(), data.getRawKnownROSDepKeys());
     }
@@ -199,6 +207,8 @@ public class ROSSettingsPage implements SearchableConfigurable {
         addToHistory(excludedXmls, HistoryKey.EXCLUDED_XMLS, data::setExcludedXmls);
         addToHistory(knownRosdepKeys, HistoryKey.KNOWN_ROSDEP_KEYS, data::setKnownROSDepKeys);
         addToHistory(rosdepSources, HistoryKey.ROSDEP_SOURCES, data::setROSDepSources);
+        data.setLicenseLinkType((String) licenseLinkType.getSelectedItem());
+        data.triggerListeners(HistoryKey.LICENSE_LINK_TYPE.get());
     }
 
     @Override
@@ -207,6 +217,7 @@ public class ROSSettingsPage implements SearchableConfigurable {
         workspace.setText(data.getWorkspacePath());
         additionalSources.setText(data.getRawAdditionalSources());
         excludedXmls.setText(data.getRawExcludedXmls());
+        licenseLinkType.setSelectedItem(data.getLicenseLinkType());
         knownRosdepKeys.setText(data.getRawKnownROSDepKeys());
         rosdepSources.setText(data.getRawROSDepSources());
     }
