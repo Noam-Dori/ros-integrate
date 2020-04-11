@@ -49,5 +49,8 @@
         <localInspection language="XML" implementationClass="ros.integrate.pkg.xml.inspection.UnusedFeatureInspection"
                          level="WARNING" enabledByDefault="true" shortName="unused-feature"
                          groupName="ROS" displayName="Unused future feature"/>
+        <localInspection language="XML" implementationClass="ros.integrate.pkg.xml.inspection.LicenseFileRequiredInspection"
+                         level="WARNING" enabledByDefault="true" shortName="license-file-required"
+                         groupName="ROS" displayName="License requires full license text"/>
     </extensions>
 </idea-plugin>

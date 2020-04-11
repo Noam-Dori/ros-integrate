@@ -10,7 +10,6 @@ import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -36,6 +35,14 @@ public class ROSLicenses {
                 case "Official": return link;
                 case "Summary": return tldr.isEmpty() ? link : tldr;
             }
+        }
+
+        public boolean isFileRequired() {
+            return fileRequired;
+        }
+
+        public String getFileSource() {
+            return file;
         }
 
         @NotNull
@@ -70,7 +77,7 @@ public class ROSLicenses {
                             ((Element)node).getAttribute("link"),
                             ((Element)node).getAttribute("tldr"),
                             ((Element)node).getAttribute("file"),
-                            ((Element)node).hasAttribute("fileRequired")
+                            ((Element)node).getElementsByTagName("fileRequired").getLength() > 0
                     );
                     NodeList names = ((Element)node).getElementsByTagName("name");
                     for (int j = 0; j < names.getLength(); j++) {
