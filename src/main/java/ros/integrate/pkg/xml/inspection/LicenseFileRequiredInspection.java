@@ -14,14 +14,13 @@ import ros.integrate.pkg.xml.intention.AddLicenseFileFix;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class LicenseFileRequiredInspection extends LocalInspectionTool {
     @Nullable
     @Override
     public ProblemDescriptor[] checkFile(@NotNull PsiFile file, @NotNull InspectionManager manager, boolean isOnTheFly) {
         ROSPackageXml pkgXml = PackageXmlUtil.getWrapper(file);
-        if (pkgXml == null || Optional.ofNullable(pkgXml.getExport()).map(ExportTag::isMetapackage).orElse(false)) {
+        if (pkgXml == null || pkgXml.getFormat() < 3) {
             return null;
         }
         List<License> licenses = pkgXml.getLicences();
