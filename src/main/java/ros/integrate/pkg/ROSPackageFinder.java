@@ -1,8 +1,8 @@
 package ros.integrate.pkg;
 
 import com.intellij.openapi.extensions.ExtensionPointName;
+import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.roots.libraries.Library;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
 import com.intellij.util.containers.MultiMap;
@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkg.psi.ROSPackage;
 
 import java.util.Collection;
+import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 
 /**
@@ -69,21 +70,25 @@ public interface ROSPackageFinder {
     CacheCommand investigateChanges(Project project, ROSPackage pkg);
 
     /**
-     * fetches the library this finder uses
-     * @param project the project the finder will search/create a library for
-     * @return {@code null} if the finder does not rely on a library,
-     *         otherwise the library this finder uses for its packages.
+     * loads the artifacts this finder uses
+     * @param project the project the finder will search/create an artifact for
+     * @return if this finder loads modules, the list of loaded modules. Otherwise, an empty collection.
      */
-    @Nullable
-    Library getLibrary(Project project);
+    @NotNull
+    Set<Module> loadArtifacts(Project project);
 
     /**
-     * updates a library
+     * updates the artifacts this finder loaded.
      * @param project the project the finder will update a library for
-     * @param lib the library to update
      * @return true if updating packages requires a purge, false otherwise.
      */
-    boolean updateLibrary(Project project, @NotNull Library lib);
+    boolean updateArtifacts(Project project);
+
+    /**
+     * loads the dependencies of the main module on the artifacts this finder loaded.
+     * @param module the original module used to develop code
+     */
+    void setDependency(Module module);
 
     enum CacheCommand {
         NONE,

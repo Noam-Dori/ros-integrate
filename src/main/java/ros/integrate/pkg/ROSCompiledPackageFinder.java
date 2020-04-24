@@ -1,9 +1,10 @@
 package ros.integrate.pkg;
 
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.impl.scopes.LibraryScope;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.roots.OrderRootType;
+import com.intellij.openapi.roots.*;
 import com.intellij.openapi.roots.libraries.Library;
 import com.intellij.openapi.roots.libraries.LibraryTable;
 import com.intellij.openapi.roots.libraries.LibraryTablesRegistrar;
@@ -15,6 +16,7 @@ import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.xml.XmlFile;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkt.psi.ROSPktFile;
 import ros.integrate.settings.ROSSettings;
 import ros.integrate.pkg.psi.ROSPackage;
@@ -30,9 +32,16 @@ import static ros.integrate.pkg.psi.impl.ROSCompiledPackage.RootType;
  */
 public class ROSCompiledPackageFinder extends ROSPackageFinderBase {
     private static final Logger LOG = Logger.getInstance("#ros.integrate.workspace.ROSCompiledPackageFinder");
+    private Library loadedLibrary = null;
+
+    @Nullable
+    private Library getLibrary(Project project) {
+        return loadedLibrary == null ?
+                LibraryTablesRegistrar.getInstance().getLibraryTable(project).getLibraryByName("ROS") : loadedLibrary;
+    }
 
     private VirtualFile getROSRoot(Project project) {
-        Library origin = LibraryTablesRegistrar.getInstance().getLibraryTable(project).getLibraryByName("ROS");
+        Library origin = getLibrary(project);
         return Objects.requireNonNull(origin).getFiles(OrderRootType.CLASSES)[0];
     }
 
@@ -59,28 +68,32 @@ public class ROSCompiledPackageFinder extends ROSPackageFinderBase {
     @NotNull
     @Override
     GlobalSearchScope getScope(Project project) {
-        return Optional.ofNullable(LibraryTablesRegistrar.getInstance()
-                .getLibraryTable(project).getLibraryByName("ROS"))
-                .map(lib -> (GlobalSearchScope) new LibraryScope(project, lib)).orElse(GlobalSearchScope.EMPTY_SCOPE);
+        return Optional.ofNullable(getLibrary(project)).map(lib -> (GlobalSearchScope) new LibraryScope(project, lib))
+                .orElse(GlobalSearchScope.EMPTY_SCOPE);
     }
 
     @NotNull
     @Override
-    public Library getLibrary(Project project) {
+    public Set<Module> loadArtifacts(Project project) {
         LibraryTable table = LibraryTablesRegistrar.getInstance().getLibraryTable(project);
         Library lib = table.getLibraryByName("ROS");
         if (lib != null) {
             table.removeLibrary(lib);
         }
         lib = table.createLibrary("ROS");
+        loadedLibrary = lib;
         String rosPath = ROSSettings.getInstance(project).getROSPath();
         addPath(lib, rosPath, (model, url) -> true);
 
-        return lib;
+        return Collections.emptySet();
     }
 
     @Override
-    public boolean updateLibrary(Project project, @NotNull Library lib) {
+    public boolean updateArtifacts(Project project) {
+        Library lib = getLibrary(project);
+        if (lib == null) {
+            return false;
+        }
         return addPath(lib, ROSSettings.getInstance(project).getROSPath(), (model, newUrl) -> {
             if (!Arrays.asList(model.getUrls(OrderRootType.CLASSES)).contains(newUrl)) {
                 Arrays.stream(model.getUrls(OrderRootType.CLASSES))
@@ -90,6 +103,20 @@ public class ROSCompiledPackageFinder extends ROSPackageFinderBase {
                 return false;
             }
         });
+    }
+
+    @Override
+    public void setDependency(@NotNull Module module) {
+        Library lib = getLibrary(module.getProject());
+        if (lib == null) {
+            return;
+        }
+        ModifiableRootModel model = ModuleRootManager.getInstance(module).getModifiableModel();
+        LibraryOrderEntry entry = model.findLibraryOrderEntry(lib);
+        if (entry == null) {
+            ModuleRootModificationUtil.addDependency(module, lib);
+        }
+        model.dispose();
     }
 
     private boolean addPath(@NotNull Library lib, @NotNull String path,

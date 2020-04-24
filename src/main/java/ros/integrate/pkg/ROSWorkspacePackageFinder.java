@@ -1,15 +1,12 @@
 package ros.integrate.pkg;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.MapDifference;
-import com.google.common.collect.Maps;
+import com.intellij.ide.highlighter.ModuleFileType;
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.module.impl.scopes.LibraryScope;
+import com.intellij.openapi.module.*;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.roots.OrderRootType;
-import com.intellij.openapi.roots.libraries.Library;
-import com.intellij.openapi.roots.libraries.LibraryTable;
-import com.intellij.openapi.roots.libraries.LibraryTablesRegistrar;
+import com.intellij.openapi.project.ProjectBundle;
+import com.intellij.openapi.roots.*;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
@@ -18,12 +15,12 @@ import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.xml.XmlFile;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import ros.integrate.pkt.psi.ROSPktFile;
-import ros.integrate.settings.ROSSettings;
 import ros.integrate.pkg.psi.ROSPackage;
 import ros.integrate.pkg.psi.impl.ROSSourcePackage;
+import ros.integrate.pkt.psi.ROSPktFile;
+import ros.integrate.settings.ROSSettings;
 
+import java.io.File;
 import java.util.*;
 
 /**
@@ -31,12 +28,19 @@ import java.util.*;
  */
 public class ROSWorkspacePackageFinder extends ROSPackageFinderBase {
     private static final Logger LOG = Logger.getInstance("#ros.integrate.workspace.ROSWorkspacePackageFinder");
+    private final String MODULE_NAME = "workspace";
+
+    private Module loadedModule = null;
+    private Module getModule(Project project) {
+        return loadedModule == null ? ModuleManager.getInstance(project).findModuleByName(MODULE_NAME) : loadedModule;
+    }
 
     @NotNull
     private List<VirtualFile> getWorkspaceRoots(Project project) {
-        Library origin = LibraryTablesRegistrar.getInstance().getLibraryTable(project).getLibraryByName("workspace");
+        Module origin = getModule(project);
         Objects.requireNonNull(origin);
-        return Lists.asList(origin.getFiles(OrderRootType.SOURCES)[0], origin.getFiles(OrderRootType.CLASSES));
+        ModuleRootManager manager = ModuleRootManager.getInstance(origin);
+        return Arrays.asList(manager.getContentRoots());
     }
 
     @Override
@@ -60,79 +64,103 @@ public class ROSWorkspacePackageFinder extends ROSPackageFinderBase {
     @NotNull
     @Override
     GlobalSearchScope getScope(Project project) {
-        return Optional.ofNullable(LibraryTablesRegistrar.getInstance()
-                .getLibraryTable(project).getLibraryByName("workspace"))
-                .map(lib -> (GlobalSearchScope) new LibraryScope(project, lib)).orElse(GlobalSearchScope.EMPTY_SCOPE);
+        return Optional.ofNullable(getModule(project))
+                .map(Module::getModuleContentScope).orElse(GlobalSearchScope.EMPTY_SCOPE);
     }
 
-    @Nullable
+    @NotNull
     @Override
-    public Library getLibrary(Project project) {
-        LibraryTable table = LibraryTablesRegistrar.getInstance().getLibraryTable(project);
-        Library lib = table.getLibraryByName("workspace");
-        if (lib != null) {
-            table.removeLibrary(lib);
+    public Set<Module> loadArtifacts(Project project) {
+        ModifiableModuleModel moduleModel = ModuleManager.getInstance(project).getModifiableModel();
+        Module module = moduleModel.findModuleByName(MODULE_NAME);
+        if (module != null) {
+            moduleModel.disposeModule(module);
         }
-        lib = table.createLibrary("workspace");
-        Library.ModifiableModel model = lib.getModifiableModel();
+        try {
+            module = ModuleManager.getInstance(project).newModule(project.getBasePath() + File.separator +
+                            Project.DIRECTORY_STORE_FOLDER + File.separator + MODULE_NAME +
+                            ModuleFileType.DOT_DEFAULT_EXTENSION, WorkspaceModuleType.getInstance().getId());
+            loadedModule = module;
+        } catch (Exception e) {
+            Messages.showErrorDialog(ProjectBundle.message("module.add.error.message", e.getMessage()),
+                    ProjectBundle.message("module.add.error.title"));
+            return Collections.emptySet();
+        }
+        ModifiableRootModel rootModel = ModuleRootManager.getInstance(module).getModifiableModel();
 
         ROSSettings settings = ROSSettings.getInstance(project);
-        Map<String, OrderRootType> paths = new HashMap<>();
-        settings.getAdditionalSources().forEach(path -> paths.put(path, OrderRootType.CLASSES));
+        Set<String> paths = new HashSet<>(settings.getAdditionalSources());
         if (!settings.getWorkspacePath().isEmpty()) {
-            paths.put(settings.getWorkspacePath(), OrderRootType.SOURCES);
+            paths.add(settings.getWorkspacePath());
         }
-        for (Map.Entry<String, OrderRootType> entry : paths.entrySet()) {
+        for (String path : paths) {
             VirtualFile root = VirtualFileManager.getInstance()
-                    .findFileByUrl(VirtualFileManager.constructUrl(LocalFileSystem.PROTOCOL, entry.getKey()));
+                    .findFileByUrl(VirtualFileManager.constructUrl(LocalFileSystem.PROTOCOL, path));
             if (root != null) {
-                model.addRoot(root, entry.getValue());
+                rootModel.addContentEntry(root);
             }
         }
-        model.commit();
-        return lib;
+        rootModel.commit();
+        return Collections.singleton(module);
     }
 
     @Override
-    public boolean updateLibrary(Project project, @NotNull Library lib) {
-        MapDifference<String, OrderRootType> changes = checkUrlChanges(project, lib);
+    public boolean updateArtifacts(Project project) {
+        Module module = getModule(project);
+        SetDifference<String> changes = checkUrlChanges(project, module);
 
         if (changes.areEqual()) {
             return false;
         } else {
-            Library.ModifiableModel model = lib.getModifiableModel();
-            for (Map.Entry<String, OrderRootType> entry : changes.entriesOnlyOnLeft().entrySet()) {
-                VirtualFile root = VirtualFileManager.getInstance().findFileByUrl(entry.getKey());
+            ModifiableRootModel model = ModuleRootManager.getInstance(module).getModifiableModel();
+            for (String addUrl : changes.entriesOnlyOnLeft()) {
+                VirtualFile root = VirtualFileManager.getInstance().findFileByUrl(addUrl);
                 if (root != null) {
-                    model.addRoot(root, entry.getValue());
+                    model.addContentEntry(root);
                 }
             }
-            for (Map.Entry<String, OrderRootType> entry : changes.entriesOnlyOnRight().entrySet()) {
-                model.removeRoot(entry.getKey(), entry.getValue());
+            ContentEntry[] entries =  model.getContentEntries();
+            for (String removeUrl : changes.entriesOnlyOnRight()) {
+                for (ContentEntry entry : entries) {
+                    if (entry.getUrl().equals(removeUrl)) {
+                        model.removeContentEntry(entry);
+                        break;
+                    }
+                }
             }
             model.commit();
             return true;
         }
     }
 
+    @Override
+    public void setDependency(Module module) {
+        ModifiableRootModel model = ModuleRootManager.getInstance(module).getModifiableModel();
+        Module workspaceModule = getModule(module.getProject());
+        if (workspaceModule == null) {
+            return;
+        }
+        ModuleOrderEntry entry = model.findModuleOrderEntry(workspaceModule);
+        if (entry == null) {
+            ModuleRootModificationUtil.addDependency(module, workspaceModule);
+        }
+        model.dispose();
+    }
+
     @NotNull
-    private MapDifference<String, OrderRootType> checkUrlChanges(Project project, Library libraryToCheck) {
+    private SetDifference<String> checkUrlChanges(Project project, Module moduleToCheck) {
         ROSSettings settings = ROSSettings.getInstance(project);
-        Map<String, OrderRootType> newUrls = new HashMap<>(), oldUrls = new HashMap<>();
+        Set<String> newUrls = new HashSet<>(), oldUrls = new HashSet<>();
 
         settings.getAdditionalSources().stream()
                 .map(path -> VirtualFileManager.constructUrl(LocalFileSystem.PROTOCOL, path))
-                .forEach(url -> newUrls.put(url, OrderRootType.CLASSES));
-        newUrls.put(VirtualFileManager.constructUrl(LocalFileSystem.PROTOCOL,
-                settings.getWorkspacePath()), OrderRootType.SOURCES);
+                .forEach(newUrls::add);
+        newUrls.add(VirtualFileManager.constructUrl(LocalFileSystem.PROTOCOL,
+                settings.getWorkspacePath()));
 
-        for (OrderRootType type : OrderRootType.getAllPersistentTypes()) {
-            for (String url : libraryToCheck.getUrls(type)) {
-                oldUrls.put(url, type);
-            }
-        }
+        Collections.addAll(oldUrls, ModuleRootManager.getInstance(moduleToCheck).getContentRootUrls());
 
-        return Maps.difference(newUrls, oldUrls);
+        return SetDifference.difference(newUrls, oldUrls);
     }
 
     boolean notInFinder(@NotNull VirtualFile vFile, @NotNull Project project) {
