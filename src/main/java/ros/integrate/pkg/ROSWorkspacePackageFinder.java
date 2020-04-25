@@ -73,18 +73,17 @@ public class ROSWorkspacePackageFinder extends ROSPackageFinderBase {
     public Set<Module> loadArtifacts(Project project) {
         ModifiableModuleModel moduleModel = ModuleManager.getInstance(project).getModifiableModel();
         Module module = moduleModel.findModuleByName(MODULE_NAME);
-        if (module != null) {
-            moduleModel.disposeModule(module);
-        }
-        try {
-            module = ModuleManager.getInstance(project).newModule(project.getBasePath() + File.separator +
-                            Project.DIRECTORY_STORE_FOLDER + File.separator + MODULE_NAME +
-                            ModuleFileType.DOT_DEFAULT_EXTENSION, WorkspaceModuleType.getInstance().getId());
-            loadedModule = module;
-        } catch (Exception e) {
-            Messages.showErrorDialog(ProjectBundle.message("module.add.error.message", e.getMessage()),
-                    ProjectBundle.message("module.add.error.title"));
-            return Collections.emptySet();
+        if (module == null) {
+            try {
+                module = ModuleManager.getInstance(project).newModule(project.getBasePath() + File.separator +
+                        Project.DIRECTORY_STORE_FOLDER + File.separator + MODULE_NAME +
+                        ModuleFileType.DOT_DEFAULT_EXTENSION, WorkspaceModuleType.getInstance().getId());
+                loadedModule = module;
+            } catch (Exception e) {
+                Messages.showErrorDialog(ProjectBundle.message("module.add.error.message", e.getMessage()),
+                        ProjectBundle.message("module.add.error.title"));
+                return Collections.emptySet();
+            }
         }
         ModifiableRootModel rootModel = ModuleRootManager.getInstance(module).getModifiableModel();
 
@@ -93,6 +92,7 @@ public class ROSWorkspacePackageFinder extends ROSPackageFinderBase {
         if (!settings.getWorkspacePath().isEmpty()) {
             paths.add(settings.getWorkspacePath());
         }
+        paths.removeAll(Arrays.asList(rootModel.getContentRootUrls()));
         for (String path : paths) {
             VirtualFile root = VirtualFileManager.getInstance()
                     .findFileByUrl(VirtualFileManager.constructUrl(LocalFileSystem.PROTOCOL, path));

@@ -23,7 +23,7 @@ import ros.integrate.pkg.psi.ROSPackage;
 import ros.integrate.pkg.psi.impl.ROSCompiledPackage;
 
 import java.util.*;
-import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
 
 import static ros.integrate.pkg.psi.impl.ROSCompiledPackage.RootType;
 
@@ -77,10 +77,9 @@ public class ROSCompiledPackageFinder extends ROSPackageFinderBase {
     public Set<Module> loadArtifacts(Project project) {
         LibraryTable table = LibraryTablesRegistrar.getInstance().getLibraryTable(project);
         Library lib = table.getLibraryByName("ROS");
-        if (lib != null) {
-            table.removeLibrary(lib);
+        if (lib == null) {
+            lib = table.createLibrary("ROS");
         }
-        lib = table.createLibrary("ROS");
         loadedLibrary = lib;
         String rosPath = ROSSettings.getInstance(project).getROSPath();
         addPath(lib, rosPath, (model, url) -> true);
@@ -120,10 +119,10 @@ public class ROSCompiledPackageFinder extends ROSPackageFinderBase {
     }
 
     private boolean addPath(@NotNull Library lib, @NotNull String path,
-                            @NotNull BiFunction<Library.ModifiableModel, String, Boolean> predicate) {
+                            @NotNull BiPredicate<Library.ModifiableModel, String> predicate) {
         Library.ModifiableModel model = lib.getModifiableModel();
         String url = VirtualFileManager.constructUrl(LocalFileSystem.PROTOCOL, path);
-        if (!predicate.apply(model, url)) {
+        if (!predicate.test(model, url)) {
             return false;
         }
         if (!path.isEmpty()) {
