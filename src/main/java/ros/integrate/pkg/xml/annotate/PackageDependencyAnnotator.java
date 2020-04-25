@@ -68,7 +68,7 @@ class PackageDependencyAnnotator {
 
     void annEmptyDependency() {
         for (int i = 0; i < dependencies.size(); i++) {
-            if (dependencies.get(i).getPackage().getName().length() == 0) {
+            if (depTrs.get(i).value() == depTrs.get(i)) {
                 Annotation ann = holder.createErrorAnnotation(depTrs.get(i).name(),
                         "Empty dependency tag.");
                 ann.registerFix(new RemoveDependencyQuickFix(pkgXml, i));
@@ -107,7 +107,8 @@ class PackageDependencyAnnotator {
 
     void annDependencyNotFound() {
         for (int i = 0; i < dependencies.size(); i++) {
-            if (dependencies.get(i).getPackage() == ROSPackage.ORPHAN) {
+            if (dependencies.get(i).getPackage() == ROSPackage.ORPHAN
+                    && depTrs.get(i).value() != depTrs.get(i)) {
                 Annotation ann = holder.createErrorAnnotation(depTrs.get(i).value(),
                         "Unresolved dependency");
                 ann.setHighlightType(ProblemHighlightType.ERROR);

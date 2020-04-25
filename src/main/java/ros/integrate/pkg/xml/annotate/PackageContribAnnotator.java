@@ -72,7 +72,7 @@ class PackageContribAnnotator {
                 Annotation ann = holder.createErrorAnnotation(authorTr.get(i).name(), "Author does not have a name");
                 ann.registerFix(new FixContributorQuickFix(pkgXml, i, ContribType.AUTHOR));
                 ann.registerFix(new RemoveContributorFix(pkgXml, i, ContribType.AUTHOR));
-            } else if (!author.getEmail().matches(Contributor.EMAIL_REGEX)) {
+            } else if (!author.getEmail().isEmpty() && !author.getEmail().matches(Contributor.EMAIL_REGEX)) {
                 Annotation ann = holder.createErrorAnnotation(authorTr.get(i).attrValue("email"),
                         "Author email is invalid");
                 ann.registerFix(new FixContributorQuickFix(pkgXml, i, ContribType.AUTHOR));
