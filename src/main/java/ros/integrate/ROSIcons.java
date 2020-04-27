@@ -14,4 +14,5 @@ public class ROSIcons {
     public static final Icon SRC_PKG = IconLoader.getIcon("/icons/srcPackage.svg");
     public static final Icon LIB_PKG = IconLoader.getIcon("/icons/libPackage.svg");
     public static final Icon DEP_KEY = IconLoader.getIcon("/icons/rosdepKey.svg");
+    public static final Icon CONDITION = IconLoader.getIcon("/icons/condition.svg");
 }

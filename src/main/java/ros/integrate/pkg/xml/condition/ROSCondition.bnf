@@ -1,0 +1,27 @@
+{
+  parserClass="ros.integrate.pkg.xml.condition.parser.ROSConditionParser"
+
+  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+  psiClassPrefix="ROSCondition"
+  psiImplClassSuffix="Impl"
+  psiPackage="ros.integrate.pkg.xml.condition.psi"
+  psiImplPackage="ros.integrate.pkg.xml.condition.psi.impl"
+ 
+  elementTypeHolderClass="ros.integrate.pkg.xml.condition.psi.ROSConditionTypes"
+  elementTypeClass="ros.integrate.pkg.xml.condition.psi.ROSConditionElementType"
+  tokenTypeClass="ros.integrate.pkg.xml.condition.psi.ROSConditionTokenType"
+ 
+  psiImplUtilClass="ros.integrate.pkg.xml.condition.psi.impl.ROSConditionPsiImplUtil"
+}
+
+rosCondition ::= entry_series_
+
+logic ::= COMPARISON | LOGIC_OPERATOR
+
+item ::= VARIABLE | LITERAL
+
+private entry_series_ ::= entry_ (logic? entry_)*
+
+private entry_ ::= order | item
+
+order ::= LPARENTHESIS entry_series_ RPARENTHESIS

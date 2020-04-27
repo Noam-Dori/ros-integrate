@@ -1,7 +1,14 @@
 <!-- included by /META-INF/plugin.xml -->
 <idea-plugin>
     <extensions defaultExtensionNs="com.intellij">
+        <!-- condition file type definition -->
+        <fileType name="ROSCondition" implementationClass="ros.integrate.pkg.xml.condition.ROSConditionFileType"
+                  fieldName="INSTANCE" language="ROSCondition" extensions="condition"/>
+        
         <!-- language features -->
+        <lang.parserDefinition language="ROSCondition"
+                               implementationClass="ros.integrate.pkg.xml.condition.lang.ROSConditionParserDefinition"/>
+        <lang.syntaxHighlighter language="ROSCondition" implementationClass="ros.integrate.pkg.xml.condition.highlight.ROSConditionSyntaxHighlighter"/>
         <psi.referenceContributor language="XML" implementation="ros.integrate.pkg.xml.PackageXmlReferenceContributor"/>
         <completion.contributor language="XML" implementationClass="ros.integrate.pkg.xml.completion.PackageXmlCompletionContributor"
                                 order="before xmlNonFirst"/>

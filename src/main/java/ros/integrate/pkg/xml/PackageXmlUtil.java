@@ -41,7 +41,7 @@ public class PackageXmlUtil {
         String rootTag = Optional.of(result)
                 .map(XmlFile::getRootTag)
                 .map(XmlTag::getName)
-                .get();
+                .orElse("");
 
         if (rootTag.isEmpty() || "package".startsWith(rootTag)) {
             return result;
