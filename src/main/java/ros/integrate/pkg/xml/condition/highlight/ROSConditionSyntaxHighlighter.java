@@ -2,6 +2,7 @@ package ros.integrate.pkg.xml.condition.highlight;
 
 import com.intellij.lexer.Lexer;
 import com.intellij.openapi.editor.DefaultLanguageHighlighterColors;
+import com.intellij.openapi.editor.colors.CodeInsightColors;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.fileTypes.SyntaxHighlighterBase;
 import com.intellij.psi.tree.IElementType;
@@ -22,6 +23,8 @@ public class ROSConditionSyntaxHighlighter extends SyntaxHighlighterBase {
             createTextAttributesKey("VARIABLE", DefaultLanguageHighlighterColors.INSTANCE_FIELD);
     public static final TextAttributesKey PARENTHESES =
             createTextAttributesKey("PARENTHESES", DefaultLanguageHighlighterColors.PARENTHESES);
+    public static final TextAttributesKey IGNORED =
+            createTextAttributesKey("IGNORED", CodeInsightColors.NOT_USED_ELEMENT_ATTRIBUTES);
 
     private static final TextAttributesKey[] LOGIC_OPERATOR_KEYS = {LOGIC_OPERATOR};
     private static final TextAttributesKey[] COMPARISON_KEYS = {COMPARISON};
