@@ -13,6 +13,7 @@
         <psi.referenceContributor language="XML" implementation="ros.integrate.pkg.xml.PackageXmlReferenceContributor"/>
         <completion.contributor language="XML" implementationClass="ros.integrate.pkg.xml.completion.PackageXmlCompletionContributor"
                                 order="before xmlNonFirst"/>
+        <completion.contributor language="ROSCondition" implementationClass="ros.integrate.pkg.xml.condition.ROSConditionCompletionContributor"/>
         <colorSettingsPage implementation="ros.integrate.pkg.xml.condition.highlight.ROSConditionColorSettings"/>
         <webBrowserUrlProvider implementation="ros.integrate.pkg.xml.ROSLicenseLinkProvider"/>
         <languageInjector implementation="ros.integrate.pkg.xml.ROSPackageXmlInjector"/>
