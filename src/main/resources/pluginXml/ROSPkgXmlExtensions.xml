@@ -28,6 +28,7 @@
         </intentionAction>
 
         <!-- language inspections and annotations -->
+        <annotator language="ROSCondition" implementationClass="ros.integrate.pkg.xml.condition.annotate.ROSConditionAnnotator"/>
         <annotator language="XML" implementationClass="ros.integrate.pkg.xml.annotate.PackageXmlAnnotator"/>
         <localInspection language="XML" implementationClass="ros.integrate.pkg.xml.inspection.OutdatedFormatInspection"
                          level="WEAK WARNING" enabledByDefault="true" shortName="outdated-format"

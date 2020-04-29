@@ -8,10 +8,9 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static ros.integrate.pkg.xml.condition.psi.ROSConditionTypes.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import ros.integrate.pkg.xml.condition.psi.*;
 
-public class ROSConditionItemImpl extends ASTWrapperPsiElement implements ROSConditionItem {
+public class ROSConditionItemImpl extends ROSConditionExprImpl implements ROSConditionItem {
 
   public ROSConditionItemImpl(@NotNull ASTNode node) {
     super(node);

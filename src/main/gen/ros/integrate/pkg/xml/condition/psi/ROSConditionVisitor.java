@@ -8,14 +8,22 @@ import com.intellij.psi.PsiElement;
 public class ROSConditionVisitor extends PsiElementVisitor {
 
   public void visitItem(@NotNull ROSConditionItem o) {
-    visitPsiElement(o);
+    visitExpr(o);
   }
 
   public void visitLogic(@NotNull ROSConditionLogic o) {
-    visitPsiElement(o);
+    visitToken(o);
   }
 
   public void visitOrder(@NotNull ROSConditionOrder o) {
+    visitExpr(o);
+  }
+
+  public void visitExpr(@NotNull ROSConditionExpr o) {
+    visitPsiElement(o);
+  }
+
+  public void visitToken(@NotNull ROSConditionToken o) {
     visitPsiElement(o);
   }
 

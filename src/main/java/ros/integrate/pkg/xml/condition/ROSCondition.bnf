@@ -11,17 +11,25 @@
   elementTypeClass="ros.integrate.pkg.xml.condition.psi.ROSConditionElementType"
   tokenTypeClass="ros.integrate.pkg.xml.condition.psi.ROSConditionTokenType"
  
-  psiImplUtilClass="ros.integrate.pkg.xml.condition.psi.impl.ROSConditionPsiImplUtil"
+  psiImplUtilClass="ros.integrate.pkg.xml.condition.psi.impl.ROSConditionExprImpl"
 }
 
-rosCondition ::= entry_series_
+rosCondition ::= entry_series_ // these will always have their own thing we define on our own
 
-logic ::= COMPARISON | LOGIC_OPERATOR
+logic ::= COMPARISON | LOGIC_OPERATOR {
+    implements="ros.integrate.pkg.xml.condition.psi.ROSConditionToken"
+}
 
-item ::= VARIABLE | LITERAL
+item ::= VARIABLE | LITERAL {
+    implements="ros.integrate.pkg.xml.condition.psi.ROSConditionExpr"
+    mixin="ros.integrate.pkg.xml.condition.psi.impl.ROSConditionExprImpl"
+}
 
 private entry_series_ ::= entry_ (logic? entry_)*
 
 private entry_ ::= order | item
 
-order ::= LPARENTHESIS entry_series_ RPARENTHESIS
+order ::= LPARENTHESIS entry_series_ RPARENTHESIS {
+    implements="ros.integrate.pkg.xml.condition.psi.ROSConditionExpr"
+    mixin="ros.integrate.pkg.xml.condition.psi.impl.ROSConditionExprImpl"
+}
