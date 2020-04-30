@@ -3,8 +3,11 @@ package ros.integrate.pkg.xml.completion;
 import com.intellij.codeInsight.completion.*;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
+import com.intellij.lang.ASTNode;
+import com.intellij.lang.injection.InjectedLanguageManager;
 import com.intellij.lang.xml.XMLLanguage;
 import com.intellij.patterns.PlatformPatterns;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.xml.XmlAttribute;
 import com.intellij.psi.xml.XmlElementType;
@@ -18,6 +21,7 @@ import ros.integrate.pkg.ROSDepKeyCache;
 import ros.integrate.pkg.ROSPackageManager;
 import ros.integrate.pkg.psi.ROSPackage;
 import ros.integrate.pkg.xml.*;
+import ros.integrate.pkg.xml.condition.psi.ROSConditionTypes;
 import ros.integrate.settings.ROSSettings;
 
 import java.io.IOException;
@@ -63,7 +67,7 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
                             return;
                         }
                         if (type.equals(XmlElementType.XML_ATTRIBUTE_VALUE_TOKEN)) {
-                            addCompletionsForAttrValue(tag, resultSet, PackageXmlUtil.getAttributeName(element));
+                            addCompletionsForAttrValue(tag, resultSet, PackageXmlUtil.getAttributeName(element), parameters);
                         } else if (type.equals(XmlElementType.XML_NAME) && element.getParent() instanceof XmlAttribute) {
                             setCompletionsForAttrName(tag, xmlFile, resultSet, parameters);
                         } else if (type.equals(XmlElementType.XML_NAME)) {
@@ -221,13 +225,16 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
                 resultSet.addElement(LookupElementBuilder.create("version_lt").withInsertHandler(completeValueHandler));
                 resultSet.addElement(LookupElementBuilder.create("version_lte").withInsertHandler(completeValueHandler));
             }
+            if (tag.getAttribute("condition") == null) {
+                resultSet.addElement(LookupElementBuilder.create("condition").withInsertHandler(anyValueHandler));
+            }
             resultSet.addElement(LookupElementBuilder.create("").withTailText("move to name", true)
                     .withInsertHandler(new SkipAttributeHandler(true)));
         }
     }
 
     private void addCompletionsForAttrValue(@NotNull XmlTag tag, @NotNull CompletionResultSet resultSet,
-                                            @Nullable String attributeName) {
+                                            @Nullable String attributeName, CompletionParameters parameters) {
         InsertHandler<LookupElement> tagDataHandler = new TagDataHandler(tag.getName(), true);
         if (tag.getName().equals("url")) {
             for (ROSPackageXml.URLType type : ROSPackageXml.URLType.values()) {
@@ -252,6 +259,29 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
                     resultSet.addElement(LookupElementBuilder.create(pkgVersion)
                             .withInsertHandler(new AttributeNameHandler()));
                 }
+            }
+            if (attributeName != null && attributeName.equals("condition")) {
+                InjectedLanguageManager manager = InjectedLanguageManager.getInstance(tag.getProject());
+                Optional.ofNullable(parameters.getOriginalPosition())
+                        .map(PsiElement::getParent).map(manager::getInjectedPsiFiles)
+                        .filter(list -> !list.isEmpty()).map(list -> list.get(0))
+                        .map(pair -> pair.first).ifPresent(injected -> {
+                    int offset = parameters.getEditor().getCaretModel().getOffset() - injected.getTextOffset() - 1;
+                    PsiElement injectedPos = injected.findElementAt(offset);
+                    if (!(injectedPos instanceof ASTNode)) {
+                        return;
+                    }
+                    CompletionResultSet injectedResult = resultSet.withPrefixMatcher(injectedPos.getText());
+                    if (((ASTNode) injectedPos).getElementType().equals(ROSConditionTypes.VARIABLE)) {
+                        for (String env : System.getenv().keySet()) {
+                            injectedResult.addElement(LookupElementBuilder.create("$" + env).withPresentableText(env));
+                        }
+                    }
+                    if (((ASTNode) injectedPos).getElementType().equals(ROSConditionTypes.LITERAL)) {
+                        injectedResult.addElement(LookupElementBuilder.create("or").bold());
+                        injectedResult.addElement(LookupElementBuilder.create("and").bold());
+                    }
+                });
             }
         }
     }
