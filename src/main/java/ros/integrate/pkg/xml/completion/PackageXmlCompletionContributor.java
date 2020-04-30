@@ -93,17 +93,20 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
         if (!element.getParent().getFirstChild().equals(element)) {
             return; // there is a bug where we cannot process XmlText so we only autocomplete on first non-space item
         }
-        if (tag.getName().equals("license")) { // WebReferences do not get autocompletion
+        if (tag.getName().equals("license")) { // WebReferences do not get completion
             List<String> xmlLicenses = xmlFile.getLicences().stream()
                     .map(ROSPackageXml.License::getValue).collect(Collectors.toList());
             ROSLicenses.AVAILABLE_LICENSES.keySet().stream().filter(license -> !xmlLicenses.contains(license))
                     .map(LookupElementBuilder::create).forEach(resultSet::addElement);
         } else if (PackageXmlUtil.isDependencyTag(tag)) {
+            int format = xmlFile.getFormat();
             Collection<ROSPackage> packages = new HashSet<>();
             packages.addAll(tag.getProject().getService(ROSPackageManager.class).getAllPackages());
             packages.addAll(tag.getProject().getService(ROSDepKeyCache.class).getAllKeys());
             Arrays.stream(PackageXmlUtil.getDependencyType(tag).getCoveredDependencies())
-                    .map(xmlFile::getDependencies).map(dep -> dep.stream().map(ROSPackageXml.Dependency::getPackage)
+                    .map(xmlFile::getDependencies).map(deps -> deps.stream()
+                    .filter(dep -> !PackageXmlUtil.conditionEvaluatesToFalse(dep, format))
+                    .map(ROSPackageXml.Dependency::getPackage)
                     .collect(Collectors.toList()))
                     .forEach(packages::removeAll);
             packages.remove(xmlFile.getPackage());
