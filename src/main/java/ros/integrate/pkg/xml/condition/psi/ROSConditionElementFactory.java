@@ -2,6 +2,7 @@ package ros.integrate.pkg.xml.condition.psi;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFileFactory;
+import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.xml.condition.ROSConditionFileType;
 
 public class ROSConditionElementFactory {
@@ -14,5 +15,11 @@ public class ROSConditionElementFactory {
         return ((ROSCondition) PsiFileFactory.getInstance(project)
                 .createFileFromText("dummy.condition", ROSConditionFileType.INSTANCE, "logic " + text + " logic"))
                 .getTokens().get(1);
+    }
+
+    @NotNull
+    public static ROSCondition createCondition(Project project, String text) {
+        return ((ROSCondition) PsiFileFactory.getInstance(project)
+                .createFileFromText("dummy.condition", ROSConditionFileType.INSTANCE, text));
     }
 }

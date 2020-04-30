@@ -143,7 +143,7 @@ public class ROSMsgFileReference extends PsiReferenceBase<PsiElement> implements
         ROSPackage thisPackage = ((ROSPktFile) context.getFile()).getPackage();
         if (!msg.getPackage().getName().equals(thisPackage.getName()) && !isFirstHeader(msg)) {
             Optional.ofNullable(thisPackage.getPackageXml()).ifPresent(pkgXml ->
-                    pkgXml.addDependency(DependencyType.BUILD, msg.getPackage(), VersionRange.any(), true));
+                    pkgXml.addDependency(DependencyType.BUILD, msg.getPackage(), VersionRange.any(), null, true));
             context.getDocument().insertString(model.getOffset(), msg.getPackage().getName() + "/");
         }
         model.getCurrentCaret().moveCaretRelatively(msg.getQualifiedName().length(), 0, false, false);

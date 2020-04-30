@@ -11,7 +11,7 @@
   elementTypeClass="ros.integrate.pkg.xml.condition.psi.ROSConditionElementType"
   tokenTypeClass="ros.integrate.pkg.xml.condition.psi.ROSConditionTokenType"
  
-  psiImplUtilClass="ros.integrate.pkg.xml.condition.psi.impl.ROSConditionExprImpl"
+  psiImplUtilClass="ros.integrate.pkg.xml.condition.psi.impl.ROSConditionImplUtil"
 }
 
 rosCondition ::= entry_series_ // these will always have their own thing we define on our own
@@ -23,6 +23,7 @@ logic ::= COMPARISON | LOGIC_OPERATOR {
 item ::= VARIABLE | LITERAL {
     implements="ros.integrate.pkg.xml.condition.psi.ROSConditionExpr"
     mixin="ros.integrate.pkg.xml.condition.psi.impl.ROSConditionExprImpl"
+    methods=[checkValid evaluate]
 }
 
 private entry_series_ ::= entry_ (logic? entry_)*

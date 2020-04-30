@@ -51,6 +51,7 @@ public class AmputateDependencyQuickFix extends BaseIntentionAction {
         } else if (Optional.ofNullable(range.getMax()).orElse("").matches(VersionRange.VERSION_REGEX)) {
             newBuilder.max(range.getMax(), range.isStrictMax());
         }
-        pkgXml.setDependency(id, new ROSPackageXml.Dependency(dep.getType(), dep.getPackage(), newBuilder.build()));
+        pkgXml.setDependency(id, new ROSPackageXml.Dependency(dep.getType(), dep.getPackage(),
+                newBuilder.build(), dep.getCondition()));
     }
 }

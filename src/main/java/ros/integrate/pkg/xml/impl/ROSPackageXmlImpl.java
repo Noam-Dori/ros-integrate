@@ -14,6 +14,7 @@ import ros.integrate.pkg.ROSDepKeyCache;
 import ros.integrate.pkg.ROSPackageManager;
 import ros.integrate.pkg.psi.ROSPackage;
 import ros.integrate.pkg.xml.*;
+import ros.integrate.pkg.xml.condition.psi.ROSCondition;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -383,7 +384,7 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
     @Override
     public void addDependency(@NotNull DependencyType type, @NotNull ROSPackage pkg,
                               @NotNull VersionRange versionRange,
-                              boolean checkRepeating) {
+                              @Nullable ROSCondition condition, boolean checkRepeating) {
         if (file.getRootTag() == null) {
             addRootTag();
         }
@@ -400,10 +401,11 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
         XmlTag newTag = file.getRootTag()
                 .createChildTag(type.getTagName(), null, pkg.getName(), false);
         addVersionRangeToDep(newTag, versionRange);
+        addCondition(newTag, condition);
         addLevel2Tag(newTag);
     }
 
-    void addVersionRangeToDep(XmlTag depTag, @NotNull VersionRange range) {
+    void addVersionRangeToDep(@NotNull XmlTag depTag, @NotNull VersionRange range) {
         if (!range.isNotValid()) {
             if (range.getMax() != null) {
                 if (range.getMax().equals(range.getMin())) {
@@ -415,6 +417,14 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
             if (range.getMin() != null && !range.getMin().equals(range.getMax())) {
                 depTag.setAttribute("version_gt" + (range.isStrictMin() ? "" : "e"), range.getMin());
             }
+        }
+    }
+
+    void addCondition(@NotNull XmlTag newTag, @Nullable ROSCondition condition) {
+        // could be more clever in terms of what ALWAYS true things are detected,
+        // but it's important to preserve the user's data unless explicitly given permission to change it.
+        if (condition != null && condition.isValid() && !condition.getText().equals("true")) {
+            newTag.setAttribute("condition", condition.getText());
         }
     }
 
@@ -566,7 +576,8 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
                     .map(tag -> new Pair<>(dep, tag)));
         }
         return result.map(pair -> new Dependency(pair.first, findPackage(pair.second.getValue().getText()),
-                PackageXmlUtil.getVersionRange(pair.second))).collect(Collectors.toList());
+                PackageXmlUtil.getVersionRange(pair.second), PackageXmlUtil.getCondition(pair.second)))
+                .collect(Collectors.toList());
     }
 
     @NotNull

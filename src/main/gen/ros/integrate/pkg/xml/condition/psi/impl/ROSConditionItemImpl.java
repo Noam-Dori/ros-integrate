@@ -25,4 +25,15 @@ public class ROSConditionItemImpl extends ROSConditionExprImpl implements ROSCon
     else super.accept(visitor);
   }
 
+  @Override
+  public boolean checkValid() {
+    return ROSConditionImplUtil.checkValid(this);
+  }
+
+  @NotNull
+  @Override
+  public String evaluate() {
+    return ROSConditionImplUtil.evaluate(this);
+  }
+
 }

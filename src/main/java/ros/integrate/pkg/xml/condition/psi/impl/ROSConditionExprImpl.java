@@ -10,6 +10,7 @@ import ros.integrate.pkg.xml.condition.psi.ROSConditionToken;
 import java.util.List;
 
 public abstract class ROSConditionExprImpl extends ASTWrapperPsiElement implements ROSConditionExpr {
+
     public ROSConditionExprImpl(@NotNull ASTNode node) {
         super(node);
     }

@@ -25,11 +25,16 @@ public class DeprecatedPackageInspection extends LocalInspectionTool {
         if (pkgXml == null) {
             return null;
         }
+        int format = pkgXml.getFormat();
         List<ROSPackageXml.Dependency> dependencies = pkgXml.getDependencies(null);
         List<TagTextRange> depTrs = pkgXml.getDependencyTextRanges();
         List<ProblemDescriptor> ret = new ArrayList<>();
         for (int i = dependencies.size() - 1; i >= 0; i--) {
-            ROSPackageXml target = dependencies.get(i).getPackage().getPackageXml();
+            ROSPackageXml.Dependency dep = dependencies.get(i);
+            if (PackageXmlUtil.conditionEvaluatesToFalse(dep, format)) {
+                continue;
+            }
+            ROSPackageXml target = dep.getPackage().getPackageXml();
             int id = i;
             Optional.ofNullable(target).map(ROSPackageXml::getExport).map(ExportTag::deprecatedMessage)
                     .ifPresent(msg -> ret.add(manager.createProblemDescriptor(file, depTrs.get(id).value(),

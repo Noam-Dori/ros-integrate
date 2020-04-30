@@ -27,18 +27,22 @@ public class DifferentDependencyVersionInspection extends LocalInspectionTool {
         if (pkgXml == null) {
             return null;
         }
+        int format = pkgXml.getFormat();
         List<ROSPackageXml.Dependency> dependencies = pkgXml.getDependencies(null);
         List<TagTextRange> depTrs = pkgXml.getDependencyTextRanges();
         List<ProblemDescriptor> ret = new ArrayList<>();
         Set<Integer> trsToAnn = new HashSet<>();
         for (int i = dependencies.size() - 1; i >= 0; i--) {
             ROSPackageXml.Dependency di = dependencies.get(i), dj;
-            if (di.getPackage() == ROSPackage.ORPHAN) {
+            if (di.getPackage() == ROSPackage.ORPHAN || PackageXmlUtil.conditionEvaluatesToFalse(di, format)) {
                 continue;
             }
             boolean found = false;
             for (int j = i - 1; j >= 0; j--) {
                 dj = dependencies.get(j);
+                if (PackageXmlUtil.conditionEvaluatesToFalse(dj, format)) {
+                    continue;
+                }
                 if (dj.getPackage().equals(di.getPackage()) && !dj.getVersionRange().equals(di.getVersionRange())) {
                     trsToAnn.add(j);
                     found = true;

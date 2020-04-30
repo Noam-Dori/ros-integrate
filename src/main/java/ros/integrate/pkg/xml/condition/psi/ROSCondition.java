@@ -5,6 +5,7 @@ import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.psi.FileViewProvider;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkg.xml.condition.ROSConditionFileType;
 import ros.integrate.pkg.xml.condition.lang.ROSConditionLanguage;
 
@@ -23,11 +24,15 @@ public class ROSCondition extends PsiFileBase implements ROSConditionExpr {
 
     @Override
     public String toString() {
-        return "ROS Condition";
+        return getText();
     }
 
     @NotNull
     public List<ROSConditionToken> getTokens() {
         return PsiTreeUtil.getChildrenOfTypeAsList(this, ROSConditionToken.class);
+    }
+
+    public boolean equals(@Nullable ROSCondition other) {
+        return other != null && getText().equals(other.getText());
     }
 }

@@ -16,6 +16,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkg.ROSPackageManager;
 import ros.integrate.pkg.psi.ROSPackage;
+import ros.integrate.pkg.xml.condition.psi.ROSCondition;
+import ros.integrate.pkg.xml.condition.psi.ROSConditionElementFactory;
 import ros.integrate.settings.ROSSettings;
 
 import java.util.Arrays;
@@ -135,5 +137,15 @@ public class PackageXmlUtil {
             }
         }
         return null;
+    }
+
+    @NotNull
+    public static ROSCondition getCondition(@NotNull XmlTag tag) {
+        String attrValue = Optional.ofNullable(tag.getAttributeValue("condition")).orElse("true");
+        return ROSConditionElementFactory.createCondition(tag.getProject(), attrValue);
+    }
+
+    public static boolean conditionEvaluatesToFalse(@NotNull ROSPackageXml.Dependency dependency, int format) {
+        return format >= 3 && dependency.getCondition().checkValid() && dependency.getCondition().evaluate().isEmpty();
     }
 }

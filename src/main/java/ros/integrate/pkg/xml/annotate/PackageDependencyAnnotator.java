@@ -4,6 +4,7 @@ import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.openapi.util.TextRange;
+import ros.integrate.pkg.xml.PackageXmlUtil;
 import ros.integrate.pkg.xml.TagTextRange;
 import com.intellij.psi.xml.XmlTag;
 import org.jetbrains.annotations.Contract;
@@ -31,12 +32,15 @@ class PackageDependencyAnnotator {
     @NotNull
     private final List<TagTextRange> depTrs;
 
+    private final int format;
+
     @Contract(pure = true)
     PackageDependencyAnnotator(@NotNull ROSPackageXml pkgXml, @NotNull AnnotationHolder holder) {
         this.holder = holder;
         this.pkgXml = pkgXml;
         dependencies = pkgXml.getDependencies(null);
         depTrs = pkgXml.getDependencyTextRanges();
+        format = pkgXml.getFormat();
     }
 
     void annSelfDependency() {
@@ -88,7 +92,8 @@ class PackageDependencyAnnotator {
                 dj = dependencies.get(j);
                 Set<DependencyType> allCovered = new HashSet<>(Arrays.asList(dj.getType().getCoveredDependencies()));
                 allCovered.retainAll(Arrays.asList(di.getType().getCoveredDependencies()));
-                if (dj.getPackage().equals(di.getPackage()) && !allCovered.isEmpty()) {
+                if (dj.getPackage().equals(di.getPackage()) && !allCovered.isEmpty() &&
+                        (format < 3 || di.getCondition().equals(dj.getCondition()))) {
                     trsToAnn.add(j);
                     found = true;
                 }
@@ -107,7 +112,11 @@ class PackageDependencyAnnotator {
 
     void annDependencyNotFound() {
         for (int i = 0; i < dependencies.size(); i++) {
-            if (dependencies.get(i).getPackage() == ROSPackage.ORPHAN
+            Dependency dep = dependencies.get(i);
+            if (PackageXmlUtil.conditionEvaluatesToFalse(dep, format)) {
+                continue;
+            }
+            if (dep.getPackage() == ROSPackage.ORPHAN
                     && depTrs.get(i).value() != depTrs.get(i)) {
                 Annotation ann = holder.createErrorAnnotation(depTrs.get(i).value(),
                         "Unresolved dependency");

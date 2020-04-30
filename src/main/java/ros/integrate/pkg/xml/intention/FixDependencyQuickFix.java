@@ -92,7 +92,8 @@ public class FixDependencyQuickFix extends BaseIntentionAction implements LocalQ
                 newBuilder.min(depVersion, false);
             }
         }
-        pkgXml.setDependency(id, new ROSPackageXml.Dependency(dep.getType(), dep.getPackage(), newBuilder.build()));
+        pkgXml.setDependency(id, new ROSPackageXml.Dependency(dep.getType(), dep.getPackage(),
+                newBuilder.build(), dep.getCondition()));
     }
 
     @Nls(capitalization = Nls.Capitalization.Sentence)

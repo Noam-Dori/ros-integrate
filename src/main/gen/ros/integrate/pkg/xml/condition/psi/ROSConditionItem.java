@@ -7,4 +7,9 @@ import com.intellij.psi.PsiElement;
 
 public interface ROSConditionItem extends ROSConditionExpr {
 
+  boolean checkValid();
+
+  @NotNull
+  String evaluate();
+
 }

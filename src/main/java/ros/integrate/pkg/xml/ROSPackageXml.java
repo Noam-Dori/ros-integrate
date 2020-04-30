@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkg.psi.ROSPackage;
+import ros.integrate.pkg.xml.condition.psi.ROSCondition;
 import ros.integrate.pkg.xml.impl.ROSPackageXmlImpl;
 
 import java.util.List;
@@ -100,11 +101,15 @@ public interface ROSPackageXml {
         private final ROSPackage pkg;
         @NotNull
         private final VersionRange versionRange;
+        @SuppressWarnings("StatefulEp")
+        @NotNull
+        private final ROSCondition condition;
 
-        public Dependency(@NotNull DependencyType type, @NotNull ROSPackage pkg, @NotNull VersionRange range) {
+        public Dependency(@NotNull DependencyType type, @NotNull ROSPackage pkg, @NotNull VersionRange range, @NotNull ROSCondition condition) {
             this.type = type;
             this.pkg = pkg;
             this.versionRange = range;
+            this.condition = condition;
         }
 
         @NotNull
@@ -120,6 +125,11 @@ public interface ROSPackageXml {
         @NotNull
         public VersionRange getVersionRange() {
             return versionRange;
+        }
+
+        @NotNull
+        public ROSCondition getCondition() {
+            return condition;
         }
     }
 
@@ -365,12 +375,15 @@ public interface ROSPackageXml {
      * adds a new dependency for this package.
      * @param type the way this package depends on the new package.
      * @param pkg the package this one depends on.
-     * @param checkRepeating also check whether or not the dependency exists already before adding this new one
      * @param versionRange what versions of the package are required?
+     * @param condition specific conditions that need to be met for this dependency to be active.
+     *                  If set to <code>null</code> or <literal>"true"</literal> or the condition is not valid,
+     *                  the dependency will not have a condition (always active).
+     * @param checkRepeating also check whether or not the dependency exists already before adding this new one
      */
     void addDependency(@NotNull DependencyType type, @NotNull ROSPackage pkg,
                        @NotNull VersionRange versionRange,
-                       boolean checkRepeating);
+                       @Nullable ROSCondition condition, boolean checkRepeating);
 
     /**
      * changes a license

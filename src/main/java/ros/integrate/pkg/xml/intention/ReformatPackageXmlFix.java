@@ -16,6 +16,7 @@ import ros.integrate.pkg.xml.*;
 import ros.integrate.pkg.xml.ROSPackageXml.Contributor;
 import ros.integrate.pkg.xml.ROSPackageXml.Dependency;
 import ros.integrate.pkg.xml.ROSPackageXml.URLType;
+import ros.integrate.pkg.xml.condition.psi.ROSCondition;
 
 import java.util.*;
 
@@ -97,32 +98,32 @@ public class ReformatPackageXmlFix extends BaseIntentionAction implements LocalQ
         authors.forEach(author -> pkgXml.addAuthor(author.getName(), author.getEmail().isEmpty() ? null :
                 author.getEmail()));
         dependencies.forEach(dependency -> pkgXml.addDependency(dependency.getType(), dependency.getPackage(),
-                dependency.getVersionRange(), false));
+                dependency.getVersionRange(), dependency.getCondition(), false));
         // groups
         export.map(ExportTag::getRawTag).ifPresent(pkgXml::setExport);
     }
 
     private void updateDependencies(@NotNull List<Dependency> dependencies) {
         // get actual dependency types
-        HashMultimap<ROSPackage, DependencyType> depTypesForPackage = HashMultimap.create();
-        Map<ROSPackage, VersionRange> versionRangeForPackage = new HashMap<>();
+        HashMultimap<Pair<ROSPackage, ROSCondition>, DependencyType> depTypesForPackageCond = HashMultimap.create();
+        Map<Pair<ROSPackage, ROSCondition>, VersionRange> versionRangeForPackageCond = new HashMap<>();
         dependencies.forEach(dependency -> {
-            depTypesForPackage.putAll(dependency.getPackage(), Arrays.asList(dependency.getType()
-                    .getCoveredDependencies()));
-            versionRangeForPackage.put(dependency.getPackage(), dependency.getVersionRange()
-                    .intersect(versionRangeForPackage.get(dependency.getPackage())));
+            Pair<ROSPackage, ROSCondition> key = Pair.create(dependency.getPackage(), dependency.getCondition());
+            depTypesForPackageCond.putAll(key, Arrays.asList(dependency.getType().getCoveredDependencies()));
+            versionRangeForPackageCond.put(key,
+                    dependency.getVersionRange().intersect(versionRangeForPackageCond.get(key)));
         });
 
         // reform dependency types to actual dependencies.
         // Latter dependencies are grouped ones and should be prioritised.
         dependencies.clear();
         DependencyType[] values = DependencyType.values();
-        for (ROSPackage pkg : depTypesForPackage.keySet()) {
-            VersionRange versionRange = versionRangeForPackage.get(pkg);
-            if (pkg == ROSPackage.ORPHAN || versionRange == null) {
+        for (Pair<ROSPackage, ROSCondition> pkgCond : depTypesForPackageCond.keySet()) {
+            VersionRange versionRange = versionRangeForPackageCond.get(pkgCond);
+            if (pkgCond.first == ROSPackage.ORPHAN || versionRange == null) {
                 continue;
             }
-            Set<DependencyType> dependencyTypes = depTypesForPackage.get(pkg);
+            Set<DependencyType> dependencyTypes = depTypesForPackageCond.get(pkgCond);
             dependencyTypes.add(null); // used so that if all elements are removed, the key is not.
             for (int i = values.length - 1; i >= 0; i--) {
                 DependencyType dep = values[i];
@@ -131,7 +132,7 @@ public class ReformatPackageXmlFix extends BaseIntentionAction implements LocalQ
                 }
                 List<DependencyType> coveredDependencyTypes = Arrays.asList(dep.getCoveredDependencies());
                 if (dependencyTypes.containsAll(coveredDependencyTypes)) {
-                    dependencies.add(new Dependency(dep, pkg, versionRange));
+                    dependencies.add(new Dependency(dep, pkgCond.first, versionRange, pkgCond.second));
                     dependencyTypes.removeAll(coveredDependencyTypes);
                 }
             }

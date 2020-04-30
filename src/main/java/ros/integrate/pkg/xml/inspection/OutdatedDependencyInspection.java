@@ -24,12 +24,16 @@ public class OutdatedDependencyInspection extends LocalInspectionTool {
         if (pkgXml == null) {
             return null;
         }
+        int format = pkgXml.getFormat();
         List<ROSPackageXml.Dependency> dependencies = pkgXml.getDependencies(null);
         List<TagTextRange> depTrs = pkgXml.getDependencyTextRanges();
         List<ProblemDescriptor> ret = new ArrayList<>();
         Set<Integer> trsToAnn = new HashSet<>();
         for (int i = dependencies.size() - 1; i >= 0; i--) {
             ROSPackageXml.Dependency dep = dependencies.get(i);
+            if (PackageXmlUtil.conditionEvaluatesToFalse(dep, format)) {
+                continue;
+            }
             String depVersion = Optional.ofNullable(dep.getPackage().getPackageXml()).map(ROSPackageXml::getVersion)
                     .map(ROSPackageXml.Version::getValue).orElse(null);
             String compatibilityVersion = Optional.ofNullable(dep.getPackage().getPackageXml())
