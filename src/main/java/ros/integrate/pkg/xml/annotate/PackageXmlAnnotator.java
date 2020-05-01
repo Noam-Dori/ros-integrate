@@ -104,6 +104,7 @@ public class PackageXmlAnnotator implements Annotator {
             expAnn.annMultipleArchitectureIndependentTags();
             expAnn.annMultipleMetapackageTags();
             expAnn.annMultipleDeprecated();
+            expAnn.annIgnoredCondition();
         }
     }
 }

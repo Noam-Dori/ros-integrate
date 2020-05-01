@@ -1,14 +1,19 @@
 package ros.integrate.pkg.xml.annotate;
 
 import com.intellij.codeInsight.daemon.impl.analysis.RemoveTagIntentionFix;
+import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.psi.xml.XmlTag;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkg.xml.ExportTag;
+import ros.integrate.pkg.xml.PackageXmlUtil;
 import ros.integrate.pkg.xml.ROSPackageXml;
+import ros.integrate.pkg.xml.TagTextRange;
+import ros.integrate.pkg.xml.condition.highlight.ROSConditionSyntaxHighlighter;
 
 import java.util.Arrays;
+import java.util.List;
 
 class PackageExportAnnotator {
     @Nullable
@@ -79,5 +84,20 @@ class PackageExportAnnotator {
 
     void annMultipleBuildTypes() {
         tooManyTag("build_type", "A package may only have one build type.");
+    }
+
+    void annIgnoredCondition() {
+        if (export == null) {
+            return;
+        }
+        int format = export.getParent().getFormat();
+        List<ExportTag.BuildType> buildTypes = export.getBuildTypes();
+        List<TagTextRange> buildTypeTrs = export.getBuildTypeTextRanges();
+        for (int i = 0; i < buildTypes.size(); i++) {
+            if (PackageXmlUtil.conditionEvaluatesToFalse(buildTypes.get(i).getCondition(), format)) {
+                Annotation ann = holder.createInfoAnnotation(buildTypeTrs.get(i), null);
+                ann.setTextAttributes(ROSConditionSyntaxHighlighter.IGNORED);
+            }
+        }
     }
 }
