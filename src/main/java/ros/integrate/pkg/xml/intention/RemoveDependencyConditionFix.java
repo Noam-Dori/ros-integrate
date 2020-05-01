@@ -7,12 +7,12 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.xml.ROSPackageXml;
 
-public class RemoveLicenseFileFix implements LocalQuickFix {
+public class RemoveDependencyConditionFix implements LocalQuickFix {
     private final int id;
     @NotNull
     private final ROSPackageXml pkgXml;
 
-    public RemoveLicenseFileFix(@NotNull ROSPackageXml pkgXml, int id) {
+    public RemoveDependencyConditionFix(@NotNull ROSPackageXml pkgXml, int id) {
         this.id = id;
         this.pkgXml = pkgXml;
     }
@@ -21,7 +21,7 @@ public class RemoveLicenseFileFix implements LocalQuickFix {
     @NotNull
     @Override
     public String getName() {
-        return "Remove file reference";
+        return "Remove condition";
     }
 
     @Nls(capitalization = Nls.Capitalization.Sentence)
@@ -33,6 +33,8 @@ public class RemoveLicenseFileFix implements LocalQuickFix {
 
     @Override
     public void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor) {
-        pkgXml.setLicense(id, new ROSPackageXml.License(pkgXml.getLicences().get(id).getValue(), null));
+        ROSPackageXml.Dependency old = pkgXml.getDependencies(null).get(id);
+        pkgXml.setDependency(id, new ROSPackageXml.Dependency(old.getType(), old.getPackage(), old.getVersionRange(),
+                null));
     }
 }

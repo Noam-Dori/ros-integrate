@@ -102,10 +102,10 @@ public interface ROSPackageXml {
         @NotNull
         private final VersionRange versionRange;
         @SuppressWarnings("StatefulEp")
-        @NotNull
+        @Nullable
         private final ROSCondition condition;
 
-        public Dependency(@NotNull DependencyType type, @NotNull ROSPackage pkg, @NotNull VersionRange range, @NotNull ROSCondition condition) {
+        public Dependency(@NotNull DependencyType type, @NotNull ROSPackage pkg, @NotNull VersionRange range, @Nullable ROSCondition condition) {
             this.type = type;
             this.pkg = pkg;
             this.versionRange = range;
@@ -127,7 +127,7 @@ public interface ROSPackageXml {
             return versionRange;
         }
 
-        @NotNull
+        @Nullable
         public ROSCondition getCondition() {
             return condition;
         }

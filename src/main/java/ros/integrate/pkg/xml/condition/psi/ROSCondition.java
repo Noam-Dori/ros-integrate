@@ -32,7 +32,8 @@ public class ROSCondition extends PsiFileBase implements ROSConditionExpr {
         return PsiTreeUtil.getChildrenOfTypeAsList(this, ROSConditionToken.class);
     }
 
-    public boolean equals(@Nullable ROSCondition other) {
-        return other != null && getText().equals(other.getText());
+    @Override
+    public boolean equals(@Nullable Object other) {
+        return other instanceof ROSCondition && getText().equals(((ROSCondition) other).getText());
     }
 }

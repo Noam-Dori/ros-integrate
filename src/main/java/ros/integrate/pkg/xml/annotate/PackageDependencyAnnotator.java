@@ -93,7 +93,7 @@ class PackageDependencyAnnotator {
                 Set<DependencyType> allCovered = new HashSet<>(Arrays.asList(dj.getType().getCoveredDependencies()));
                 allCovered.retainAll(Arrays.asList(di.getType().getCoveredDependencies()));
                 if (dj.getPackage().equals(di.getPackage()) && !allCovered.isEmpty() &&
-                        (format < 3 || di.getCondition().equals(dj.getCondition()))) {
+                        (format < 3 || Objects.equals(di.getCondition(), dj.getCondition()))) {
                     trsToAnn.add(j);
                     found = true;
                 }

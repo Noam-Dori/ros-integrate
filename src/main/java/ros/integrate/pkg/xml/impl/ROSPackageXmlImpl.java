@@ -423,7 +423,7 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
     void addCondition(@NotNull XmlTag newTag, @Nullable ROSCondition condition) {
         // could be more clever in terms of what ALWAYS true things are detected,
         // but it's important to preserve the user's data unless explicitly given permission to change it.
-        if (condition != null && condition.isValid() && !condition.getText().equals("true")) {
+        if (condition != null && condition.isValid()) {
             newTag.setAttribute("condition", condition.getText());
         }
     }
@@ -488,6 +488,7 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
         XmlTag newTag = root.createChildTag(dependency.getType().getTagName(), null,
                 dependency.getPackage().getName(), false);
         addVersionRangeToDep(newTag, dependency.getVersionRange());
+        addCondition(newTag, dependency.getCondition());
         oldTag.replace(newTag);
     }
 

@@ -12,6 +12,7 @@ import ros.integrate.pkg.xml.ROSPackageXml;
 import ros.integrate.pkg.xml.TagTextRange;
 import ros.integrate.pkg.xml.intention.ReformatPackageXmlFix;
 import ros.integrate.pkg.xml.intention.RemoveCompatibilityFix;
+import ros.integrate.pkg.xml.intention.RemoveDependencyConditionFix;
 import ros.integrate.pkg.xml.intention.RemoveLicenseFileFix;
 
 import java.util.ArrayList;
@@ -43,13 +44,24 @@ public class UnusedFeatureInspection extends LocalInspectionTool {
             ROSPackageXml.License license = licenses.get(i);
             if (format < 3 && license.getFile() != null) {
                 ret.add(manager.createProblemDescriptor(file, licenseTrs.get(i).attr("file"),
-                        "Version compatibility is only used from format 3",
+                        "License file reference is only used from format 3",
                         ProblemHighlightType.LIKE_UNUSED_SYMBOL, isOnTheFly,
                         new ReformatPackageXmlFix(pkgXml, true),
                         new RemoveLicenseFileFix(pkgXml, i)));
             }
         }
-
+        List<ROSPackageXml.Dependency> dependencies = pkgXml.getDependencies(null);
+        List<TagTextRange> dependencyTrs = pkgXml.getDependencyTextRanges();
+        for (int i = 0; i < dependencies.size(); i++) {
+            ROSPackageXml.Dependency dependency = dependencies.get(i);
+            if (format < 3 && dependency.getCondition() != null) {
+                ret.add(manager.createProblemDescriptor(file, dependencyTrs.get(i).attr("condition"),
+                        "Conditions are only used from format 3",
+                        ProblemHighlightType.LIKE_UNUSED_SYMBOL, isOnTheFly,
+                        new ReformatPackageXmlFix(pkgXml, true),
+                        new RemoveDependencyConditionFix(pkgXml, i)));
+            }
+        }
         return ret.toArray(ProblemDescriptor.EMPTY_ARRAY);
     }
 }

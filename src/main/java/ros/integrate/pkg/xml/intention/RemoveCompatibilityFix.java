@@ -15,9 +15,10 @@ import ros.integrate.pkg.xml.ROSPackageXml.Version;
 import java.util.Objects;
 
 public class RemoveCompatibilityFix extends BaseIntentionAction implements LocalQuickFix {
-    private ROSPackageXml pkgXml;
+    @NotNull
+    private final ROSPackageXml pkgXml;
 
-    public RemoveCompatibilityFix(ROSPackageXml pkgXml) {
+    public RemoveCompatibilityFix(@NotNull ROSPackageXml pkgXml) {
         this.pkgXml = pkgXml;
     }
 
