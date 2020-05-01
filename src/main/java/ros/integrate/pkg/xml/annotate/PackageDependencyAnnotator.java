@@ -14,6 +14,7 @@ import ros.integrate.pkg.psi.ROSPackage;
 import ros.integrate.pkg.xml.DependencyType;
 import ros.integrate.pkg.xml.ROSPackageXml;
 import ros.integrate.pkg.xml.ROSPackageXml.Dependency;
+import ros.integrate.pkg.xml.condition.highlight.ROSConditionSyntaxHighlighter;
 import ros.integrate.pkg.xml.intention.*;
 
 import java.util.*;
@@ -182,6 +183,15 @@ class PackageDependencyAnnotator {
                     ann.registerFix(new AmputateDependencyQuickFix(pkgXml, i));
                     ann.registerFix(new FixDependencyQuickFix(pkgXml, i, false));
                 }
+            }
+        }
+    }
+
+    void annIgnoredCondition() {
+        for (int i = 0; i < dependencies.size(); i++) {
+            if (PackageXmlUtil.conditionEvaluatesToFalse(dependencies.get(i), format)) {
+                Annotation ann = holder.createInfoAnnotation(depTrs.get(i), null);
+                ann.setTextAttributes(ROSConditionSyntaxHighlighter.IGNORED);
             }
         }
     }
