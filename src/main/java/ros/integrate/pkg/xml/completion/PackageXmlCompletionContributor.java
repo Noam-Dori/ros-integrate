@@ -179,7 +179,7 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
                     }
                     if (export.getBuildType() == null) {
                         resultSet.addElement(LookupElementBuilder.create("build_type")
-                                .withInsertHandler(dataWithCompletionHandler));
+                                .withInsertHandler(xmlFile.getFormat() >= 3 ? attrHandler : dataWithCompletionHandler));
                     }
                 }
                 return;
@@ -234,6 +234,13 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
             resultSet.addElement(LookupElementBuilder.create("").withTailText("move to name", true)
                     .withInsertHandler(new SkipAttributeHandler(true)));
         }
+        if (tag.getName().equals("build_type")) {
+            if (tag.getAttribute("condition") == null) {
+                resultSet.addElement(LookupElementBuilder.create("condition").withInsertHandler(anyValueHandler));
+            }
+            resultSet.addElement(LookupElementBuilder.create("").withTailText("unconditional", true)
+                    .withInsertHandler(new SkipAttributeHandler(true)));
+        }
     }
 
     private void addCompletionsForAttrValue(@NotNull XmlTag tag, @NotNull CompletionResultSet resultSet,
@@ -263,29 +270,29 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
                             .withInsertHandler(new AttributeNameHandler()));
                 }
             }
-            if (attributeName != null && attributeName.equals("condition")) {
-                InjectedLanguageManager manager = InjectedLanguageManager.getInstance(tag.getProject());
-                Optional.ofNullable(parameters.getOriginalPosition())
-                        .map(PsiElement::getParent).map(manager::getInjectedPsiFiles)
-                        .filter(list -> !list.isEmpty()).map(list -> list.get(0))
-                        .map(pair -> pair.first).ifPresent(injected -> {
-                    int offset = parameters.getEditor().getCaretModel().getOffset() - injected.getTextOffset() - 1;
-                    PsiElement injectedPos = injected.findElementAt(offset);
-                    if (!(injectedPos instanceof ASTNode)) {
-                        return;
+        }
+        if (attributeName != null && attributeName.equals("condition")) {
+            InjectedLanguageManager manager = InjectedLanguageManager.getInstance(tag.getProject());
+            Optional.ofNullable(parameters.getOriginalPosition())
+                    .map(PsiElement::getParent).map(manager::getInjectedPsiFiles)
+                    .filter(list -> !list.isEmpty()).map(list -> list.get(0))
+                    .map(pair -> pair.first).ifPresent(injected -> {
+                int offset = parameters.getEditor().getCaretModel().getOffset() - injected.getTextOffset() - 1;
+                PsiElement injectedPos = injected.findElementAt(offset);
+                if (!(injectedPos instanceof ASTNode)) {
+                    return;
+                }
+                CompletionResultSet injectedResult = resultSet.withPrefixMatcher(injectedPos.getText());
+                if (((ASTNode) injectedPos).getElementType().equals(ROSConditionTypes.VARIABLE)) {
+                    for (String env : System.getenv().keySet()) {
+                        injectedResult.addElement(LookupElementBuilder.create("$" + env).withPresentableText(env));
                     }
-                    CompletionResultSet injectedResult = resultSet.withPrefixMatcher(injectedPos.getText());
-                    if (((ASTNode) injectedPos).getElementType().equals(ROSConditionTypes.VARIABLE)) {
-                        for (String env : System.getenv().keySet()) {
-                            injectedResult.addElement(LookupElementBuilder.create("$" + env).withPresentableText(env));
-                        }
-                    }
-                    if (((ASTNode) injectedPos).getElementType().equals(ROSConditionTypes.LITERAL)) {
-                        injectedResult.addElement(LookupElementBuilder.create("or").bold());
-                        injectedResult.addElement(LookupElementBuilder.create("and").bold());
-                    }
-                });
-            }
+                }
+                if (((ASTNode) injectedPos).getElementType().equals(ROSConditionTypes.LITERAL)) {
+                    injectedResult.addElement(LookupElementBuilder.create("or").bold());
+                    injectedResult.addElement(LookupElementBuilder.create("and").bold());
+                }
+            });
         }
     }
 }
