@@ -228,14 +228,14 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
                 resultSet.addElement(LookupElementBuilder.create("version_lt").withInsertHandler(completeValueHandler));
                 resultSet.addElement(LookupElementBuilder.create("version_lte").withInsertHandler(completeValueHandler));
             }
-            if (tag.getAttribute("condition") == null) {
+            if (tag.getAttribute("condition") == null && xmlFile.getFormat() >= 3) {
                 resultSet.addElement(LookupElementBuilder.create("condition").withInsertHandler(anyValueHandler));
             }
             resultSet.addElement(LookupElementBuilder.create("").withTailText("move to name", true)
                     .withInsertHandler(new SkipAttributeHandler(true)));
         }
         if (tag.getName().equals("build_type")) {
-            if (tag.getAttribute("condition") == null) {
+            if (tag.getAttribute("condition") == null && xmlFile.getFormat() >= 3) {
                 resultSet.addElement(LookupElementBuilder.create("condition").withInsertHandler(anyValueHandler));
             }
             resultSet.addElement(LookupElementBuilder.create("").withTailText("unconditional", true)
