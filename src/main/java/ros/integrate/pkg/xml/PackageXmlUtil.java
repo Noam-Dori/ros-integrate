@@ -144,11 +144,14 @@ public class PackageXmlUtil {
         return Optional.ofNullable(tag.getAttributeValue("condition"))
                 .map(attrValue -> ROSConditionElementFactory.createCondition(tag.getProject(), attrValue))
                 .orElse(null);
-
     }
 
     public static boolean conditionEvaluatesToFalse(@NotNull ROSPackageXml.Dependency dependency, int format) {
         ROSCondition condition = dependency.getCondition();
+        return format >= 3 && condition != null && condition.checkValid() && condition.evaluate().isEmpty();
+    }
+
+    public static boolean conditionEvaluatesToFalse(@Nullable ROSCondition condition, int format) {
         return format >= 3 && condition != null && condition.checkValid() && condition.evaluate().isEmpty();
     }
 }

@@ -30,7 +30,7 @@ public class NotArchitectureIndependentInspection extends LocalInspectionTool {
             }
             for (ExportLangHelper helper : HELPERS) {
                 if (helper.dependsOnArchitecture(export.getParent().getPackage())) {
-                    problem.add(manager.createProblemDescriptor(file, export.getArchitectureIndependentTextRange(),
+                    problem.add(manager.createProblemDescriptor(file, export.getArchitectureIndependentTextRange().name(),
                             getDisplayName(), ProblemHighlightType.GENERIC_ERROR_OR_WARNING, isOnTheFly));
                     break;
                 }

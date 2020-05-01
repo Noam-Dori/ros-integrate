@@ -1,11 +1,36 @@
 package ros.integrate.pkg.xml;
 
-import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.xml.XmlTag;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import ros.integrate.pkg.xml.condition.psi.ROSCondition;
+
+import java.util.List;
 
 public interface ExportTag {
+    class BuildType {
+        @NotNull
+        private final String type;
+
+        @Nullable
+        private final ROSCondition condition;
+
+        public BuildType(@NotNull String type, @Nullable ROSCondition condition) {
+            this.condition = condition;
+            this.type = type;
+        }
+
+        @Nullable
+        public ROSCondition getCondition() {
+            return condition;
+        }
+
+        @NotNull
+        public String getType() {
+            return type;
+        }
+    }
+
     @NotNull
     XmlTag getRawTag();
 
@@ -16,19 +41,24 @@ public interface ExportTag {
     String getMessageGenerator();
 
     @NotNull
-    TextRange getMessageGeneratorTextRange();
+    TagTextRange getMessageGeneratorTextRange();
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     boolean markedArchitectureIndependent();
 
     @NotNull
-    TextRange getArchitectureIndependentTextRange();
+    TagTextRange getArchitectureIndependentTextRange();
 
     @Nullable
     String deprecatedMessage();
 
     boolean isMetapackage();
 
-    @Nullable
-    String getBuildType();
+    @NotNull
+    List<BuildType> getBuildTypes();
+
+    @NotNull
+    List<TagTextRange> getBuildTypeTextRange();
+
+    void setBuildType(int id, BuildType newBuildType);
 }

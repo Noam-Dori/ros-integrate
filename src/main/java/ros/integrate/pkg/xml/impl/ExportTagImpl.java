@@ -1,12 +1,18 @@
 package ros.integrate.pkg.xml.impl;
 
-import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.xml.XmlTag;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkg.xml.ExportTag;
+import ros.integrate.pkg.xml.PackageXmlUtil;
 import ros.integrate.pkg.xml.ROSPackageXml;
+import ros.integrate.pkg.xml.TagTextRange;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class ExportTagImpl implements ExportTag {
     private static final String MESSAGE_GENERATOR = "message_generator",
@@ -23,12 +29,6 @@ public class ExportTagImpl implements ExportTag {
     public ExportTagImpl(@NotNull XmlTag tag, @NotNull ROSPackageXml pkgXml) {
         this.tag = tag;
         this.pkgXml = pkgXml;
-    }
-
-    @NotNull
-    @Contract(" -> new")
-    private TextRange getRootTextRange() {
-        return new TextRange(tag.getTextOffset() + 1, tag.getTextOffset() + 1 + tag.getName().length());
     }
 
     @NotNull
@@ -51,15 +51,8 @@ public class ExportTagImpl implements ExportTag {
 
     @NotNull
     @Override
-    public TextRange getMessageGeneratorTextRange() {
-        XmlTag found = tag.findFirstSubTag(MESSAGE_GENERATOR);
-        if (found == null) {
-            return getRootTextRange();
-        }
-        if (found.getValue().getText().isEmpty()) {
-            return new TextRange(found.getTextOffset() + 1, found.getTextOffset() + 1 + MESSAGE_GENERATOR.length());
-        }
-        return found.getValue().getTextRange();
+    public TagTextRange getMessageGeneratorTextRange() {
+        return getTagTextRange(MESSAGE_GENERATOR);
     }
 
     @Override
@@ -69,16 +62,8 @@ public class ExportTagImpl implements ExportTag {
 
     @NotNull
     @Override
-    public TextRange getArchitectureIndependentTextRange() {
-        XmlTag found = tag.findFirstSubTag(ARCHITECTURE_INDEPENDENT);
-        if (found == null) {
-            return getRootTextRange();
-        }
-        if (found.getValue().getText().isEmpty()) {
-            return new TextRange(found.getTextOffset() + 1, found.getTextOffset() + 1 +
-                    ARCHITECTURE_INDEPENDENT.length());
-        }
-        return found.getValue().getTextRange();
+    public TagTextRange getArchitectureIndependentTextRange() {
+        return getTagTextRange(ARCHITECTURE_INDEPENDENT);
     }
 
     @Nullable
@@ -92,9 +77,40 @@ public class ExportTagImpl implements ExportTag {
         return tag.findFirstSubTag(METAPACKAGE) != null;
     }
 
-    @Nullable
+    @NotNull
     @Override
-    public String getBuildType() {
-        return tag.getSubTagText(BUILD_TYPE);
+    public List<BuildType> getBuildTypes() {
+        return Arrays.stream(tag.findSubTags(BUILD_TYPE)).map(buildTag ->
+                new BuildType(buildTag.getValue().getText(), PackageXmlUtil.getCondition(buildTag)))
+                .collect(Collectors.toList());
+    }
+
+    @NotNull
+    @Override
+    public List<TagTextRange> getBuildTypeTextRange() {
+        List<TagTextRange> ret = Arrays.stream(tag.findSubTags(BUILD_TYPE)).map(TagTextRange::new)
+                .collect(Collectors.toList());
+        if (ret.isEmpty()) {
+            ret.add(new TagTextRange(tag));
+        }
+        return ret;
+    }
+
+    @NotNull
+    @Contract("_ -> new")
+    private TagTextRange getTagTextRange(@NotNull String tagName) {
+        return new TagTextRange(Optional.ofNullable(tag.findFirstSubTag(tagName)).orElse(tag));
+    }
+
+    @Override
+    public void setBuildType(int id, BuildType newBuildType) {
+        XmlTag[] buildTypeTags = tag.findSubTags(BUILD_TYPE);
+        if (buildTypeTags.length > id) {
+            XmlTag newTag = tag.createChildTag(BUILD_TYPE, null, newBuildType.getType(), false);
+            if (newBuildType.getCondition() != null) {
+                newTag.setAttribute("condition",newBuildType.getCondition().getText());
+            }
+            buildTypeTags[id].replace(newTag);
+        }
     }
 }

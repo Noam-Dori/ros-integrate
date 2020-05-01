@@ -11,13 +11,13 @@ import java.util.*;
 public class TagTextRange extends TextRange {
     private static final String VALUE = "=", NAME = "\"";
 
-    private Map<String, TextRange> trCache = new HashMap<>();
+    private final Map<String, TextRange> trCache = new HashMap<>();
 
     public enum Prefix {
         VALUE('='),
         NAME('\"');
 
-        private char text;
+        private final char text;
         Prefix(char text) {
             this.text = text;
         }

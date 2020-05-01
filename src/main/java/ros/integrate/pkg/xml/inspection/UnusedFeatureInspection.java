@@ -7,13 +7,11 @@ import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import ros.integrate.pkg.xml.ExportTag;
 import ros.integrate.pkg.xml.PackageXmlUtil;
 import ros.integrate.pkg.xml.ROSPackageXml;
 import ros.integrate.pkg.xml.TagTextRange;
-import ros.integrate.pkg.xml.intention.ReformatPackageXmlFix;
-import ros.integrate.pkg.xml.intention.RemoveCompatibilityFix;
-import ros.integrate.pkg.xml.intention.RemoveDependencyConditionFix;
-import ros.integrate.pkg.xml.intention.RemoveLicenseFileFix;
+import ros.integrate.pkg.xml.intention.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,6 +60,22 @@ public class UnusedFeatureInspection extends LocalInspectionTool {
                         new RemoveDependencyConditionFix(pkgXml, i)));
             }
         }
+        ExportTag export = pkgXml.getExport();
+        Optional.ofNullable(export).map(ExportTag::getBuildTypes).ifPresent(buildTypes -> {
+            if (format >= 3) {
+                return;
+            }
+            for (int i = 0; i < buildTypes.size(); i++) {
+                if (buildTypes.get(i).getCondition() != null) {
+                    ret.add(manager.createProblemDescriptor(file, export.getBuildTypeTextRange().get(i)
+                                    .attr("condition"),
+                            "Conditions are only used from format 3",
+                            ProblemHighlightType.LIKE_UNUSED_SYMBOL, isOnTheFly,
+                            new ReformatPackageXmlFix(pkgXml, true),
+                            new RemoveBuildTypeConditionFix(export, i)));
+                }
+            }
+        });
         return ret.toArray(ProblemDescriptor.EMPTY_ARRAY);
     }
 }

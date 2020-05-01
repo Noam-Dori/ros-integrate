@@ -121,6 +121,7 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
     private void setCompletionsForTagName(int level, @Nullable XmlTag parentTag, @NotNull ROSPackageXml xmlFile,
                                           @NotNull CompletionResultSet resultSet, CompletionParameters parameters) {
         resultSet.runRemainingContributors(parameters, EmptyConsumer.getInstance()); // removes all other entries. Dangerous stuff.
+        int format = xmlFile.getFormat();
         InsertHandler<LookupElement> attrHandler = new AttributeNameHandler(null),
                 dataHandler = new TagDataHandler("", false),
                 multilineHandler = new TagDataHandler("", false, "", true, false),
@@ -139,7 +140,7 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
                 }
                 if (xmlFile.getVersion() == null) {
                     resultSet.addElement(LookupElementBuilder.create("version")
-                            .withInsertHandler(xmlFile.getFormat() >= 3 ? attrHandler : dataHandler));
+                            .withInsertHandler(format >= 3 ? attrHandler : dataHandler));
                 }
                 if (xmlFile.getDescription() == null) {
                     resultSet.addElement(LookupElementBuilder.create("description").withInsertHandler(multilineHandler));
@@ -149,8 +150,8 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
                 resultSet.addElement(LookupElementBuilder.create("maintainer")
                         .withInsertHandler(new AttributeNameHandler("email")));
                 resultSet.addElement(LookupElementBuilder.create("license")
-                        .withInsertHandler(xmlFile.getFormat() >= 3 ? attrHandler : dataWithCompletionHandler));
-                PackageXmlUtil.getDependNames(xmlFile.getFormat()).stream().map(LookupElementBuilder::create)
+                        .withInsertHandler(format >= 3 ? attrHandler : dataWithCompletionHandler));
+                PackageXmlUtil.getDependNames(format).stream().map(LookupElementBuilder::create)
                         .map(builder -> builder.withInsertHandler(attrHandler))
                         .forEach(resultSet::addElement);
                 if (xmlFile.getExport() == null) {
@@ -177,9 +178,10 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
                         resultSet.addElement(LookupElementBuilder.create("metapackage")
                                 .withInsertHandler(new EmptyTagHandler()));
                     }
-                    if (export.getBuildType() == null) {
+                    if (export.getBuildTypes().stream().allMatch(buildType ->
+                            PackageXmlUtil.conditionEvaluatesToFalse(buildType.getCondition(), format))) {
                         resultSet.addElement(LookupElementBuilder.create("build_type")
-                                .withInsertHandler(xmlFile.getFormat() >= 3 ? attrHandler : dataWithCompletionHandler));
+                                .withInsertHandler(format >= 3 ? attrHandler : dataWithCompletionHandler));
                     }
                 }
                 return;
@@ -188,17 +190,18 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
         }
     }
 
-    private void setCompletionsForAttrName(@NotNull XmlTag tag, ROSPackageXml xmlFile, @NotNull CompletionResultSet resultSet,
-                                           CompletionParameters parameters) {
+    private void setCompletionsForAttrName(@NotNull XmlTag tag, @NotNull ROSPackageXml xmlFile,
+                                           @NotNull CompletionResultSet resultSet, CompletionParameters parameters) {
+        int format = xmlFile.getFormat();
         InsertHandler<LookupElement> anyValueHandler = new AttributeValueHandler(false),
                 completeValueHandler = new AttributeValueHandler(true);
         resultSet.runRemainingContributors(parameters, EmptyConsumer.getInstance()); // removes all other entries. Dangerous stuff.
-        if (tag.getName().equals("version") && tag.getAttribute("compatibility") == null && xmlFile.getFormat() >= 3) {
+        if (tag.getName().equals("version") && tag.getAttribute("compatibility") == null && format >= 3) {
             resultSet.addElement(LookupElementBuilder.create("compatibility").withInsertHandler(completeValueHandler));
             resultSet.addElement(LookupElementBuilder.create("").withTailText("default", true)
                     .withInsertHandler(new SkipAttributeHandler(false)));
         }
-        if (tag.getName().equals("license") && tag.getAttribute("file") == null && xmlFile.getFormat() >= 3) {
+        if (tag.getName().equals("license") && tag.getAttribute("file") == null && format >= 3) {
             resultSet.addElement(LookupElementBuilder.create("file").withInsertHandler(completeValueHandler));
             resultSet.addElement(LookupElementBuilder.create("").withTailText("no file", true)
                         .withInsertHandler(new SkipAttributeHandler(true)));
@@ -228,14 +231,14 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
                 resultSet.addElement(LookupElementBuilder.create("version_lt").withInsertHandler(completeValueHandler));
                 resultSet.addElement(LookupElementBuilder.create("version_lte").withInsertHandler(completeValueHandler));
             }
-            if (tag.getAttribute("condition") == null && xmlFile.getFormat() >= 3) {
+            if (tag.getAttribute("condition") == null && format >= 3) {
                 resultSet.addElement(LookupElementBuilder.create("condition").withInsertHandler(anyValueHandler));
             }
             resultSet.addElement(LookupElementBuilder.create("").withTailText("move to name", true)
                     .withInsertHandler(new SkipAttributeHandler(true)));
         }
         if (tag.getName().equals("build_type")) {
-            if (tag.getAttribute("condition") == null && xmlFile.getFormat() >= 3) {
+            if (tag.getAttribute("condition") == null && format >= 3) {
                 resultSet.addElement(LookupElementBuilder.create("condition").withInsertHandler(anyValueHandler));
             }
             resultSet.addElement(LookupElementBuilder.create("").withTailText("unconditional", true)

@@ -34,7 +34,7 @@ public class InvalidMessageGeneratorInspection extends LocalInspectionTool {
                     return;
                 }
             }
-            problem.add(manager.createProblemDescriptor(file, export.getMessageGeneratorTextRange(),
+            problem.add(manager.createProblemDescriptor(file, export.getMessageGeneratorTextRange().value(),
                     getDisplayName() + " " + lang, ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                     isOnTheFly));
         });
