@@ -10,29 +10,28 @@ import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkg.xml.ExportTag;
 import ros.integrate.pkg.xml.PackageXmlUtil;
 import ros.integrate.pkg.xml.ROSPackageXml;
+import ros.integrate.pkg.xml.TagTextRange;
 import ros.integrate.settings.ROSSettings;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Optional;
-import java.util.Properties;
+import java.util.*;
 import java.util.logging.Logger;
 
 public class UnknownBuildTypeInspection extends LocalInspectionTool {
     private static final Logger LOG = Logger.getLogger("#ros.integrate.pkg.xml.completion.PackageXmlCompletionContributor");
-    private static final String[] BUILD_TYPES = loadBuildTypes();
+    private static final List<String> BUILD_TYPES = loadBuildTypes();
 
     @NotNull
-    private static String[] loadBuildTypes() {
+    private static List<String> loadBuildTypes() {
         Properties ret = new Properties();
         try {
             ret.load(ROSSettings.class.getClassLoader().getResourceAsStream("defaults.properties"));
-            return ret.getProperty("buildTypes").split(":");
+            return Arrays.asList(ret.getProperty("buildTypes").split(":"));
         } catch (IOException e) {
             LOG.warning("could not load configuration file, default values will not be loaded. error: " +
                     e.getMessage());
         }
-        return new String[0];
+        return Collections.emptyList();
     }
 
     @Nullable
@@ -43,12 +42,19 @@ public class UnknownBuildTypeInspection extends LocalInspectionTool {
         if (export == null) {
             return null;
         }
-        return Arrays.stream(export.getRawTag().findSubTags("build_type"))
-                .filter(build_type -> !build_type.getValue().getText().isEmpty())
-                .filter(build_type -> !Arrays.asList(BUILD_TYPES).contains(build_type.getValue().getText()))
-                .map(build_type -> manager.createProblemDescriptor(file, build_type.getValue().getTextRange(),
-                                getDisplayName() + " " + build_type.getText() + ".",
-                                ProblemHighlightType.GENERIC_ERROR_OR_WARNING, isOnTheFly)
-                ).toArray(ProblemDescriptor[]::new);
+        int format = export.getParent().getFormat();
+        List<ExportTag.BuildType> buildTypes = export.getBuildTypes();
+        List<TagTextRange> buildTypeTrs = export.getBuildTypeTextRanges();
+        List<ProblemDescriptor> ret = new ArrayList<>();
+        for (int i = 0; i < buildTypes.size(); i++) {
+            ExportTag.BuildType buildType = buildTypes.get(i);
+            if (!PackageXmlUtil.conditionEvaluatesToFalse(buildType.getCondition(), format) &&
+                    !BUILD_TYPES.contains(buildType.getType())) {
+                ret.add(manager.createProblemDescriptor(file, buildTypeTrs.get(i).value(),
+                        getDisplayName() + " " + buildType.getType() + ".",
+                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING, isOnTheFly));
+            }
+        }
+        return ret.toArray(ProblemDescriptor.EMPTY_ARRAY);
     }
 }

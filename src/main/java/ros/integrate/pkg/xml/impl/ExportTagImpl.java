@@ -87,7 +87,7 @@ public class ExportTagImpl implements ExportTag {
 
     @NotNull
     @Override
-    public List<TagTextRange> getBuildTypeTextRange() {
+    public List<TagTextRange> getBuildTypeTextRanges() {
         List<TagTextRange> ret = Arrays.stream(tag.findSubTags(BUILD_TYPE)).map(TagTextRange::new)
                 .collect(Collectors.toList());
         if (ret.isEmpty()) {

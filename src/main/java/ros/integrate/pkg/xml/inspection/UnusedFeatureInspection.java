@@ -67,7 +67,7 @@ public class UnusedFeatureInspection extends LocalInspectionTool {
             }
             for (int i = 0; i < buildTypes.size(); i++) {
                 if (buildTypes.get(i).getCondition() != null) {
-                    ret.add(manager.createProblemDescriptor(file, export.getBuildTypeTextRange().get(i)
+                    ret.add(manager.createProblemDescriptor(file, export.getBuildTypeTextRanges().get(i)
                                     .attr("condition"),
                             "Conditions are only used from format 3",
                             ProblemHighlightType.LIKE_UNUSED_SYMBOL, isOnTheFly,
