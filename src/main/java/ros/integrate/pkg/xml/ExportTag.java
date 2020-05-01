@@ -61,4 +61,6 @@ public interface ExportTag {
     List<TagTextRange> getBuildTypeTextRanges();
 
     void setBuildType(int id, BuildType newBuildType);
+
+    void removeBuildType(int id);
 }

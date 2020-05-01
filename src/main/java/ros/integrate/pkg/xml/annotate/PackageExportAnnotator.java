@@ -11,6 +11,7 @@ import ros.integrate.pkg.xml.PackageXmlUtil;
 import ros.integrate.pkg.xml.ROSPackageXml;
 import ros.integrate.pkg.xml.TagTextRange;
 import ros.integrate.pkg.xml.condition.highlight.ROSConditionSyntaxHighlighter;
+import ros.integrate.pkg.xml.intention.RemoveBuildTypeQuickFix;
 
 import java.util.Arrays;
 import java.util.List;
@@ -83,7 +84,23 @@ class PackageExportAnnotator {
     }
 
     void annMultipleBuildTypes() {
-        tooManyTag("build_type", "A package may only have one build type.");
+        if (export == null) {
+            return;
+        }
+        int format = export.getParent().getFormat();
+        List<ExportTag.BuildType> buildTypes = export.getBuildTypes();
+        List<TagTextRange> buildTypeTrs = export.getBuildTypeTextRanges();
+        boolean foundActive = false;
+        for (int i = 0; i < buildTypes.size(); i++) {
+            if (!PackageXmlUtil.conditionEvaluatesToFalse(buildTypes.get(i).getCondition(), format)) {
+                if (foundActive) {
+                    holder.createWarningAnnotation(buildTypeTrs.get(i), "A package may only have one build type.")
+                            .registerFix(new RemoveBuildTypeQuickFix(export, i));
+                } else {
+                    foundActive = true;
+                }
+            }
+        }
     }
 
     void annIgnoredCondition() {

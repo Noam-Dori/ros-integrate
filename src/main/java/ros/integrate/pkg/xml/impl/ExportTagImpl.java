@@ -113,4 +113,12 @@ public class ExportTagImpl implements ExportTag {
             buildTypeTags[id].replace(newTag);
         }
     }
+
+    @Override
+    public void removeBuildType(int id) {
+        XmlTag[] buildTypeTags = tag.findSubTags(BUILD_TYPE);
+        if (buildTypeTags.length > id) {
+            buildTypeTags[id].delete();
+        }
+    }
 }
