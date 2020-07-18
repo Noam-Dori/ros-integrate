@@ -7,9 +7,6 @@
         <projectService serviceInterface="ros.integrate.pkg.ROSDepKeyCache"
                         serviceImplementation="ros.integrate.pkg.ROSDepKeyCacheImpl"/>
 
-        <!-- workspace module type -->
-        <moduleType id="WORKSPACE_MODULE_TYPE" implementationClass="ros.integrate.pkg.WorkspaceModuleType"/>
-
         <!-- model features -->
         <iconProvider implementation="ros.integrate.pkg.ROSPackageIconProvider" order="first"/>
     </extensions>
