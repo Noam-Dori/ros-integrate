@@ -10,6 +10,7 @@ import com.intellij.openapi.roots.libraries.LibraryTablesRegistrar;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
+import com.intellij.openapi.vfs.VirtualFileSystem;
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.search.GlobalSearchScope;
@@ -31,6 +32,8 @@ import java.util.stream.Collectors;
 public class ROSWorkspacePackageFinder extends ROSPackageFinderBase {
     private static final Logger LOG = Logger.getInstance("#ros.integrate.workspace.ROSWorkspacePackageFinder");
     private static final String WS_LIB = "workspace";
+    private static final VirtualFileSystem FILE_SYSTEM = VirtualFileManager.getInstance()
+            .getFileSystem(LocalFileSystem.PROTOCOL);
 
     private Library wsLib;
     private String wsPath = null;
@@ -40,8 +43,7 @@ public class ROSWorkspacePackageFinder extends ROSPackageFinderBase {
         if (path == null) {
             return null;
         }
-        return VirtualFileManager.getInstance().findFileByUrl(
-                VirtualFileManager.constructUrl(LocalFileSystem.PROTOCOL, path));
+        return FILE_SYSTEM.findFileByPath(path);
     }
 
     @NotNull
