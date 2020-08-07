@@ -7,12 +7,12 @@ This plugin provides support for implementing ROS features in your code,
 and improves the experience of using and writing ROS.
 The plugin has several end-goals:
 1. Allow programming simple robots without boilerplate ("in one click").
-2. Allow using common ROS features from the IDE in a user-friendly manner.
+2. Make common ROS features more accessible and user-friendly.
 3. Raise errors in the robot software and suggest fixes, and provide suggestions for more efficient use of ROS.
 4. provide the developer with the means to learn and use the more advanced and less known features ROS provides.
 
 # Target platforms
-This plugin is made for all IntelliJ based IDEs.
+This plugin targets all IntelliJ based IDEs.
 
 # Community
 
@@ -23,6 +23,8 @@ Have a question? need help? [ask away!](https://github.com/Noam-Dori/ros-integra
 Want something new? [request a feature!](https://github.com/Noam-Dori/ros-integrate/issues/new?assignees=Noam-Dori&labels=feature&template=feature_request.md&title=)
 
 Ran into an issue? [report it!](https://github.com/Noam-Dori/ros-integrate/issues/new?assignees=Noam-Dori&labels=bug&template=bug_report.md&title=)
+
+Want to try the latest version or edit the code? [here is a guide!](https://github.com/Noam-Dori/ros-integrate/wiki/Working-From-Source)
 
 # Planned Features
 
