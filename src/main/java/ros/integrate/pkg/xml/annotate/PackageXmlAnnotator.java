@@ -13,6 +13,7 @@ import ros.integrate.pkg.xml.PackageXmlUtil;
 import ros.integrate.pkg.xml.ROSPackageXml;
 import ros.integrate.pkg.xml.intention.FixFormatQuickFix;
 import ros.integrate.pkg.xml.intention.FixURLQuickFix;
+import ros.integrate.pkg.xml.intention.MoveToExportFix;
 import ros.integrate.pkg.xml.intention.RemoveURLQuickFix;
 
 import java.util.Arrays;
@@ -119,8 +120,8 @@ public class PackageXmlAnnotator implements Annotator {
             for (XmlTag lvl1Tag : pkgXml.getSubTags()) {
                 if (!LEVEL_1_TAGS.contains(lvl1Tag.getName()) && !PackageXmlUtil.isDependencyTag(lvl1Tag)) {
                     Annotation ann = holder.createErrorAnnotation(lvl1Tag, "Unsupported tag outside export");
+                    ann.registerFix(new MoveToExportFix(lvl1Tag, pkgXml));
                     ann.registerFix(new RemoveTagIntentionFix(lvl1Tag.getName(), lvl1Tag));
-//                    ann.registerFix(new MoveToExportQuickFix(lvl1Tag, pkgXml));
                 }
             }
         }
