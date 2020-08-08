@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 public class PackageXmlCompletionContributor extends CompletionContributor {
     private static final Logger LOG = Logger.getLogger("#ros.integrate.pkg.xml.completion.PackageXmlCompletionContributor");
     private static final String[] BUILD_TYPES = loadBuildTypes();
+    private static final List<String> COND_TAGS = Arrays.asList("build_type", "group_depend", "member_of_group");
 
     @NotNull
     private static String[] loadBuildTypes() {
@@ -157,6 +158,8 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
                 if (xmlFile.getExport() == null) {
                     resultSet.addElement(LookupElementBuilder.create("export").withInsertHandler(multilineHandler));
                 }
+                resultSet.addElement(LookupElementBuilder.create("group_depend").withInsertHandler(attrHandler));
+                resultSet.addElement(LookupElementBuilder.create("member_of_group").withInsertHandler(attrHandler));
                 return;
             }
             case 2: {
@@ -237,7 +240,7 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
             resultSet.addElement(LookupElementBuilder.create("").withTailText("move to name", true)
                     .withInsertHandler(new SkipAttributeHandler(true)));
         }
-        if (tag.getName().equals("build_type")) {
+        if (COND_TAGS.contains(tag.getName())) {
             if (tag.getAttribute("condition") == null && format >= 3) {
                 resultSet.addElement(LookupElementBuilder.create("condition").withInsertHandler(anyValueHandler));
             }
