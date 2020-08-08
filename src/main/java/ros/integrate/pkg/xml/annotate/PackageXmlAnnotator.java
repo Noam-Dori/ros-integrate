@@ -1,11 +1,13 @@
 package ros.integrate.pkg.xml.annotate;
 
+import com.intellij.codeInsight.daemon.impl.analysis.RemoveTagIntentionFix;
 import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.openapi.util.Pair;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.xml.XmlFile;
+import com.intellij.psi.xml.XmlTag;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.xml.PackageXmlUtil;
 import ros.integrate.pkg.xml.ROSPackageXml;
@@ -13,6 +15,7 @@ import ros.integrate.pkg.xml.intention.FixFormatQuickFix;
 import ros.integrate.pkg.xml.intention.FixURLQuickFix;
 import ros.integrate.pkg.xml.intention.RemoveURLQuickFix;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -33,6 +36,9 @@ import java.util.List;
  * </ul>
  */
 public class PackageXmlAnnotator implements Annotator {
+    private final List<String> LEVEL_1_TAGS = Arrays.asList("name", "version", "description", "license", "maintainer",
+            "author", "url", "export", "group_depend", "member_of_group");
+
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
         if (element instanceof XmlFile) {
@@ -105,6 +111,18 @@ public class PackageXmlAnnotator implements Annotator {
             expAnn.annMultipleMetapackageTags();
             expAnn.annMultipleDeprecated();
             expAnn.annIgnoredCondition();
+
+//            PackageGroupAnnotator grpAnn = new PackageGroupAnnotator(pkgXml, holder);
+//            grpAnn.annTooLowFormat();
+//            grpAnn.annIgnoredCondition();
+
+            for (XmlTag lvl1Tag : pkgXml.getSubTags()) {
+                if (!LEVEL_1_TAGS.contains(lvl1Tag.getName()) && !PackageXmlUtil.isDependencyTag(lvl1Tag)) {
+                    Annotation ann = holder.createErrorAnnotation(lvl1Tag, "Unsupported tag outside export");
+                    ann.registerFix(new RemoveTagIntentionFix(lvl1Tag.getName(), lvl1Tag));
+//                    ann.registerFix(new MoveToExportQuickFix(lvl1Tag, pkgXml));
+                }
+            }
         }
     }
 }

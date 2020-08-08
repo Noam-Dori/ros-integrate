@@ -464,4 +464,10 @@ public interface ROSPackageXml {
      */
     @NotNull
     XmlTag[] findSubTags(@NotNull String qName);
+
+    /**
+     * wrapper method for {@link XmlTag#getSubTags()} of {@link XmlFile#getRootTag()}
+     */
+    @NotNull
+    XmlTag[] getSubTags();
 }

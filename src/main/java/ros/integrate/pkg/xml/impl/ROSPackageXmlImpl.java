@@ -566,6 +566,15 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
 
     @NotNull
     @Override
+    public XmlTag[] getSubTags() {
+        if (file.getRootTag() == null) {
+            return new XmlTag[0];
+        }
+        return file.getRootTag().getSubTags();
+    }
+
+    @NotNull
+    @Override
     public List<Dependency> getDependencies(@Nullable DependencyType dependencyType) {
         if (file.getRootTag() == null) {
             return Collections.emptyList();
