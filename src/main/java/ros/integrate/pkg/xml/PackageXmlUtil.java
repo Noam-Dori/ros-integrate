@@ -17,11 +17,13 @@ import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkg.ROSPackageManager;
 import ros.integrate.pkg.psi.ROSPackage;
 import ros.integrate.pkg.xml.condition.psi.ROSCondition;
+import ros.integrate.pkg.xml.condition.psi.ROSCondition.Conditioned;
 import ros.integrate.pkg.xml.condition.psi.ROSConditionElementFactory;
 import ros.integrate.settings.ROSSettings;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -146,11 +148,19 @@ public class PackageXmlUtil {
                 .orElse(null);
     }
 
-    public static boolean conditionEvaluatesToFalse(@NotNull ROSCondition.Conditioned tagWithCondition, int format) {
+    public static boolean conditionEvaluatesToFalse(@NotNull Conditioned tagWithCondition, int format) {
         return conditionEvaluatesToFalse(tagWithCondition.getCondition(), format);
     }
 
     public static boolean conditionEvaluatesToFalse(@Nullable ROSCondition condition, int format) {
         return format >= 3 && condition != null && condition.checkValid() && condition.evaluate().isEmpty();
+    }
+
+    public static boolean mayConflict(@NotNull Conditioned lhs, @NotNull Conditioned rhs, int format) {
+        ROSCondition condL = lhs.getCondition(), condR = rhs.getCondition();
+        return format < 3 || // conditions don't matter
+                Objects.equals(condL, condR) || // takes care of null and identical conditions
+                (condL != null && condR != null && condL.checkValid() && condR.checkValid()
+                        && !condL.evaluate().isEmpty() && !condR.evaluate().isEmpty()); // both conditions eval to true
     }
 }

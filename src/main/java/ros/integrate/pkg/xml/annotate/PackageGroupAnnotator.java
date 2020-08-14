@@ -11,7 +11,7 @@ import ros.integrate.pkg.xml.condition.highlight.ROSConditionSyntaxHighlighter;
 import ros.integrate.pkg.xml.intention.ReformatPackageXmlFix;
 import ros.integrate.pkg.xml.intention.RemoveGroupTagQuickFix;
 
-import java.util.List;
+import java.util.*;
 
 public class PackageGroupAnnotator {
     @NotNull
@@ -85,5 +85,37 @@ public class PackageGroupAnnotator {
                 ann.registerFix(new RemoveGroupTagQuickFix(pkgXml, i, true));
             }
         }
+    }
+
+    public void annConflictingGroups() {
+        annConflictAny(groups, groupTrs, false);
+        annConflictAny(groupDepends, groupDependTrs, true);
+    }
+
+    private void annConflictAny(@NotNull List<GroupLink> groupLinks, @NotNull List<TagTextRange> textRanges,
+                                boolean isDependency) {
+        Set<Integer> trsToAnn = new HashSet<>();
+        for (int i = groupLinks.size() - 1; i >= 0; i--) {
+            GroupLink gi = groupLinks.get(i), gj;
+            if (gi.getGroup().isEmpty()) {
+                continue;
+            }
+            boolean found = false;
+            for (int j = i - 1; j >= 0; j--) {
+                gj = groupLinks.get(j);
+                if (gj.getGroup().equals(gi.getGroup()) && PackageXmlUtil.mayConflict(gi, gj, format)) {
+                    trsToAnn.add(j);
+                    found = true;
+                }
+            }
+            if (found) {
+                trsToAnn.add(i);
+            }
+        }
+        trsToAnn.forEach(i -> {
+            Annotation ann = holder.createErrorAnnotation(textRanges.get(i).value(),
+                    "Group tag conflicts with another tag in the file.");
+            ann.registerFix(new RemoveGroupTagQuickFix(pkgXml, i, isDependency));
+        });
     }
 }
