@@ -146,9 +146,8 @@ public class PackageXmlUtil {
                 .orElse(null);
     }
 
-    public static boolean conditionEvaluatesToFalse(@NotNull ROSPackageXml.Dependency dependency, int format) {
-        ROSCondition condition = dependency.getCondition();
-        return format >= 3 && condition != null && condition.checkValid() && condition.evaluate().isEmpty();
+    public static boolean conditionEvaluatesToFalse(@NotNull ROSCondition.Conditioned tagWithCondition, int format) {
+        return conditionEvaluatesToFalse(tagWithCondition.getCondition(), format);
     }
 
     public static boolean conditionEvaluatesToFalse(@Nullable ROSCondition condition, int format) {

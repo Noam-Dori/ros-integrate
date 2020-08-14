@@ -12,6 +12,11 @@ import ros.integrate.pkg.xml.condition.lang.ROSConditionLanguage;
 import java.util.List;
 
 public class ROSCondition extends PsiFileBase implements ROSConditionExpr {
+    public interface Conditioned {
+        @Nullable
+        ROSCondition getCondition();
+    }
+
     public ROSCondition(@NotNull FileViewProvider viewProvider) {
         super(viewProvider, ROSConditionLanguage.INSTANCE);
     }

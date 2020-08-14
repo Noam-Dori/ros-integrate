@@ -93,7 +93,7 @@ public interface ROSPackageXml {
         }
     }
 
-    class Dependency {
+    class Dependency implements ROSCondition.Conditioned {
         @NotNull
         private final DependencyType type;
         @SuppressWarnings("StatefulEp")
@@ -130,6 +130,28 @@ public interface ROSPackageXml {
         @Nullable
         public ROSCondition getCondition() {
             return condition;
+        }
+    }
+
+    class GroupLink implements ROSCondition.Conditioned {
+        @NotNull
+        private final String group;
+        @Nullable
+        private final ROSCondition condition;
+
+        public GroupLink(@NotNull String name, @Nullable ROSCondition condition) {
+            this.group = name;
+            this.condition = condition;
+        }
+
+        @Nullable
+        public ROSCondition getCondition() {
+            return condition;
+        }
+
+        @NotNull
+        public String getGroup() {
+            return group;
         }
     }
 
@@ -235,6 +257,18 @@ public interface ROSPackageXml {
     List<Dependency> getDependencies(@Nullable DependencyType dependencyType);
 
     /**
+     * @return a list of all the groups this package depends on.
+     */
+    @NotNull
+    List<GroupLink> getGroupDepends();
+
+    /**
+     * @return a list of all the groups this package is member of.
+     */
+    @NotNull
+    List<GroupLink> getGroups();
+
+    /**
      * @return the entire tag containing data for 3rd party processing.
      */
     @Nullable
@@ -304,6 +338,20 @@ public interface ROSPackageXml {
      */
     @NotNull
     List<TagTextRange> getDependencyTextRanges();
+
+    /**
+     * @return a list with at least length 1 that points towards all text ranges of the group depend tags,
+     * or if no group depend is available, to the package tag.
+     */
+    @NotNull
+    List<TagTextRange> getGroupDependTextRanges();
+
+    /**
+     * @return a list with at least length 1 that points towards all text ranges of the group member tags,
+     * or if no group member is available, to the package tag.
+     */
+    @NotNull
+    List<TagTextRange> getGroupTextRanges();
 
     /**
      * updates the format of the package to the latest version (based on your ROS version).

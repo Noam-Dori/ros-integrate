@@ -8,7 +8,7 @@ import ros.integrate.pkg.xml.condition.psi.ROSCondition;
 import java.util.List;
 
 public interface ExportTag {
-    class BuildType {
+    class BuildType implements ROSCondition.Conditioned {
         @NotNull
         private final String type;
 

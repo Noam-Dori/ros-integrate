@@ -21,8 +21,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ROSPackageXmlImpl implements ROSPackageXml {
-    private static final String EXPORT = "export", FORMAT = "format", EMAIL = "email", COMPATIBILITY = "compatibility",
-            FILE = "file";
+    private static final String FORMAT = "format", EMAIL = "email", COMPATIBILITY = "compatibility", FILE = "file";
 
     private enum Component {
         NAME,
@@ -31,7 +30,11 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
         MAINTAINER,
         LICENSE,
         AUTHOR,
-        URL;
+        URL,
+        DEPENDENCIES,
+        GROUP_DEPEND,
+        MEMBER_OF_GROUP,
+        EXPORT;
 
         @NotNull
         String get() {
@@ -41,12 +44,15 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
 
     private static final List<String> TAG_NAMES = findTagNames();
 
+    @NotNull
     private static List<String> findTagNames() {
         List<DependencyType> dependencyTypes = Arrays.asList(DependencyType.values());
         dependencyTypes.sort(DependencyType::compare);
-        return Stream.concat(Stream.concat(Stream.of(Component.values()).map(Component::get),
-                dependencyTypes.stream().map(DependencyType::getTagName)), Stream.of(EXPORT))
-                .collect(Collectors.toList());
+        List<String> ret = Arrays.stream(Component.values()).map(Component::get).collect(Collectors.toList());
+        ret.addAll(Component.DEPENDENCIES.ordinal(),
+                dependencyTypes.stream().map(DependencyType::getTagName).collect(Collectors.toList()));
+        ret.remove(Component.DEPENDENCIES.get());
+        return ret;
     }
 
     private XmlFile file;
@@ -591,6 +597,40 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
     }
 
     @NotNull
+    private List<GroupLink> getGroupTag(String name) {
+        if (file.getRootTag() == null) {
+            return Collections.emptyList();
+        }
+        return Arrays.stream(findSubTags(name))
+                .map(tag -> new GroupLink(tag.getValue().getText(), PackageXmlUtil.getCondition(tag)))
+                .collect(Collectors.toList());
+    }
+
+    @NotNull
+    @Override
+    public List<GroupLink> getGroupDepends() {
+        return getGroupTag(Component.GROUP_DEPEND.get());
+    }
+
+    @NotNull
+    @Override
+    public List<GroupLink> getGroups() {
+        return getGroupTag(Component.MEMBER_OF_GROUP.get());
+    }
+
+    @NotNull
+    @Override
+    public List<TagTextRange> getGroupDependTextRanges() {
+        return getComponentTextRanges(Component.GROUP_DEPEND);
+    }
+
+    @NotNull
+    @Override
+    public List<TagTextRange> getGroupTextRanges() {
+        return getComponentTextRanges(Component.MEMBER_OF_GROUP);
+    }
+
+    @NotNull
     private ROSPackage findPackage(String name) {
         return Optional.ofNullable(pkgManager.findPackage(name)).map(Optional::of)
                 .orElseGet(() -> Optional.ofNullable(keyCache.findKey(name))).orElse(ROSPackage.ORPHAN);
@@ -602,7 +642,7 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
         if (file.getRootTag() == null) {
             return null;
         }
-        return Optional.ofNullable(file.getRootTag().findFirstSubTag(EXPORT))
+        return Optional.ofNullable(file.getRootTag().findFirstSubTag(Component.EXPORT.get()))
                 .map(tag -> new ExportTagImpl(tag, this)).orElse(null);
     }
 
@@ -612,8 +652,8 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
             addRootTag();
         }
         XmlTag oldExport = Optional.ofNullable(getExport()).map(ExportTag::getRawTag).orElse(null),
-                newExport = file.getRootTag().createChildTag(EXPORT, null, exportToRead.getValue()
-                        .getText(), false);
+                newExport = file.getRootTag().createChildTag(Component.EXPORT.get(), null,
+                        exportToRead.getValue().getText(), false);
         if (oldExport == null) {
             addLevel2Tag(newExport);
         } else {
