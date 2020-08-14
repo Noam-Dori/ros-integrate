@@ -15,6 +15,7 @@ import ros.integrate.pkg.psi.ROSPackage;
 import ros.integrate.pkg.xml.*;
 import ros.integrate.pkg.xml.ROSPackageXml.Contributor;
 import ros.integrate.pkg.xml.ROSPackageXml.Dependency;
+import ros.integrate.pkg.xml.ROSPackageXml.GroupLink;
 import ros.integrate.pkg.xml.ROSPackageXml.URLType;
 import ros.integrate.pkg.xml.condition.psi.ROSCondition;
 
@@ -78,7 +79,7 @@ public class ReformatPackageXmlFix extends BaseIntentionAction implements LocalQ
         List<ROSPackageXml.License> licenses = pkgXml.getLicences();
         List<Pair<String, URLType>> urls = pkgXml.getURLs();
         List<Dependency> dependencies = pkgXml.getDependencies(null);
-        // TODO: 2/29/2020 Add group
+        List<GroupLink> groupDependencies = pkgXml.getGroupDepends(), groups = pkgXml.getGroups();
         Optional<ExportTag> export = Optional.ofNullable(pkgXml.getExport());
 
         // step 2: group dependencies based on format. drop those that cannot fit.
@@ -99,7 +100,8 @@ public class ReformatPackageXmlFix extends BaseIntentionAction implements LocalQ
                 author.getEmail()));
         dependencies.forEach(dependency -> pkgXml.addDependency(dependency.getType(), dependency.getPackage(),
                 dependency.getVersionRange(), dependency.getCondition(), false));
-        // groups
+        groupDependencies.forEach(group -> pkgXml.addGroupDependency(group.getGroup(), group.getCondition()));
+        groups.forEach(group -> pkgXml.addGroup(group.getGroup(), group.getCondition()));
         export.map(ExportTag::getRawTag).ifPresent(pkgXml::setExport);
     }
 

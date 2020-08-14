@@ -433,6 +433,10 @@ public interface ROSPackageXml {
                        @NotNull VersionRange versionRange,
                        @Nullable ROSCondition condition, boolean checkRepeating);
 
+    void addGroupDependency(String group, ROSCondition condition);
+
+    void addGroup(String group, ROSCondition condition);
+
     /**
      * changes a license
      * @param id the identifier of the resource - its index in the list of tags with the same name in the file.

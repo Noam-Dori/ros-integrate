@@ -411,7 +411,29 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
         addLevel2Tag(newTag);
     }
 
-    void addVersionRangeToDep(@NotNull XmlTag depTag, @NotNull VersionRange range) {
+    @Override
+    public void addGroupDependency(String group, ROSCondition condition) {
+        if (file.getRootTag() == null) {
+            addRootTag();
+        }
+        XmlTag newTag = file.getRootTag()
+                .createChildTag(Component.GROUP_DEPEND.get(), null, group, false);
+        addCondition(newTag, condition);
+        addLevel2Tag(newTag);
+    }
+
+    @Override
+    public void addGroup(String group, ROSCondition condition) {
+        if (file.getRootTag() == null) {
+            addRootTag();
+        }
+        XmlTag newTag = file.getRootTag()
+                .createChildTag(Component.MEMBER_OF_GROUP.get(), null, group, false);
+        addCondition(newTag, condition);
+        addLevel2Tag(newTag);
+    }
+
+    private void addVersionRangeToDep(@NotNull XmlTag depTag, @NotNull VersionRange range) {
         if (!range.isNotValid()) {
             if (range.getMax() != null) {
                 if (range.getMax().equals(range.getMin())) {
