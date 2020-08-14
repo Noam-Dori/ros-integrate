@@ -26,6 +26,7 @@ import ros.integrate.pkg.psi.ROSPackage;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Collectors;
 
 public class ROSPackageManagerImpl implements ROSPackageManager {
     private final ConcurrentMap<String, ROSPackage> pkgCache = new ConcurrentHashMap<>();
@@ -230,5 +231,23 @@ public class ROSPackageManagerImpl implements ROSPackageManager {
         project.getMessageBus().syncPublisher(VirtualFileManager.VFS_CHANGES)
                 .after(Collections.singletonList(new VFileContentChangeEvent(this, file.getVirtualFile(),
                         file.getModificationStamp(), -1, false)));
+    }
+
+    @NotNull
+    @Override
+    public Collection<ROSPackage> findGroupMembers(@NotNull String groupName) {
+        return getAllPackages().stream()
+                .filter(pkg -> pkg.getPackageXml() != null && pkg.getPackageXml().getGroups().stream()
+                        .anyMatch(group -> group.getGroup().equals(groupName)))
+                .collect(Collectors.toList());
+    }
+
+    @NotNull
+    @Override
+    public Collection<ROSPackage> findGroupDependents(@NotNull String groupName) {
+        return getAllPackages().stream()
+                .filter(pkg -> pkg.getPackageXml() != null && pkg.getPackageXml().getGroupDepends().stream()
+                        .anyMatch(group -> group.getGroup().equals(groupName)))
+                .collect(Collectors.toList());
     }
 }

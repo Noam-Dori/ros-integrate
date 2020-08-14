@@ -63,5 +63,8 @@
         <localInspection language="XML" implementationClass="ros.integrate.pkg.xml.inspection.LicenseFileRequiredInspection"
                          level="WARNING" enabledByDefault="true" shortName="license-file-required"
                          groupName="ROS" displayName="License requires full license text"/>
+        <localInspection language="XML" implementationClass="ros.integrate.pkg.xml.inspection.EmptyGroupInspection"
+                         level="WARNING" enabledByDefault="true" shortName="empty-group"
+                         groupName="ROS" displayName="Dependency on a group with no members"/>
     </extensions>
 </idea-plugin>

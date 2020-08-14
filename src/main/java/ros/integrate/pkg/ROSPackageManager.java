@@ -2,6 +2,7 @@ package ros.integrate.pkg;
 
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.xml.XmlFile;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkg.psi.ROSPackage;
 
@@ -41,7 +42,35 @@ public interface ROSPackageManager {
      */
     void updatePackageName(ROSPackage pkg, String newName);
 
+    /**
+     * removes an XML file from indexing in the ROS plugin.
+     * @param file the file to ignore
+     */
     void excludePkgXml(XmlFile file);
 
+    /**
+     * adds an XML file for indexing in the ROS plugin.
+     * @param file the file to recognize
+     */
     void includeXml(XmlFile file);
+
+    /**
+     * searches for all members of a specific group within the workspace.
+     * @param groupName the group to look for
+     * @return a collection of all the members of the group. If there are none, an empty collection is returned.
+     * @apiNote this action can be heavy to calculate since it runs text operations on all package.xml files.
+     *          Use it sparingly.
+     */
+    @NotNull
+    Collection<ROSPackage> findGroupMembers(@NotNull String groupName);
+
+    /**
+     * searches for all packages within the workspace that depend on a specific group.
+     * @param groupName the group to look for
+     * @return a collection of all the members of the group. If there are none, an empty collection is returned.
+     * @apiNote this action can be heavy to calculate since it runs text operations on all package.xml files.
+     *          Use it sparingly.
+     */
+    @NotNull
+    Collection<ROSPackage> findGroupDependents(@NotNull String groupName);
 }
