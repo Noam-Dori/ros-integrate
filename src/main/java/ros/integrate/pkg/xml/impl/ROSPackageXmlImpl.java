@@ -573,6 +573,16 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
     }
 
     @Override
+    public void removeGroupDependency(int id) {
+        removeComponent(id, Component.GROUP_DEPEND);
+    }
+
+    @Override
+    public void removeGroup(int id) {
+        removeComponent(id, Component.MEMBER_OF_GROUP);
+    }
+
+    @Override
     public void setLicense(int id, @NotNull License license) {
         XmlTag newTag = Objects.requireNonNull(this.file.getRootTag())
                 .createChildTag(Component.LICENSE.get(), null, license.getValue(), false);

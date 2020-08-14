@@ -512,6 +512,18 @@ public interface ROSPackageXml {
     void removeDependency(int id);
 
     /**
+     * removes a group dependency
+     * @param id the identifier of the resource - its index in the list of all group dependencies in the file.
+     */
+    void removeGroupDependency(int id);
+
+    /**
+     * removes a group membership
+     * @param id the identifier of the resource - its index in the list of all groups in the file.
+     */
+    void removeGroup(int id);
+
+    /**
      * wrapper method for {@link XmlTag#findSubTags(String)} of {@link XmlFile#getRootTag()}
      */
     @NotNull

@@ -1,9 +1,7 @@
 package ros.integrate.pkg.xml.annotate;
 
-import com.intellij.codeInsight.daemon.impl.analysis.RemoveTagIntentionFix;
 import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
-import com.intellij.psi.xml.XmlTag;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.xml.PackageXmlUtil;
 import ros.integrate.pkg.xml.ROSPackageXml;
@@ -11,6 +9,7 @@ import ros.integrate.pkg.xml.ROSPackageXml.GroupLink;
 import ros.integrate.pkg.xml.TagTextRange;
 import ros.integrate.pkg.xml.condition.highlight.ROSConditionSyntaxHighlighter;
 import ros.integrate.pkg.xml.intention.ReformatPackageXmlFix;
+import ros.integrate.pkg.xml.intention.RemoveGroupTagQuickFix;
 
 import java.util.List;
 
@@ -39,19 +38,17 @@ public class PackageGroupAnnotator {
         if (format >= 3) {
             return;
         }
-        XmlTag[] tags = pkgXml.findSubTags("member_of_group");
         for (int i = 0; i < groups.size(); i++) {
             Annotation ann = holder.createErrorAnnotation(groupTrs.get(i),
                     "member_of_group is supported from format 3");
             ann.registerFix(new ReformatPackageXmlFix(pkgXml, true));
-            ann.registerFix(new RemoveTagIntentionFix("member_of_group", tags[i]));
+            ann.registerFix(new RemoveGroupTagQuickFix(pkgXml, i, false));
         }
-        tags = pkgXml.findSubTags("group_depend");
         for (int i = 0; i < groupDepends.size(); i++) {
             Annotation ann = holder.createErrorAnnotation(groupDependTrs.get(i),
                     "group_depend is supported from format 3");
             ann.registerFix(new ReformatPackageXmlFix(pkgXml, true));
-            ann.registerFix(new RemoveTagIntentionFix("group_depend", tags[i]));
+            ann.registerFix(new RemoveGroupTagQuickFix(pkgXml, i, true));
         }
     }
 
@@ -69,6 +66,23 @@ public class PackageGroupAnnotator {
             if (PackageXmlUtil.conditionEvaluatesToFalse(groups.get(i), format)) {
                 Annotation ann = holder.createInfoAnnotation(groupTrs.get(i), null);
                 ann.setTextAttributes(ROSConditionSyntaxHighlighter.IGNORED);
+            }
+        }
+    }
+
+    public void annEmptyGroup() {
+        for (int i = 0; i < groups.size(); i++) {
+            if (groupTrs.get(i).value() == groupTrs.get(i)) {
+                Annotation ann = holder.createErrorAnnotation(groupTrs.get(i).name(),
+                        "Empty group tag.");
+                ann.registerFix(new RemoveGroupTagQuickFix(pkgXml, i, false));
+            }
+        }
+        for (int i = 0; i < groupDepends.size(); i++) {
+            if (groupDependTrs.get(i).value() == groupDependTrs.get(i)) {
+                Annotation ann = holder.createErrorAnnotation(groupDependTrs.get(i).name(),
+                        "Empty group tag.");
+                ann.registerFix(new RemoveGroupTagQuickFix(pkgXml, i, true));
             }
         }
     }

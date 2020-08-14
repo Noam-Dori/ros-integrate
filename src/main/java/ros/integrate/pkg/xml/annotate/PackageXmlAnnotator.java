@@ -116,6 +116,7 @@ public class PackageXmlAnnotator implements Annotator {
             PackageGroupAnnotator grpAnn = new PackageGroupAnnotator(pkgXml, holder);
             grpAnn.annTooLowFormat();
             grpAnn.annIgnoredCondition();
+            grpAnn.annEmptyGroup();
 
             for (XmlTag lvl1Tag : pkgXml.getSubTags()) {
                 if (!LEVEL_1_TAGS.contains(lvl1Tag.getName()) && !PackageXmlUtil.isDependencyTag(lvl1Tag)) {
