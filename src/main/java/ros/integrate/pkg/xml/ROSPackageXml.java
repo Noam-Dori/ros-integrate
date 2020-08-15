@@ -281,6 +281,12 @@ public interface ROSPackageXml {
     ROSPackage getPackage();
 
     /**
+     * @return the text range covering the name of the root tag of the package.xml, \<package\>\</package\>
+     */
+    @NotNull
+    TextRange getRootTextRange();
+
+    /**
      * @return the text range of the format tag, or if it is not available, the root tag.
      */
     @NotNull

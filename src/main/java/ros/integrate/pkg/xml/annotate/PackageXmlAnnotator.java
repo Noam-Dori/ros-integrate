@@ -100,6 +100,7 @@ public class PackageXmlAnnotator implements Annotator {
             depAnn.annInvalidDependencyVersionAttr();
             depAnn.annConflictingVersionAttr();
             depAnn.annIgnoredCondition();
+            depAnn.annNoBuildtoolDependency();
 
             PackageExportAnnotator expAnn = new PackageExportAnnotator(pkgXml, holder);
             expAnn.annEmptyMessageGenerator();

@@ -195,4 +195,12 @@ class PackageDependencyAnnotator {
             }
         }
     }
+
+    public void annNoBuildtoolDependency() {
+        if (pkgXml.getDependencies(DependencyType.BUILDTOOL).isEmpty()) {
+            Annotation ann = holder.createErrorAnnotation(pkgXml.getRootTextRange(),
+                    "Package must include at least one buildtool dependency.");
+            ann.registerFix(new AddBuildtoolDependencyFix(pkgXml));
+        }
+    }
 }
