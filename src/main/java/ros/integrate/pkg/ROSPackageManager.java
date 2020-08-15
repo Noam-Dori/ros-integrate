@@ -71,6 +71,7 @@ public interface ROSPackageManager {
      * @apiNote this action can be heavy to calculate since it runs text operations on all package.xml files.
      *          Use it sparingly.
      */
+    @SuppressWarnings("unused")
     @NotNull
     Collection<ROSPackage> findGroupDependents(@NotNull String groupName);
 }

@@ -11,6 +11,7 @@ import com.intellij.util.ProcessingContext;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.xml.ref.DependencyToPackageReference;
+import ros.integrate.pkg.xml.ref.PackageXmlGroupReference;
 import ros.integrate.pkg.xml.ref.NameXmlToPackageReference;
 import ros.integrate.settings.ROSSettings;
 
@@ -46,6 +47,10 @@ public class PackageXmlReferenceContributor extends PsiReferenceContributor {
                     return new PsiReference[]{new DependencyToPackageReference((XmlTag) element)};
                 } else if (name.equals("name")) {
                     return new PsiReference[]{new NameXmlToPackageReference((XmlTag) element, pkgXml)};
+                } else if (name.equals("group_depend")) {
+                    return new PsiReference[]{new PackageXmlGroupReference((XmlTag) element, true)};
+                } else if (name.equals("member_of_group")) {
+                    return new PsiReference[]{new PackageXmlGroupReference((XmlTag) element, false)};
                 }
                 return PsiReference.EMPTY_ARRAY;
             }

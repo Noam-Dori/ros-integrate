@@ -17,6 +17,7 @@ import com.intellij.util.EmptyConsumer;
 import com.intellij.util.ProcessingContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import ros.integrate.ROSIcons;
 import ros.integrate.pkg.ROSDepKeyCache;
 import ros.integrate.pkg.ROSPackageManager;
 import ros.integrate.pkg.psi.ROSPackage;
@@ -28,6 +29,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class PackageXmlCompletionContributor extends CompletionContributor {
     private static final Logger LOG = Logger.getLogger("#ros.integrate.pkg.xml.completion.PackageXmlCompletionContributor");
@@ -115,6 +117,23 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
                     .forEach(resultSet::addElement);
         } else if (tag.getName().equals("build_type")) {
             Arrays.stream(BUILD_TYPES).map(LookupElementBuilder::create).map(LookupElementBuilder::bold)
+                    .forEach(resultSet::addElement);
+        } else if (tag.getName().equals("member_of_group") || tag.getName().equals("group_depend") &&
+                xmlFile.getFormat() >= 3) {
+            Set<String> result = new HashSet<>();
+            Set<String> badGroups =
+                    Stream.concat(xmlFile.getGroups().stream(), xmlFile.getGroupDepends().stream())
+                    .filter(group -> !PackageXmlUtil.conditionEvaluatesToFalse(group, xmlFile.getFormat()))
+                    .map(ROSPackageXml.GroupLink::getGroup).collect(Collectors.toSet());
+            tag.getProject().getService(ROSPackageManager.class).getAllPackages().stream()
+                    .map(ROSPackage::getPackageXml).filter(Objects::nonNull)
+                    .peek(pkgXml -> result.addAll(pkgXml.getGroups().stream()
+                            .map(ROSPackageXml.GroupLink::getGroup).collect(Collectors.toSet())))
+                    .forEach(pkgXml -> result.addAll(pkgXml.getGroupDepends().stream()
+                            .map(ROSPackageXml.GroupLink::getGroup).collect(Collectors.toSet())));
+            result.stream().filter(str -> !str.isEmpty() && !badGroups.contains(str))
+                    .map(LookupElementBuilder::create)
+                    .map(lookupElement -> lookupElement.withIcon(ROSIcons.GROUP))
                     .forEach(resultSet::addElement);
         }
     }
