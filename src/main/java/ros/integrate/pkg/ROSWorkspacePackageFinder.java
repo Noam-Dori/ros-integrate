@@ -1,42 +1,65 @@
 package ros.integrate.pkg;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.MapDifference;
-import com.google.common.collect.Maps;
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.module.impl.scopes.LibraryScope;
+import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.roots.OrderRootType;
+import com.intellij.openapi.roots.*;
 import com.intellij.openapi.roots.libraries.Library;
 import com.intellij.openapi.roots.libraries.LibraryTable;
 import com.intellij.openapi.roots.libraries.LibraryTablesRegistrar;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
+import com.intellij.openapi.vfs.VirtualFileSystem;
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.psi.search.GlobalSearchScopesCore;
 import com.intellij.psi.xml.XmlFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import ros.integrate.pkt.psi.ROSPktFile;
-import ros.integrate.settings.ROSSettings;
 import ros.integrate.pkg.psi.ROSPackage;
 import ros.integrate.pkg.psi.impl.ROSSourcePackage;
+import ros.integrate.pkt.psi.ROSPktFile;
+import ros.integrate.settings.ROSSettings;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * a finder used to find packages in the project's workspace. These packages do not need to be inside the project to be found.
  */
 public class ROSWorkspacePackageFinder extends ROSPackageFinderBase {
     private static final Logger LOG = Logger.getInstance("#ros.integrate.workspace.ROSWorkspacePackageFinder");
+    private static final String WS_LIB = "workspace";
+    private static final VirtualFileSystem FILE_SYSTEM = VirtualFileManager.getInstance()
+            .getFileSystem(LocalFileSystem.PROTOCOL);
+
+    private Library wsLib;
+    private String wsPath = null;
+
+    @Nullable
+    private VirtualFile toVirtualFile(@Nullable String path) {
+        if (path == null) {
+            return null;
+        }
+        return FILE_SYSTEM.findFileByPath(path);
+    }
 
     @NotNull
     private List<VirtualFile> getWorkspaceRoots(Project project) {
-        Library origin = LibraryTablesRegistrar.getInstance().getLibraryTable(project).getLibraryByName("workspace");
-        Objects.requireNonNull(origin);
-        return Lists.asList(origin.getFiles(OrderRootType.SOURCES)[0], origin.getFiles(OrderRootType.CLASSES));
+        List<VirtualFile> ret = new ArrayList<>(Arrays.asList(getLibrary(project).getFiles(OrderRootType.CLASSES)));
+        Optional.ofNullable(toVirtualFile(wsPath)).ifPresent(ret::add);
+        return ret;
+    }
+
+    @NotNull
+    private Library getLibrary(Project project) {
+        LibraryTable table = LibraryTablesRegistrar.getInstance().getLibraryTable(project);
+        wsLib = Optional.ofNullable(Optional.ofNullable(wsLib)
+                .orElseGet(() -> table.getLibraryByName(WS_LIB)))
+                .orElseGet(() -> table.createLibrary(WS_LIB));
+        return wsLib;
     }
 
     @Override
@@ -60,79 +83,79 @@ public class ROSWorkspacePackageFinder extends ROSPackageFinderBase {
     @NotNull
     @Override
     GlobalSearchScope getScope(Project project) {
-        return Optional.ofNullable(LibraryTablesRegistrar.getInstance()
-                .getLibraryTable(project).getLibraryByName("workspace"))
-                .map(lib -> (GlobalSearchScope) new LibraryScope(project, lib)).orElse(GlobalSearchScope.EMPTY_SCOPE);
+        return GlobalSearchScope.union(getWorkspaceRoots(project).stream()
+                .map(vFile -> GlobalSearchScopesCore.directoryScope(project, vFile, true))
+                .toArray(GlobalSearchScope[]::new));
     }
 
-    @Nullable
+    @NotNull
     @Override
-    public Library getLibrary(Project project) {
-        LibraryTable table = LibraryTablesRegistrar.getInstance().getLibraryTable(project);
-        Library lib = table.getLibraryByName("workspace");
-        if (lib != null) {
-            table.removeLibrary(lib);
-        }
-        lib = table.createLibrary("workspace");
-        Library.ModifiableModel model = lib.getModifiableModel();
-
+    public Set<Module> loadArtifacts(Project project) {
         ROSSettings settings = ROSSettings.getInstance(project);
-        Map<String, OrderRootType> paths = new HashMap<>();
-        settings.getAdditionalSources().forEach(path -> paths.put(path, OrderRootType.CLASSES));
-        if (!settings.getWorkspacePath().isEmpty()) {
-            paths.put(settings.getWorkspacePath(), OrderRootType.SOURCES);
-        }
-        for (Map.Entry<String, OrderRootType> entry : paths.entrySet()) {
-            VirtualFile root = VirtualFileManager.getInstance()
-                    .findFileByUrl(VirtualFileManager.constructUrl(LocalFileSystem.PROTOCOL, entry.getKey()));
-            if (root != null) {
-                model.addRoot(root, entry.getValue());
+        Set<VirtualFile> files = settings.getAdditionalSources().stream().map(this::toVirtualFile)
+                .collect(Collectors.toSet());
+        Optional.ofNullable(settings.getWorkspacePath())
+                .map(path -> wsPath = path)
+                .map(this::toVirtualFile)
+                .map(root -> root.findChild("src"))
+                .map(VirtualFile::getChildren)
+                .ifPresent(children -> Collections.addAll(files, children));
+        files.removeAll(getWorkspaceRoots(project));
+        GlobalSearchScope projectScope = GlobalSearchScope.projectScope(project);
+        Library.ModifiableModel model = getLibrary(project).getModifiableModel();
+        for (VirtualFile file : files) {
+            if (file != null && !projectScope.contains(file)) {
+                model.addRoot(file, OrderRootType.CLASSES);
             }
         }
         model.commit();
-        return lib;
+        return Collections.emptySet();
     }
 
     @Override
-    public boolean updateLibrary(Project project, @NotNull Library lib) {
-        MapDifference<String, OrderRootType> changes = checkUrlChanges(project, lib);
+    public boolean updateArtifacts(Project project) {
+        SetDifference<VirtualFile> changes = checkUrlChanges(project);
 
         if (changes.areEqual()) {
             return false;
         } else {
-            Library.ModifiableModel model = lib.getModifiableModel();
-            for (Map.Entry<String, OrderRootType> entry : changes.entriesOnlyOnLeft().entrySet()) {
-                VirtualFile root = VirtualFileManager.getInstance().findFileByUrl(entry.getKey());
-                if (root != null) {
-                    model.addRoot(root, entry.getValue());
-                }
+            Library.ModifiableModel model = getLibrary(project).getModifiableModel();
+            for (VirtualFile addFile : changes.entriesOnlyOnLeft()) {
+                model.addRoot(addFile, OrderRootType.CLASSES);
             }
-            for (Map.Entry<String, OrderRootType> entry : changes.entriesOnlyOnRight().entrySet()) {
-                model.removeRoot(entry.getKey(), entry.getValue());
+            for (VirtualFile removeFile : changes.entriesOnlyOnRight()) {
+                model.removeRoot(removeFile.getUrl(), OrderRootType.CLASSES);
             }
             model.commit();
             return true;
         }
     }
 
-    @NotNull
-    private MapDifference<String, OrderRootType> checkUrlChanges(Project project, Library libraryToCheck) {
-        ROSSettings settings = ROSSettings.getInstance(project);
-        Map<String, OrderRootType> newUrls = new HashMap<>(), oldUrls = new HashMap<>();
-
-        settings.getAdditionalSources().stream()
-                .map(path -> VirtualFileManager.constructUrl(LocalFileSystem.PROTOCOL, path))
-                .forEach(url -> newUrls.put(url, OrderRootType.CLASSES));
-        newUrls.put(VirtualFileManager.constructUrl(LocalFileSystem.PROTOCOL,
-                settings.getWorkspacePath()), OrderRootType.SOURCES);
-
-        for (OrderRootType type : OrderRootType.getAllPersistentTypes()) {
-            for (String url : libraryToCheck.getUrls(type)) {
-                oldUrls.put(url, type);
-            }
+    @Override
+    public void setDependency(Module module) {
+        ModifiableRootModel model = ModuleRootManager.getInstance(module).getModifiableModel();
+        LibraryOrderEntry entry = model.findLibraryOrderEntry(getLibrary(module.getProject()));
+        if (entry == null) {
+            ModuleRootModificationUtil.addDependency(module, getLibrary(module.getProject()));
         }
+        model.dispose();
+    }
 
-        return Maps.difference(newUrls, oldUrls);
+    @NotNull
+    private SetDifference<VirtualFile> checkUrlChanges(Project project) {
+        ROSSettings settings = ROSSettings.getInstance(project);
+        Set<VirtualFile> oldFiles = new HashSet<>(getWorkspaceRoots(project)),
+                newFiles = settings.getAdditionalSources().stream().map(this::toVirtualFile)
+                        .collect(Collectors.toSet());
+        Optional.ofNullable(settings.getWorkspacePath())
+                .map(path -> wsPath = path) // this update will help the scope that uses it.
+                .map(this::toVirtualFile)
+                .map(root -> root.findChild("src"))
+                .map(VirtualFile::getChildren)
+                .ifPresent(children -> Collections.addAll(newFiles, children));
+        GlobalSearchScope projectScope = GlobalSearchScope.projectScope(project);
+        newFiles.removeIf(file -> file == null || projectScope.contains(file));
+        return SetDifference.difference(newFiles, oldFiles);
     }
 
     boolean notInFinder(@NotNull VirtualFile vFile, @NotNull Project project) {

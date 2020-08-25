@@ -165,7 +165,8 @@ public abstract class ROSPackageFinderBase implements ROSPackageFinder {
             return CacheCommand.DELETE;
         }
         // if package.xml was changed, change it in the package.
-        if(!newXml.equals(Optional.ofNullable(pkg.getPackageXml()).map(ROSPackageXml::getRawXml).get())) {
+        if(Optional.ofNullable(pkg.getPackageXml()).map(ROSPackageXml::getRawXml)
+                .map(rawXml -> !newXml.equals(rawXml)).orElse(true)) {
             pkg.setPackageXml(newXml);
         }
         // 2. check for new packets in root & apply changes

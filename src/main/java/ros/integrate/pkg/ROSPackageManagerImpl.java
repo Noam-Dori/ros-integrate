@@ -5,9 +5,6 @@ import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.roots.*;
-import com.intellij.openapi.roots.libraries.Library;
-import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.openapi.vfs.newvfs.BulkFileListener;
 import com.intellij.openapi.vfs.newvfs.events.VFileContentChangeEvent;
@@ -67,30 +64,20 @@ public class ROSPackageManagerImpl implements ROSPackageManager {
     }
 
     private void setupLibraries() {
-        Module[] projectModules = ModuleManager.getInstance(project).getModules();
+        List<Module> originalModules = new ArrayList<>(Arrays.asList(ModuleManager.getInstance(project).getModules()));
         finders.forEach(finder -> {
-            Library lib = WriteCommandAction.runWriteCommandAction(project, (Computable<Library>) () ->
-                    finder.getLibrary(project));
-            if (lib != null) {
-                ROSSettings.getInstance(project).addListener(settings ->
-                                WriteCommandAction.runWriteCommandAction(project, () -> {
-                                    purgeFlag = finder.updateLibrary(project, lib);
-                                    dispatchEvents(new ArrayList<>());
-                                }),
-                        new String[]{BrowserOptions.HistoryKey.EXTRA_SOURCES.get(),
-                                BrowserOptions.HistoryKey.WORKSPACE.get()});
-                Arrays.stream(projectModules).forEach(module -> setDependency(module, lib));
-            }
+            WriteCommandAction.runWriteCommandAction(project, (Runnable) () ->
+                    originalModules.removeIf(module -> finder.loadArtifacts(project).stream().map(Module::getName)
+                                    .collect(Collectors.toSet()).contains(module.getName())));
+            ROSSettings.getInstance(project).addListener(settings ->
+                            WriteCommandAction.runWriteCommandAction(project, () -> {
+                                purgeFlag = finder.updateArtifacts(project);
+                                dispatchEvents(new ArrayList<>());
+                            }),
+                    new String[]{BrowserOptions.HistoryKey.EXTRA_SOURCES.get(),
+                            BrowserOptions.HistoryKey.WORKSPACE.get()});
         });
-    }
-
-    private void setDependency(@NotNull Module module, @NotNull Library lib) {
-        ModifiableRootModel model = ModuleRootManager.getInstance(module).getModifiableModel();
-        LibraryOrderEntry entry = model.findLibraryOrderEntry(lib);
-        if (entry == null) {
-            ModuleRootModificationUtil.addDependency(module, lib);
-        }
-        model.dispose();
+        finders.forEach(finder -> originalModules.forEach(finder::setDependency));
     }
 
     private void findAndCachePackages() {

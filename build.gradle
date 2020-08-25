@@ -21,7 +21,7 @@ dependencies {
 
 intellij {
 //    version 'LATEST-EAP-SNAPSHOT'
-    version '2019.3'
+    version 'CL-2019.3'
     updateSinceUntilBuild false
 }
 
