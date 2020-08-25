@@ -34,8 +34,9 @@ public class PackageXmlReferenceContributor extends PsiReferenceContributor {
                 }
                 String name = ((XmlTag)element).getName(), value = ((XmlTag)element).getValue().getText();
                 if (name.equals("license")) {
-                    String url = ROSLicenses.AVAILABLE_LICENSES.get(value)
-                            .getLink(ROSSettings.getInstance(element.getProject()).getLicenseLinkType());
+                    String url = Optional.ofNullable(ROSLicenses.AVAILABLE_LICENSES.get(value)).map(licenseEntity ->
+                            licenseEntity.getLink(ROSSettings.getInstance(element.getProject()).getLicenseLinkType()))
+                            .orElse(null);
                     return url == null || url.isEmpty() ? PsiReference.EMPTY_ARRAY : getWebReference(element, url);
                 } else if (name.equals("url")) {
                     try {

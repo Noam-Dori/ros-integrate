@@ -16,7 +16,8 @@ public class OutdatedFormatInspection extends LocalInspectionTool {
     @Override
     public ProblemDescriptor[] checkFile(@NotNull PsiFile file, @NotNull InspectionManager manager, boolean isOnTheFly) {
         ROSPackageXml pkgXml = PackageXmlUtil.getWrapper(file);
-        if (pkgXml == null || pkgXml.getFormat() >= ROSPackageXml.getLatestFormat()) {
+        if (pkgXml == null || pkgXml.getFormat() >= ROSPackageXml.getLatestFormat() ||
+                pkgXml.getFormatTextRange().isEmpty()) { // this aborts the inspection since there is already an error.
             return null;
         }
         return new ProblemDescriptor[]{

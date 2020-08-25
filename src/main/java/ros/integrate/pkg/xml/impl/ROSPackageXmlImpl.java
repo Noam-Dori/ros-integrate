@@ -123,7 +123,7 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
     @NotNull
     @Override
     public TagTextRange getRootTextRange() {
-        return file.getRootTag() == null ? new TagTextRange(file.getTextRange()) :
+        return file.getRootTag() == null || file.getText().isEmpty() ? new TagTextRange(file.getTextRange()) :
                 new TagTextRange(file.getRootTag().getTextOffset() + 1, file.getRootTag().getTextOffset() + 1 +
                 file.getRootTag().getName().length());
     }
