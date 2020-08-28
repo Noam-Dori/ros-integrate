@@ -19,6 +19,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ROSDepKeyCacheImpl implements ROSDepKeyCache {
     private static final Logger LOG = Logger.getLogger("#ros.integrate.pkg.ROSDepKeyCacheImpl");
@@ -103,6 +105,20 @@ public class ROSDepKeyCacheImpl implements ROSDepKeyCache {
                 connectionFailed = true;
             }
         }
+
+        try {
+            Process process = Runtime.getRuntime().exec("rosdep db");
+            Scanner scanner = new Scanner(process.getInputStream());
+            while (scanner.hasNextLine()) {
+                String keyName = nextKeyRosdepDB(scanner);
+                if (!keyName.isEmpty()) {
+                    keyCache.putIfAbsent(keyName, new ROSDepKey(project, keyName));
+                }
+            }
+        } catch (IOException e) {
+            LOG.warning("Failed to use rosdep db to update rosdep keys.");
+        }
+
         offlineMode = connectionFailed;
         internetAttempted = true;
     }
@@ -119,6 +135,23 @@ public class ROSDepKeyCacheImpl implements ROSDepKeyCache {
             String line = scanner.nextLine();
             if (!line.contains(" ")) {
                 ret = line.substring(0,line.length() - 1);
+            }
+        }
+        return ret;
+    }
+
+    @NotNull
+    public String nextKeyRosdepDB(@NotNull Scanner scanner) {
+        String ret = "";
+        while (scanner.hasNextLine() && ret.isEmpty()) {
+            String line = scanner.nextLine();
+
+            Pattern pattern = Pattern.compile("^[^\\s]+");
+            Matcher matcher = pattern.matcher(line);
+            if(matcher.find()) {
+                ret = matcher.group(0);
+                if(ret.equals("OS") || ret.equals("DB"))
+                    ret = "";
             }
         }
         return ret;
