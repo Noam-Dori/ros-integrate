@@ -4,6 +4,10 @@
     <vendor email="TheNODO55@gmail.com">Noam Dori</vendor>
     <id>ros-integrate</id>
 
+    <projectListeners>
+        <listener class="ros.integrate.pkg.ROSIndexChangeListener" topic="com.intellij.openapi.vfs.newvfs.BulkFileListener"/>
+    </projectListeners>
+
     <extensionPoints>
         <extensionPoint name="packageFinder" interface="ros.integrate.pkg.ROSPackageFinder"/>
         <extensionPoint name="exportLangHelper" interface="ros.integrate.pkg.xml.annotate.ExportLangHelper"/>

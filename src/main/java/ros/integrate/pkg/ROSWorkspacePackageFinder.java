@@ -35,8 +35,8 @@ public class ROSWorkspacePackageFinder extends ROSPackageFinderBase {
     private static final VirtualFileSystem FILE_SYSTEM = VirtualFileManager.getInstance()
             .getFileSystem(LocalFileSystem.PROTOCOL);
 
-    private Library wsLib;
-    private String wsPath = null;
+    Map<Project, Library> wsLib = new HashMap<>(1);
+    Map<Project, String> wsPath = new HashMap<>(1);
 
     @Nullable
     private VirtualFile toVirtualFile(@Nullable String path) {
@@ -46,20 +46,24 @@ public class ROSWorkspacePackageFinder extends ROSPackageFinderBase {
         return FILE_SYSTEM.findFileByPath(path);
     }
 
+    @Nullable
+    private String getWorkspacePath(@NotNull Project project) {
+        return wsPath.putIfAbsent(project, ROSSettings.getInstance(project).getWorkspacePath());
+    }
+
     @NotNull
     private List<VirtualFile> getWorkspaceRoots(Project project) {
         List<VirtualFile> ret = new ArrayList<>(Arrays.asList(getLibrary(project).getFiles(OrderRootType.CLASSES)));
-        Optional.ofNullable(toVirtualFile(wsPath)).ifPresent(ret::add);
+        Optional.ofNullable(toVirtualFile(getWorkspacePath(project))).ifPresent(ret::add);
         return ret;
     }
 
     @NotNull
     private Library getLibrary(Project project) {
-        LibraryTable table = LibraryTablesRegistrar.getInstance().getLibraryTable(project);
-        wsLib = Optional.ofNullable(Optional.ofNullable(wsLib)
-                .orElseGet(() -> table.getLibraryByName(WS_LIB)))
-                .orElseGet(() -> table.createLibrary(WS_LIB));
-        return wsLib;
+        return wsLib.computeIfAbsent(project, p -> {
+            LibraryTable table = LibraryTablesRegistrar.getInstance().getLibraryTable(project);
+            return Optional.ofNullable(table.getLibraryByName(WS_LIB)).orElseGet(() -> table.createLibrary(WS_LIB));
+        });
     }
 
     @Override
@@ -88,14 +92,13 @@ public class ROSWorkspacePackageFinder extends ROSPackageFinderBase {
                 .toArray(GlobalSearchScope[]::new));
     }
 
-    @NotNull
     @Override
-    public Set<Module> loadArtifacts(Project project) {
+    public void loadLibraries(Project project) {
         ROSSettings settings = ROSSettings.getInstance(project);
         Set<VirtualFile> files = settings.getAdditionalSources().stream().map(this::toVirtualFile)
                 .collect(Collectors.toSet());
         Optional.ofNullable(settings.getWorkspacePath())
-                .map(path -> wsPath = path)
+                .map(path -> wsPath.put(project, path))
                 .map(this::toVirtualFile)
                 .map(root -> root.findChild("src"))
                 .map(VirtualFile::getChildren)
@@ -109,11 +112,10 @@ public class ROSWorkspacePackageFinder extends ROSPackageFinderBase {
             }
         }
         model.commit();
-        return Collections.emptySet();
     }
 
     @Override
-    public boolean updateArtifacts(Project project) {
+    public boolean updateLibraries(Project project) {
         SetDifference<VirtualFile> changes = checkUrlChanges(project);
 
         if (changes.areEqual()) {
@@ -148,7 +150,7 @@ public class ROSWorkspacePackageFinder extends ROSPackageFinderBase {
                 newFiles = settings.getAdditionalSources().stream().map(this::toVirtualFile)
                         .collect(Collectors.toSet());
         Optional.ofNullable(settings.getWorkspacePath())
-                .map(path -> wsPath = path) // this update will help the scope that uses it.
+                .map(path -> wsPath.put(project, path)) // this update will help the scope that uses it.
                 .map(this::toVirtualFile)
                 .map(root -> root.findChild("src"))
                 .map(VirtualFile::getChildren)

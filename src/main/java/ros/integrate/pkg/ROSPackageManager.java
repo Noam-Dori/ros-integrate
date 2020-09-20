@@ -1,5 +1,6 @@
 package ros.integrate.pkg;
 
+import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.xml.XmlFile;
 import org.jetbrains.annotations.NotNull;
@@ -7,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkg.psi.ROSPackage;
 
 import java.util.Collection;
+import java.util.List;
 
 public interface ROSPackageManager {
     /**
@@ -74,4 +76,15 @@ public interface ROSPackageManager {
     @SuppressWarnings("unused")
     @NotNull
     Collection<ROSPackage> findGroupDependents(@NotNull String groupName);
+
+    /**
+     * reloads the package manager index.
+     */
+    void reloadIndex();
+
+    /**
+     * indicates that relevant files changed, so the index should try updating
+     * @param events the events that happened
+     */
+    void filesChanged(List<? extends VFileEvent> events);
 }

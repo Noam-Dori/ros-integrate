@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkg.psi.ROSPackage;
 
 import java.util.Collection;
-import java.util.Set;
+import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 
 /**
@@ -19,6 +19,8 @@ import java.util.concurrent.ConcurrentMap;
  */
 public interface ROSPackageFinder {
     ExtensionPointName<ROSPackageFinder> EP_NAME = ExtensionPointName.create("ros-integrate.packageFinder");
+
+    List<ROSPackageFinder> FINDERS = ROSPackageFinder.EP_NAME.getExtensionList();
 
     /**
      * the main action which finds ROS packages based on their key-files,
@@ -72,17 +74,15 @@ public interface ROSPackageFinder {
     /**
      * loads the artifacts this finder uses
      * @param project the project the finder will search/create an artifact for
-     * @return if this finder loads modules, the list of loaded modules. Otherwise, an empty collection.
      */
-    @NotNull
-    Set<Module> loadArtifacts(Project project);
+    void loadLibraries(Project project);
 
     /**
-     * updates the artifacts this finder loaded.
+     * checks and updates the libraries this finder loaded.
      * @param project the project the finder will update a library for
-     * @return true if updating packages requires a purge, false otherwise.
+     * @return true if the libraries were, false otherwise.
      */
-    boolean updateArtifacts(Project project);
+    boolean updateLibraries(Project project);
 
     /**
      * loads the dependencies of the main module on the artifacts this finder loaded.

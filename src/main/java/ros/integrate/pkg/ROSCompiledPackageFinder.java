@@ -16,7 +16,6 @@ import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.xml.XmlFile;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkt.psi.ROSPktFile;
 import ros.integrate.settings.ROSSettings;
 import ros.integrate.pkg.psi.ROSPackage;
@@ -32,12 +31,15 @@ import static ros.integrate.pkg.psi.impl.ROSCompiledPackage.RootType;
  */
 public class ROSCompiledPackageFinder extends ROSPackageFinderBase {
     private static final Logger LOG = Logger.getInstance("#ros.integrate.workspace.ROSCompiledPackageFinder");
-    private Library loadedLibrary = null;
+    private final Map<Project, Library> rosLib = new HashMap<>();
+    private static final String ROS_LIB = "ROS";
 
-    @Nullable
+    @NotNull
     private Library getLibrary(Project project) {
-        return loadedLibrary == null ?
-                LibraryTablesRegistrar.getInstance().getLibraryTable(project).getLibraryByName("ROS") : loadedLibrary;
+        return rosLib.computeIfAbsent(project, p -> {
+            LibraryTable table = LibraryTablesRegistrar.getInstance().getLibraryTable(project);
+            return Optional.ofNullable(table.getLibraryByName(ROS_LIB)).orElseGet(() -> table.createLibrary(ROS_LIB));
+        });
     }
 
     private VirtualFile getROSRoot(Project project) {
@@ -68,31 +70,19 @@ public class ROSCompiledPackageFinder extends ROSPackageFinderBase {
     @NotNull
     @Override
     GlobalSearchScope getScope(Project project) {
-        return Optional.ofNullable(getLibrary(project)).map(lib -> (GlobalSearchScope) new LibraryScope(project, lib))
+        return Optional.of(getLibrary(project)).map(lib -> (GlobalSearchScope) new LibraryScope(project, lib))
                 .orElse(GlobalSearchScope.EMPTY_SCOPE);
     }
 
-    @NotNull
     @Override
-    public Set<Module> loadArtifacts(Project project) {
-        LibraryTable table = LibraryTablesRegistrar.getInstance().getLibraryTable(project);
-        Library lib = table.getLibraryByName("ROS");
-        if (lib == null) {
-            lib = table.createLibrary("ROS");
-        }
-        loadedLibrary = lib;
+    public void loadLibraries(Project project) {
         String rosPath = ROSSettings.getInstance(project).getROSPath();
-        addPath(lib, rosPath, (model, url) -> true);
-
-        return Collections.emptySet();
+        addPath(getLibrary(project), rosPath, (model, url) -> true);
     }
 
     @Override
-    public boolean updateArtifacts(Project project) {
+    public boolean updateLibraries(Project project) {
         Library lib = getLibrary(project);
-        if (lib == null) {
-            return false;
-        }
         return addPath(lib, ROSSettings.getInstance(project).getROSPath(), (model, newUrl) -> {
             if (!Arrays.asList(model.getUrls(OrderRootType.CLASSES)).contains(newUrl)) {
                 Arrays.stream(model.getUrls(OrderRootType.CLASSES))
@@ -107,9 +97,6 @@ public class ROSCompiledPackageFinder extends ROSPackageFinderBase {
     @Override
     public void setDependency(@NotNull Module module) {
         Library lib = getLibrary(module.getProject());
-        if (lib == null) {
-            return;
-        }
         ModifiableRootModel model = ModuleRootManager.getInstance(module).getModifiableModel();
         LibraryOrderEntry entry = model.findLibraryOrderEntry(lib);
         if (entry == null) {
