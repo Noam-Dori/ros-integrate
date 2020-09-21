@@ -56,7 +56,7 @@ public class ROSPktUtil {
             Optional.ofNullable(manager.findPackage(pkgName)).ifPresent(packages::add);
         }
         for (ROSPackage pkg : packages) {
-            Arrays.stream(pkg.getPackets(GlobalSearchScope.allScope(project)))
+            Arrays.stream(pkg.getPackets(GlobalSearchScope.everythingScope(project)))
                     .filter(pkt -> pkt instanceof ROSMsgFile && !pkt.equals(exclude))
                     .map(pkt -> (ROSMsgFile)pkt)
                     .forEach(result::add);

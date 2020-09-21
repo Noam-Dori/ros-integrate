@@ -87,7 +87,7 @@ public class ROSMsgFileReference extends PsiReferenceBase<PsiElement> implements
     private void addPackageVariants(@NotNull Project project, List<LookupElement> variants) {
         if (!explicitPackage) {
             for (final ROSPackage pkg : project.getService(ROSPackageManager.class).getAllPackages()) {
-                if (pkg.getPackets(GlobalSearchScope.allScope(project)).length > 0) {
+                if (pkg.getPackets(GlobalSearchScope.everythingScope(project)).length > 0) {
                     variants.add(LookupElementBuilder.createWithIcon(pkg)
                             .withInsertHandler((context, item) -> addSlash(context, project))
                     );
