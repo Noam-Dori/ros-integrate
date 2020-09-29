@@ -1,3 +1,145 @@
+<p>0.1.6</p>
+<ul>
+    <li><b>package.xml</b>
+        <ul>
+            <li>version ranges are now fully supported:
+                <ul>
+                    <li>all version range attributes are suggested when editing/adding a dependency</li>
+                    <li>The autocompletion is smart and only suggests valid attributes
+                        (for example, if you have version_lt, it will not suggest version_lte)</li>
+                    <li>it also tries to suggest a value for each attribute which is the current version of the package</li>
+                    <li>invalid version values are annotated as errors (for example 1.0.a is not a version)</li>
+                    <li>conflicting version attributes are also annotated (version_lte and version_lt for example)</li>
+                    <li>similar dependency tags with different version ranges are pointed out in an inspection
+                        (for example test_depend->std_msgs vs depend->std_msgs)</li>
+                    <li>if a package is in a version unsupported by a package,
+                        the dependency tag will point it out in an inspection.</li>
+                    <li>the annotations and inspections also have fixes:
+                        <ul>
+                            <li>remove information from the dependency tag until its valid</li>
+                            <li>modify information from the tag so the tag is valid,
+                                and tries to preserve the information as much as possible.</li>
+                            <li>remove the dependency tag completely</li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            <li>export tag is now fully supported
+                <ul>
+                    <li>the tag can now be auto-completed</li>
+                    <li>when reformatting the file, the entire contents of the tag are preserved and in order</li>
+                    <li>autocompletion for architecture_independent subtag</li>
+                    <li>non-empty architecture_independent tags are annotated</li>
+                    <li>multiple architecture_independent tags are annotated</li>
+                    <li>architecture dependent packages with this tags are marked by an inspection</li>
+                    <li>autocompletion for build_type tag along with the value options</li>
+                    <li>unknown build types are marked in an inspection</li>
+                    <li>multiple build_type tags are annotated (with both toggled on)</li>
+                    <li>autocompletion for deprecated tags</li>
+                    <li>multiple deprecated tags are annotated</li>
+                    <li>dependency tags that point to deprecated packages are marked via inspection
+                        and contain the text in the deprecated tag</li>
+                    <li>autocompletion for message_generator tag</li>
+                    <li>empty message_generator tags are annotated</li>
+                    <li>multiple message_generator tags are annotated</li>
+                    <li>a currently dud inspection for invalid generators is also added,
+                        you can implement it via a plugin</li>
+                    <li>autocompletion for metapackage tag</li>
+                    <li>multiple metapackage tags are annotated</li>
+                    <li>non-empty metapackage tags are annotated</li>
+                    <li>dependency tags to metapackages from concrete packages are marked via an inspection</li>
+                    <li>forbidden dependency tags within metapackages (like test_depend) are marked via inspection</li>
+                    <li>fixes for export sub-tags:
+                        <ul>
+                            <li>remove sub-tag</li>
+                            <li>remove related dependency tag</li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            <li>you can configure via settings what website Ctrl+Clicking a license will bring you:
+                TL;DR Legal (default) or the official documentation in the OSI website</li>
+            <li>if the license requires a file, a warning is raised on the tag.
+                There is also an automatic fix that downloads a license file according to your license and links it.
+                This fix provides a dialogue where the user fills in info to replace.</li>
+            <li>in format 3, file attribute is suggested in license tag</li>
+            <li>the value of the file attribute auto-completes to file path from containing directory</li>
+            <li>the file name in the attribute can be Ctrl+Clicked to jump to that page</li>
+            <li>if file attribute is found in format 2 or less, an inspection points it out and suggests either
+                upgrading to newer format or removing file attribute</li>
+            <li>version tag now allows autocompletion for compatibility in format >= 3</li>
+            <li>compatibility value as the same completion as the version tag value</li>
+            <li>compatibility value also has the same annotation for validity</li>
+            <li>if the compatibility version is higher than the actual version, the attribute is annotated and suggests
+                either flipping compatibility and version or removing compatibility</li>
+            <li>full support of the condition attribute
+                <ul>
+                    <li>in format >=3, the condition attribute is suggested for build_type, all group tags, and all dependency tags</li>
+                    <li>the value in the condition attribute is now considered its own language.
+                        It has its own custom highlighting and can even be opened as its own page for editing</li>
+                    <li>the highlighting colors can be customised in the color settings menu.</li>
+                    <li>parentheses opened are now matched with closing ones</li>
+                    <li>when typing literals, auto-completion might suggest and/or</li>
+                    <li>if $ is typed, all available environment variables are suggested</li>
+                    <li>variables and literals that contain illegal characters are annotated.
+                        A fix cleaning them up is also suggested</li>
+                    <li>if literals are found in a series, they are annotated, and a "prepend logic" fix is suggested</li>
+                    <li>if condition is evaluated to false, many inspections are toggled off:
+                        "Dependency not found" is toggled off,
+                        "Conflicting Dependencies" ignores false conditions and checks that the conditions are the same,
+                        "Dependency on deprecated package" is toggled off,
+                        "Different dependency versions" ignores false conditions,
+                        "Dependency on outdated package" is toggled off</li>
+                    <li>ignored dependency tags do not get package completion</li>
+                    <li>if a condition attribute is found in format < 3, the attribute is marked by an inspection,
+                        and a "remove condition" fix is suggested</li>
+                    <li>ignored tags (those that have a condition resolving to false) are "grayed" out
+                        (the color is configurable)</li>
+                </ul>
+            </li>
+            <li>full support for group tags
+                <ul>
+                    <li>auto-completion for group tags member_of_group and group_depend</li>
+                    <li>if group tags are used in format <3, they are annotated accordingly</li>
+                    <li>reformat fix respects group tags</li>
+                    <li>empty group tags are annotated</li>
+                    <li>duplicate group tags are also annotated. This respects conditionals</li>
+                    <li>if a group dependency points to an empty group, this is pointed out in an inspection</li>
+                    <li>group tag value completion now suggests existing group names</li>
+                    <li>Ctrl+Clicking on a group_depend value will show all members to the group</li>
+                    <li>Ctrl+Clicking on a member_of_group value will show all packages that depend on this group</li>
+                </ul>
+            </li>
+            <li>unsupported tags outside export are annotated accordingly and two fixes are suggested:
+                delete tag and move to export.</li>
+            <li>if the package has no buildtool dependency, it will be annotated. The fix suggested will be to add a new
+                buildtool_depend tag and allow the user to put in a value</li>
+        </ul>
+    </li>
+    <li><b>Bug Fixes</b>
+        <ul>
+            <li>packages no longer disappear randomly from the libraries tab.</li>
+            <li>license values now properly link to website on CTRL+Click</li>
+            <li>.msg,.srv,.action files
+                <ul>
+                    <li>.msg comments are now found after a number const and multiple spaces</li>
+                    <li>byte and char can now get numerical constants</li>
+                    <li>completing a package name now triggers chain completion</li>
+                </ul>
+            </li>
+            <li>empty ROS path or workspace in ROS settings will no longer index the entire computer</li>
+            <li>"UnsupportedOperation" error when completing package.xml dependencies fixed</li>
+            <li>maintainer and author "FixContributor" intention now repairs bad emails</li>
+            <li>package.xml intentions now add elements in the correct order</li>
+            <li>"ArrayIndexOutOfBounds" error that happens spontaneously when a package.xml is open fixed</li>
+            <li>libraries will no longer disappear after reloading CMake in CLion</li>
+            <li>reopening CLion will also keep the CMake relevant and will not trigger the
+                "file is not in project" warning</li>
+            <li>changing project should not cause a bunch of errors relating to "disposal"</li>
+            <li>libraries and package indexing now both work correctly. They both will not disappear randomly</li>
+        </ul>
+    </li>
+</ul>
 <p>0.1.5</p>
 <ul>
     <li><b>initial support for package manifests (package.xml files)</b>
