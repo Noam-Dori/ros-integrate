@@ -8,9 +8,20 @@ import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkt.file.ROSSrvFileType;
 
 /**
- * a ROS message, a one-directional message sent between (and within) executables.
+ * represents a service, which describes the medium passed between two nodes when one requests another to
+ * complete a short term task. This has two sections:
+ * <ol>
+ *     <li>the request: the client tells the server details about the task it needs to do</li>
+ *     <li>the response: the server completes the task and sends back results</li>
+ * </ol>
+ * Files of this type use the .srv extension
+ * @author Noam Dori
  */
 public class ROSSrvFile extends ROSPktFile {
+    /**
+     * construct a new service file
+     * @param viewProvider the file view provider. go figure
+     */
     public ROSSrvFile(@NotNull FileViewProvider viewProvider) {
         super(viewProvider);
     }

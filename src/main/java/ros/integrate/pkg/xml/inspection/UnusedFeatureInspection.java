@@ -17,6 +17,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * <p>reports used features that do not exist in the current format</p>
+ * <p>For example, if a ROS condition attribute is found in a format 2 package.xml file,
+ *     the entire attribute will be annotated as unused.</p>
+ * <p>this inspection offers two fixes per feature:</p>
+ * <ol>
+ *     <li>Update the package to use the latest format. This will also reformat the package and order its contents
+ *         correctly</li>
+ *     <li>Remove the feature from the tag (or if the feature is a tag, remove the tag)</li>
+ * </ol>
+ * @author Noam Dori
+ */
 public class UnusedFeatureInspection extends LocalInspectionTool {
     @Nullable
     @Override

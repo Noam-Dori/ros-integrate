@@ -19,6 +19,10 @@ import ros.integrate.pkt.psi.ROSPktFile;
 
 import java.util.*;
 
+/**
+ * a base implementation for ROS packages. You can extend this class to make
+ * implementing a new package type a lot easier.
+ */
 public abstract class ROSPackageBase extends PsiElementBase implements ROSPackage, Queryable {
     private static final Logger LOG = Logger.getInstance("#ros.integrate.workspace.ROSPackageBase");
 
@@ -31,7 +35,12 @@ public abstract class ROSPackageBase extends PsiElementBase implements ROSPackag
     @NotNull
     private final Project project;
 
-
+    /**
+     * construct a new package (this class is abstract however)
+     * @param project the project this package belongs to
+     * @param name the name of the package. This is the fully qualifies name as well, used for indexing.
+     * @param pkgXml the reference package.xml file
+     */
     ROSPackageBase(@NotNull Project project, @NotNull String name, @NotNull XmlFile pkgXml) {
         this.name = name;
         this.project = project;

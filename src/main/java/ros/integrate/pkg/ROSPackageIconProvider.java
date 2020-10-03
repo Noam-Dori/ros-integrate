@@ -10,6 +10,10 @@ import ros.integrate.pkg.psi.ROSPackage;
 
 import javax.swing.*;
 
+/**
+ * adds the package icon to the root package directories, mainly in the project view but in other places too
+ * @author Noam Dori
+ */
 public class ROSPackageIconProvider extends IconProvider {
     @Nullable
     @Override

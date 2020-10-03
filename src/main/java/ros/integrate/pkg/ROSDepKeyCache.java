@@ -22,6 +22,7 @@ import java.util.Collection;
  *     <li>the cache marks that it attempted connection so that it wont attempt it again next time
  *     (even if it failed connecting)</li>
  * </ol>
+ * @author Noam Dori
  */
 public interface ROSDepKeyCache {
 

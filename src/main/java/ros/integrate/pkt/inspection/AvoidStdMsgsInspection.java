@@ -12,6 +12,18 @@ import ros.integrate.pkt.psi.ROSPktTypeBase;
 
 import java.util.List;
 
+/**
+ * <p>Checks for use of the custom Messages types that emulate builtin types, and marks those types</p>
+ * <p>for example, <code>UInt32</code> emulates <code>uint32</code> so it will be marked.</p>
+ * <p>When defining custom messages, the builtin types should be used instead of the "standard types":
+ *     they take up less space, and the data they hold is easier to access.
+ * </p>
+ * <p>this inspection offers one fix:</p>
+ * <ol>
+ *     <li>replace this field type with the built-in type</li>
+ * </ol>
+ * @author Noam Dori
+ */
 public class AvoidStdMsgsInspection extends ROSPktInspectionBase {
     @Override
     protected void checkField(@NotNull ROSPktFieldBase field, @NotNull InspectionManager manager, boolean isOnTheFly, @NotNull List<ProblemDescriptor> descriptors) {

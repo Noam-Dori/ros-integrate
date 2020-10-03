@@ -11,12 +11,25 @@ import ros.integrate.pkg.xml.condition.lang.ROSConditionLanguage;
 
 import java.util.List;
 
+/**
+ * represents a complete condition, an entire condition attribute value,
+ * which will determine the fate of its respective tag. It also acts as the base file for the condition language.
+ * @author Noam Dori
+ */
 public class ROSCondition extends PsiFileBase implements ROSConditionExpr {
-    public interface Conditioned {
+    /**
+     * represents classes, usually tag data, that contain a ROS condition.
+ * @author Noam Dori
+ */
+public interface Conditioned {
         @Nullable
         ROSCondition getCondition();
     }
 
+    /**
+     * construct a new condition
+     * @param viewProvider the file view provider. go figure
+     */
     public ROSCondition(@NotNull FileViewProvider viewProvider) {
         super(viewProvider, ROSConditionLanguage.INSTANCE);
     }

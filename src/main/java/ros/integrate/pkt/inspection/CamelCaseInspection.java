@@ -15,7 +15,18 @@ import ros.integrate.pkt.psi.ROSPktFieldBase;
 import java.util.List;
 
 /**
- * An inspection checking that all message types are written according to the ROS standards, in CamelCase form.
+ * <p>checks if a message, service, or action type is not in the standard naming convention, and marks the type accordingly.</p>
+ * <p>These are the naming conventions for a message, service, or action type name:</p>
+ * <ol>
+ *     <li>The message name is in PascalCase, meaning the words are glued together
+ *         and every word starts with a capital letter.</li>
+ *     <li>The only characters allowed are the alphabet (a-z,A-Z) and the digits (0-9)</li>
+ * </ol>
+ * <p>this inspection offers one fix:</p>
+ * <ol>
+ *     <li>Rename the type via rename refactor</li>
+ * </ol>
+ * @author Noam Dori
  */
 public class CamelCaseInspection extends ROSPktInspectionBase {
     /**

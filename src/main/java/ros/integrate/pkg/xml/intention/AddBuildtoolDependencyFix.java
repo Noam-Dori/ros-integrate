@@ -12,10 +12,18 @@ import ros.integrate.pkg.xml.DependencyType;
 import ros.integrate.pkg.xml.ROSPackageXml;
 import ros.integrate.pkg.xml.VersionRange;
 
+/**
+ * an intention that adds a buildtool_depend tag to a package.xml
+ * @author Noam Dori
+ */
 public class AddBuildtoolDependencyFix extends BaseIntentionAction {
     @NotNull
     private final ROSPackageXml pkgXml;
 
+    /**
+     * construct a new intention
+     * @param pkgXml the relevant package.xml file
+     */
     public AddBuildtoolDependencyFix(@NotNull ROSPackageXml pkgXml) {
         this.pkgXml = pkgXml;
     }

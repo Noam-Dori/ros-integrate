@@ -13,6 +13,10 @@ import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.ROSDepKeyCache;
 import ros.integrate.pkg.xml.PackageXmlUtil;
 
+/**
+ * an intention that forces the plugin to download and cache all dependency keys from the internet
+ * @author Noam Dori
+ */
 public class ForceCacheQuickFix extends BaseIntentionAction implements LocalQuickFix {
 
     @Nls(capitalization = Nls.Capitalization.Sentence)

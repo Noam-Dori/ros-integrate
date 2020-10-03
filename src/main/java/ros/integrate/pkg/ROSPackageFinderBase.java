@@ -25,6 +25,10 @@ import java.util.concurrent.ConcurrentMap;
 import static ros.integrate.pkg.psi.ROSPackage.ORPHAN;
 import static ros.integrate.pkg.psi.ROSPackage.RootType;
 
+/**
+ * the base implementation of the package finder. it handles work like understanding changes,
+ * package introspection and using the scope the implementation provides to actually find packages
+ */
 public abstract class ROSPackageFinderBase implements ROSPackageFinder {
     @Override
     public void findAndCache(Project project, ConcurrentMap<String, ROSPackage> pkgCache) {
@@ -216,6 +220,11 @@ public abstract class ROSPackageFinderBase implements ROSPackageFinder {
      */
     abstract boolean notInFinder(@NotNull VirtualFile file, @NotNull Project project);
 
+    /**
+     * gets the lookup scope of whatever this finder loaded
+     * @param project the project that the scope should work against
+     * @return a new scope containing every artifact the finder loaded in the provided project
+     */
     @NotNull
     abstract GlobalSearchScope getScope(Project project); // should be updated to protected
 }

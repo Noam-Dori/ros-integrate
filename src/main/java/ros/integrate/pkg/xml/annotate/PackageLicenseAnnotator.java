@@ -13,6 +13,9 @@ import ros.integrate.pkg.xml.intention.SplitLicenseQuickFix;
 
 import java.util.List;
 
+/**
+ * A facade class used to annotate package.xml files for anything related to the license tag
+ */
 class PackageLicenseAnnotator {
     @NotNull
     private final ROSPackageXml pkgXml;
@@ -23,6 +26,11 @@ class PackageLicenseAnnotator {
     @NotNull
     private final List<TagTextRange> licenseTrs;
 
+    /**
+     * construct the annotator
+     * @param pkgXml the reference package.xml file
+     * @param holder the annotation holder.
+     */
     PackageLicenseAnnotator(@NotNull ROSPackageXml pkgXml, @NotNull AnnotationHolder holder) {
         this.pkgXml = pkgXml;
         this.holder = holder;
@@ -30,6 +38,9 @@ class PackageLicenseAnnotator {
         licenseTrs = pkgXml.getLicenceTextRanges();
     }
 
+    /**
+     * annotates packages with no license tags
+     */
     void annNoLicenses() {
         if (licenses.isEmpty()) {
             Annotation ann = holder.createErrorAnnotation(licenseTrs.get(0),
@@ -38,6 +49,13 @@ class PackageLicenseAnnotator {
         }
     }
 
+    /**
+     * annotates license tags if either:
+     * <ul>
+     *     <li>the tag has no value</li>
+     *     <li>the tag contains more than one license (found by comma)</li>
+     * </ul>
+     */
     void annBadLicenses() {
         if (licenses.isEmpty()) {
             return;
@@ -60,6 +78,9 @@ class PackageLicenseAnnotator {
         }
     }
 
+    /**
+     * annotates placeholder license tags
+     */
     void annTodoLicense() {
         if (licenses.isEmpty()) {
             return;

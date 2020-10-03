@@ -13,6 +13,15 @@ import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.ROSPackageManager;
 import ros.integrate.pkg.xml.PackageXmlUtil;
 
+/**
+ * <p>Excludes an XML file from indexing by the ROS plugin.
+ *     This action can be undone from the ROS Settings page and by the undo intention
+ * </p>
+ * <p>this means that even if this file is named "package.xml" it cannot be used as the manifest of a ROS package.
+ *     Usually this means ROS is not used or the parent directory is not related to ROS
+ * </p>
+ * @author Noam Dori
+ */
 public class ExcludePackageXml extends BaseIntentionAction implements LocalQuickFix {
     @Nls(capitalization = Nls.Capitalization.Sentence)
     @NotNull

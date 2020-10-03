@@ -19,12 +19,33 @@ import ros.integrate.pkt.psi.ROSPktFile;
 import javax.swing.*;
 import java.util.Collection;
 
+/**
+ * a rosdep key. This is not a real ROS package, but it can be depended on from package.xml dependency tags. Things like
+ * the cmake executable belong here. The reason they are together with ROSPackage
+ * is so that they can be put together in the same list.
+ *
+ * @apiNote objects from this class have very limited functionality. Here are the functions you can use:
+ * <ul>
+ *     <li>{@link ROSDepKey#getName()}</li>
+ *     <li>{@link ROSDepKey#getProject()}</li>
+ *     <li>{@link ROSDepKey#getIcon(int)}</li>
+ *     <li>{@link ROSDepKey#isValid()}</li>
+ *     <li>{@link ROSDepKey#isEditable()}</li>
+ * </ul>
+ * The rest work, but won't do much good or outright ignore the request.
+ * @author Noam Dori
+ */
 public class ROSDepKey extends PsiElementBase implements ROSPackage {
     @NotNull
     private final String name;
     @NotNull
     private final Project project;
 
+    /**
+     * construct a new dependency key
+     * @param project the project this key belongs to
+     * @param name the key.
+     */
     public ROSDepKey(@NotNull Project project, @NotNull String name) {
         this.name = name;
         this.project = project;

@@ -11,20 +11,41 @@ import java.util.Objects;
 
 /**
  * a utility class holding {@link ROSPktFieldBase} implementations
+ * @author Noam Dori
  */
 class ROSPktFieldUtil {
 
+    /**
+     * fetches the base type of this field, even if it is a fragment or the field itself is a fragment.
+     * @param field the field fragment to use
+     * @return a non-null base type
+     */
     @NotNull
     static ROSPktTypeBase getTypeBase(@NotNull ROSPktFieldFrag field) {
         ROSPktType type = field.getType();
         return type != null ? type : Objects.requireNonNull(field.getTypeFrag());
     }
 
+    /**
+     * fetches the base type of this field, even if it is a fragment or the field itself is a fragment.
+     * @param field the field to use
+     * @return a non-null base type
+     */
     @NotNull
     static ROSPktType getTypeBase(@NotNull ROSPktField field) {
         return field.getType();
     }
 
+    /**
+     * checks whether or not this field is a sufficient constant,
+     * that is, it can contain the numerical value provided with the given memory it is permitted to use,
+     * and is properly formatted to be properly kept.
+     * @param field the field to check.
+     * @return false if one of the following is true:
+     *              - the field is NOT a constant field
+     *              - the value within the field cannot be contained within the type provided in it.
+     *         otherwise, returns true.
+     */
     @Contract("null -> false")
     static boolean isLegalConstant(@NotNull ROSPktFieldBase field) {
         ROSPktConst msgConst = field.getConst();
@@ -84,6 +105,12 @@ class ROSPktFieldUtil {
         }
     }
 
+    /**
+     * provided that this field is a constant holding field, find the optimal data-type to hold the constant within it.
+     * @param constant the constant to optimise
+     * @return <code>null</code> iff the field is not a constant,
+     * otherwise a non-empty key-type holding the best data-type to use for the constant with respect to memory and actual size.
+     */
     @NotNull
     static ROSPktType getBestFit(@NotNull ROSPktConst constant) {
         String num = constant.getText();
@@ -131,6 +158,9 @@ class ROSPktFieldUtil {
         }
     }
 
+    /**
+     * an internal definitino of the numerical limits of the builtin data-types
+     */
     private enum MaxValue {
         BIT(1,"bool"),
         INT8(Byte.MAX_VALUE, "int8"),
@@ -144,23 +174,41 @@ class ROSPktFieldUtil {
         @NotNull private final UnsignedLong value;
         @NotNull private final String name;
 
+        /**
+         * construct a new numerical limits entity
+         * @param rawVal the actual number that is the maximum
+         * @param typeName the name of the type this number represents the max value for
+         */
         MaxValue(long rawVal, @NotNull String typeName) {
             this.value = UnsignedLong.valueOf(rawVal);
             this.name = typeName;
         }
 
+        /**
+         * @return the actual max value
+         */
         @NotNull
         @Contract(pure = true)
         UnsignedLong getValue() {
             return value;
         }
 
+        /**
+         * creates a PSI field type of this data type
+         * @param project the project this type belongs to
+         * @return a new PSI field type with the builtin data type as argument
+         */
         @NotNull
         @Contract(pure = true)
         ROSPktType createType(@NotNull Project project) {
             return ROSPktElementFactory.createType(project, name);
         }
 
+        /**
+         * checks if the name of this data type is the name as the input string
+         * @param otherName the string to compare against
+         * @return true if the datatype name is the same as the input, false otherwise
+         */
         @Contract(value = "null -> false", pure = true)
         boolean nameEquals(@Nullable String otherName) {
             return name.equals(otherName);
@@ -171,9 +219,14 @@ class ROSPktFieldUtil {
         return unsignedLong.compareTo(value.getValue()) <= 0;
     }
 
+    /**
+     * checks if this field is a complete field (which it is)
+     * @param field the field/field fragment to use
+     * @return true if this field is NOT a fragment and follows all rules of packet fields, false otherwise
+     */
     @SuppressWarnings("SameReturnValue")
     @Contract(pure = true)
-    static boolean isComplete(@SuppressWarnings("unused") @NotNull ROSPktField field) {
+    static boolean isComplete(@SuppressWarnings({"unused", "RedundantSuppression"}) @NotNull ROSPktField field) {
         return true;
     }
 }

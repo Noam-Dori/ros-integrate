@@ -13,7 +13,8 @@ import ros.integrate.pkt.psi.ROSPktType;
 import ros.integrate.pkt.psi.ROSPktTypeBase;
 
 /**
- * a fix used to change the key-type according to the {@link ROSPktConst} provided.
+ * an intention that changes the type of the field to accommodate the constant value assigned to it
+ * @author Noam Dori
  */
 public class ChangeKeytypeQuickFix extends BaseIntentionAction {
 
@@ -22,6 +23,11 @@ public class ChangeKeytypeQuickFix extends BaseIntentionAction {
     private final @NotNull
     ROSPktConst constant;
 
+    /**
+     * construct a new intention
+     * @param type the type of the const field
+     * @param constant the PSI element containing the constant value
+     */
     public ChangeKeytypeQuickFix(@NotNull ROSPktTypeBase type, @NotNull ROSPktConst constant) {
         this.type = type;
         this.constant = constant;

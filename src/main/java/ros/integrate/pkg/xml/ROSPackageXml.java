@@ -15,30 +15,49 @@ import java.util.List;
 
 /**
  * A facade class that simplifies interactions with a package.xml file
+ * @author Noam Dori
  */
 public interface ROSPackageXml {
-
+    /**
+     * the logical representation of a version tag
+     */
     class Version {
         @NotNull
         private final String version;
         @Nullable
         private final String compatibility;
 
+        /**
+         * construct a new version
+         * @param value the version string specified by the tag value
+         * @param compatibility the compatibility version string specified by the attribute value.
+         *                      if no such attribute exists, use null
+         */
         public Version(@NotNull String value, @Nullable String compatibility) {
             version = value;
             this.compatibility = compatibility;
         }
 
+        /**
+         * @return the earliest version this package.xml is compatible with.
+         * By default, this is the same as the actual version
+         */
         @NotNull
         public String getCompatibility() {
             return compatibility == null ? version : compatibility;
         }
 
+        /**
+         * @return the actual value of the compatibility attribute. Will return null if the attribute does not exist
+         */
         @Nullable
         public String getRawCompatibility() {
             return compatibility;
         }
 
+        /**
+         * @return the actual version of this package according to the version tag
+         */
         @NotNull
         public String getValue() {
             return version;
@@ -46,7 +65,7 @@ public interface ROSPackageXml {
     }
 
     /**
-     * helper class describing contributors: authors or maintainers
+     * the logical representation of contributors: authors or maintainers
      */
     class Contributor {
         public static final String EMAIL_REGEX =
@@ -55,44 +74,75 @@ public interface ROSPackageXml {
         @NotNull
         private final String name, email;
 
+        /**
+         * construct a new contributor
+         * @param name the name of the contributor, specified by the tag value. This is required.
+         * @param email the email of the contributor, for contacting. required for maintainers,
+         *              authors may put in an empty string to represent "no email"
+         */
         public Contributor(@NotNull String name, @NotNull String email) {
             this.email = email;
             this.name = name;
         }
 
+        /**
+         * @return the value of the email attribute, or an empty string if there is no email
+         */
         @NotNull
         public String getEmail() {
             return email;
         }
 
+        /**
+         * @return the name of the contributor, the value of the tag.
+         */
         @NotNull
         public String getName() {
             return name;
         }
     }
 
+    /**
+     * the logical representation of licenses, specifically the tags
+     */
     class License {
         @NotNull
         private final String license;
         @Nullable
         private final String file;
 
+        /**
+         * construct a new license
+         * @param value the name of the license used
+         * @param file the relative path from the containing directory to the location of a raw license file,
+         *             specified by the "file" attribute. If there is no file attribute, set this to null
+         */
         public License(@NotNull String value, @Nullable String file) {
             license = value;
             this.file = file;
         }
 
+        /**
+         * @return the relative path from the containing directory to the location of a raw license file,
+         * or null if the file attribute does not exist
+         */
         @Nullable
         public String getFile() {
             return file;
         }
 
+        /**
+         * @return the name of the license used
+         */
         @NotNull
         public String getValue() {
             return license;
         }
     }
 
+    /**
+     * the logical representation of a dependency tag.
+     */
     class Dependency implements ROSCondition.Conditioned {
         @NotNull
         private final DependencyType type;
@@ -105,6 +155,17 @@ public interface ROSPackageXml {
         @Nullable
         private final ROSCondition condition;
 
+        /**
+         * construct a new dependency
+         * @param type the type of dependency, corresponding to the tag name
+         * @param pkg the package this dependency points to. If it points to no package, use {@link ROSPackage#ORPHAN}.
+         *            corresponds the the tag value
+         * @param range the allowed versions that <code>pkg</code> may be in for this package to work.
+         *              If it can be any version, use {@link VersionRange#any()}.
+         *              corresponds to the version_* attributes
+         * @param condition condition for this dependency to be used. If it is unconditionally active, set this to null.
+         *                  Corresponds to the condition attribute
+         */
         public Dependency(@NotNull DependencyType type, @NotNull ROSPackage pkg, @NotNull VersionRange range, @Nullable ROSCondition condition) {
             this.type = type;
             this.pkg = pkg;
@@ -112,49 +173,79 @@ public interface ROSPackageXml {
             this.condition = condition;
         }
 
+        /**
+         * @return the type of dependency, corresponding to the tag name
+         */
         @NotNull
         public DependencyType getType() {
             return type;
         }
 
+        /**
+         * @return the package this dependency points to. If it points to no package, returns {@link ROSPackage#ORPHAN}
+         */
         @NotNull
         public ROSPackage getPackage() {
             return pkg;
         }
 
+        /**
+         * @return the allowed versions that {@param pkg} may be in for this package to work.
+         */
         @NotNull
         public VersionRange getVersionRange() {
             return versionRange;
         }
 
+        /**
+         * @return condition for this dependency to be used. If it is unconditionally active, returns null
+         */
         @Nullable
         public ROSCondition getCondition() {
             return condition;
         }
     }
 
+    /**
+     * the logical representation of a group dependency or membership. It does not tell the two apart.
+     */
     class GroupLink implements ROSCondition.Conditioned {
         @NotNull
         private final String group;
         @Nullable
         private final ROSCondition condition;
 
+        /**
+         * construct a new group link, either dependency or membership
+         * @param name the name of the linked group. It does not have to exist, since groups are just namespaces
+         * @param condition condition for this dependency to be used. If it is unconditionally active, set this to null.
+         *                  Corresponds to the condition attribute
+         */
         public GroupLink(@NotNull String name, @Nullable ROSCondition condition) {
             this.group = name;
             this.condition = condition;
         }
 
+        /**
+         * @return condition for this dependency to be used. If it is unconditionally active, returns null
+         */
         @Nullable
         public ROSCondition getCondition() {
             return condition;
         }
 
+        /**
+         * @return the name of the group this link points to
+         */
         @NotNull
         public String getGroup() {
             return group;
         }
     }
 
+    /**
+     * the possible types of URL tags. These are specified in the "type" attribute
+     */
     enum URLType {
         WEBSITE,
         BUGTRACKER,
@@ -408,7 +499,7 @@ public interface ROSPackageXml {
      * adds a url
      * @param url the new "website" url to use.
      */
-    @SuppressWarnings("unused") // I know, but it is not something obvious
+    @SuppressWarnings({"unused", "RedundantSuppression"}) // I know, but it is not something obvious
     default void addURL(@NotNull String url) { addURL(url, URLType.WEBSITE); }
 
     /**
@@ -463,7 +554,7 @@ public interface ROSPackageXml {
      * @param id the identifier of the resource - its index in the list of tags with the same name in the file.
      * @param url the new "website" url to use.
      */
-    @SuppressWarnings("unused") // I know, but it is not something obvious
+    @SuppressWarnings({"unused", "RedundantSuppression"}) // I know, but it is not something obvious
     default void setURL(int id, @NotNull String url) { setURL(id, url, URLType.WEBSITE); }
 
     /**

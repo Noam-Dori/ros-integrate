@@ -12,7 +12,9 @@ import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.xml.condition.lang.ROSConditionLanguage;
 
 /**
- * Injects things for the ROS package.xml
+ * implements language injection in package.xml files.
+ * specifically, injection of ROS conditions and HTML in the description tag
+ * @author Noam Dori
  */
 public class ROSPackageXmlInjector implements LanguageInjector {
     @Override

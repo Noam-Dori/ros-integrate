@@ -14,7 +14,8 @@ import ros.integrate.pkt.psi.ROSPktFile;
 import java.util.List;
 
 /**
- * the generic inspection within ROS message and service files.
+ * a template for inspections running on packet files (.msg, .srv, .action)
+ * @author Noam Dori
  */
 abstract class ROSPktInspectionBase extends LocalInspectionTool implements CustomSuppressableInspectionTool {
     @Nullable
@@ -30,8 +31,7 @@ abstract class ROSPktInspectionBase extends LocalInspectionTool implements Custo
 
     /**
      * creates a suppression action for this inspection
-     *
-     * @param key I dunno, check out {@link ROSPktInspectionBase#getSuppressActions(PsiElement)} to understand.
+     * @param key contains the ID of this inspection to be used in the suppression string
      * @return an array of possible suppression actions for this inspection.
      */
     @NotNull
@@ -42,7 +42,6 @@ abstract class ROSPktInspectionBase extends LocalInspectionTool implements Custo
 
     /**
      * is this field's inspections being suppressed?
-     *
      * @param field the field to check
      * @return true if this field has a suppression annotation for this inspection
      */
@@ -69,9 +68,8 @@ abstract class ROSPktInspectionBase extends LocalInspectionTool implements Custo
 
     /**
      * Override this to report problems at field level.
-     *
      * @param field       to check.
-     * @param manager     InspectionManager to ask for ProblemDescriptor's from.
+     * @param manager     an inspection manager to get {@link ProblemDescriptor}s from.
      * @param isOnTheFly  true if called during on the fly editor highlighting. Called from Inspect Code action otherwise.
      * @param descriptors list of descriptors to append raised problems found for the field.
      */

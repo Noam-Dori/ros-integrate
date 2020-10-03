@@ -15,6 +15,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * <p>If a package is annotated as a message generator, this inspection makes sure that the package actually generates
+ *     messages for that language.</p>
+ * <!-- tooltip end -->
+ * <p>Please note that this inspection is not exhaustive and cannot account for every language.
+ *     Support for additional languages can be added via plugins.</p>
+ * @author Noam Dori
+ */
 public class InvalidMessageGeneratorInspection extends LocalInspectionTool {
     @NotNull
     private static final List<ExportLangHelper> HELPERS = ExportLangHelper.EP_NAME.getExtensionList();

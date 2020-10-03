@@ -11,10 +11,15 @@ import java.util.Optional;
 
 /**
  * a class defining the references of {@link ros.integrate.pkg.xml.ROSPackageXml} to {@link ROSPackage} and its affiliated roots.
+ * @author Noam Dori
  */
 public class DependencyToPackageReference extends ROSPackageReferenceBase<XmlTag> {
     // note: myElement is the referencing element, and the result of resolve() is the original element (the file).
 
+    /**
+     * construct a new reference
+     * @param element the referencing element.
+     */
     public DependencyToPackageReference(@NotNull XmlTag element) {
         super(element, getTextRange(element));
         pkgName = element.getValue().getText();

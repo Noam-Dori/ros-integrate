@@ -28,13 +28,6 @@ Want to try the latest version or edit the code? [here is a guide!](https://gith
 
 # Planned Features
 
-**version 0.1.6:** extended package.xml support.
-* \<export> tag support
-* intentions adding tags in the right places
-* complete dependency tag functionality (dependency based on versions)
-* Format 3 features (license files, groups, conditionals)
-* package manager crashing bugfix
-
 **version 0.1.7:** CMake in ROS
 * Msg,Srv,Action files linked from CMake clauses
 * CMake code generation when adding new messages/services

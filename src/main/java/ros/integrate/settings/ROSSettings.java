@@ -13,6 +13,10 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 
+/**
+ * stores user configurations that persist after the IDE is closed. These settings are per project, however.
+ * @author Noam Dori
+ */
 @State(name = "ROSSettings",storages = @Storage("ros.xml"))
 public class ROSSettings implements PersistentStateComponent<ROSSettings.State> {
     private static final Logger LOG = Logger.getLogger("#ros.integrate.settings.ROSSettings");
@@ -32,6 +36,9 @@ public class ROSSettings implements PersistentStateComponent<ROSSettings.State> 
         return ret;
     }
 
+    /**
+     * the actual data os the settings
+     */
     @SuppressWarnings("WeakerAccess")
     static class State {
         public String rosPath;
@@ -45,6 +52,10 @@ public class ROSSettings implements PersistentStateComponent<ROSSettings.State> 
     private final State state = new State();
     private final MultiMap<String,Consumer<ROSSettings>> listeners = new MultiMap<>();
 
+    /**
+     * construct a new settings service
+     * @param project the project this configuration entity belongs to
+     */
     @Contract(pure = true)
     private ROSSettings(Project project) {
         String rosPath = System.getenv("ROS_ROOT");
@@ -74,6 +85,11 @@ public class ROSSettings implements PersistentStateComponent<ROSSettings.State> 
         }
     }
 
+    /**
+     * a shortcut to get the ROS settings entity
+     * @param project the project from which to get the settings page
+     * @return the instance of the settings of this project
+     */
     public static ROSSettings getInstance(@NotNull Project project) {
         return project.getService(ROSSettings.class);
     }
@@ -92,32 +108,63 @@ public class ROSSettings implements PersistentStateComponent<ROSSettings.State> 
                         .ifPresent(val -> accessor.set(this.state, val)));
     }
 
+    /**
+     * triggers all stored subscribers that are listening to a specific topic
+     * @param topic the topic on which all listeners are triggered
+     */
     void triggerListeners(String topic) {
         listeners.get(topic).forEach(listener -> listener.accept(this));
     }
 
+    /**
+     * adds a subscriber to a specific topic. Once this topic is triggered, the function runs.
+     * @param trigger the function to run when the topic is triggered
+     * @param topic the topic to link the subscriber to
+     */
     public void addListener(Consumer<ROSSettings> trigger, String topic) {
         listeners.putValue(topic, trigger);
     }
 
+    /**
+     * adds a subscriber to multiple topics. Once one of those topics is triggered, the function runs.
+     * @param trigger the function to run when a topic is triggered
+     * @param topics a list of all topics to link the subscriber to
+     */
     public void addListener(Consumer<ROSSettings> trigger, @NotNull String[] topics) {
         for (String topic : topics) {
             listeners.putValue(topic, trigger);
         }
     }
 
+    /**
+     * @return the path to the ROS installation directory. There all ROS files are placed
+     * (for example, setup.sh is directly in it)
+     */
     public String getROSPath() {
         return state.rosPath;
     }
 
+    /**
+     * sets the path to the ROS installation directory
+     * @param rosPath the new path
+     */
     void setRosPath(String rosPath) {
         state.rosPath = rosPath;
     }
 
+    /**
+     * @return the path to the workspace directory. In ROS1 this was commonly called catkin_ws.
+     * In ROS2 it is commonly called dev_ws. In here, all the source files the user works on are placed,
+     * and whatever is generated from them
+     */
     public String getWorkspacePath() {
         return state.workspacePath;
     }
 
+    /**
+     * sets the path to the workspace directory.
+     * @param workspacePath the new path
+     */
     void setWorkspacePath(String workspacePath) {
         state.workspacePath = workspacePath;
     }
@@ -130,10 +177,17 @@ public class ROSSettings implements PersistentStateComponent<ROSSettings.State> 
         return PathListUtil.parsePathList(state.additionalSources);
     }
 
+    /**
+     * @return the serialized raw data of the additional sources
+     */
     String getRawAdditionalSources() {
         return state.additionalSources;
     }
 
+    /**
+     * sets the additional paths to source packages
+     * @param rawAdditionalSources the new list of paths
+     */
     void setAdditionalSources(String rawAdditionalSources) {
         state.additionalSources = rawAdditionalSources;
     }
@@ -146,6 +200,10 @@ public class ROSSettings implements PersistentStateComponent<ROSSettings.State> 
         return PathListUtil.parsePathList(state.excludedXmls);
     }
 
+    /**
+     * removes an XML file from indexing in the ROS plugin.
+     * @param xmlPath the path to the XML file to ignore
+     */
     public void addExcludedXml(String xmlPath) {
         List<String> parsed = PathListUtil.parsePathList(state.excludedXmls);
         if (!parsed.contains(xmlPath)) {
@@ -154,55 +212,99 @@ public class ROSSettings implements PersistentStateComponent<ROSSettings.State> 
         state.excludedXmls = PathListUtil.serializePathList(parsed);
     }
 
+    /**
+     * adds an XML file for indexing in the ROS plugin.
+     * @param xmlPath the path to the XML file to recognize
+     */
     public void removeExcludedXml(String xmlPath) {
         List<String> parsed = PathListUtil.parsePathList(state.excludedXmls);
         parsed.remove(xmlPath);
         state.excludedXmls = PathListUtil.serializePathList(parsed);
     }
 
+    /**
+     * @return the serialized raw data of the excluded XML paths
+     */
     String getRawExcludedXmls() {
         return state.excludedXmls;
     }
 
+    /**
+     * sets, not just add/removes the list of excluded XML paths from indexing
+     * @param excludedXmls a list of XML file paths to ignore when indexing
+     */
     void setExcludedXmls(String excludedXmls) {
         state.excludedXmls = excludedXmls;
     }
 
+    /**
+     * @return a list of rosdep keys to be remembered by the IDE without the need to go online.
+     * These can then be depended on.
+     */
     public List<String> getKnownROSDepKeys() {
         return Arrays.asList(state.knownKeys.split(":"));
     }
 
+    /**
+     * @return the serialized raw data of the known rosdep keys
+     */
     String getRawKnownROSDepKeys() {
         return state.knownKeys;
     }
 
-
+    /**
+     * sets, not just add/remove the list of known rosdep keys
+     * @param knownKeys the list of rosdep keys to remember
+     */
     void setKnownROSDepKeys(String knownKeys) {
         state.knownKeys = knownKeys;
     }
 
+    /**
+     * adds a new rosdep key to remember when looking for dependencies
+     * @param name the new rosdep
+     */
     public void addKnownROSDepKey(@NotNull String name) {
         if (!name.isEmpty() && !state.knownKeys.matches("^(.*:)?" + name + "(:.*)?$")) {
             state.knownKeys = state.knownKeys.concat((state.knownKeys.isEmpty() ? "" : ":") + name);
         }
     }
 
+    /**
+     * @return a list of online URLs that contain all dependencies. When necessary, the plugin will download these pages
+     * and extract the dependencies from them
+     */
     public List<String> getROSDepSources() {
         return Arrays.asList(state.depSources.split("\""));
     }
 
+    /**
+     * @return the serialized raw data of the rosdep source URLs
+     */
     String getRawROSDepSources() {
         return state.depSources;
     }
 
+    /**
+     * sets the list of online URLs from which to extract possible dependencies
+     * @param sources a URL list (delimited by <code>"</code>) of the lists of rosdep keys
+     */
     void setROSDepSources(String sources) {
         state.depSources = sources;
     }
 
+    /**
+     * @return the type of pages to show as documentation for a license
+     */
     public String getLicenseLinkType() {
         return state.licenseLinkType;
     }
 
+    /**
+     * sets the type of pages to show as documentation for a license
+     * @param licenseLinkType the name of the type of pages.
+     *                        See {@link ros.integrate.pkg.xml.ROSLicenses.LicenseEntity#getLink(String)} for details
+     */
     public void setLicenseLinkType(String licenseLinkType) {
         state.licenseLinkType = licenseLinkType;
     }

@@ -16,7 +16,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
+/**
+ * gives access to all licenses, specifically for interaction with ROS
+ * @author Noam Dori
+ */
 public class ROSLicenses {
+    /**
+     * describes one license. includes links to any documentation and the raw text
+     */
     public static class LicenseEntity {
         @NotNull
         private final String link, tldr, file;
@@ -29,6 +36,11 @@ public class ROSLicenses {
             this.fileRequired = fileRequired;
         }
 
+        /**
+         * gets a link to documentation about the license
+         * @param type the type of documentation requested
+         * @return a URL to a documentation page about the license
+         */
         public String getLink(@NotNull String type) {
             switch (type) {
                 default:
@@ -37,14 +49,23 @@ public class ROSLicenses {
             }
         }
 
+        /**
+         * @return true if having the raw file is required by the license, false otherwise
+         */
         public boolean isFileRequired() {
             return fileRequired;
         }
 
+        /**
+         * @return the URL of the raw text of the license
+         */
         public String getFileSource() {
             return file;
         }
 
+        /**
+         * @return the options that may be used in the "type" parameter of {@link LicenseEntity#getLink(String)}
+         */
         @NotNull
         @Contract(value = " -> new", pure = true)
         public static String[] getLinkTypeOptions() {
@@ -54,6 +75,11 @@ public class ROSLicenses {
 
     private static final Logger LOG = Logger.getLogger("ros.integrate.pkg.xml.ROSLicenses");
 
+    /**
+     * this is a complete lookup map for all known licenses. use {@link Map#get(Object)}
+     * to get a license for a specific name. note that one license entity can have multiple names,
+     * so getting all entries will get you duplicates.
+     */
     @NotNull
     public static final Map<String, LicenseEntity> AVAILABLE_LICENSES = getLicenses();
 

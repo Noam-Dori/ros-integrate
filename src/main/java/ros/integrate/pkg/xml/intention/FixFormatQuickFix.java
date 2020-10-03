@@ -11,9 +11,17 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.xml.ROSPackageXml;
 
+/**
+ * an intention that repairs the format attribute of the file by just setting it to the latest version
+ * @author Noam Dori
+ */
 public class FixFormatQuickFix extends BaseIntentionAction implements LocalQuickFix {
     private final ROSPackageXml pkgXml;
 
+    /**
+     * construct a new intention
+     * @param pkgXml the relevant package.xml file
+     */
     public FixFormatQuickFix(ROSPackageXml pkgXml) {
         this.pkgXml = pkgXml;
     }

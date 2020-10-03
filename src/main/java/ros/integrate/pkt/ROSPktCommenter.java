@@ -4,7 +4,9 @@ import com.intellij.lang.Commenter;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * a class enabling using a commenter in ROS messages and services.
+ * implements the Ctrl+/ action that automatically converts a code line to a comment
+ * in packet files (.msg, .srv, .action)
+ * @author Noam Dori
  */
 public class ROSPktCommenter implements Commenter {
     @Nullable

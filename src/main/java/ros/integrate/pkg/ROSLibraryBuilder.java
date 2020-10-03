@@ -11,7 +11,9 @@ import ros.integrate.settings.ROSSettings;
 import java.util.Arrays;
 
 /**
- * a startup activity trigger the creation/load of ROS libraries
+ * a startup activity that triggers the creation/loading of ROS libraries.
+ * This is important for package indexing as they rely on these libraries
+ * @author Noam Dori
  */
 public class ROSLibraryBuilder implements StartupActivity {
 

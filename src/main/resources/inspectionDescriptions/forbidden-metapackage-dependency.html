@@ -1,10 +1,32 @@
 <html>
 <body>
-<p>Checks whether or not the metapackage uses valid dependencies.
-    According to <a href="https://www.ros.org/reps/rep-0140.html#metapackage">the ROS standards</a>,
+<p>Checks whether or not the metapackage uses illegal dependencies.</p>
+<!-- tooltip end -->
+<p>According to <a href="https://www.ros.org/reps/rep-0140.html#metapackage">the ROS standards</a>,
     metapackages only provide execution-time dependencies, cannot be used for catkin builds and compile nothing themselves.
+    <br/>
     The only thing they are allowed to depend on is ONE buildtool dependency which is used to mark the package as a metapackage.
 </p>
-<!-- tooltip end -->
+<p>these dependency tags will be annotated in meta-packages as forbidden:</p>
+<ul>
+    <li><code>depend</code></li>
+    <li><code>build_depend</code></li>
+    <li><code>build_export_depend</code></li>
+    <li><code>buildtool_export_depend</code></li>
+    <li><code>test_depend</code></li>
+    <li><code>doc_depend</code></li>
+    <li><code>conflict</code></li>
+    <li><code>replace</code></li>
+    <li><code>run_depend</code></li>
+</ul>
+<p>these dependency tags are allowed, at least to some extent:</p>
+<ul>
+    <li><code>exec_depend</code></li>
+    <li><code>buildtool_depend</code>, but only once</li>
+</ul>
+<p>this inspection offers one fix:</p>
+<ol>
+    <li>Remove the dependency tag(s).</li>
+</ol>
 </body>
 </html>

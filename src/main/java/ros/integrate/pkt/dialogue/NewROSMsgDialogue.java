@@ -48,7 +48,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * the message dialog when creating a new message type.
+ * the user interface dialogue that allows the user to fill information used when creating a new message type.
+ * @author Noam Dori
  */
 public class NewROSMsgDialogue extends DialogWrapper {
     // TODO: 8/29/2018 add error annotation for illegal message types somehow. spelling would be nice too
@@ -63,7 +64,16 @@ public class NewROSMsgDialogue extends DialogWrapper {
     private PsiDirectory targetDir;
     private final Project prj;
 
-    public NewROSMsgDialogue(@NotNull Project prj, @Nullable ROSPackage suggestedPkg, @Nullable String suggestedName, @NotNull PsiFile origFile) {
+    /**
+     * construct the dialogue
+     * @param prj the project this dialog belongs to
+     * @param suggestedPkg the initial package the interface should suggest to place the message in
+     * @param suggestedName the initial name this message should have.
+     *                      This can still be changed by the user in the dialogue
+     * @param origFile the original file that triggered the dialogue
+     */
+    public NewROSMsgDialogue(@NotNull Project prj, @Nullable ROSPackage suggestedPkg, @Nullable String suggestedName,
+                             @NotNull PsiFile origFile) {
         super(prj);
         this.prj = prj;
 
@@ -212,14 +222,23 @@ public class NewROSMsgDialogue extends DialogWrapper {
         }, "New ROS Message", null);
     }
 
+    /**
+     * @return the name of the message file to be created
+     */
     public String getFileName() {
         return msgNameField.getText();
     }
 
+    /**
+     * @return the target directory to place the new message in
+     */
     public PsiDirectory getDirectory() {
         return targetDir;
     }
 
+    /**
+     * specific implementation of a text field. This has a custom width
+     */
     private static class MyTextField extends JBTextField {
         @Override
         public Dimension getPreferredSize() {

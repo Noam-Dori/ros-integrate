@@ -12,13 +12,17 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import org.jetbrains.annotations.NotNull;
 
-class SkipAttributeHandler implements InsertHandler<LookupElement> {
+/**
+ * a special attribute name handler that is used to skip the attribute section and move to the tag value
+ */
+class SkipAttribute implements InsertHandler<LookupElement> {
     private final boolean newCompletion;
 
     /**
+     * constructs a new handler that is triggered from "completing" an attribute name
      * @param newCompletion whether or not to start a new completion
      */
-    SkipAttributeHandler(boolean newCompletion) {
+    SkipAttribute(boolean newCompletion) {
         this.newCompletion = newCompletion;
     }
 

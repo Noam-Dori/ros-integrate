@@ -12,6 +12,10 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.xml.ROSPackageXml;
 
+/**
+ * an intention that removes a group tag (group_depend or member_of_group) from the package.xml
+ * @author Noam Dori
+ */
 public class RemoveGroupTagQuickFix extends BaseIntentionAction implements LocalQuickFix {
 
     @NotNull
@@ -19,6 +23,12 @@ public class RemoveGroupTagQuickFix extends BaseIntentionAction implements Local
     private final int id;
     private final boolean isDependency;
 
+    /**
+     * construct a new intention
+     * @param pkgXml the relevant package.xml file
+     * @param id the index of the tag in the package.xml
+     * @param isDependency true if the tag is a group_depend tag, false if it is a member_of_group tag
+     */
     @Contract(pure = true)
     public RemoveGroupTagQuickFix(@NotNull ROSPackageXml pkgXml, int id, boolean isDependency) {
         this.id = id;

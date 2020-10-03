@@ -7,11 +7,20 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.xml.ROSPackageXml;
 
+/**
+ * an intention that removes the condition attribute from a dependency tag
+ * @author Noam Dori
+ */
 public class RemoveDependencyConditionFix implements LocalQuickFix {
     private final int id;
     @NotNull
     private final ROSPackageXml pkgXml;
 
+    /**
+     * construct a new intention
+     * @param pkgXml the relevant package.xml file
+     * @param id the index of the tag in the package.xml
+     */
     public RemoveDependencyConditionFix(@NotNull ROSPackageXml pkgXml, int id) {
         this.id = id;
         this.pkgXml = pkgXml;

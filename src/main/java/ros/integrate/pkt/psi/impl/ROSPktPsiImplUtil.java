@@ -16,6 +16,7 @@ import static ros.integrate.pkt.psi.ROSPktElementFactory.ANNOTATION_PREFIX;
 /**
  * a utility class implementing all of the ROSMsg PSI objects' methods.
  * Also hold all documentation for them since it just passes them to the sub-utilities.
+ * @author Noam Dori
  */
 public class ROSPktPsiImplUtil {
     /**
@@ -97,7 +98,12 @@ public class ROSPktPsiImplUtil {
         return ROSPktTypeUtil.set(type, rawType);
     }
 
-    // utility function, do not use.
+    /**
+     * Returns the name of the element.
+     * @param type the field type to check
+     * @return the name of the element
+     * @apiNote utility function, do not use
+     */
     @Contract(pure = true)
     static String getName(@NotNull ROSPktTypeBase type) {
         return ROSPktTypeUtil.getName(type);
@@ -108,12 +114,18 @@ public class ROSPktPsiImplUtil {
      * @param type the type to change
      * @return type, but changed (or not)
      */
+    @NotNull
     @Contract("_ -> param1")
     static PsiElement removeArray(@NotNull ROSPktTypeBase type) {
         return ROSPktTypeUtil.removeArray(type);
     }
 
-    // utility function, do not use
+    /**
+     * Returns the name identifier of the element.
+     * @param type the field type to check
+     * @return the name of the element
+     * @apiNote utility function, do not use
+     */
     @Nullable
     static PsiElement getNameIdentifier(@NotNull ROSPktTypeBase type) {
         return ROSPktTypeUtil.getNameIdentifier(type);
@@ -139,6 +151,12 @@ public class ROSPktPsiImplUtil {
         return ROSPktTypeUtil.getReferences(type);
     }
 
+    /**
+     * checks if this field type is a complete field type (which it is)
+     * @param type the field/field fragment to use
+     * @return true if this field type is NOT a fragment and follows all rules of packet field types, false otherwise
+     * @apiNote utility function, do not use
+     */
     @Contract(pure = true)
     static boolean isComplete(@NotNull ROSPktType type) {
         return ROSPktTypeUtil.isComplete(type);
@@ -150,12 +168,18 @@ public class ROSPktPsiImplUtil {
      * @param newName the new name used for the field
      * @return the new (or current) psi element put in place of the provided field label.
      */
+    @NotNull
     @Contract("_, _ -> param1")
     public static PsiElement set(@NotNull ROSPktLabel label, String newName) {
         return ROSPktLabelUtil.set(label, newName);
     }
 
-    // utility function, do not use
+    /**
+     * Returns the name of the element.
+     * @param label the field label to check
+     * @return the name of the element
+     * @apiNote utility function, do not use
+     */
     @Contract(pure = true)
     public static String getName(@NotNull ROSPktLabel label) {
         return ROSPktLabelUtil.getName(label);
@@ -195,6 +219,11 @@ public class ROSPktPsiImplUtil {
         return ROSPktFieldUtil.getTypeBase(field);
     }
 
+    /**
+     * checks if this field is a complete field (which it is)
+     * @param field the field/field fragment to use
+     * @return true if this field is NOT a fragment and follows all rules of packet fields, false otherwise
+     */
     @Contract(pure = true)
     static boolean isComplete(@NotNull ROSPktField field) {
         return ROSPktFieldUtil.isComplete(field);
@@ -216,8 +245,8 @@ public class ROSPktPsiImplUtil {
      * @return a list of all available fields in this section in textual order.
      * @param section the section to search for fields
      * @param queryClass the class of which to search. If limited to complete fields, use {@link ROSPktField}
- *                   if fragments need be searched use {@link ROSPktFieldFrag}.
- *                   if you want both, use {@link ROSPktFieldBase}
+     *                   if fragments need be searched use {@link ROSPktFieldFrag}.
+     *                   if you want both, use {@link ROSPktFieldBase}
      * @param includeConstants whether or not constant fields should be included
      */
     @NotNull

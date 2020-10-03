@@ -3,7 +3,9 @@ package ros.integrate;
 import com.intellij.spellchecker.BundledDictionaryProvider;
 
 /**
- * fetches the ROS bundled dictionary into the IDE
+ * loads the ROS bundled dictionary into the IDE.
+ * This dictionary holds commonly used ROS terms that are not standard English.
+ * @author Noam Dori
  */
 public class ROSBundledDictionaryProvider implements BundledDictionaryProvider {
     @Override

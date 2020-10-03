@@ -30,6 +30,14 @@ public enum ContribType {
     @NotNull
     private final BiConsumer<ROSPackageXml, Integer> removeContrib;
 
+    /**
+     * construct a new adapter
+     * @param getContrib the function to extract the contributor data from a package.xml given an ID
+     * @param getContribTr the function to extract the contributor text range from a package.xml given an ID
+     * @param fixContrib the function used to fix the specific contributor from the given package.xml and ID using the
+     *                   data from the third parameter.
+     * @param removeContrib the function used to remove the contributor with a specific ID from a given package.xml
+     */
     @Contract(pure = true)
     ContribType(@NotNull BiFunction<ROSPackageXml, Integer, Contributor> getContrib,
                 @NotNull BiFunction<ROSPackageXml, Integer, TextRange> getContribTr,
@@ -41,14 +49,32 @@ public enum ContribType {
         this.getContribTr = getContribTr;
     }
 
+    /**
+     * fetches the data of a specific contributor
+     * @param pkgXml the package.xml file to find a contributor in
+     * @param id the index of the tag in the package.xml
+     * @return the data of the contributor requested
+     */
     Contributor get(ROSPackageXml pkgXml, int id) {
         return getContrib.apply(pkgXml, id);
     }
 
+    /**
+     * fetches the text range of a specific contributor
+     * @param pkgXml the package.xml file to find a contributor in
+     * @param id the index of the tag in the package.xml
+     * @return the text range of the contributor requested
+     */
     TextRange getTr(ROSPackageXml pkgXml, int id) {
         return getContribTr.apply(pkgXml, id);
     }
 
+    /**
+     * repairs a specific contributor
+     * @param pkgXml the package.xml file to fix a contributor in
+     * @param id the index of the tag in the package.xml
+     * @return whether or not the repair was successful
+     */
     boolean fix(ROSPackageXml pkgXml, int id) {
         Contributor contrib = get(pkgXml, id);
         String name = contrib.getName().isEmpty() ? "user" : contrib.getName();
@@ -56,6 +82,7 @@ public enum ContribType {
 
         return fixContrib.fun(pkgXml, id, new Contributor(name, email));
     }
+
     @NotNull
     private String repairEmail(@NotNull String email) {
         if (email.isEmpty()) {
@@ -113,6 +140,11 @@ public enum ContribType {
         return repaired;
     }
 
+    /**
+     * remove a specific contributor from a given package.xml
+     * @param pkgXml the package.xml file to remove a contributor from
+     * @param id the index of the tag in the package.xml
+     */
     void remove(ROSPackageXml pkgXml, int id) {
         removeContrib.accept(pkgXml, id);
     }

@@ -24,6 +24,10 @@ import java.util.stream.Collectors;
 public abstract class ROSPktFile extends PsiFileBase implements PsiNameIdentifierOwner, PsiQualifiedNamedElement, Comparable<ROSPktFile> {
     private ROSPackage parentPackage;
 
+    /**
+     * construct a new packet file
+     * @param viewProvider the file view provider. go figure
+     */
     ROSPktFile(@NotNull FileViewProvider viewProvider) {
         super(viewProvider, ROSPktLanguage.INSTANCE);
         parentPackage = ROSPackage.ORPHAN;

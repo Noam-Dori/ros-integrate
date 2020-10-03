@@ -10,9 +10,15 @@ import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkt.psi.ROSPktFieldBase;
 
 /**
- * a fix used to remove an entire field from the file.
+ * an intention that removes an entire field from a packet file.
+ * @author Noam Dori
  */
 public class RemoveFieldQuickFix extends BaseIntentionAction {
+
+    /**
+     * construct a new intention
+     * @param field the field to delete
+     */
     public RemoveFieldQuickFix(ROSPktFieldBase field) {
         this.field = field;
     }

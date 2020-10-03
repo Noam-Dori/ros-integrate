@@ -12,7 +12,10 @@ import ros.integrate.pkt.psi.ROSPktSeparator;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * a fix used to delete all service lines in a file
+ * <p>Removes all service separator lines from the file</p>
+ * <p>this means that every "---" line in the file is deleted, even if the file requires at least one of these.</p>
+ * <p>In action and service files, you will need to add the necessary number of separators back</p>
+ * @author Noam Dori
  */
 public class RemoveAllSrvLinesQuickFix extends BaseIntentionAction {
 

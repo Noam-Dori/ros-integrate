@@ -12,6 +12,10 @@ import ros.integrate.pkg.xml.condition.psi.ROSConditionTypes;
 
 import static com.intellij.openapi.editor.colors.TextAttributesKey.createTextAttributesKey;
 
+/**
+ * the custom highlighting colors for ROS conditions
+ * @author Noam Dori
+ */
 public class ROSConditionSyntaxHighlighter extends SyntaxHighlighterBase {
     public static final TextAttributesKey LOGIC_OPERATOR =
             createTextAttributesKey("LOGIC_OPERATOR", DefaultLanguageHighlighterColors.KEYWORD);

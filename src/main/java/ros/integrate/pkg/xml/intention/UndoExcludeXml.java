@@ -11,6 +11,13 @@ import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.ROSPackageManager;
 import ros.integrate.pkg.xml.PackageXmlUtil;
 
+/**
+ * <p>Allows this file to be used for indexing by the ROS plugin.
+ *     Like its complement, XML exclusion can be redone from the ROS settings page and from the complement intention action.
+ * </p>
+ * <p>this means that even if this file does not belong to ros, the plugin will consider it as such</p>
+ * @author Noam Dori
+ */
 public class UndoExcludeXml extends BaseIntentionAction {
     @Nls(capitalization = Nls.Capitalization.Sentence)
     @NotNull

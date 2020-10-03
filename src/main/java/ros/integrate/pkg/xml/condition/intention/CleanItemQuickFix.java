@@ -9,10 +9,19 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.xml.condition.psi.ROSConditionElementFactory;
 
+/**
+ * a quick fix used on ROS condition verbs to remove illegal characters from them.
+ * if the entire verb is illegal characters, it will just be deleted.
+ * @author Noam Dori
+ */
 public class CleanItemQuickFix extends BaseIntentionAction {
     @NotNull
     private final PsiElement element;
 
+    /**
+     * construct a new fix
+     * @param element the ROS condition element to be cleaned.
+     */
     public CleanItemQuickFix(@NotNull PsiElement element) {
         this.element = element;
     }

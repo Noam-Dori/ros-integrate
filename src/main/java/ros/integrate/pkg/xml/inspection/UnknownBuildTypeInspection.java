@@ -17,6 +17,18 @@ import java.io.IOException;
 import java.util.*;
 import java.util.logging.Logger;
 
+/**
+ * <p>checks that the build type in <code>build_type</code> tags is an actual build system</p>
+ * <p>ROS (and by extension ROS2) offer multiple build systems. However, those are limited:</p>
+ * <ul>
+ *     <li>cmake</li>
+ *     <li>catkin</li>
+ *     <li>ament_cmake</li>
+ *     <li>ament_python</li>
+ * </ul>
+ * <p>By default, the catkin is the build type. Other build types are possible, but these are the core build systems</p>
+ * @author Noam Dori
+ */
 public class UnknownBuildTypeInspection extends LocalInspectionTool {
     private static final Logger LOG = Logger.getLogger("#ros.integrate.pkg.xml.completion.PackageXmlCompletionContributor");
     private static final List<String> BUILD_TYPES = loadBuildTypes();

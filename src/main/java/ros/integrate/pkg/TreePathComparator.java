@@ -4,6 +4,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Comparator;
 
+/**
+ * a comparator that allows comparing and sorting path strings, which respects the file tree and doesn't just do a plain
+ * string comparison
+ */
 class TreePathComparator implements Comparator<String> {
 
     @Override

@@ -8,11 +8,16 @@ import ros.integrate.pkt.psi.ROSPktTypeBase;
 import ros.integrate.pkg.psi.ROSPackage;
 
 /**
- * a class defining the references of {@link ROSPktTypeBase} to {@link ROSPackage} and its affiliated roots.
+ * a class defining the references from {@link ROSPktTypeBase} to {@link ROSPackage} and its affiliated roots.
  */
 class ROSPktToPackageReference extends ROSPackageReferenceBase<ROSPktTypeBase> {
     // note: myElement is the referencing element, and the result of resolve() is the original element (the file).
 
+    /**
+     * construct a new reference
+     * @param element the referencing element.
+     * @param textRange Reference range relative to given element}.
+     */
     ROSPktToPackageReference(@NotNull ROSPktTypeBase element, @NotNull TextRange textRange) {
         super(element, textRange);
         pkgName = element.raw().getText().replaceAll("/.*","");

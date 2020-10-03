@@ -24,6 +24,12 @@ import java.net.URL;
 import java.util.Scanner;
 import java.util.logging.Logger;
 
+/**
+ * an intention that downloads the license file related to a specific license and links it to the tag that called it.
+ * This will also bring up a dialogue where the user can fill in information so the license is specific for their
+ * company/product.
+ * @author Noam Dori
+ */
 public class AddLicenseFileFix implements LocalQuickFix {
     private static final Logger LOG = Logger.getLogger("#ros.integrate.pkg.xml.intention.AddLicenseFileFix");
     private static final String GET_LICENSE_MSG = "Downloading License";
@@ -38,6 +44,12 @@ public class AddLicenseFileFix implements LocalQuickFix {
     @NotNull
     private final String fileSourceUrl;
 
+    /**
+     * construct a new intention
+     * @param pkgXml the relevant package.xml file
+     * @param fileSourceUrl the URL of the raw license text
+     * @param id the index of the tag in the package.xml
+     */
     public AddLicenseFileFix(@NotNull ROSPackageXml pkgXml, int id, @NotNull String fileSourceUrl) {
         this.pkgXml = pkgXml;
         this.id = id;

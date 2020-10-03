@@ -25,7 +25,8 @@ import javax.swing.*;
 import java.util.Objects;
 
 /**
- * a fix used to trigger refactoring for a certain type.
+ * an intention used to refactor the name of a message (or service or action) type
+ * @author Noam Dori
  */
 public class RenameTypeQuickFix implements LocalQuickFix {
     @Nullable
@@ -33,6 +34,10 @@ public class RenameTypeQuickFix implements LocalQuickFix {
     @Nullable
     private final FileEditor fileEditor; // compliment of editor, available only in inspection fixes.
 
+    /**
+     * construct a new intention
+     * @param editor the editor of the file this intention applies to
+     */
     public RenameTypeQuickFix(@Nullable FileEditor editor) {
         this.fileEditor = editor;
     }
@@ -61,11 +66,20 @@ public class RenameTypeQuickFix implements LocalQuickFix {
         return false;
     }
 
+    /**
+     * an intention action adapter for the "refactor" quick fix
+     * TODO merge this class with the main one
+     */
     public static class RenameTypeIntention extends BaseIntentionAction {
         @NotNull private final RenameTypeQuickFix fix = new RenameTypeQuickFix(null);
         @NotNull private final ROSPktTypeBase type;
         final String message;
 
+        /**
+         * construct a new intention
+         * @param fieldType the field type to be refactored
+         * @param message a message to be displayed to the user
+         */
         public RenameTypeIntention(@NotNull ROSPktTypeBase fieldType, String message) {
             type = fieldType;
             this.message = message;

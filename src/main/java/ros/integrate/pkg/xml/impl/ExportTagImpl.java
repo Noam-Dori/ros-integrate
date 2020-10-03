@@ -14,6 +14,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * implements the data representation of the export tag. This implementation works alongside the actual XML tag.
+ * @author Noam Dori
+ */
 public class ExportTagImpl implements ExportTag {
     private static final String MESSAGE_GENERATOR = "message_generator",
             ARCHITECTURE_INDEPENDENT = "architecture_independent",
@@ -26,6 +30,11 @@ public class ExportTagImpl implements ExportTag {
     @NotNull
     private final ROSPackageXml pkgXml;
 
+    /**
+     * construct a new export tag representation.
+     * @param tag the real PSI export tag
+     * @param pkgXml the parent package.xml file
+     */
     public ExportTagImpl(@NotNull XmlTag tag, @NotNull ROSPackageXml pkgXml) {
         this.tag = tag;
         this.pkgXml = pkgXml;

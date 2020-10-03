@@ -16,10 +16,19 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * a base class representing a reference to a ROS package ({@link ROSPackage}).
+ * @param <T> the class of the PSI element that is referencing a ROS package.
+ */
 public abstract class ROSPackageReferenceBase<T extends PsiElement> extends PsiPolyVariantReferenceBase<T> {
 
     protected String pkgName;
 
+    /**
+     * construct a new reference
+     * @param element the referencing element.
+     * @param range Reference range relative to given element}.
+     */
     protected ROSPackageReferenceBase(@NotNull T element, TextRange range) {
         super(element, range, true);
     }
@@ -52,6 +61,10 @@ public abstract class ROSPackageReferenceBase<T extends PsiElement> extends PsiP
         return ret.toArray(ResolveResult.EMPTY_ARRAY);
     }
 
+    /**
+     * the method that figures out what package the element is referencing.
+     * @return the package this element is referencing. It can also fail and return {@link Optional#empty()}
+     */
     @NotNull
     protected Optional<ROSPackage> resolvePackage() {
         return Optional.ofNullable(myElement.getProject().getService(ROSPackageManager.class).findPackage(pkgName));

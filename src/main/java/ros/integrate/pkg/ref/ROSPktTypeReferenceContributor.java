@@ -9,7 +9,8 @@ import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkt.psi.ROSPktTypeBase;
 
 /**
- * a class enabling references in ROS messages.
+ * enables references from ROS messages to ROS packages.
+ * @author Noam Dori
  */
 public class ROSPktTypeReferenceContributor extends PsiReferenceContributor {
     @Nullable
@@ -21,6 +22,7 @@ public class ROSPktTypeReferenceContributor extends PsiReferenceContributor {
         }
         return null;
     }
+
     @Override
     public void registerReferenceProviders(@NotNull PsiReferenceRegistrar registrar) {
         registrar.registerReferenceProvider(PlatformPatterns.psiElement(ROSPktTypeBase.class),

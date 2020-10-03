@@ -24,6 +24,11 @@ class PackageContribAnnotator {
     @NotNull
     private final AnnotationHolder holder;
 
+    /**
+     * construct the annotator
+     * @param pkgXml the reference package.xml file
+     * @param holder the annotation holder.
+     */
     PackageContribAnnotator(@NotNull ROSPackageXml pkgXml, @NotNull AnnotationHolder holder) {
         this.pkgXml = pkgXml;
         this.holder = holder;
@@ -33,6 +38,9 @@ class PackageContribAnnotator {
         authorTr = pkgXml.getAuthorTextRanges();
     }
 
+    /**
+     * annotates package that have no maintainers as errors.
+     */
     void annNoMaintainers() {
         if (maintainers.isEmpty()) {
             Annotation ann = holder.createErrorAnnotation(maintainerTr.get(0),
@@ -42,6 +50,14 @@ class PackageContribAnnotator {
         }
     }
 
+    /**
+     * annotates maintainer tags that are either:
+     * <ul>
+     *     <li>missing email</li>
+     *     <li>have an email value that's not a real email</li>
+     *     <li>missing name</li>
+     * </ul>
+     */
     void annBadMaintainer() {
         for (int i = 0; i < maintainers.size(); i++) {
             Contributor maintainer = maintainers.get(i);
@@ -65,6 +81,13 @@ class PackageContribAnnotator {
         }
     }
 
+    /**
+     * annotates maintainer tags that are either:
+     * <ul>
+     *     <li>have an email value that's not a real email</li>
+     *     <li>missing name</li>
+     * </ul>
+     */
     void annBadAuthor() {
         for (int i = 0; i < authors.size(); i++) {
             Contributor author = authors.get(i);

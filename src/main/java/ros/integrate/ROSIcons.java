@@ -8,6 +8,7 @@ import javax.swing.*;
 /**
  * a map containing information for a bunch of usable icons in the ROS plugin
  * A useful list of icons: https://jetbrains.design/intellij/resources/icons_list/
+ * @author Noam Dori
  */
 public class ROSIcons {
     public static final Icon MSG_FILE = IconLoader.getIcon("/icons/msgFile.png");

@@ -12,6 +12,10 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.xml.ROSPackageXml;
 
+/**
+ * an intention that repairs maintainer and author tags
+ * @author Noam Dori
+ */
 public class FixContributorQuickFix extends BaseIntentionAction {
 
     @NotNull
@@ -20,6 +24,12 @@ public class FixContributorQuickFix extends BaseIntentionAction {
     @NotNull
     private final ContribType type;
 
+    /**
+     * construct a new intention
+     * @param pkgXml the relevant package.xml file
+     * @param id the index of the tag in the package.xml
+     * @param type the type of tag being repaired. This can be either author or maintainer
+     */
     @Contract(pure = true)
     public FixContributorQuickFix(@NotNull ROSPackageXml pkgXml, int id, @NotNull ContribType type) {
         this.pkgXml = pkgXml;

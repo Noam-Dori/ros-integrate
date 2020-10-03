@@ -3,7 +3,16 @@ package ros.integrate.pkg.xml.intention;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * a utility class used to repair version strings
+ * @author Noam Dori
+ */
 public class VersionRepairUtil {
+    /**
+     * repairs a version string
+     * @param brokenVersion the invalid version string
+     * @return the valid version string containing the data of the broken string
+     */
     @NotNull
     static String repairVersion(@Nullable String brokenVersion) {
         if (brokenVersion == null) {

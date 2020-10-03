@@ -8,7 +8,11 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.util.TextRange;
 import org.jetbrains.annotations.NotNull;
 
-public class EmptyTagHandler implements InsertHandler<LookupElement> {
+/**
+ * a handler specialising in completing empty tags, triggered from tag name completion.
+ * @author Noam Dori
+ */
+public class EmptyTag implements InsertHandler<LookupElement> {
     @Override
     public void handleInsert(@NotNull InsertionContext context, @NotNull LookupElement item) {
         CaretModel model = context.getEditor().getCaretModel();

@@ -7,6 +7,10 @@ import com.intellij.util.ProcessingContext;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.xml.condition.psi.ROSConditionTypes;
 
+/**
+ * implements auto-completion in ROS conditions, but only in the file fragments.
+ * @author Noam Dori
+ */
 public class ROSConditionCompletionContributor extends CompletionContributor {
     public ROSConditionCompletionContributor() {
         extend(CompletionType.BASIC, PlatformPatterns.psiElement(ROSConditionTypes.VARIABLE), new CompletionProvider<CompletionParameters>() {

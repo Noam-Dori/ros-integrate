@@ -7,8 +7,8 @@ import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkt.psi.*;
 
 /**
- * This class is responsible for adding annotations to .msg (and .srv) files,
- * and directing results to specific annotators.
+ * enforces rules for packet files (.msg, .srv, .action files) using annotations and intentions.
+ * @author Noam Dori
  */
 public class ROSPktAnnotator implements Annotator {
     @Override
@@ -27,8 +27,6 @@ public class ROSPktAnnotator implements Annotator {
                     typeAnnotator.annIllegalType();
                 }
             }
-
-
 
             // constant inspection:
             ROSPktConst constant = field.getConst();

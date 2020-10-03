@@ -27,7 +27,9 @@ import java.util.function.BiPredicate;
 import static ros.integrate.pkg.psi.impl.ROSCompiledPackage.RootType;
 
 /**
- * a default finder used for finding compiled packages within the libraries
+ * a package finder that searches for packages in the installation path, (or ROS path).
+ * It also adds the ROS library
+ * @author Noam Dori
  */
 public class ROSCompiledPackageFinder extends ROSPackageFinderBase {
     private static final Logger LOG = Logger.getInstance("#ros.integrate.workspace.ROSCompiledPackageFinder");

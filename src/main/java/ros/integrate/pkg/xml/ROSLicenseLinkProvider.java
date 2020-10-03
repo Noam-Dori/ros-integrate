@@ -10,6 +10,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.settings.ROSSettings;
 
+/**
+ * implements the "go to website" action for ROS licenses - linking the user to documentation on the actual license
+ * @author Noam Dori
+ */
 public class ROSLicenseLinkProvider extends WebBrowserUrlProvider {
     @Nullable
     @Override

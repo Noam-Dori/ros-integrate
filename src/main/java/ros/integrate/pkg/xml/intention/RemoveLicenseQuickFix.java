@@ -10,11 +10,20 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.xml.ROSPackageXml;
 
+/**
+ * an intention that removes a license tag from the package.xml
+ * @author Noam Dori
+ */
 public class RemoveLicenseQuickFix extends BaseIntentionAction {
     @NotNull
     private final ROSPackageXml pkgXml;
     private final int id;
 
+    /**
+     * construct a new intention
+     * @param pkgXml the relevant package.xml file
+     * @param id the index of the tag in the package.xml
+     */
     @Contract(pure = true)
     public RemoveLicenseQuickFix(@NotNull ROSPackageXml pkgXml, int id) {
         this.id = id;

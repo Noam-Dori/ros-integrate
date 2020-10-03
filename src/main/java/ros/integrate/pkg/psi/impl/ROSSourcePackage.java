@@ -11,6 +11,12 @@ import ros.integrate.pkt.psi.ROSPktFile;
 import javax.swing.*;
 import java.util.Collection;
 
+/**
+ * represents packages that are not compiled. There packages contain source code and can be quite messy.
+ * These usually exist somewhere in the workspace (under src) or in additional places specified by the user.
+ * These can be organised in extra folders.
+ * @author Noam Dori
+ */
 public class ROSSourcePackage extends ROSPackageBase {
 
     @NotNull

@@ -1,25 +1,25 @@
 <html>
 <body>
-<p>Checks if the package the dependency points to is in the correct version restricted by the dependency.</p>
+<p>Checks if the package the dependency points to is in the correct version restricted by the dependency</p>
 <!-- tooltip end -->
-<p>For example, in the new package:
-    <code>
-        <br/>
-        &lt;test_depend version_lte="1.0.0"&gt;catkin&lt;/depend&gt;
-        <br/>
-    </code>
-    and in catkin we have:
-    <code>
-        <br/>
-        &lt;version&gt;1.1.0&lt;/version&gt;
-        <br/>
-    </code>
-    This means that compiling the new package will fail because it requires a version at may be at most 1.0.0,
-    but the available package is 1.1.0, higher than the imposed maximum.
-</p>
-<p>This inspection offers two ways to fix this:</p>
+<p>Consider packages <b>core</b> and <b>leaf</b>:</p>
+<code>
+    &lt;package&gt;<br/>
+    &nbsp;&nbsp;&nbsp;&nbsp;&lt;name&gt;core&lt;/name&gt;<br/>
+    &nbsp;&nbsp;&nbsp;&nbsp;&lt;version&gt;1.1.0&lt;/version&gt;<br/>
+    &lt;/package&gt;<br/>
+    <br/>
+    &lt;package&gt;<br/>
+    &nbsp;&nbsp;&nbsp;&nbsp;&lt;name&gt;leaf&lt;/name&gt;<br/>
+    &nbsp;&nbsp;&nbsp;&nbsp;&lt;depend version_lte="1.0.0"&gt;catkin&lt;/depend&gt;<br/>
+    &lt;/package&gt;
+</code>
+<p>the <code>core</code> package is in version 1.1.0. This forces the <code>leaf</code> package to fail compilation
+    since it requires a core package with a version of 1.0.0 at most</p>
+<p>This inspection offers two fixes:</p>
 <ol>
     <li>change the dependency so that it includes the current version</li>
     <li>Remove the dependency tag(s).</li>
-</ol></body>
+</ol>
+</body>
 </html>

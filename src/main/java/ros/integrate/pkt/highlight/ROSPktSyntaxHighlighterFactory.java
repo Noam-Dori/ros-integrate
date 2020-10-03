@@ -8,7 +8,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * a class that generates highlighters for ROS messages.
+ * generates highlighters for packet files (.msg, .srv, .action).
+ * @author Noam Dori
  */
 public class ROSPktSyntaxHighlighterFactory extends SyntaxHighlighterFactory {
     @NotNull

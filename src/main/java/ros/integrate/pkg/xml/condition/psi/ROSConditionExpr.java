@@ -9,6 +9,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
+/**
+ * the most general form of ROS conditions. This can represent entire ROS conditions, sub-expressions, and single
+ * variables/literals
+ * @author Noam Dori
+ */
 public interface ROSConditionExpr extends ROSConditionToken {
     /**
      * A variant of this class that runs lazy evaluations.
@@ -41,10 +46,16 @@ public interface ROSConditionExpr extends ROSConditionToken {
                     Pair.create(">", compare -> compare > 0)
             );
 
+    /**
+     * @return get the list of actual tokens that make up this expression. This does not include whitespaces.
+     */
     List<ROSConditionToken> getTokens();
 
     /**
-     * assuming the expression is valid ({@link ROSConditionExpr#checkValid()} returns <code>true</code>)
+     * assuming the expression is valid ({@link ROSConditionExpr#checkValid()} returns <code>true</code>),
+     * this method evaluates the expression as if it is a python expression,
+     * with the special rule that strings starting with $ are substituted with their environment variable value.
+     * This method is recursive, but uses a lot of lazy evaluations to make the calculation as efficient as possible.
      * @return {@link ROSConditionExpr#TRUE} if the expression evaluated to a boolean and returned <code>true</code>,
      *         {@link ROSConditionExpr#FALSE} if the expression evaluated to a boolean and returned <code>false</code>,
      *         or a proper string value if the expression evaluated to a string.
@@ -95,6 +106,17 @@ public interface ROSConditionExpr extends ROSConditionToken {
         return returnValue;
     }
 
+    /**
+     * checks whether or not this expression is a legal ROS condition according to REP 149.
+     * Even if it is not the entire condition, it still follows the rules of complete conditions.
+     * @return true if:
+     * <ul>
+     *     <li>all sub-expressions are valid (the recursion ends with the verbs, check
+     *     {@link ROSConditionItem#checkValid()} for details)</li>
+     *     <li>all sub-expressions are delimited by logic tokens</li>
+     *     <li>there is an odd number of tokens </li>
+     * </ul>
+     */
     default boolean checkValid() {
         boolean operator = false;
         for (ROSConditionToken token : getTokens()) {

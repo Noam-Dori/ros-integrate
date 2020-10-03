@@ -12,6 +12,7 @@ import com.intellij.refactoring.util.MoveRenameUsageInfo;
 import com.intellij.refactoring.util.TextOccurrencesUtil;
 import com.intellij.usageView.UsageInfo;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkt.psi.ROSPktFieldBase;
 import ros.integrate.pkt.psi.ROSPktFile;
@@ -21,6 +22,10 @@ import ros.integrate.pkg.psi.ROSPackage;
 
 import java.util.*;
 
+/**
+ * implements a custom move refactor mechanism for packet files
+ * @author Noam Dori
+ */
 public class MovePktFileHandler extends MoveFileHandler {
     @Override
     public boolean canProcessElement(PsiFile element) {
@@ -28,7 +33,7 @@ public class MovePktFileHandler extends MoveFileHandler {
     }
 
     @Override
-    public void prepareMovedFile(PsiFile file, PsiDirectory moveDestination, Map<PsiElement, PsiElement> oldToNewMap) {
+    public void prepareMovedFile(PsiFile file, PsiDirectory moveDestination, @NotNull Map<PsiElement, PsiElement> oldToNewMap) {
         // add mapping from old pkg to new pkg
         ROSPackage oldPkg = pkt(file).getPackage();
         ROSPackage newPkg = file.getProject().getService(ROSPackageManager.class).findPackage(moveDestination);
@@ -49,7 +54,7 @@ public class MovePktFileHandler extends MoveFileHandler {
 
     @Nullable
     @Override
-    public List<UsageInfo> findUsages(PsiFile psiFile, PsiDirectory newParent, boolean searchInComments, boolean searchInNonJavaFiles) {
+    public List<UsageInfo> findUsages(@NotNull PsiFile psiFile, PsiDirectory newParent, boolean searchInComments, boolean searchInNonJavaFiles) {
         List<UsageInfo> ret = new ArrayList<>();
         Set<PsiReference> foundReferences = new HashSet<>();
 
@@ -76,7 +81,7 @@ public class MovePktFileHandler extends MoveFileHandler {
     }
 
     @Override
-    public void retargetUsages(List<UsageInfo> usageInfos, Map<PsiElement, PsiElement> oldToNewMap) {
+    public void retargetUsages(@NotNull List<UsageInfo> usageInfos, Map<PsiElement, PsiElement> oldToNewMap) {
         usageInfos.parallelStream().forEach(use -> {
             PsiElement element = use.getElement();
             PsiReference ref = use.getReference();

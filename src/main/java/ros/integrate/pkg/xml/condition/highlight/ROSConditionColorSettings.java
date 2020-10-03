@@ -14,6 +14,11 @@ import ros.integrate.ROSIcons;
 import javax.swing.*;
 import java.util.Map;
 
+/**
+ * implements the color settings tab for ROS conditions. It only shows the GUI, the colors are specified in
+ * {@link ROSConditionSyntaxHighlighter}
+ * @author Noam Dori
+ */
 public class ROSConditionColorSettings implements ColorSettingsPage {
     @Nullable
     @Override

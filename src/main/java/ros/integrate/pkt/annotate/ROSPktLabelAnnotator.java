@@ -9,13 +9,20 @@ import ros.integrate.pkt.psi.ROSPktFieldBase;
 import ros.integrate.pkt.psi.ROSPktLabel;
 
 /**
- * An annotator dedicated to {@link ROSPktLabel}
+ * An annotator dedicated to {@link ROSPktLabel}, the name of each property in the message
+ * @author Noam Dori
  */
 class ROSPktLabelAnnotator extends ROSPktAnnotatorBase {
 
     private final @NotNull String fieldName;
     private final @NotNull ROSPktLabel label;
 
+    /**
+     * construct the annotator
+     * @param holder the annotation holder
+     * @param label the PSI element pointing to the name of the field
+     * @param fieldName the name of the field
+     */
     ROSPktLabelAnnotator(@NotNull AnnotationHolder holder,
                          @NotNull ROSPktLabel label,
                          @NotNull String fieldName) {

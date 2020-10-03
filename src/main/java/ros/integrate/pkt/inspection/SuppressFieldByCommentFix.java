@@ -11,9 +11,16 @@ import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkt.psi.ROSPktFieldBase;
 
 /**
- * a fix intended to suppress inspections via a comment.
+ * a suppression intention that adds a comment before a field to let the IDE know to skip over the
+ * field when running specific inspections
+ * @author Noam Dori
  */
 class SuppressFieldByCommentFix extends SuppressByCommentFix {
+
+    /**
+     * construct a new intention
+     * @param key contains the ID of the inspection suppress
+     */
     SuppressFieldByCommentFix(@NotNull HighlightDisplayKey key) {
         super(key, ROSPktFieldBase.class);
     }

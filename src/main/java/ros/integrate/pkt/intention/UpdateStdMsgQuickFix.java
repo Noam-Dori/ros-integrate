@@ -8,6 +8,10 @@ import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkt.psi.ROSPktElementFactory;
 import ros.integrate.pkt.psi.ROSPktType;
 
+/**
+ * an intention that replaces a custom field type with the built-in field type it emulates
+ * @author Noam Dori
+ */
 public class UpdateStdMsgQuickFix implements LocalQuickFix {
 
     @Nls(capitalization = Nls.Capitalization.Sentence)

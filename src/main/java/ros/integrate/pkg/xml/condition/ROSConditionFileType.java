@@ -8,9 +8,16 @@ import ros.integrate.pkg.xml.condition.lang.ROSConditionLanguage;
 
 import javax.swing.*;
 
+/**
+ * formal definition of the ROS condition file. It gives ROSCondition file fragments their own icon
+ * @author Noam Dori
+ */
 public class ROSConditionFileType extends LanguageFileType {
     public static final ROSConditionFileType INSTANCE = new ROSConditionFileType();
 
+    /**
+     * construct an instance of this definition
+     */
     public ROSConditionFileType() {
         super(ROSConditionLanguage.INSTANCE);
     }

@@ -10,6 +10,10 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.xml.ROSPackageXml;
 
+/**
+ * an intention that removes author or maintainer tags from a package.xml file
+ * @author Noam Dori
+ */
 public class RemoveContributorFix extends BaseIntentionAction {
 
     @NotNull
@@ -18,6 +22,12 @@ public class RemoveContributorFix extends BaseIntentionAction {
     @NotNull
     private final ContribType type;
 
+    /**
+     * construct a new intention
+     * @param pkgXml the relevant package.xml file
+     * @param id the index of the tag in the package.xml
+     * @param type the type of tag being repaired. This can be either author or maintainer
+     */
     @Contract(pure = true)
     public RemoveContributorFix(@NotNull ROSPackageXml pkgXml, int id, @NotNull ContribType type) {
         this.pkgXml = pkgXml;

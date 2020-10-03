@@ -11,7 +11,8 @@ import ros.integrate.pkt.psi.ROSPktTypeBase;
 import java.util.*;
 
 /**
- * a class used to suggest names for things in ROS messages.
+ * implements name suggestion for named elements in packet files (.msg, .srv, .action)
+ * @author Noam Dori
  */
 public class ROSPktNameSuggestionProvider extends PreferrableNameSuggestionProvider {
     @Nullable

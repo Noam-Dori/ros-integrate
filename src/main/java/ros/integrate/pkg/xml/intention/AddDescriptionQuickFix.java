@@ -12,9 +12,17 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.xml.ROSPackageXml;
 
+/**
+ * an intention that adds a description tag to a package.xml
+ * @author Noam Dori
+ */
 public class AddDescriptionQuickFix extends BaseIntentionAction {
     private final ROSPackageXml pkgXml;
 
+    /**
+     * construct a new intention
+     * @param pkgXml the relevant package.xml file
+     */
     @Contract(pure = true)
     public AddDescriptionQuickFix(ROSPackageXml pkgXml) {
         this.pkgXml = pkgXml;

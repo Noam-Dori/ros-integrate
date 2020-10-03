@@ -12,14 +12,15 @@ import ros.integrate.pkt.psi.ROSPktComment;
 import ros.integrate.pkt.psi.ROSPktType;
 
 /**
- * a class enabling the spellchecker in ROS messages.
+ * runs the spellchecker in packet files (.msg, .srv, .action)
+ * @author Noam Dori
  */
 public class ROSPktSpellcheckingStrategy extends SpellcheckingStrategy {
     private final Tokenizer<ROSPktComment> myROSCommentTokenizer = new ROSCommentTokenizer();
 
     @NotNull
     @Override
-    public Tokenizer getTokenizer(PsiElement element) {
+    public Tokenizer<?> getTokenizer(PsiElement element) {
         if(element instanceof ROSPktType) {
             return EMPTY_TOKENIZER;
         }

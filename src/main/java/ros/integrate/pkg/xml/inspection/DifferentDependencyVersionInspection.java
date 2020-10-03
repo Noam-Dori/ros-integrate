@@ -19,6 +19,29 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * <p>Checks if there are multiple dependency tags that point to the same package
+ *     but with different version restrictions.</p>
+ * <p>Consider this package:</p>
+ * <code>
+ *     &lt;package&gt;<br/>
+ *     &nbsp;&nbsp;&nbsp;&nbsp&lt;depend&gt;catkin&lt;/depend&gt;<br/>
+ *     &nbsp;&nbsp;&nbsp;&nbsp&lt;test_depend version_gte="1.0.0"&gt;catkin&lt;/depend&gt;<br/>
+ *     &lt;/package&gt;
+ * </code>
+ * <p>This package has two dependencies that require somewhat different versions:
+ *     the first can work with any version of <code>catkin</code>,
+ *     but the second requires <code>catkin</code> to be at least version 1.0.0.
+ * </p>
+ * <p>For this reason, the values of both dependency tags will be annotated.</p>
+ * <p>This inspection offers two fixes:</p>
+ * <ol>
+ *     <li>Reformat the entire file. This will also change the version restriction to match the versions common to all tags.
+ *     If no such common version exists, the dependencies will be removed.</li>
+ *     <li>Remove the dependency tag(s).</li>
+ * </ol>
+ * @author Noam Dori
+ */
 public class DifferentDependencyVersionInspection extends LocalInspectionTool {
     @Nullable
     @Override

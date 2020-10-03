@@ -15,6 +15,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * <p>If a package is annotated as architecture independent, this inspection makes sure that the compilation of the package
+ *     does not depend on the architecture of the system, like on the CPU/GPU used, etc.
+ * </p>
+ * <p>python packages are considered architecture independent, while C/C++ packages depend on the architecture.</p>
+ * <p>Please note that this inspection is not exhaustive and cannot account for every language.</p>
+ * <p>Support for additional languages can be added via plugins.</p>
+ * @author Noam Dori
+ */
 public class NotArchitectureIndependentInspection extends LocalInspectionTool {
     @NotNull
     private static final List<ExportLangHelper> HELPERS = ExportLangHelper.EP_NAME.getExtensionList();

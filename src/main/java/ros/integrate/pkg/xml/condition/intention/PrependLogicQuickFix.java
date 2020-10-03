@@ -11,6 +11,11 @@ import ros.integrate.pkg.xml.condition.psi.ROSConditionElementFactory;
 import ros.integrate.pkg.xml.condition.psi.ROSConditionExpr;
 import ros.integrate.pkg.xml.condition.psi.ROSConditionToken;
 
+/**
+ * a quick fix used on ROS condition expressions when two verbs are near each other. The solution is to put
+ * a logic operator between them (specifically <code>==</code>)
+ * @author Noam Dori
+ */
 public class PrependLogicQuickFix extends BaseIntentionAction {
 
     @NotNull
@@ -18,6 +23,11 @@ public class PrependLogicQuickFix extends BaseIntentionAction {
     @NotNull
     private final ROSConditionExpr expr;
 
+    /**
+     * constructs a new fix
+     * @param expr the expression with the two adjacent verbs
+     * @param token the latter token of the adjacent verbs.
+     */
     public PrependLogicQuickFix(@NotNull ROSConditionExpr expr, @NotNull ROSConditionToken token) {
         this.token = token;
         this.expr = expr;

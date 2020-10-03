@@ -8,6 +8,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkg.xml.condition.psi.ROSConditionTypes;
 
+/**
+ * implements automatic parentheses matching in ROS conditions
+ * @author Noam Dori
+ */
 public class ROSConditionBraceMatcher implements PairedBraceMatcher {
     @NotNull
     @Override

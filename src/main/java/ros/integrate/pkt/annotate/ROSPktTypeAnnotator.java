@@ -15,12 +15,20 @@ import ros.integrate.pkt.psi.*;
 import java.util.List;
 
 /**
- * an annotator dedicated to {@link ROSPktTypeBase}
+ * an annotator dedicated to {@link ROSPktTypeBase}. This is the data type of the field. This can have multiple components
+ * and uses a class-like concept
+ * @author Noam Dori
  */
 public class ROSPktTypeAnnotator extends ROSPktAnnotatorBase {
     private final String msgName;
     private final ROSPktTypeBase type;
 
+    /**
+     * construct the annotator
+     * @param holder the annotation holder
+     * @param type the pointer to the PSI element containing the type
+     * @param msgName the name of the file this type is in
+     */
     ROSPktTypeAnnotator(@NotNull AnnotationHolder holder,
                         @NotNull ROSPktTypeBase type,
                         @NotNull String msgName) {

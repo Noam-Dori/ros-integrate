@@ -13,10 +13,16 @@ import ros.integrate.pkt.psi.ROSPktTypes;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * a fix used to remove the constant from a field
+ * <p>Removes the const value assignment from the field</p>
+ * <p>This makes the field a property field instead of a const-value field</p>
+ * @author Noam Dori
  */
 public class RemoveConstQuickFix extends BaseIntentionAction {
 
+    /**
+     * construct a new intention
+     * @param field the field to modify
+     */
     public RemoveConstQuickFix(ROSPktFieldBase field) {
         this.field = field;
     }

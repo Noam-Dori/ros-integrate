@@ -22,12 +22,18 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * a fix used to change duplicate names without triggering a refactor.
+ * an intention used to change the name of one of two duplicate fields
+ * @author Noam Dori
  */
 public class ChangeNameQuickFix extends BaseIntentionAction {
     private final ROSPktFieldBase parent;
     private final PsiElement badElement;
 
+    /**
+     * construct a new intention
+     * @param field the field element belongs to
+     * @param element the element that need to be changed.
+     */
     public ChangeNameQuickFix(ROSPktFieldBase field, PsiElement element) {
         this.parent = field;
         this.badElement = element;

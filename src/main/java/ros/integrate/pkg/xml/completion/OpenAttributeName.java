@@ -13,24 +13,30 @@ import com.intellij.openapi.util.TextRange;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-class AttributeNameHandler implements InsertHandler<LookupElement> {
+/**
+ * a completion handler that starts an attribute name (that may be canceled later).
+ * Triggered from a tag name completion or from another attribute
+ */
+class OpenAttributeName implements InsertHandler<LookupElement> {
     @Nullable
     private final String forcedAttrName;
     private final boolean inAttr;
 
     /**
+     * constructs a handler that is triggered from a tag name completion, not an attribute name completion.
      * @param forcedAttrName leave null if the user may select an attribute.
      *                       Otherwise, the string used is inserted as the attribute.
      */
-    AttributeNameHandler(@Nullable String forcedAttrName) {
+    OpenAttributeName(@Nullable String forcedAttrName) {
         this.forcedAttrName = forcedAttrName;
         inAttr = false;
     }
 
     /**
+     * constructs a handler that is triggered when you completed an attribute value.
      * use this to handle moving to another attribute name from completing an attribute value.
      */
-    AttributeNameHandler() {
+    OpenAttributeName() {
         this.forcedAttrName = null;
         inAttr = true;
     }

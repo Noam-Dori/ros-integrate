@@ -21,6 +21,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * A facade class used to annotate package.xml files for anything related to the dependency type tags (depend,
+ * test_depend, etc.).
+ */
 class PackageDependencyAnnotator {
     @NotNull
     private final ROSPackageXml pkgXml;
@@ -35,6 +39,11 @@ class PackageDependencyAnnotator {
 
     private final int format;
 
+    /**
+     * construct the annotator
+     * @param pkgXml the reference package.xml file
+     * @param holder the annotation holder.
+     */
     @Contract(pure = true)
     PackageDependencyAnnotator(@NotNull ROSPackageXml pkgXml, @NotNull AnnotationHolder holder) {
         this.holder = holder;
@@ -44,6 +53,9 @@ class PackageDependencyAnnotator {
         format = pkgXml.getFormat();
     }
 
+    /**
+     * annotates tags that point to themselves
+     */
     void annSelfDependency() {
         for (int i = 0; i < dependencies.size(); i++) {
             if (pkgXml.getPackage().equals(dependencies.get(i).getPackage())) {
@@ -54,6 +66,10 @@ class PackageDependencyAnnotator {
         }
     }
 
+    /**
+     * annotates tags that are not allowed to be used the the manifest's current format.
+     * For example, run_depend is only allowed in format 1 manifests
+     */
     void annInvalidDependencyName() {
         // get invalid tag names
         List<String> relevant = Arrays.stream(DependencyType.values())
@@ -71,6 +87,9 @@ class PackageDependencyAnnotator {
         }
     }
 
+    /**
+     * annotates empty dependency tags
+     */
     void annEmptyDependency() {
         for (int i = 0; i < dependencies.size(); i++) {
             if (depTrs.get(i).value() == depTrs.get(i)) {
@@ -81,6 +100,10 @@ class PackageDependencyAnnotator {
         }
     }
 
+    /**
+     * annotates tags that are conflicting. For example, depend and exec_depend cannot be used together on the same
+     * dependency because both declare an "execution time dependency". This annotation respects conditions.
+     */
     void annConflictingDependencies() {
         Set<Integer> trsToAnn = new HashSet<>();
         for (int i = dependencies.size() - 1; i >= 0; i--) {
@@ -111,6 +134,9 @@ class PackageDependencyAnnotator {
         });
     }
 
+    /**
+     * annotates tags that point to an unknown package or dependency.
+     */
     void annDependencyNotFound() {
         for (int i = 0; i < dependencies.size(); i++) {
             Dependency dep = dependencies.get(i);
@@ -130,6 +156,10 @@ class PackageDependencyAnnotator {
         }
     }
 
+    /**
+     * annotates attributes of tags that result in an invalid version range. For example,
+     * {@code version_lt=1.0.0} and {@code version_gt=2.0.0} means no version is possible and should be annotated.
+     */
     void annInvalidDependencyVersionAttr() {
         for (int i = 0; i < dependencies.size(); i++) {
             Dependency dep = dependencies.get(i);
@@ -144,6 +174,10 @@ class PackageDependencyAnnotator {
         }
     }
 
+    /**
+     * annotates version attributes that cannot be together in the same tag, yet are. For example,
+     * version_lt and version_lte should not be together in the same tag.
+     */
     void annConflictingVersionAttr() {
         if (dependencies.size() == 0) {
             return;
@@ -187,6 +221,9 @@ class PackageDependencyAnnotator {
         }
     }
 
+    /**
+     * annotates tags that contains a false evaluating condition.
+     */
     void annIgnoredCondition() {
         for (int i = 0; i < dependencies.size(); i++) {
             if (PackageXmlUtil.conditionEvaluatesToFalse(dependencies.get(i), format)) {
@@ -196,6 +233,9 @@ class PackageDependencyAnnotator {
         }
     }
 
+    /**
+     * annotates packages that no no buildtool_depend tags.
+     */
     public void annNoBuildtoolDependency() {
         if (pkgXml.getDependencies(DependencyType.BUILDTOOL).isEmpty()) {
             Annotation ann = holder.createErrorAnnotation(pkgXml.getRootTextRange(),

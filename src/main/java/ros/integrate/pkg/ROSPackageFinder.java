@@ -15,7 +15,9 @@ import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 
 /**
- * an extension point used to find and add ROS packages to the cache
+ * an extension point used to find and add ROS packages to the package index,
+ * as well as load/create new relevant libraries
+ * @author Noam Dori
  */
 public interface ROSPackageFinder {
     ExtensionPointName<ROSPackageFinder> EP_NAME = ExtensionPointName.create("ros-integrate.packageFinder");
@@ -90,6 +92,10 @@ public interface ROSPackageFinder {
      */
     void setDependency(Module module);
 
+    /**
+     * represents possible commands that can be applied in certain items in the cache:
+     * either rename the item, delete the item, or do nothing
+     */
     enum CacheCommand {
         NONE,
         RENAME,

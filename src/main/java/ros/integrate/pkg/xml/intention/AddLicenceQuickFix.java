@@ -11,9 +11,17 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.xml.ROSPackageXml;
 
+/**
+ * an intention that adds a license tag to a package.xml
+ * @author Noam Dori
+ */
 public class AddLicenceQuickFix extends BaseIntentionAction {
     private final ROSPackageXml pkgXml;
 
+    /**
+     * construct a new intention
+     * @param pkgXml the relevant package.xml file
+     */
     public AddLicenceQuickFix(ROSPackageXml pkgXml) {
         this.pkgXml = pkgXml;
     }

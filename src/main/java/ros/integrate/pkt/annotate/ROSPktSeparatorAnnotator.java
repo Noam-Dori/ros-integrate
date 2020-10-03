@@ -10,11 +10,18 @@ import ros.integrate.pkt.psi.ROSPktFile;
 import ros.integrate.pkt.psi.ROSPktSeparator;
 
 /**
- * an annotator dedicated to {@link ROSPktSeparator}
+ * an annotator dedicated to {@link ROSPktSeparator}, used in .srv and .action files to distinguish between the sub-messages
+ * request, response, and feedback in actions
+ * @author Noam Dori
  */
 class ROSPktSeparatorAnnotator extends ROSPktAnnotatorBase {
     private final ROSPktSeparator sep;
 
+    /**
+     * construct the annotator
+     * @param holder the annotation holder
+     * @param sep the separator being checked and annotated.
+     */
     ROSPktSeparatorAnnotator(@NotNull AnnotationHolder holder, @NotNull ROSPktSeparator sep) {
         super(holder);
         this.sep = sep;

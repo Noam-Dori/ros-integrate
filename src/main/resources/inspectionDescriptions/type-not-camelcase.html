@@ -1,15 +1,16 @@
 <html>
 <body>
-<p>A general ROS-wide standard for messages and services is the naming convention for messages and services.<br/>
-    The rule is: <i>all messages and services should be written in <b>Capitalised CamelCase</b></i>.<br/>
-    Following are the guidelines for CamelCase:
-</p>
-<ol>
-    <li>The only characters allowed are the alphabet (a-z,A-Z) and the digits (0-9). This means <b>no underscores allowed!</b></li>
-    <li>Each word starts with a Capital letter, even after a number.</li>
-</ol>
-<p>This inspection checks whether or not these conditions are met, although proper spelling is left out.
-</p>
+<p>checks if a message, service, or action type is not in the standard naming convention, and marks the type accordingly.</p>
 <!-- tooltip end -->
+<p>These are the naming conventions for a message, service, or action type name:</p>
+<ol>
+    <li>The message name is in PascalCase, meaning the words are glued together
+        and every word starts with a capital letter.</li>
+    <li>The only characters allowed are the alphabet (a-z,A-Z) and the digits (0-9)</li>
+</ol>
+<p>this inspection offers one fix:</p>
+<ol>
+    <li>Rename the type via rename refactor</li>
+</ol>
 </body>
 </html>

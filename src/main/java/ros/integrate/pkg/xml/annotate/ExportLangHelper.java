@@ -3,6 +3,11 @@ package ros.integrate.pkg.xml.annotate;
 import com.intellij.openapi.extensions.ExtensionPointName;
 import ros.integrate.pkg.psi.ROSPackage;
 
+/**
+ * a plugin interface that helps check if the supported tags (message_generator and architecture_independent)
+ * in export are valid
+ * @author Noam Dori
+ */
 public interface ExportLangHelper {
     ExtensionPointName<ExportLangHelper> EP_NAME = ExtensionPointName.create("ros-integrate.exportLangHelper");
 

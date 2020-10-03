@@ -18,7 +18,8 @@ import ros.integrate.pkt.psi.ROSPktTypes;
 import java.util.*;
 
 /**
- * a class enabling and defining auto-completion within ROS messages
+ * the completion engine for packet files (.msg, .srv, .action)
+ * @author Noam Dori
  */
 public class ROSPktCompletionContributor extends CompletionContributor {
     private static final LookupElement[] INTEGRAL_SIZES = Arrays.stream(new String[] {"8", "16", "32", "64"})
@@ -30,6 +31,9 @@ public class ROSPktCompletionContributor extends CompletionContributor {
             .map(LookupElementBuilder::bold)
             .toArray(LookupElement[]::new);
 
+    /**
+     * construct the new completion engine
+     */
     public ROSPktCompletionContributor() {
         extend(CompletionType.BASIC,
                 PlatformPatterns.psiElement(ROSPktTypes.CUSTOM_TYPE).withLanguage(ROSPktLanguage.INSTANCE),

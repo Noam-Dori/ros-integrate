@@ -7,7 +7,8 @@ import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkt.psi.ROSPktTypeBase;
 
 /**
- * a class enabling references in ROS messages.
+ * implements reference creation for packet files (.msg, .srv, .action)
+ * @author Noam Dori
  */
 public class ROSMsgFileReferenceContributor extends PsiReferenceContributor {
     @Override

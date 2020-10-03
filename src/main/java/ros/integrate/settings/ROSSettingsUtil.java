@@ -9,7 +9,17 @@ import com.intellij.psi.search.GlobalSearchScope;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * a collection of utility functions for handling plugin configurations
+ * @author Noam Dori
+ */
 class ROSSettingsUtil {
+    /**
+     * attempts to find the user's workspace directory for him
+     * @param project the project currently open
+     * @return null if the plugin could not find the user's workspace directory,
+     * otherwise the absolute path to the user's workspace directory.
+     */
     @Nullable
     static String detectWorkspace(@NotNull Project project) {
         GlobalSearchScope scope = GlobalSearchScope.projectScope(project);

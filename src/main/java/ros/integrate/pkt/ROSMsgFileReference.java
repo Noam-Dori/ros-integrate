@@ -29,6 +29,7 @@ import java.util.Optional;
 
 /**
  * a class defining the references of {@link ros.integrate.pkt.psi.ROSPktTypeBase} to {@link ROSMsgFile}
+ * @author Noam Dori
  */
 public class ROSMsgFileReference extends PsiReferenceBase<PsiElement> implements PsiFileReference {
     // note: myElement is the referencing element, and the result of resolve() is the original element (the file).
@@ -39,6 +40,11 @@ public class ROSMsgFileReference extends PsiReferenceBase<PsiElement> implements
     private final String pkgName;
     private final boolean explicitPackage;
 
+    /**
+     * construct a new reference
+     * @param element the referencing element.
+     * @param textRange the text range to attach the reference to within element
+     */
     public ROSMsgFileReference(@NotNull ROSPktTypeBase element, @NotNull TextRange textRange) {
         super(element, textRange);
         msgName = element.raw().getText();

@@ -12,11 +12,24 @@ import javax.swing.*;
 import java.util.Collection;
 import java.util.Map;
 
+/**
+ * represents packages that are directly installed. There are pre-compiled packages that were already organised by the
+ * build system. These usually exist in the ROS root directory (or "ROS Path")
+ * @author Noam Dori
+ */
 public class ROSCompiledPackage extends ROSPackageBase {
 
     @NotNull
     private final Map<RootType,PsiDirectory> rootMap;
 
+    /**
+     * construct a new package (this class is abstract however)
+     * @param project the project this package belongs to
+     * @param name the name of the package. This is the fully qualifies name as well, used for indexing.
+     * @param pkgXml the reference package.xml file
+     * @param rootMap maps between different root directory types to the real PSI directory.
+     * @param packets the collection of all packet files that belong to this package
+     */
     public ROSCompiledPackage(@NotNull Project project, @NotNull String name, @NotNull Map<RootType, PsiDirectory> rootMap,
                             @NotNull XmlFile pkgXml, @NotNull Collection<ROSPktFile> packets) {
         super(project,name,pkgXml);

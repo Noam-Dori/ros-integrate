@@ -30,9 +30,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * the user interface that allows the user to fill persistent, important configurations about the ROS plugin and the
+ * user's ROS environment
+ * @author Noam Dori
+ */
 public class ROSSettingsPage implements SearchableConfigurable {
     private static final String GET_SOURCES_PROGRESS = "Fetching ROSDep Source Lists";
-
 
     @NotNull
     @Override
@@ -71,6 +75,10 @@ public class ROSSettingsPage implements SearchableConfigurable {
 
     private final JButton fetchSourceListsButton = new JButton();
 
+    /**
+     * construct a new settings page
+     * @param project the project this settings page belongs to
+     */
     public ROSSettingsPage(Project project) {
         this.project = project;
         recentsManager = RecentsManager.getInstance(project);

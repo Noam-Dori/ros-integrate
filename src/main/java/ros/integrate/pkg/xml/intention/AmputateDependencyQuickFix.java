@@ -12,11 +12,20 @@ import ros.integrate.pkg.xml.VersionRange;
 
 import java.util.Optional;
 
+/**
+ * an intention that removes information from dependency tags so they can be valid.
+ * @author Noam Dori
+ */
 public class AmputateDependencyQuickFix extends BaseIntentionAction {
     @NotNull
     private final ROSPackageXml pkgXml;
     private final int id;
 
+    /**
+     * construct a new intention
+     * @param pkgXml the relevant package.xml file
+     * @param id the index of the tag in the package.xml
+     */
     public AmputateDependencyQuickFix(@NotNull ROSPackageXml pkgXml, int id) {
         this.pkgXml = pkgXml;
         this.id = id;

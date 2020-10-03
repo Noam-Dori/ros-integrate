@@ -11,7 +11,10 @@ import ros.integrate.pkt.psi.*;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * a class used to define the PSI parser for ROS messages.
+ * implements the details of the packet (.msg .srv, .action) language.
+ * It is not the parser, but it tells the IDE useful information like what tokens are whitespaces, literals, etc.
+ * It's more like a bridge between the IDE and the parser.
+ * @author Noam Dori
  */
 public class ROSPktParserDefinition implements ParserDefinition {
     private static final TokenSet WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE);

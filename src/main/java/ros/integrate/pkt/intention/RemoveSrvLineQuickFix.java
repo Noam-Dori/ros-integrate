@@ -11,12 +11,18 @@ import ros.integrate.pkt.psi.ROSPktSeparator;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * a fix used to remove one service separator from the file.
+ * <p>Deletes the selected service separator from the file</p>
+ * <p>Note that there may be more service separators to remove until the file is valid</p>
+ * @author Noam Dori
  */
 public class RemoveSrvLineQuickFix extends BaseIntentionAction {
 
     private final ROSPktSeparator separator;
 
+    /**
+     * construct a new intention
+     * @param separator the segment separator to delete
+     */
     public RemoveSrvLineQuickFix(ROSPktSeparator separator) {
         this.separator = separator;
     }

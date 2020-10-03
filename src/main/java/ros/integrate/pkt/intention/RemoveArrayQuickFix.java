@@ -10,10 +10,15 @@ import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkt.psi.ROSPktTypeBase;
 
 /**
- * a fix used to remove arrays from type decelerators.
+ * an intention that removes the array modifier from an array type in a field in packet files.
+ * @author Noam Dori
  */
 public class RemoveArrayQuickFix extends BaseIntentionAction {
 
+    /**
+     * construct a new intention
+     * @param type the type to modify
+     */
     public RemoveArrayQuickFix(ROSPktTypeBase type) {
         this.type = type;
     }

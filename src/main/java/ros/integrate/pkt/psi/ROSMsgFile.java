@@ -8,9 +8,17 @@ import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkt.file.ROSMsgFileType;
 
 /**
- * a ROS message, a one-directional message sent between (and within) executables.
+ * represents a message, which describes the medium passed from one node to another.
+ * This medium consists of data that is basically like a C/C++ struct: a bunch of fields of various types.
+ * Messages are one-directional and act as the base unit for the ROS middleware unit
+ * Files of this type use the .msg extension
+ * @author Noam Dori
  */
 public class ROSMsgFile extends ROSPktFile {
+    /**
+     * construct a new message file
+     * @param viewProvider the file view provider. go figure
+     */
     public ROSMsgFile(@NotNull FileViewProvider viewProvider) {
         super(viewProvider);
     }

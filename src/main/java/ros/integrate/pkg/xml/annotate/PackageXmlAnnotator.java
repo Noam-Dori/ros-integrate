@@ -20,11 +20,12 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * enforces rules for package.xml files as specified by the manifest REPs:
+ * enforces rules for package.xml files using annotations and intentions.
+ * The rules are specified by the manifest REPs:
  * <ul>
  *     <li>Format 1 (outdated): https://www.ros.org/reps/rep-0127.html</li>
- *     <li>Format 2 (current): https://www.ros.org/reps/rep-0140.html</li>
- *     <li>Format 3 (future): https://www.ros.org/reps/rep-0149.html</li>
+ *     <li>Format 2 (outdated): https://www.ros.org/reps/rep-0140.html</li>
+ *     <li>Format 3 (current): https://www.ros.org/reps/rep-0149.html</li>
  * </ul>
  * <b>Notes about implementation:</b>
  * <ul>
@@ -35,6 +36,7 @@ import java.util.List;
  *     <li>The plugin considers the file a ROS package XML iff the root tag either does not exist,
  *     or its name is the start of {@code package}</li>
  * </ul>
+ * @author Noam Dori
  */
 public class PackageXmlAnnotator implements Annotator {
     private final List<String> LEVEL_1_TAGS = Arrays.asList("name", "version", "description", "license", "maintainer",

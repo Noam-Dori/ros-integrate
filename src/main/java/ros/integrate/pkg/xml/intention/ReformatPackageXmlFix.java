@@ -21,11 +21,20 @@ import ros.integrate.pkg.xml.condition.psi.ROSCondition;
 
 import java.util.*;
 
+/**
+ * an intention that reformats the entire file to ensure validity, but also that it uses the latest format (optional)
+ * @author Noam Dori
+ */
 public class ReformatPackageXmlFix extends BaseIntentionAction implements LocalQuickFix {
     @NotNull
     private final ROSPackageXml pkgXml;
     private final int targetFormat;
 
+    /**
+     * construct a new intention
+     * @param pkgXml the relevant package.xml file
+     * @param updateFormat whether or not to also update the format of the file to the latest one
+     */
     public ReformatPackageXmlFix(@NotNull ROSPackageXml pkgXml, boolean updateFormat) {
         this.pkgXml = pkgXml;
         targetFormat = updateFormat ? ROSPackageXml.getLatestFormat() : pkgXml.getFormat();

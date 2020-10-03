@@ -15,7 +15,8 @@ import ros.integrate.pkg.psi.ROSPackage;
 import java.util.*;
 
 /**
- * a generic utility class regarding ROS messages and services.
+ * a collection of utility functions for handling packet files (.msg, .srv, .action)
+ * @author Noam Dori
  */
 public class ROSPktUtil {
     /**
@@ -45,6 +46,7 @@ public class ROSPktUtil {
      *                If not null, the provided file will be excluded from the search.
      * @return a non-null list containing all message files found via the query.
      */
+    @NotNull
     static List<ROSMsgFile> findMessages(@NotNull Project project, @Nullable String pkgName, @Nullable ROSMsgFile exclude) {
         ROSPackageManager manager = project.getService(ROSPackageManager.class);
         List<ROSMsgFile> result = new ArrayList<>();

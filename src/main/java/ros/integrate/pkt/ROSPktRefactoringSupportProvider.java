@@ -8,7 +8,8 @@ import ros.integrate.pkt.psi.ROSPktLabel;
 import ros.integrate.pkt.psi.ROSPktType;
 
 /**
- * a class enabling in-place refactoring support in ROS messages.
+ * enables in-place refactoring in packet files (.msg, .srv, .action)
+ * @author Noam Dori
  */
 public class ROSPktRefactoringSupportProvider extends RefactoringSupportProvider {
     @Override

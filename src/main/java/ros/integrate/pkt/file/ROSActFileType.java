@@ -11,14 +11,17 @@ import ros.integrate.pkt.psi.ROSActFile;
 import javax.swing.*;
 
 /**
+ * formal definition of .action files. It gives these files their own icon
  * @author Noam Dori
- * a class defining the ROS Msg file type (and perhaps the service one as well)
  */
 public class ROSActFileType extends ROSPktFileType {
     public static final ROSPktFileType INSTANCE = new ROSActFileType();
     @NonNls private static final String DEFAULT_EXTENSION = "action";
     @NonNls public static final String DOT_DEFAULT_EXTENSION = "." + DEFAULT_EXTENSION;
 
+    /**
+     * construct an instance of this definition
+     */
     private ROSActFileType() {
         super();
     }

@@ -13,6 +13,11 @@ import ros.integrate.pkg.xml.intention.RemoveGroupTagQuickFix;
 
 import java.util.*;
 
+/**
+ * A facade class used to annotate package.xml files for anything related to the group tags (group_depend,
+ * member_of_group)
+ * @author Noam Dori
+ */
 public class PackageGroupAnnotator {
     @NotNull
     private final ROSPackageXml pkgXml;
@@ -24,6 +29,11 @@ public class PackageGroupAnnotator {
     @NotNull
     private final List<TagTextRange> groupDependTrs, groupTrs;
 
+    /**
+     * construct the annotator
+     * @param pkgXml the reference package.xml file
+     * @param holder the annotation holder.
+     */
     public PackageGroupAnnotator(@NotNull ROSPackageXml pkgXml, @NotNull AnnotationHolder holder) {
         this.holder = holder;
         this.pkgXml = pkgXml;
@@ -34,6 +44,9 @@ public class PackageGroupAnnotator {
         format = pkgXml.getFormat();
     }
 
+    /**
+     * annotates tags if they exist in a package with a format lower than 3
+     */
     public void annTooLowFormat() {
         if (format >= 3) {
             return;
@@ -52,6 +65,9 @@ public class PackageGroupAnnotator {
         }
     }
 
+    /**
+     * annotates tags that contains a false evaluating condition.
+     */
     public void annIgnoredCondition() {
         if (format < 3) {
             return;
@@ -70,6 +86,9 @@ public class PackageGroupAnnotator {
         }
     }
 
+    /**
+     * annotates group tags that have no value
+     */
     public void annEmptyGroup() {
         for (int i = 0; i < groups.size(); i++) {
             if (groupTrs.get(i).value() == groupTrs.get(i)) {
@@ -87,6 +106,10 @@ public class PackageGroupAnnotator {
         }
     }
 
+    /**
+     * annotates tags that point to the same group. This annotation respects conditions and acts on group_depend and
+     * member_of_group separately
+     */
     public void annConflictingGroups() {
         annConflictAny(groups, groupTrs, false);
         annConflictAny(groupDepends, groupDependTrs, true);

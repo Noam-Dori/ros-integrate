@@ -11,14 +11,17 @@ import ros.integrate.pkt.psi.ROSSrvFile;
 import javax.swing.*;
 
 /**
+ * formal definition of .srv files. It gives these files their own icon
  * @author Noam Dori
- * a class defining the ROS Msg file type (and perhaps the service one as well)
  */
 public class ROSSrvFileType extends ROSPktFileType {
     public static final ROSPktFileType INSTANCE = new ROSSrvFileType();
     @NonNls private static final String DEFAULT_EXTENSION = "srv";
     @NonNls public static final String DOT_DEFAULT_EXTENSION = "." + DEFAULT_EXTENSION;
 
+    /**
+     * construct an instance of this definition
+     */
     private ROSSrvFileType() {
         super();
     }

@@ -10,10 +10,15 @@ import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkt.psi.ROSPktTypeBase;
 
 /**
- * a fix used to change the header type as necessary.
+ * an intention that appends "std_msgs/" to a prefix-less header
+ * @author Noam Dori
  */
 public class ChangeHeaderQuickFix extends BaseIntentionAction {
 
+    /**
+     * construct a new intention
+     * @param field the field containing the badly named type
+     */
     public ChangeHeaderQuickFix(ROSPktTypeBase field) {
         header = field;
     }

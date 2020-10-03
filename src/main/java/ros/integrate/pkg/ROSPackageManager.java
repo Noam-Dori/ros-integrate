@@ -10,6 +10,12 @@ import ros.integrate.pkg.psi.ROSPackage;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * the complete index of all ROS packages from here you can get all available packages, find specific packages,
+ * and edit the index (or some indexing settings).
+ * As a bonus, this index also handles group management (from package.xml group tags)
+ * @author Noam Dori
+ */
 public interface ROSPackageManager {
     /**
      * retrieves all packages in the cache (and tries to find more)
@@ -73,7 +79,7 @@ public interface ROSPackageManager {
      * @apiNote this action can be heavy to calculate since it runs text operations on all package.xml files.
      *          Use it sparingly.
      */
-    @SuppressWarnings("unused")
+    @SuppressWarnings({"unused", "RedundantSuppression"})
     @NotNull
     Collection<ROSPackage> findGroupDependents(@NotNull String groupName);
 

@@ -20,6 +20,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * implements the data representation of package.xml. This implementation works alongside the actual XML file.
+ * @author Noam Dori
+ */
 public class ROSPackageXmlImpl implements ROSPackageXml {
     private static final String FORMAT = "format", EMAIL = "email", COMPATIBILITY = "compatibility", FILE = "file";
 

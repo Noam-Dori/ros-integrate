@@ -12,9 +12,17 @@ import ros.integrate.pkg.xml.ROSPackageXml.Version;
 
 import java.util.Objects;
 
+/**
+ * an intention that flips the version tag value and the compatibility attribute value in that tag to ensure validity
+ * @author Noam Dori
+ */
 public class FlipVersionCompatibilityFix extends BaseIntentionAction {
-    private ROSPackageXml pkgXml;
+    private final ROSPackageXml pkgXml;
 
+    /**
+     * construct a new intention
+     * @param pkgXml the relevant package.xml file
+     */
     public FlipVersionCompatibilityFix(ROSPackageXml pkgXml) {
         this.pkgXml = pkgXml;
     }

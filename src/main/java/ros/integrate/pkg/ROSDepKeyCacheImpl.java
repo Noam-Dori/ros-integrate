@@ -20,6 +20,10 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 
+/**
+ * the implementation of the rosdep key cache, based on directly reading the known key lists
+ * @author Noam Dori
+ */
 public class ROSDepKeyCacheImpl implements ROSDepKeyCache {
     private static final Logger LOG = Logger.getLogger("#ros.integrate.pkg.ROSDepKeyCacheImpl");
 
@@ -29,6 +33,10 @@ public class ROSDepKeyCacheImpl implements ROSDepKeyCache {
     private boolean internetAttempted = false,
             offlineMode = true;
 
+    /**
+     * construct the key cache
+     * @param project the project this cache belongs to
+     */
     public ROSDepKeyCacheImpl(Project project) {
         this.project = project;
         init();

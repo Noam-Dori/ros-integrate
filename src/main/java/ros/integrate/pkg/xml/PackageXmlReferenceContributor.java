@@ -19,6 +19,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Optional;
 
+/**
+ * implements reference creation for package.xml files
+ * @author Noam Dori
+ */
 public class PackageXmlReferenceContributor extends PsiReferenceContributor {
 
     @Override

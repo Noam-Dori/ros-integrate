@@ -9,8 +9,15 @@ import ros.integrate.pkg.xml.condition.psi.ROSConditionToken;
 
 import java.util.List;
 
+/**
+ * base implementation of a ROS condition expression
+ */
 public abstract class ROSConditionExprImpl extends ASTWrapperPsiElement implements ROSConditionExpr {
 
+    /**
+     * construct a new expression
+     * @param node the corresponding AST node
+     */
     public ROSConditionExprImpl(@NotNull ASTNode node) {
         super(node);
     }

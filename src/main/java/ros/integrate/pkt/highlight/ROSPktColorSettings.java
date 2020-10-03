@@ -13,7 +13,9 @@ import javax.swing.*;
 import java.util.Map;
 
 /**
- * creates the settings page for the code colors of ROS messages and services.
+ * implements the color settings tab for packet files (.msg, .srv, .action).
+ * It only shows the GUI, the colors are specified in {@link ROSPktSyntaxHighlighter}
+ * @author Noam Dori
  */
 public class ROSPktColorSettings implements ColorSettingsPage {
     private static final AttributesDescriptor[] DESCRIPTORS = new AttributesDescriptor[]{

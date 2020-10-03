@@ -10,11 +10,21 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.xml.ROSPackageXml;
 
+/**
+ * an intention that converts one license tag that happens to contain two licenses into two
+ * license tags each contain one license.
+ * @author Noam Dori
+ */
 public class SplitLicenseQuickFix extends BaseIntentionAction {
     @NotNull
     private final ROSPackageXml pkgXml;
     private final int id;
 
+    /**
+     * construct a new intention
+     * @param pkgXml the relevant package.xml file
+     * @param id the index of the license tag to split in the package.xml
+     */
     @Contract(pure = true)
     public SplitLicenseQuickFix(@NotNull ROSPackageXml pkgXml, int id) {
         this.id = id;

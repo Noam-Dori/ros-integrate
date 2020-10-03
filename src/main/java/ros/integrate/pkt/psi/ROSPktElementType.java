@@ -5,7 +5,9 @@ import ros.integrate.pkt.lang.ROSPktLanguage;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * generic representation of an element type in ros messages.
+ * formally defines ROS packet element types. This is a template for generated token types.
+ * What is the difference between this and token types? no idea
+ * @author Noam Dori
  */
 public class ROSPktElementType extends IElementType {
     ROSPktElementType(@NotNull String debugName) {

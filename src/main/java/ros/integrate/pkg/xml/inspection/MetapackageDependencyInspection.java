@@ -17,6 +17,33 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * <p>Checks if normal (concrete) packages depend on metapackages.</p>
+ * <p>According to <a href="https://www.ros.org/reps/rep-0140.html#metapackage">the ROS standards</a>,
+ *     only metapackages may depend on other metapackages. Normal, or non-meta packages may not depend
+ *     on metapackages in any way.
+ * </p>
+ * <p>Consider packages <b>core</b> and <b>leaf</b>:</p>
+ * <code>
+ *     &lt;package&gt;<br/>
+ *     &nbsp;&nbsp;&nbsp;&nbsp;&lt;name&gt;core&lt;/name&gt;<br/>
+ *     &nbsp;&nbsp;&nbsp;&nbsp;&lt;export&gt;<br/>
+ *     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;metapackage/&gt;<br/>
+ *     &nbsp;&nbsp;&nbsp;&nbsp;&lt;/export&gt;<br/>
+ *     &lt;/package&gt;<br/>
+ *     <br/>
+ *     &lt;package&gt;<br/>
+ *     &nbsp;&nbsp;&nbsp;&nbsp;&lt;name&gt;leaf&lt;/name&gt;<br/>
+ *     &nbsp;&nbsp;&nbsp;&nbsp;&lt;depend&gt;core&lt;/depend&gt;<br/>
+ *     &lt;/package&gt;
+ * </code>
+ * <p>the leaf package clearly depends on the metapackage "core", so the <code>depend</code> tag will be annotated.</p>
+ * <p>this inspection offers one fix:</p>
+ * <ol>
+ *     <li>Remove the dependency tag(s).</li>
+ * </ol>
+ * @author Noam Dori
+ */
 public class MetapackageDependencyInspection extends LocalInspectionTool {
     @Nullable
     @Override

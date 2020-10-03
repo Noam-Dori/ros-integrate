@@ -18,18 +18,36 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * represents the dialog box used to allow the user to easily create and edit lists of paths
+ * @author Noam Dori
+ */
 public class PathListTable extends ListTableWithButtons<PathListTable.Path> {
+    /**
+     * the physical path. This is the entry row of the table
+     */
     static class Path {
         private String path;
 
+        /**
+         * @return the actual string path
+         */
         String get() {
             return path;
         }
 
+        /**
+         * sets the value this entry stores
+         * @param path the actual string path
+         */
         void set(@NotNull String path) {
             this.path = path;
         }
 
+        /**
+         * construct a new path entry
+         * @param path the actual string path
+         */
         @Contract(pure = true)
         Path(@NotNull String path) {
             this.path = path;
@@ -38,14 +56,19 @@ public class PathListTable extends ListTableWithButtons<PathListTable.Path> {
 
     private final BrowserOptions browserOptions;
 
+    /**
+     * construct a new path list dialog
+     * @param browserOptions an options object loading a bunch of useful settings like window title,
+     *                       history storage, etc.
+     */
     PathListTable(BrowserOptions browserOptions) {
         getTableView().getEmptyText().setText("No paths specified");
         this.browserOptions = browserOptions;
     }
 
     @Override
-    protected ListTableModel createListModel() {
-        return new ListTableModel(new ElementsColumnInfoBase<Path>("") {
+    protected ListTableModel<?> createListModel() {
+        return new ListTableModel<>(new ElementsColumnInfoBase<Path>("") {
             @Contract("null -> !null")
             @Nullable
             @Override
@@ -96,10 +119,17 @@ public class PathListTable extends ListTableWithButtons<PathListTable.Path> {
         return true;
     }
 
+    /**
+     * @return list of all path values this dialog contains. These were confirmed as OK by the user
+     */
     List<String> getPaths() {
         return getElements().stream().map(Path::get).collect(Collectors.toList());
     }
 
+    /**
+     * sets the current values that this list should display to the user for editing
+     * @param paths the collection of path strings to be displayed in list from to the user
+     */
     void setValues(@NotNull Collection<String> paths) {
         setValues(paths.stream().map(Path::new).collect(Collectors.toList()));
     }
@@ -122,7 +152,7 @@ public class PathListTable extends ListTableWithButtons<PathListTable.Path> {
         if (browserOptions.addBrowser) {
             AnActionButton browseButton = new AnActionButton(UIBundle.message("component.with.browse.button.browse.button.tooltip.text"), AllIcons.Actions.Menu_open) {
                 private final TextFieldWithBrowseButton dummy = new TextFieldWithBrowseButton();
-                private final BrowseFolderActionListener action =
+                private final BrowseFolderActionListener<?> action =
                         new BrowseFolderActionListener<>(browserOptions.title,
                                 browserOptions.description, dummy, browserOptions.project,
                                 FileChooserDescriptorFactory.createSingleFolderDescriptor(),
@@ -131,6 +161,7 @@ public class PathListTable extends ListTableWithButtons<PathListTable.Path> {
                 @Override
                 public void actionPerformed(@NotNull AnActionEvent e) {
                     stopEditing();
+                    //noinspection UnstableApiUsage
                     action.run();
                     getSelection().forEach(path -> path.set(dummy.getText()));
                 }

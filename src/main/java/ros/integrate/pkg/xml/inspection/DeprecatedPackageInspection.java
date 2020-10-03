@@ -16,6 +16,32 @@ import ros.integrate.pkg.xml.intention.RemoveDependencyQuickFix;
 
 import java.util.*;
 
+/**
+ * <p>checks whether or not the package depends on any deprecated packages, and marks it accordingly.</p>
+ * <p>Consider packages <b>core</b> and <b>leaf</b>:</p>
+ * <code>
+ *     &lt;package&gt;<br/>
+ *     &nbsp;&nbsp;&nbsp;&nbsp;&lt;name&gt;core&lt;/name&gt;<br/>
+ *     &nbsp;&nbsp;&nbsp;&nbsp;&lt;export&gt;<br/>
+ *     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;deprecated/&gt;<br/>
+ *     &nbsp;&nbsp;&nbsp;&nbsp;&lt;/export&gt;<br/>
+ *     &lt;/package&gt;<br/>
+ *     <br/>
+ *     &lt;package&gt;<br/>
+ *     &nbsp;&nbsp;&nbsp;&nbsp;&lt;name&gt;leaf&lt;/name&gt;<br/>
+ *     &nbsp;&nbsp;&nbsp;&nbsp;&lt;depend&gt;core&lt;/depend&gt;<br/>
+ *     &lt;/package&gt;
+ * </code>
+ * <p>the leaf package clearly depends on a deprecated package here, so the <code>depend</code> tag will be annotated with
+ *     the deprecation message.</p>
+ * <p>Note that this only uses the deprecated annotation and does not use the information from the dependency versions.
+ *     This job is left to another inspection.</p>
+ * <p>this inspection offers one fix:</p>
+ * <ol>
+ *     <li>Remove the dependency tag(s).</li>
+ * </ol>
+ * @author Noam Dori
+ */
 public class DeprecatedPackageInspection extends LocalInspectionTool {
 
     @Nullable

@@ -11,13 +11,17 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 
-class AttributeValueHandler implements InsertHandler<LookupElement> {
+/**
+ * a completion handler that starts an attribute value. Triggered from completing an attribute name.
+ */
+class OpenAttributeValue implements InsertHandler<LookupElement> {
     private final boolean newCompletion;
 
     /**
+     * constructs a new handler
      * @param newCompletion whether or not to start a new completion
      */
-    AttributeValueHandler(boolean newCompletion) {
+    OpenAttributeValue(boolean newCompletion) {
         this.newCompletion = newCompletion;
     }
 

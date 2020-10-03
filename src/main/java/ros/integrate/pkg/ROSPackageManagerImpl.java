@@ -22,12 +22,21 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
+/**
+ * the implementation of the package manager.
+ * Relies on directly handling file events to update the index and uses a concurrent map as the index model
+ * @author Noam Dori
+ */
 public class ROSPackageManagerImpl implements ROSPackageManager {
     private final ConcurrentMap<String, ROSPackage> pkgCache = new ConcurrentHashMap<>();
     private final Project project;
 
     private boolean loaded;
 
+    /**
+     * constructs a new package manager
+     * @param project the project this manager belongs to
+     */
     public ROSPackageManagerImpl(@NotNull Project project) {
         this.project = project;
         loaded = false;

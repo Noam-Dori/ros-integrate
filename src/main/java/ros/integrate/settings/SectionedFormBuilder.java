@@ -12,7 +12,15 @@ import java.awt.*;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * an extension of the form builder that supports sections.
+ * Sections have similar vertical spacing and are divided by horizontal bars
+ * @author Noam Dori
+ */
 public class SectionedFormBuilder extends FormBuilder {
+    /**
+     * an extension of the form builder that builds one section
+     */
     public static class SectionBuilder extends FormBuilder {
         private final String name;
         private final SectionedFormBuilder parent;
@@ -27,11 +35,20 @@ public class SectionedFormBuilder extends FormBuilder {
                     .getPanel();
         }
 
+        /**
+         * construct a new section builder
+         * @param name the name of the section
+         * @param parent the form builder this belongs to
+         */
         SectionBuilder(String name, SectionedFormBuilder parent) {
             this.name = name;
             this.parent = parent;
         }
 
+        /**
+         * builds the section and appends it to the parent form builder
+         * @return the parent form builder
+         */
         SectionedFormBuilder closeSection() {
             return (SectionedFormBuilder) parent.addComponent(newSectionHeader(name), UIUtil.LARGE_VGAP)
                     .addComponentToRightColumn(super.getPanel());
@@ -81,12 +98,21 @@ public class SectionedFormBuilder extends FormBuilder {
         return unfilledClasses;
     }
 
+    /**
+     * construct the form builder
+     * @return the new form builder
+     */
     @NotNull
     @Contract(" -> new")
     public static SectionedFormBuilder createFormBuilder() {
         return new SectionedFormBuilder();
     }
 
+    /**
+     * opens a new section in the form
+     * @param name the name of the new section
+     * @return a new section builder
+     */
     SectionBuilder addSection(String name) {
         return new SectionBuilder(name, this);
     }

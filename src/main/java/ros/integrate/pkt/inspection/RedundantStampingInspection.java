@@ -16,8 +16,37 @@ import java.awt.*;
 import java.util.List;
 
 /**
- * Checks if there is an available variant of the type provided that does not have a stamp.
- * Note: this makes the assumption that message {@code [NAME]Stamped} is the stamped alternative of {@code [NAME]}
+ * <p>Checks for use of stamped types within a message definition
+ *     (for example, PointStamped is a stamped variant of Point) and if a non-stamped alternative exists.</p>
+ * <p>Using stamped types is generally discouraged,
+ *     so a <code>std_msgs/Header</code> is placed instead at the top level of the message</p>
+ * <p>However, there are many exceptions to this rule, like nav_msgs/Path which may need to track an object relative to time.
+ * </p>
+ * <p>This inspection has many options that may be toggled in the inspection profile.
+ * </p>
+ * <p>sometimes there are exceptions
+ *     (like <code>nav_msgs/Path</code> containing an array of <code>std_msgs/PointStamped</code>)
+ *     so you can configure what field types will be scanned:</p>
+ * <ul>
+ *     <li>
+ *         Inspect objects: will raise errors for stamped types without an array descriptor.<br/>
+ *         Example: <code>geometry_msgs/PoseStamped</code>
+ *     </li>
+ *     <li>
+ *         Inspect arrays: will raise errors for stamped types that are finite arrays<br/>
+ *         Example: <code>geometry_msgs/PoseStamped[27]</code>
+ *     </li>
+ *     <li>
+ *         Inspect lists: will raise errors for stamped types that are dynamic arrays (vector/list)<br/>
+ *         Example: <code>geometry_msgs/PoseStamped[]</code>)
+ *     </li>
+ * </ul>
+ * <p>by default, the only types checked are object types.</p>
+ * <p>this inspection offers one fix:</p>
+ * <ol>
+ *     <li>convert the stamped type to the corresponding non-stamped type (for example, PointStamped -> Point)</li>
+ * </ol>
+ * @author Noam Dori
  */
 public class RedundantStampingInspection extends ROSPktInspectionBase {
     @SuppressWarnings("WeakerAccess")

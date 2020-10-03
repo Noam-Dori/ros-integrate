@@ -11,6 +11,11 @@ import ros.integrate.pkg.psi.ROSPackage;
 
 import java.util.*;
 
+/**
+ * defines the reference of group_depend tags to member_of_group tags with the same value and vice versa.
+ * This is part of package.xml file features.
+ * @author Noam Dori
+ */
 public class PackageXmlGroupReference extends PsiPolyVariantReferenceBase<XmlTag> {
     @NotNull
     private final String groupName;
@@ -19,6 +24,11 @@ public class PackageXmlGroupReference extends PsiPolyVariantReferenceBase<XmlTag
     @NotNull
     private final ROSPackageManager manager;
 
+    /**
+     * construct a new reference
+     * @param element the referencing group tag
+     * @param isDepend true if the tag is a group_depend tag, false if it is a member_of_group tag
+     */
     public PackageXmlGroupReference(XmlTag element, boolean isDepend) {
         super(element, getTextRange(element), true);
         groupName = element.getValue().getText();

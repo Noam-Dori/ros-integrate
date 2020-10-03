@@ -9,7 +9,8 @@ import ros.integrate.pkt.file.ROSMsgFileType;
 import ros.integrate.pkt.file.ROSPktFileType;
 
 /**
- * a utility factory class to generate PSI objects within ROS messages.
+ * a utility factory that generates packet file related PSI objects within ROS messages.
+ * @author Noam Dori
  */
 public class ROSPktElementFactory {
     public static final String ANNOTATION_PREFIX = "# noinspection ";
@@ -72,6 +73,12 @@ public class ROSPktElementFactory {
         return (ROSPktType) file.getFirstChild().getFirstChild().getFirstChild();
     }
 
+    /**
+     * creates an instance of a field label.
+     * @param project the project this belongs to.
+     * @param labelName the name of the label. This will also be the name of the field this PSI element is part of.
+     * @return a psi element holding the name provided.
+     */
     public static ROSPktLabel createLabel(Project project, String labelName) {
         final ROSPktFile file = createFile(project, "dummyName " + labelName);
         return (ROSPktLabel) file.getFirstChild().getFirstChild().getLastChild();

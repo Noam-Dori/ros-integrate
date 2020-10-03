@@ -13,20 +13,24 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import org.jetbrains.annotations.NotNull;
 
-class TagDataHandler implements InsertHandler<LookupElement> {
+/**
+ * a completion handler that starts writing the tag value. Triggered from completing a tag name or an attribute value
+ */
+class OpenTagValue implements InsertHandler<LookupElement> {
     @NotNull
     private final String tagName, data;
     private final boolean inAttr, multiline, newCompletion;
 
     /**
+     * constructs a new handler
      * @param tagName the name of the tag to use when moving to data component.
      * @param inAttr was the completion done in an attribute value?
      * @param data optional text to put in the data. Set to "" to prevent adding any data.
      * @param multiline should the tag be multiline?
      * @param newCompletion trigger a new Completion?
      */
-    TagDataHandler(@NotNull String tagName, boolean inAttr, @NotNull String data,
-                   boolean multiline, boolean newCompletion) {
+    OpenTagValue(@NotNull String tagName, boolean inAttr, @NotNull String data,
+                 boolean multiline, boolean newCompletion) {
         this.tagName = tagName;
         this.data = data;
         this.inAttr = inAttr;
@@ -34,7 +38,12 @@ class TagDataHandler implements InsertHandler<LookupElement> {
         this.newCompletion = newCompletion;
     }
 
-    TagDataHandler(@NotNull String tagName, boolean inAttr) {
+    /**
+     * a convenience constructor with less parameters
+     * @param tagName the name of the tag to use when moving to data component.
+     * @param inAttr was the completion done in an attribute value?
+     */
+    OpenTagValue(@NotNull String tagName, boolean inAttr) {
         this(tagName, inAttr, "", false, false);
     }
 

@@ -19,10 +19,17 @@ import javax.swing.*;
 import java.util.Collection;
 
 /**
- * represents a low-level ROS package. it does not contain any packages. That's the job of the meta-package.
- * ROS packages must have two things:
- * 1. a package.xml file
- * 2. a CMakeLists.txt file which has the {@code catkin_package()} function
+ * A ROS package, the base unit of work for indexing. A package implements some functionality,
+ *  from actual code, to configurations or a common interface.
+ *
+ *  All ROS packages across all versions have one thing in common: the manifest file.
+ *  Every package has a package.xml file. This file describes details an indexing engine should know about,
+ *  as well as identifiers. More info available at {@link ROSPackageXml}.
+ *
+ * note that some ROS2 packages rely on special scripts to generate the package.xml file for them, with a build type
+ * "ament_auto". Thus, the package.xml file might not be real in those versions. This is currently not supported in the
+ * plugin.
+ * @author Noam Dori
  */
 public interface ROSPackage extends PsiCheckedRenameElement, NavigatablePsiElement, Comparable<ROSPackage> {
     enum RootType {
@@ -211,7 +218,10 @@ public interface ROSPackage extends PsiCheckedRenameElement, NavigatablePsiEleme
         return null;
     }
 
-
+    /**
+     * the "orphan" package. this acts like the "null" of packages. if some method points you here, the package you
+     * are looking for does not exist.
+     */
     final class ROSOrphanPackage extends PsiElementBase implements ROSPackage {
         private ROSOrphanPackage() {}
 

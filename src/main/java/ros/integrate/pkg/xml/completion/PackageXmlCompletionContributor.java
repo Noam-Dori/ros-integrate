@@ -31,6 +31,10 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * the completion engine for package.xml files. It also happens to handle the completion for conditions.
+ * @author Noam Dori
+ */
 public class PackageXmlCompletionContributor extends CompletionContributor {
     private static final Logger LOG = Logger.getLogger("#ros.integrate.pkg.xml.completion.PackageXmlCompletionContributor");
     private static final String[] BUILD_TYPES = loadBuildTypes();
@@ -49,6 +53,9 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
         return new String[0];
     }
 
+    /**
+     * construct the new completion engine
+     */
     public PackageXmlCompletionContributor() {
         extend(CompletionType.BASIC,
                 PlatformPatterns.psiElement(XmlToken.class).withLanguage(XMLLanguage.INSTANCE),
@@ -142,10 +149,10 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
                                           @NotNull CompletionResultSet resultSet, CompletionParameters parameters) {
         resultSet.runRemainingContributors(parameters, EmptyConsumer.getInstance()); // removes all other entries. Dangerous stuff.
         int format = xmlFile.getFormat();
-        InsertHandler<LookupElement> attrHandler = new AttributeNameHandler(null),
-                dataHandler = new TagDataHandler("", false),
-                multilineHandler = new TagDataHandler("", false, "", true, false),
-                dataWithCompletionHandler = new TagDataHandler("", false, "", false, true);
+        InsertHandler<LookupElement> attrHandler = new OpenAttributeName(null),
+                dataHandler = new OpenTagValue("", false),
+                multilineHandler = new OpenTagValue("", false, "", true, false),
+                dataWithCompletionHandler = new OpenTagValue("", false, "", false, true);
         switch (level) {
             case 0: {
                 if (xmlFile.getRawXml().getRootTag() == null || xmlFile.getRawXml().getRootTag().getName().isEmpty()) {
@@ -156,7 +163,7 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
             case 1: {
                 if (xmlFile.getPkgName() == null) {
                     resultSet.addElement(LookupElementBuilder.create("name")
-                            .withInsertHandler(new TagDataHandler("", false, xmlFile.getPackage().getName(), false, false)));
+                            .withInsertHandler(new OpenTagValue("", false, xmlFile.getPackage().getName(), false, false)));
                 }
                 if (xmlFile.getVersion() == null) {
                     resultSet.addElement(LookupElementBuilder.create("version")
@@ -168,7 +175,7 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
                 resultSet.addElement(LookupElementBuilder.create("url").withInsertHandler(attrHandler));
                 resultSet.addElement(LookupElementBuilder.create("author").withInsertHandler(attrHandler));
                 resultSet.addElement(LookupElementBuilder.create("maintainer")
-                        .withInsertHandler(new AttributeNameHandler("email")));
+                        .withInsertHandler(new OpenAttributeName("email")));
                 resultSet.addElement(LookupElementBuilder.create("license")
                         .withInsertHandler(format >= 3 ? attrHandler : dataWithCompletionHandler));
                 PackageXmlUtil.getDependNames(format).stream().map(LookupElementBuilder::create)
@@ -190,7 +197,7 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
                     }
                     if (!export.markedArchitectureIndependent()) {
                         resultSet.addElement(LookupElementBuilder.create("architecture_independent")
-                                .withInsertHandler(new EmptyTagHandler()));
+                                .withInsertHandler(new EmptyTag()));
                     }
                     if (export.deprecatedMessage() == null) {
                         resultSet.addElement(LookupElementBuilder.create("deprecated")
@@ -198,7 +205,7 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
                     }
                     if (!export.isMetapackage()) {
                         resultSet.addElement(LookupElementBuilder.create("metapackage")
-                                .withInsertHandler(new EmptyTagHandler()));
+                                .withInsertHandler(new EmptyTag()));
                     }
                     if (export.getBuildTypes().stream().allMatch(buildType ->
                             PackageXmlUtil.conditionEvaluatesToFalse(buildType.getCondition(), format))) {
@@ -215,29 +222,29 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
     private void setCompletionsForAttrName(@NotNull XmlTag tag, @NotNull ROSPackageXml xmlFile,
                                            @NotNull CompletionResultSet resultSet, CompletionParameters parameters) {
         int format = xmlFile.getFormat();
-        InsertHandler<LookupElement> anyValueHandler = new AttributeValueHandler(false),
-                completeValueHandler = new AttributeValueHandler(true);
+        InsertHandler<LookupElement> anyValueHandler = new OpenAttributeValue(false),
+                completeValueHandler = new OpenAttributeValue(true);
         resultSet.runRemainingContributors(parameters, EmptyConsumer.getInstance()); // removes all other entries. Dangerous stuff.
         if (tag.getName().equals("version") && tag.getAttribute("compatibility") == null && format >= 3) {
             resultSet.addElement(LookupElementBuilder.create("compatibility").withInsertHandler(completeValueHandler));
             resultSet.addElement(LookupElementBuilder.create("").withTailText("default", true)
-                    .withInsertHandler(new SkipAttributeHandler(false)));
+                    .withInsertHandler(new SkipAttribute(false)));
         }
         if (tag.getName().equals("license") && tag.getAttribute("file") == null && format >= 3) {
             resultSet.addElement(LookupElementBuilder.create("file").withInsertHandler(completeValueHandler));
             resultSet.addElement(LookupElementBuilder.create("").withTailText("no file", true)
-                        .withInsertHandler(new SkipAttributeHandler(true)));
+                        .withInsertHandler(new SkipAttribute(true)));
         }
         if (tag.getName().equals("url") && tag.getAttribute("type") == null) {
             resultSet.addElement(LookupElementBuilder.create("type").withInsertHandler(completeValueHandler));
             resultSet.addElement(LookupElementBuilder.create("").withTailText("default", true)
-                    .withInsertHandler(new SkipAttributeHandler(false)));
+                    .withInsertHandler(new SkipAttribute(false)));
         }
         if (tag.getName().matches("author|maintainer") && tag.getAttribute("email") == null) {
             resultSet.addElement(LookupElementBuilder.create("email").withInsertHandler(anyValueHandler));
             if (tag.getName().equals("author")) {
                 resultSet.addElement(LookupElementBuilder.create("").withTailText("no email", true)
-                        .withInsertHandler(new SkipAttributeHandler(false)));
+                        .withInsertHandler(new SkipAttribute(false)));
             }
         }
         if (PackageXmlUtil.isDependencyTag(tag)) {
@@ -257,20 +264,20 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
                 resultSet.addElement(LookupElementBuilder.create("condition").withInsertHandler(anyValueHandler));
             }
             resultSet.addElement(LookupElementBuilder.create("").withTailText("move to name", true)
-                    .withInsertHandler(new SkipAttributeHandler(true)));
+                    .withInsertHandler(new SkipAttribute(true)));
         }
         if (COND_TAGS.contains(tag.getName())) {
             if (tag.getAttribute("condition") == null && format >= 3) {
                 resultSet.addElement(LookupElementBuilder.create("condition").withInsertHandler(anyValueHandler));
             }
             resultSet.addElement(LookupElementBuilder.create("").withTailText("unconditional", true)
-                    .withInsertHandler(new SkipAttributeHandler(true)));
+                    .withInsertHandler(new SkipAttribute(true)));
         }
     }
 
     private void addCompletionsForAttrValue(@NotNull XmlTag tag, @NotNull CompletionResultSet resultSet,
                                             @Nullable String attributeName, CompletionParameters parameters) {
-        InsertHandler<LookupElement> tagDataHandler = new TagDataHandler(tag.getName(), true);
+        InsertHandler<LookupElement> tagDataHandler = new OpenTagValue(tag.getName(), true);
         if (tag.getName().equals("url")) {
             for (ROSPackageXml.URLType type : ROSPackageXml.URLType.values()) {
                 resultSet.addElement(LookupElementBuilder.create(type.name().toLowerCase())
@@ -289,10 +296,10 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
             }
             if (attributeName != null && attributeName.matches("version_[lg]te?")) {
                 resultSet.addElement(LookupElementBuilder.create("1.0.0")
-                        .withInsertHandler(new AttributeNameHandler()));
+                        .withInsertHandler(new OpenAttributeName()));
                 if (!pkgVersion.isEmpty()) {
                     resultSet.addElement(LookupElementBuilder.create(pkgVersion)
-                            .withInsertHandler(new AttributeNameHandler()));
+                            .withInsertHandler(new OpenAttributeName()));
                 }
             }
         }

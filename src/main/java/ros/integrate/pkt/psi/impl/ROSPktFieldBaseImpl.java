@@ -9,7 +9,16 @@ import ros.integrate.pkt.psi.ROSPktFieldBase;
 import ros.integrate.pkt.psi.ROSPktFile;
 import ros.integrate.pkt.psi.ROSPktLabel;
 
+/**
+ * the template used to implement the basic concept of a packet field
+ * @author Noam Dori
+ */
 public abstract class ROSPktFieldBaseImpl extends ASTWrapperPsiElement implements ROSPktFieldBase {
+
+    /**
+     * constructs a new PSI element of this type
+     * @param node a view into the token tree
+     */
     ROSPktFieldBaseImpl(@NotNull ASTNode node) {
         super(node);
     }

@@ -12,9 +12,18 @@ import ros.integrate.pkg.xml.ROSPackageXml.Version;
 
 import java.util.Optional;
 
+/**
+ * an intention that repairs a version tag in the package.xml (or adds it)
+ * @author Noam Dori
+ */
 public class FixVersionQuickFix extends BaseIntentionAction {
     private final ROSPackageXml pkgXml;
 
+    /**
+     * construct a new intention
+     * @param pkgXml the relevant package.xml file
+     * @param prefix the intention description prefix
+     */
     public FixVersionQuickFix(ROSPackageXml pkgXml, String prefix) {
         this.pkgXml = pkgXml;
         setText(prefix + " package version");

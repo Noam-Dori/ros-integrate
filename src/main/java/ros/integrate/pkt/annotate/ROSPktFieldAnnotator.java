@@ -9,17 +9,32 @@ import ros.integrate.pkt.psi.ROSPktTypes;
 
 import java.util.Objects;
 
+/**
+ * a facade class used to annotate fields in packet files (.msg, .srv, .action).
+ * Fields are basically one line, or one object the message type contains
+ * @author Noam Dori
+ */
 class ROSPktFieldAnnotator extends ROSPktAnnotatorBase {
     @NotNull
     private final ROSPktFieldBase field;
 
+    /**
+     * construct the annotator
+     * @param holder the annotation holder
+     * @param field the field being checked and annotated.
+     */
     ROSPktFieldAnnotator(AnnotationHolder holder, @NotNull ROSPktFieldBase field) {
         super(holder);
         this.field = field;
     }
 
     /**
-     * annotates if the field (NOT the type) has bad structure.
+     * annotates if the field either:
+     * <ul>
+     *     <li>is missing the name part</li>
+     *     <li>has a const assignment, but no actual constant</li>
+     *     <li>has an extra constant, but no '='</li>
+     * </ul>
      * This is a multi-annotator, that is, it makes multiple annotations.
      */
     void annBadStructure() {

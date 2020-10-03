@@ -9,6 +9,14 @@ import ros.integrate.pkt.psi.ROSPktElementFactory;
 import ros.integrate.pkt.psi.ROSPktType;
 import ros.integrate.pkt.psi.ROSPktTypeBase;
 
+/**
+ * an intention that converts deprecated field types to current ones:
+ * <ul>
+ *     <li>char -> uint8</li>
+ *     <li>byte -> int8</li>
+ * </ul>
+ * @author Noam Dori
+ */
 public class UpdateKeytypeQuickFix implements LocalQuickFix {
 
     @Nls(capitalization = Nls.Capitalization.Sentence)

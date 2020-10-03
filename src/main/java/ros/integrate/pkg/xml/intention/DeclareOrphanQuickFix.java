@@ -9,9 +9,17 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.xml.ROSPackageXml;
 
+/**
+ * an intention that declares a package.xml as orphaned by adding the orphan maintainer to it
+ * @author Noam Dori
+ */
 public class DeclareOrphanQuickFix extends BaseIntentionAction {
     private final ROSPackageXml pkgXml;
 
+    /**
+     * construct a new intention
+     * @param pkgXml the relevant package.xml file
+     */
     public DeclareOrphanQuickFix(ROSPackageXml pkgXml) {
         this.pkgXml = pkgXml;
     }

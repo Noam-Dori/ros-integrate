@@ -12,12 +12,21 @@ import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.xml.ExportTag;
 import ros.integrate.pkg.xml.ROSPackageXml;
 
+/**
+ * an intention that moves tags into the export tag
+ * @author Noam Dori
+ */
 public class MoveToExportFix extends BaseIntentionAction {
     @NotNull
     private final ROSPackageXml pkgXml;
     @NotNull
     private final XmlTag origTag;
 
+    /**
+     * construct a new intention
+     * @param lvl1Tag the tag to move
+     * @param pkgXml the relevant package.xml file
+     */
     @Contract(pure = true)
     public MoveToExportFix(@NotNull XmlTag lvl1Tag, @NotNull ROSPackageXml pkgXml) {
         this.pkgXml = pkgXml;

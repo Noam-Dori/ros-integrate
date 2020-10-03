@@ -27,7 +27,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * a finder used to find packages in the project's workspace. These packages do not need to be inside the project to be found.
+ * a package finder used to find packages in the project's workspace or additional package paths.
+ * These packages do not need to be inside the project to be found.
+ * Moreover, this finder also adds the workspace library which has a bunch of roots loading to all workspace packages
+ * that are not contained in the project
+ * @author Noam Dori
  */
 public class ROSWorkspacePackageFinder extends ROSPackageFinderBase {
     private static final Logger LOG = Logger.getInstance("#ros.integrate.workspace.ROSWorkspacePackageFinder");

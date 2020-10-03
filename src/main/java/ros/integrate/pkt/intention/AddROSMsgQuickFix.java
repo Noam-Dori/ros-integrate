@@ -24,10 +24,15 @@ import ros.integrate.pkg.ROSPackageManager;
 import ros.integrate.pkg.psi.ROSPackage;
 
 /**
- * a fix used to add new ROS messages when needed.
+ * an intention that creates a new ROS message file with the name of the missing type
+ * @author Noam Dori
  */
 public class AddROSMsgQuickFix extends BaseIntentionAction {
 
+    /**
+     * construct a new intention
+     * @param fieldType the type of the missing field
+     */
     public AddROSMsgQuickFix(PsiElement fieldType) {
         type = fieldType;
         origPkgName = ((ROSPktFile)type.getContainingFile().getOriginalFile()).getPackage().getName();

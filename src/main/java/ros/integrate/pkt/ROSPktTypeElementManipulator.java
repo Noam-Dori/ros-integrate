@@ -7,7 +7,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkt.psi.ROSPktTypeBase;
 
-// allows manipulations of type PSI elements
+/**
+ * allows manipulations of type PSI elements. Important for rename refactoring
+ * @author Noam Dori
+ */
 public class ROSPktTypeElementManipulator extends AbstractElementManipulator<ROSPktTypeBase> {
     @Nullable
     @Override

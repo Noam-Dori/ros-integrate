@@ -10,11 +10,20 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.xml.ROSPackageXml;
 
+/**
+ * an intentino that removes a url tag from the package.xml file
+ * @author Noam Dori
+ */
 public class RemoveURLQuickFix extends BaseIntentionAction {
     @NotNull
     private final ROSPackageXml pkgXml;
     private final int id;
 
+    /**
+     * construct a new intention
+     * @param pkgXml the relevant package.xml file
+     * @param id the index of the tag in the package.xml
+     */
     @Contract(pure = true)
     public RemoveURLQuickFix(@NotNull ROSPackageXml pkgXml, int id) {
         this.id = id;

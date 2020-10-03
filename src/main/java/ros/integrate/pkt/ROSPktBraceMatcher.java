@@ -9,7 +9,8 @@ import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkt.psi.ROSPktTypes;
 
 /**
- * an extension enabling bracket support in ROS messages.
+ * implements automatic bracket matching at the end of field types in packet files (.msg, .srv, .action)
+ * @author Noam Dori
  */
 public class ROSPktBraceMatcher implements PairedBraceMatcher {
     @NotNull

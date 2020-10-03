@@ -16,7 +16,8 @@ import ros.integrate.pkt.psi.ROSPktFile;
 import java.util.List;
 
 /**
- * a collection of utility functions regarding suppressing ROS inspections.
+ * a collection of utility functions regarding suppressing ROS packet inspections.
+ * @author Noam Dori
  */
 class ROSPktSuppressionUtil {
 

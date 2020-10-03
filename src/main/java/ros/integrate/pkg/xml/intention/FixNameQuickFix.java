@@ -10,9 +10,18 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.xml.ROSPackageXml;
 
+/**
+ * an intention that repairs a name tag in the package.xml (or adds it)
+ * @author Noam Dori
+ */
 public class FixNameQuickFix extends BaseIntentionAction {
     private final ROSPackageXml pkgXml;
 
+    /**
+     * construct a new intention
+     * @param pkgXml the relevant package.xml file
+     * @param prefix the intention description prefix
+     */
     @Contract(pure = true)
     public FixNameQuickFix(ROSPackageXml pkgXml, String prefix) {
         this.pkgXml = pkgXml;

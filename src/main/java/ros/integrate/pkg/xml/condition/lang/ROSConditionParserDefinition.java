@@ -16,6 +16,11 @@ import ros.integrate.pkg.xml.condition.parser.ROSConditionParser;
 import ros.integrate.pkg.xml.condition.psi.ROSCondition;
 import ros.integrate.pkg.xml.condition.psi.ROSConditionTypes;
 
+/**
+ * implements the details of the ROS condition language. It is not the parser, but it tells the IDE useful information
+ * like what tokens are whitespaces, literals, etc. It's more like a bridge between the IDE and the parser.
+ * @author Noam Dori
+ */
 public class ROSConditionParserDefinition implements ParserDefinition {
     public static final TokenSet WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE);
     public static final TokenSet LITERALS = TokenSet.create(ROSConditionTypes.LITERAL);

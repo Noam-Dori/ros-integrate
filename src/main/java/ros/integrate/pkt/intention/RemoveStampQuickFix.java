@@ -9,6 +9,10 @@ import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkt.psi.ROSPktElementFactory;
 import ros.integrate.pkt.psi.ROSPktType;
 
+/**
+ * an intention that removed the "Stamped" suffix from a specific field type
+ * @author Noam Dori
+ */
 public class RemoveStampQuickFix implements LocalQuickFix {
     @Nls(capitalization = Nls.Capitalization.Sentence)
     @NotNull

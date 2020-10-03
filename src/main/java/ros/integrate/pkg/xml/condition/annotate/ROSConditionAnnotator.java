@@ -13,6 +13,11 @@ import ros.integrate.pkg.xml.condition.psi.ROSConditionToken;
 
 import java.util.List;
 
+/**
+ * an annotator enforcing rules within ROS conditions using annotations and intentions.
+ * the rules are specified in REP 149: https://www.ros.org/reps/rep-0149.html
+ * @author Noam Dori
+ */
 public class ROSConditionAnnotator implements Annotator {
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {

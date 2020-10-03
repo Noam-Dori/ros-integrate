@@ -41,7 +41,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
- * the message dialog when creating a new message type.
+ * the user interface dialogue that allows the user to fill information used in license templates
+ * @author Noam Dori
  */
 public class NewLicenseDialogue extends DialogWrapper {
 
@@ -63,6 +64,10 @@ public class NewLicenseDialogue extends DialogWrapper {
     private final Project project;
     private final RecentsManager recentsManager;
 
+    /**
+     * constructs a new dialogue
+     * @param origDirectory the directory the calling package.xml file belongs to
+     */
     public NewLicenseDialogue(@NotNull PsiDirectory origDirectory) {
         super(origDirectory.getProject());
         project = origDirectory.getProject();
@@ -201,18 +206,30 @@ public class NewLicenseDialogue extends DialogWrapper {
         field.setText(curText);
     }
 
+    /**
+     * @return the name the new license file should have
+     */
     public String getFileName() {
         return fileName.getText();
     }
 
+    /**
+     * @return the directory this license file should be placed in
+     */
     public PsiDirectory getDirectory() {
         return targetDir;
     }
 
+    /**
+     * @return the year this license was drafted for. Usually this is just this year
+     */
     public String getYear() {
         return String.valueOf(licenseYear.getNumber());
     }
 
+    /**
+     * @return the name of the copyright holder. This can be a person, a company, an organisation, etc.
+     */
     public String getCopyrightHolder() {
         return copyrightHolder.getText();
     }

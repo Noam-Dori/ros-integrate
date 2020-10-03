@@ -7,11 +7,20 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.xml.ExportTag;
 
+/**
+ * an intention that removes the condition attribute from a build_type tag
+ * @author Noam Dori
+ */
 public class RemoveBuildTypeConditionFix implements LocalQuickFix {
     private final int id;
     @NotNull
     private final ExportTag export;
 
+    /**
+     * construct a new intention
+     * @param export the relevant export tag
+     * @param id the index of the tag in the export tag
+     */
     public RemoveBuildTypeConditionFix(@NotNull ExportTag export, int id) {
         this.id = id;
         this.export = export;

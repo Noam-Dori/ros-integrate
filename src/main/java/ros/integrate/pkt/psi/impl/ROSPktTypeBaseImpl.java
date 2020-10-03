@@ -7,6 +7,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkt.psi.ROSPktTypeBase;
 
+/**
+ * the template used to implement the basic concept of a packet field type
+ * @author Noam Dori
+ */
 public abstract class ROSPktTypeBaseImpl extends ROSPktIdentifierImpl implements ROSPktTypeBase {
     ROSPktTypeBaseImpl(@NotNull ASTNode node) {
         super(node);

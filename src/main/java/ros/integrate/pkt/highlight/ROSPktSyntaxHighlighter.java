@@ -18,7 +18,8 @@ import java.awt.*;
 import static com.intellij.openapi.editor.colors.TextAttributesKey.createTextAttributesKey;
 
 /**
- * a highlighter for ROS messages and services.
+ * the custom highlighting colors for packet files (.msg, .srv, .action).
+ * @author Noam Dori
  */
 class ROSPktSyntaxHighlighter extends SyntaxHighlighterBase {
     private static final TextAttributesKey ASSIGNER =

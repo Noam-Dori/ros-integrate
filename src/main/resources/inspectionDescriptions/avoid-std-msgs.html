@@ -1,11 +1,14 @@
 <html>
 <body>
-<p>Checks for use of the custom Messages that emulate the builtin types
-    (for example, <b>UInt32</b> emulates <b>uint32</b>)</p>
-<p>
-    When defining custom messages, the builtin types should be used instead of the "standard types":
+<p>Checks for use of the custom Messages types that emulate builtin types, and marks those types</p>
+<p>for example, <code>UInt32</code> emulates <code>uint32</code> so it will be marked.</p>
+<!-- tooltip end -->
+<p>When defining custom messages, the builtin types should be used instead of the "standard types":
     they take up less space, and the data they hold is easier to access.
 </p>
-<!-- tooltip end -->
+<p>this inspection offers one fix:</p>
+<ol>
+    <li>replace this field type with the built-in type</li>
+</ol>
 </body>
 </html>
