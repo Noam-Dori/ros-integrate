@@ -21,7 +21,7 @@ dependencies {
 
 intellij {
 //    version 'LATEST-EAP-SNAPSHOT'
-    version 'IC-2019.3'
+    version 'IC-2020.2'
     updateSinceUntilBuild false
 }
 
@@ -34,13 +34,13 @@ sourceSets {
     }
 }
 
-String pluginVersion = '0.1.6'
+String pluginVersion = '0.1.7'
 String pluginIndex = 'ros-integrate'
 String changes = new File("changelog.html").text
 
 patchPluginXml {
     version pluginVersion
-    sinceBuild 193.5233
+    sinceBuild 202.6397
     pluginDescription "Extends IntelliJ-Based IDEs with ROS specific development tools"
     changeNotes changes
 }
