@@ -39,8 +39,8 @@ public class ROSWorkspacePackageFinder extends ROSPackageFinderBase {
     private static final VirtualFileSystem FILE_SYSTEM = VirtualFileManager.getInstance()
             .getFileSystem(LocalFileSystem.PROTOCOL);
 
-    Map<Project, Library> wsLib = new HashMap<>(1);
-    Map<Project, String> wsPath = new HashMap<>(1);
+    final Map<Project, Library> wsLib = new HashMap<>(1);
+    final Map<Project, String> wsPath = new HashMap<>(1);
 
     @Nullable
     private VirtualFile toVirtualFile(@Nullable String path) {

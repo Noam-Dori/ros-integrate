@@ -27,7 +27,7 @@ Steps to reproduce the behavior:
  - Related Plugins: *do you use other ROS plugins like [hatchery](https://github.com/duckietown/hatchery)?*
 
 **Stack Trace**
-*If the bug causes an error or an IDE freeze, [get its thread dump](https://intellij-support.jetbrains.com/hc/en-us/articles/206544899-Getting-a-thread-dump-when-IDE-hangs-and-doesn-t-respond) and paste it here.*
+*If the bug causes an error or IDE freeze, [get its thread dump](https://intellij-support.jetbrains.com/hc/en-us/articles/206544899-Getting-a-thread-dump-when-IDE-hangs-and-doesn-t-respond) and paste it here.*
 
 **Screenshots**
 *If applicable, add screenshots to help explain your problem.*

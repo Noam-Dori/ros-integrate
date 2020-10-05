@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.xml.ROSPackageXml;
 
 /**
- * an intentino that removes a url tag from the package.xml file
+ * an intention that removes a url tag from the package.xml file
  * @author Noam Dori
  */
 public class RemoveURLQuickFix extends BaseIntentionAction {

@@ -81,8 +81,8 @@ public class MovePktFileHandler extends MoveFileHandler {
     }
 
     @Override
-    public void retargetUsages(@NotNull List<UsageInfo> usageInfos, Map<PsiElement, PsiElement> oldToNewMap) {
-        usageInfos.parallelStream().forEach(use -> {
+    public void retargetUsages(@NotNull List<UsageInfo> usages, Map<PsiElement, PsiElement> oldToNewMap) {
+        usages.parallelStream().forEach(use -> {
             PsiElement element = use.getElement();
             PsiReference ref = use.getReference();
             if(element != null && ref != null) {

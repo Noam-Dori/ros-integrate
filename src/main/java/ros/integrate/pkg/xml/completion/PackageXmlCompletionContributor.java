@@ -114,7 +114,7 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
             packages.addAll(tag.getProject().getService(ROSPackageManager.class).getAllPackages());
             packages.addAll(tag.getProject().getService(ROSDepKeyCache.class).getAllKeys());
             Arrays.stream(PackageXmlUtil.getDependencyType(tag).getCoveredDependencies())
-                    .map(xmlFile::getDependencies).map(deps -> deps.stream()
+                    .map(xmlFile::getDependencies).map(dependencies -> dependencies.stream()
                     .filter(dep -> !PackageXmlUtil.conditionEvaluatesToFalse(dep, format))
                     .map(ROSPackageXml.Dependency::getPackage)
                     .collect(Collectors.toList()))

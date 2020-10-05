@@ -159,7 +159,7 @@ class ROSPktFieldUtil {
     }
 
     /**
-     * an internal definitino of the numerical limits of the builtin data-types
+     * an internal definition of the numerical limits of the builtin data-types
      */
     private enum MaxValue {
         BIT(1,"bool"),

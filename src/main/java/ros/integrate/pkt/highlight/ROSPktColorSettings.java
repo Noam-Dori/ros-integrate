@@ -53,7 +53,7 @@ public class ROSPktColorSettings implements ColorSettingsPage {
                 "# this is a comment\n" +
                 "time t # This is also a comment.\n" +
                 "--- \n" +
-                "# service seperator";
+                "# service separator";
     }
 
     @Nullable

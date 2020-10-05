@@ -7,11 +7,16 @@
       <w>endlocal</w>
       <w>errorlevel</w>
       <w>evenodd</w>
+      <w>freebsd</w>
       <w>lgpl</w>
       <w>metapackage</w>
       <w>metapackages</w>
+      <w>newvfs</w>
+      <w>openapi</w>
+      <w>opensource</w>
       <w>rospkt</w>
       <w>setlocal</w>
+      <w>tldr</w>
       <w>wxwindows</w>
       <w>xmls</w>
       <w>xpointer</w>

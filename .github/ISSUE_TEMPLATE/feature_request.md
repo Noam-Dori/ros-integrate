@@ -8,7 +8,7 @@ assignees: Noam-Dori
 ---
 
 **Feature:**
-*In 10 words or less, what do you want added?*
+*In 10 words or fewer, what do you want added?*
 
 **Background**
 *Provide useful context for the feature.  

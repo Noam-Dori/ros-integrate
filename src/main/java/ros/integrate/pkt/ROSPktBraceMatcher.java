@@ -20,7 +20,7 @@ public class ROSPktBraceMatcher implements PairedBraceMatcher {
     }
 
     @Override
-    public boolean isPairedBracesAllowedBeforeType(@NotNull IElementType lbraceType, @Nullable IElementType contextType) {
+    public boolean isPairedBracesAllowedBeforeType(@NotNull IElementType braceType, @Nullable IElementType contextType) {
         return contextType == ROSPktTypes.CUSTOM_TYPE || contextType == ROSPktTypes.KEYTYPE;
     }
 
