@@ -1,8 +1,8 @@
 package ros.integrate.pkg.xml.annotate;
 
 import com.intellij.codeInsight.daemon.impl.analysis.RemoveTagIntentionFix;
-import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
+import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.psi.xml.XmlTag;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -28,6 +28,7 @@ class PackageExportAnnotator {
 
     /**
      * construct the annotator
+     *
      * @param pkgXml the reference package.xml file
      * @param holder the annotation holder.
      */
@@ -42,8 +43,10 @@ class PackageExportAnnotator {
         }
         XmlTag[] foundTags = export.getRawTag().findSubTags(tagName);
         for (int i = 1; i < foundTags.length; i++) {
-            holder.createWarningAnnotation(foundTags[i].getTextRange(), message)
-                    .registerFix(new RemoveTagIntentionFix(tagName, foundTags[i]));
+            holder.newAnnotation(HighlightSeverity.WARNING, message)
+                    .range(foundTags[i].getTextRange())
+                    .withFix(new RemoveTagIntentionFix(tagName, foundTags[i]))
+                    .create();
         }
     }
 
@@ -53,10 +56,11 @@ class PackageExportAnnotator {
         }
         Arrays.stream(export.getRawTag().findSubTags(tagName))
                 .filter(tag -> emptyFails ? tag.getValue().getText().isEmpty() : !tag.isEmpty())
-                .forEach(tag -> holder.createWarningAnnotation(
-                        emptyFails ? tag.getTextRange() : tag.getValue().getTextRange(),
+                .forEach(tag -> holder.newAnnotation(HighlightSeverity.WARNING,
                         "Tag " + tagName + " should " + (emptyFails ? "not " : "") + "be empty.")
-                        .registerFix(new RemoveTagIntentionFix(tagName, tag)));
+                        .range(emptyFails ? tag.getTextRange() : tag.getValue().getTextRange())
+                        .withFix(new RemoveTagIntentionFix(tagName, tag))
+                        .create());
     }
 
     /**
@@ -129,8 +133,10 @@ class PackageExportAnnotator {
         for (int i = 0; i < buildTypes.size(); i++) {
             if (!PackageXmlUtil.conditionEvaluatesToFalse(buildTypes.get(i).getCondition(), format)) {
                 if (foundActive) {
-                    holder.createWarningAnnotation(buildTypeTrs.get(i), "A package may only have one build type.")
-                            .registerFix(new RemoveBuildTypeQuickFix(export, i));
+                    holder.newAnnotation(HighlightSeverity.WARNING, "A package may only have one build type.")
+                            .range(buildTypeTrs.get(i))
+                            .withFix(new RemoveBuildTypeQuickFix(export, i))
+                            .create();
                 } else {
                     foundActive = true;
                 }
@@ -150,8 +156,9 @@ class PackageExportAnnotator {
         List<TagTextRange> buildTypeTrs = export.getBuildTypeTextRanges();
         for (int i = 0; i < buildTypes.size(); i++) {
             if (PackageXmlUtil.conditionEvaluatesToFalse(buildTypes.get(i).getCondition(), format)) {
-                Annotation ann = holder.createInfoAnnotation(buildTypeTrs.get(i), null);
-                ann.setTextAttributes(ROSConditionSyntaxHighlighter.IGNORED);
+                holder.newSilentAnnotation(HighlightSeverity.INFORMATION).range(buildTypeTrs.get(i))
+                        .textAttributes(ROSConditionSyntaxHighlighter.IGNORED)
+                        .create();
             }
         }
     }

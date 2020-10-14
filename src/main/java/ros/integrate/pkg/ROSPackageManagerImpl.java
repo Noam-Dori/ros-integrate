@@ -217,6 +217,7 @@ public class ROSPackageManagerImpl implements ROSPackageManager {
 
     @NotNull
     @Override
+    @SuppressWarnings({"unused", "RedundantSuppression"})
     public Collection<ROSPackage> findGroupDependents(@NotNull String groupName) {
         loadIndex();
         return getAllPackages().stream()

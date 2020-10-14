@@ -1,7 +1,7 @@
 package ros.integrate.pkg.xml.annotate;
 
-import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
+import com.intellij.lang.annotation.HighlightSeverity;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.xml.PackageXmlUtil;
 import ros.integrate.pkg.xml.ROSPackageXml;
@@ -31,6 +31,7 @@ public class PackageGroupAnnotator {
 
     /**
      * construct the annotator
+     *
      * @param pkgXml the reference package.xml file
      * @param holder the annotation holder.
      */
@@ -52,16 +53,18 @@ public class PackageGroupAnnotator {
             return;
         }
         for (int i = 0; i < groups.size(); i++) {
-            Annotation ann = holder.createErrorAnnotation(groupTrs.get(i),
-                    "member_of_group is supported from format 3");
-            ann.registerFix(new ReformatPackageXmlFix(pkgXml, true));
-            ann.registerFix(new RemoveGroupTagQuickFix(pkgXml, i, false));
+            holder.newAnnotation(HighlightSeverity.ERROR, "member_of_group is supported from format 3")
+                    .range(groupTrs.get(i))
+                    .withFix(new ReformatPackageXmlFix(pkgXml, true))
+                    .withFix(new RemoveGroupTagQuickFix(pkgXml, i, false))
+                    .create();
         }
         for (int i = 0; i < groupDepends.size(); i++) {
-            Annotation ann = holder.createErrorAnnotation(groupDependTrs.get(i),
-                    "group_depend is supported from format 3");
-            ann.registerFix(new ReformatPackageXmlFix(pkgXml, true));
-            ann.registerFix(new RemoveGroupTagQuickFix(pkgXml, i, true));
+            holder.newAnnotation(HighlightSeverity.ERROR, "group_depend is supported from format 3")
+                    .range(groupDependTrs.get(i))
+                    .withFix(new ReformatPackageXmlFix(pkgXml, true))
+                    .withFix(new RemoveGroupTagQuickFix(pkgXml, i, true))
+                    .create();
         }
     }
 
@@ -74,14 +77,18 @@ public class PackageGroupAnnotator {
         }
         for (int i = 0; i < groupDepends.size(); i++) {
             if (PackageXmlUtil.conditionEvaluatesToFalse(groupDepends.get(i), format)) {
-                Annotation ann = holder.createInfoAnnotation(groupDependTrs.get(i), null);
-                ann.setTextAttributes(ROSConditionSyntaxHighlighter.IGNORED);
+                holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+                        .range(groupDependTrs.get(i))
+                        .textAttributes(ROSConditionSyntaxHighlighter.IGNORED)
+                        .create();
             }
         }
         for (int i = 0; i < groups.size(); i++) {
             if (PackageXmlUtil.conditionEvaluatesToFalse(groups.get(i), format)) {
-                Annotation ann = holder.createInfoAnnotation(groupTrs.get(i), null);
-                ann.setTextAttributes(ROSConditionSyntaxHighlighter.IGNORED);
+                holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+                        .range(groupTrs.get(i))
+                        .textAttributes(ROSConditionSyntaxHighlighter.IGNORED)
+                        .create();
             }
         }
     }
@@ -92,16 +99,18 @@ public class PackageGroupAnnotator {
     public void annEmptyGroup() {
         for (int i = 0; i < groups.size(); i++) {
             if (groupTrs.get(i).value() == groupTrs.get(i)) {
-                Annotation ann = holder.createErrorAnnotation(groupTrs.get(i).name(),
-                        "Empty group tag.");
-                ann.registerFix(new RemoveGroupTagQuickFix(pkgXml, i, false));
+                holder.newAnnotation(HighlightSeverity.ERROR, "Empty group tag.")
+                        .range(groupTrs.get(i).name())
+                        .withFix(new RemoveGroupTagQuickFix(pkgXml, i, false))
+                        .create();
             }
         }
         for (int i = 0; i < groupDepends.size(); i++) {
             if (groupDependTrs.get(i).value() == groupDependTrs.get(i)) {
-                Annotation ann = holder.createErrorAnnotation(groupDependTrs.get(i).name(),
-                        "Empty group tag.");
-                ann.registerFix(new RemoveGroupTagQuickFix(pkgXml, i, true));
+                holder.newAnnotation(HighlightSeverity.ERROR, "Empty group tag.")
+                        .range(groupDependTrs.get(i).name())
+                        .withFix(new RemoveGroupTagQuickFix(pkgXml, i, true))
+                        .create();
             }
         }
     }
@@ -135,10 +144,9 @@ public class PackageGroupAnnotator {
                 trsToAnn.add(i);
             }
         }
-        trsToAnn.forEach(i -> {
-            Annotation ann = holder.createErrorAnnotation(textRanges.get(i).value(),
-                    "Group tag conflicts with another tag in the file.");
-            ann.registerFix(new RemoveGroupTagQuickFix(pkgXml, i, isDependency));
-        });
+        trsToAnn.forEach(i -> holder.newAnnotation(HighlightSeverity.ERROR, "Group tag conflicts with another tag in the file.")
+                .range(textRanges.get(i).value())
+                .withFix(new RemoveGroupTagQuickFix(pkgXml, i, isDependency))
+                .create());
     }
 }

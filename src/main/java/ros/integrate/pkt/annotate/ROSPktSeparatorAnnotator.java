@@ -1,7 +1,8 @@
 package ros.integrate.pkt.annotate;
 
-import com.intellij.lang.annotation.Annotation;
+import com.intellij.lang.annotation.AnnotationBuilder;
 import com.intellij.lang.annotation.AnnotationHolder;
+import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.openapi.util.TextRange;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkt.intention.RemoveAllSrvLinesQuickFix;
@@ -36,9 +37,13 @@ class ROSPktSeparatorAnnotator extends ROSPktAnnotatorBase {
         if (separatorCount > file.getMaxSeparators()) {
             TextRange range = new TextRange(sep.getTextRange().getStartOffset(),
                     sep.getTextRange().getEndOffset());
-            Annotation ann = holder.createErrorAnnotation(range, file.getTooManySeparatorsMessage());
-            ann.registerFix(new RemoveSrvLineQuickFix(sep));
-            if(file.flagRemoveAll(separatorCount)) {ann.registerFix(new RemoveAllSrvLinesQuickFix());}
+            AnnotationBuilder ann = holder.newAnnotation(HighlightSeverity.ERROR, file.getTooManySeparatorsMessage())
+                    .range(range)
+                    .withFix(new RemoveSrvLineQuickFix(sep));
+            if (file.flagRemoveAll(separatorCount)) {
+                ann = ann.withFix(new RemoveAllSrvLinesQuickFix());
+            }
+            ann.create();
         }
     }
 }

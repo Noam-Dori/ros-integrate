@@ -91,7 +91,7 @@ public abstract class ROSPackageBase extends PsiElementBase implements ROSPackag
 
     @Override
     public PsiElement getParent() {
-        return null; //TODO if meta-packages or workspaces are added, use those instead.
+        return null;
     }
 
     @Override

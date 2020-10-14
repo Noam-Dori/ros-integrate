@@ -1,11 +1,12 @@
 package ros.integrate.pkg.xml.annotate;
 
-import com.intellij.lang.annotation.Annotation;
+import com.intellij.lang.annotation.AnnotationBuilder;
 import com.intellij.lang.annotation.AnnotationHolder;
-import ros.integrate.pkg.xml.TagTextRange;
+import com.intellij.lang.annotation.HighlightSeverity;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.xml.ROSPackageXml;
 import ros.integrate.pkg.xml.ROSPackageXml.License;
+import ros.integrate.pkg.xml.TagTextRange;
 import ros.integrate.pkg.xml.intention.AddLicenceQuickFix;
 import ros.integrate.pkg.xml.intention.FixLicenseQuickFix;
 import ros.integrate.pkg.xml.intention.RemoveLicenseQuickFix;
@@ -28,6 +29,7 @@ class PackageLicenseAnnotator {
 
     /**
      * construct the annotator
+     *
      * @param pkgXml the reference package.xml file
      * @param holder the annotation holder.
      */
@@ -43,9 +45,10 @@ class PackageLicenseAnnotator {
      */
     void annNoLicenses() {
         if (licenses.isEmpty()) {
-            Annotation ann = holder.createErrorAnnotation(licenseTrs.get(0),
-                    "Package must have at least one licence.");
-            ann.registerFix(new AddLicenceQuickFix(pkgXml));
+            holder.newAnnotation(HighlightSeverity.ERROR, "Package must have at least one licence.")
+                    .range(licenseTrs.get(0))
+                    .withFix(new AddLicenceQuickFix(pkgXml))
+                    .create();
         }
     }
 
@@ -64,16 +67,18 @@ class PackageLicenseAnnotator {
             License license = licenses.get(i);
             TagTextRange tr = licenseTrs.get(i);
             if (license.getValue().isEmpty()) {
-                Annotation ann = holder.createErrorAnnotation(tr,
-                        "License tags cannot be empty.");
-                ann.registerFix(new FixLicenseQuickFix(pkgXml, i));
+                AnnotationBuilder ann = holder.newAnnotation(HighlightSeverity.ERROR, "License tags cannot be empty.")
+                        .range(tr)
+                        .withFix(new FixLicenseQuickFix(pkgXml, i));
                 if (licenses.size() > 1) {
-                    ann.registerFix(new RemoveLicenseQuickFix(pkgXml, i));
+                    ann = ann.withFix(new RemoveLicenseQuickFix(pkgXml, i));
                 }
+                ann.create();
             } else if (license.getValue().contains(",")) {
-                Annotation ann = holder.createWarningAnnotation(tr.value(),
-                        "Each license tag must only hold ONE license.");
-                ann.registerFix(new SplitLicenseQuickFix(pkgXml, i));
+                holder.newAnnotation(HighlightSeverity.WARNING, "Each license tag must only hold ONE license.")
+                        .range(tr.value())
+                        .withFix(new SplitLicenseQuickFix(pkgXml, i))
+                        .create();
             }
         }
     }
@@ -89,11 +94,13 @@ class PackageLicenseAnnotator {
             License license = licenses.get(i);
             TagTextRange tr = licenseTrs.get(i);
             if (license.getValue().matches("TODO")) {
-                Annotation ann = holder.createWeakWarningAnnotation(tr.value(),
-                        "This only acts a placeholder for an actual license, please choose one");
+                AnnotationBuilder ann = holder.newAnnotation(HighlightSeverity.WEAK_WARNING,
+                        "This only acts a placeholder for an actual license, please choose one")
+                        .range(tr.value());
                 if (licenses.size() > 1) {
-                    ann.registerFix(new RemoveLicenseQuickFix(pkgXml, i));
+                    ann = ann.withFix(new RemoveLicenseQuickFix(pkgXml, i));
                 }
+                ann.create();
             }
         }
     }

@@ -1,8 +1,8 @@
 package ros.integrate.pkg.xml.condition.annotate;
 
-import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
+import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.xml.condition.intention.CleanItemQuickFix;
@@ -34,25 +34,28 @@ public class ROSConditionAnnotator implements Annotator {
                 }
 
                 if (exprSequence > 1) {
-                    Annotation ann = holder.createErrorAnnotation(token,
-                            "Expressions must be separated by logic operators or comparisons.");
-                    ann.registerFix(new PrependLogicQuickFix(expr, token));
+                    holder.newAnnotation(HighlightSeverity.ERROR, "Expressions must be separated by logic operators or comparisons.")
+                            .range(token)
+                            .withFix(new PrependLogicQuickFix(expr, token))
+                            .create();
                 }
             }
         }
         if (element instanceof ROSConditionItem) {
             String text = element.getText();
             if (text.startsWith("$")) {
-                if (!text.substring(1).replaceAll("[a-zA-Z0-9_]","").isEmpty()) {
-                    Annotation ann = holder.createErrorAnnotation(element,
-                            "Variables may only contain alphanumerics and underscores.");
-                    ann.registerFix(new CleanItemQuickFix(element));
+                if (!text.substring(1).replaceAll("[a-zA-Z0-9_]", "").isEmpty()) {
+                    holder.newAnnotation(HighlightSeverity.ERROR, "Variables may only contain alphanumerics and underscores.")
+                            .range(element)
+                            .withFix(new CleanItemQuickFix(element))
+                            .create();
                 }
             } else {
-                if (!text.replaceAll("[-a-zA-Z0-9_]","").isEmpty()) {
-                    Annotation ann = holder.createErrorAnnotation(element,
-                            "Literals may only contain alphanumerics, underscores, and dashes.");
-                    ann.registerFix(new CleanItemQuickFix(element));
+                if (!text.replaceAll("[-a-zA-Z0-9_]", "").isEmpty()) {
+                    holder.newAnnotation(HighlightSeverity.ERROR, "Literals may only contain alphanumerics, underscores, and dashes.")
+                            .range(element)
+                            .withFix(new CleanItemQuickFix(element))
+                            .create();
                 }
             }
         }

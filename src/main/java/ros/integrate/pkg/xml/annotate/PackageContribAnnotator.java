@@ -1,7 +1,8 @@
 package ros.integrate.pkg.xml.annotate;
 
-import com.intellij.lang.annotation.Annotation;
+import com.intellij.lang.annotation.AnnotationBuilder;
 import com.intellij.lang.annotation.AnnotationHolder;
+import com.intellij.lang.annotation.HighlightSeverity;
 import ros.integrate.pkg.xml.TagTextRange;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.xml.ROSPackageXml;
@@ -26,6 +27,7 @@ class PackageContribAnnotator {
 
     /**
      * construct the annotator
+     *
      * @param pkgXml the reference package.xml file
      * @param holder the annotation holder.
      */
@@ -43,10 +45,11 @@ class PackageContribAnnotator {
      */
     void annNoMaintainers() {
         if (maintainers.isEmpty()) {
-            Annotation ann = holder.createErrorAnnotation(maintainerTr.get(0),
-                    "Package should have at least one maintainer.");
-            ann.registerFix(new AddMaintainerQuickFix(pkgXml));
-            ann.registerFix(new DeclareOrphanQuickFix(pkgXml));
+            holder.newAnnotation(HighlightSeverity.ERROR, "Package should have at least one maintainer.")
+                    .range(maintainerTr.get(0))
+                    .withFix(new AddMaintainerQuickFix(pkgXml))
+                    .withFix(new DeclareOrphanQuickFix(pkgXml))
+                    .create();
         }
     }
 
@@ -61,22 +64,24 @@ class PackageContribAnnotator {
     void annBadMaintainer() {
         for (int i = 0; i < maintainers.size(); i++) {
             Contributor maintainer = maintainers.get(i);
-            Annotation ann = null;
+            AnnotationBuilder ann = null;
             if (maintainer.getEmail().isEmpty()) {
-                ann = holder.createErrorAnnotation(maintainerTr.get(i).name(),
-                        "Maintainer is missing reference email");
+                ann = holder.newAnnotation(HighlightSeverity.ERROR, "Maintainer is missing reference email")
+                        .range(maintainerTr.get(i).name());
             } else if (!maintainer.getEmail().matches(Contributor.EMAIL_REGEX)) {
-                ann = holder.createErrorAnnotation(maintainerTr.get(i).attrValue("email"),
-                        "Maintainer email is invalid");
+                ann = holder.newAnnotation(HighlightSeverity.ERROR, "Maintainer email is invalid")
+                        .range(maintainerTr.get(i).attrValue("email"));
             }
             if (maintainer.getName().isEmpty()) {
-                ann = holder.createErrorAnnotation(maintainerTr.get(i).name(), "Maintainer does not have a name");
+                ann = holder.newAnnotation(HighlightSeverity.ERROR, "Maintainer does not have a name")
+                        .range(maintainerTr.get(i).name());
             }
             if (ann != null) {
-                ann.registerFix(new FixContributorQuickFix(pkgXml, i, ContribType.MAINTAINER));
+                ann = ann.withFix(new FixContributorQuickFix(pkgXml, i, ContribType.MAINTAINER));
                 if (maintainers.size() > 1) {
-                    ann.registerFix(new RemoveContributorFix(pkgXml, i, ContribType.MAINTAINER));
+                    ann = ann.withFix(new RemoveContributorFix(pkgXml, i, ContribType.MAINTAINER));
                 }
+                ann.create();
             }
         }
     }
@@ -92,14 +97,17 @@ class PackageContribAnnotator {
         for (int i = 0; i < authors.size(); i++) {
             Contributor author = authors.get(i);
             if (author.getName().isEmpty()) {
-                Annotation ann = holder.createErrorAnnotation(authorTr.get(i).name(), "Author does not have a name");
-                ann.registerFix(new FixContributorQuickFix(pkgXml, i, ContribType.AUTHOR));
-                ann.registerFix(new RemoveContributorFix(pkgXml, i, ContribType.AUTHOR));
+                holder.newAnnotation(HighlightSeverity.ERROR, "Author does not have a name")
+                        .range(authorTr.get(i).name())
+                        .withFix(new FixContributorQuickFix(pkgXml, i, ContribType.AUTHOR))
+                        .withFix(new RemoveContributorFix(pkgXml, i, ContribType.AUTHOR))
+                        .create();
             } else if (!author.getEmail().isEmpty() && !author.getEmail().matches(Contributor.EMAIL_REGEX)) {
-                Annotation ann = holder.createErrorAnnotation(authorTr.get(i).attrValue("email"),
-                        "Author email is invalid");
-                ann.registerFix(new FixContributorQuickFix(pkgXml, i, ContribType.AUTHOR));
-                ann.registerFix(new RemoveContributorFix(pkgXml, i, ContribType.AUTHOR));
+                holder.newAnnotation(HighlightSeverity.ERROR, "Author email is invalid")
+                        .range(authorTr.get(i).attrValue("email"))
+                        .withFix(new FixContributorQuickFix(pkgXml, i, ContribType.AUTHOR))
+                        .withFix(new RemoveContributorFix(pkgXml, i, ContribType.AUTHOR))
+                        .create();
             }
         }
     }

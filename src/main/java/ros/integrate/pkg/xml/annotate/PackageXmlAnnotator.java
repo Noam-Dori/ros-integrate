@@ -1,9 +1,9 @@
 package ros.integrate.pkg.xml.annotate;
 
 import com.intellij.codeInsight.daemon.impl.analysis.RemoveTagIntentionFix;
-import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
+import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.openapi.util.Pair;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.xml.XmlFile;
@@ -51,9 +51,10 @@ public class PackageXmlAnnotator implements Annotator {
             }
 
             if (pkgXml.getFormat() == 0) {
-                Annotation ann = holder.createErrorAnnotation(pkgXml.getFormatTextRange(),
-                        "Invalid package format");
-                ann.registerFix(new FixFormatQuickFix(pkgXml));
+                holder.newAnnotation(HighlightSeverity.ERROR, "Invalid package format")
+                        .range(pkgXml.getFormatTextRange())
+                        .withFix(new FixFormatQuickFix(pkgXml))
+                        .create();
             }
 
             PackageIdAnnotator idAnn = new PackageIdAnnotator(pkgXml, holder);
@@ -79,17 +80,19 @@ public class PackageXmlAnnotator implements Annotator {
             contribAnn.annBadMaintainer();
             contribAnn.annBadAuthor();
 
-            List<Pair<String,ROSPackageXml.URLType>> urlList = pkgXml.getURLs();
+            List<Pair<String, ROSPackageXml.URLType>> urlList = pkgXml.getURLs();
             for (int i = 0; i < urlList.size(); i++) {
                 if (urlList.get(i).first.isEmpty()) {
-                    Annotation ann = holder.createErrorAnnotation(pkgXml.getURLTextRanges().get(i),
-                            "Empty URL");
-                    ann.registerFix(new RemoveURLQuickFix(pkgXml, i));
+                    holder.newAnnotation(HighlightSeverity.ERROR, "Empty URL")
+                            .range(pkgXml.getURLTextRanges().get(i))
+                            .withFix(new RemoveURLQuickFix(pkgXml, i))
+                            .create();
                 }
                 if (urlList.get(i).second == null) {
-                    Annotation ann = holder.createErrorAnnotation(pkgXml.getURLTextRanges().get(i),
-                            "URL type is unknown");
-                    ann.registerFix(new FixURLQuickFix(pkgXml, i));
+                    holder.newAnnotation(HighlightSeverity.ERROR, "URL type is unknown")
+                            .range(pkgXml.getURLTextRanges().get(i))
+                            .withFix(new FixURLQuickFix(pkgXml, i))
+                            .create();
                 }
             }
 
@@ -124,9 +127,11 @@ public class PackageXmlAnnotator implements Annotator {
 
             for (XmlTag lvl1Tag : pkgXml.getSubTags()) {
                 if (!LEVEL_1_TAGS.contains(lvl1Tag.getName()) && !PackageXmlUtil.isDependencyTag(lvl1Tag)) {
-                    Annotation ann = holder.createErrorAnnotation(lvl1Tag, "Unsupported tag outside export");
-                    ann.registerFix(new MoveToExportFix(lvl1Tag, pkgXml));
-                    ann.registerFix(new RemoveTagIntentionFix(lvl1Tag.getName(), lvl1Tag));
+                    holder.newAnnotation(HighlightSeverity.ERROR, "Unsupported tag outside export")
+                            .range(lvl1Tag)
+                            .withFix(new MoveToExportFix(lvl1Tag, pkgXml))
+                            .withFix(new RemoveTagIntentionFix(lvl1Tag.getName(), lvl1Tag))
+                            .create();
                 }
             }
         }

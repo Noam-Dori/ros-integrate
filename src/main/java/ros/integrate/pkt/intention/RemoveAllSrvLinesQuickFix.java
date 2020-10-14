@@ -22,7 +22,7 @@ public class RemoveAllSrvLinesQuickFix extends BaseIntentionAction {
     @NotNull
     @Override
     public String getText() {
-        return "Remove ALL service separators";
+        return "Remove all service separators";
     }
 
     @NotNull

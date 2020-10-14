@@ -1,8 +1,9 @@
 package ros.integrate.pkg.xml.annotate;
 
 import com.intellij.codeInspection.ProblemHighlightType;
-import com.intellij.lang.annotation.Annotation;
+import com.intellij.lang.annotation.AnnotationBuilder;
 import com.intellij.lang.annotation.AnnotationHolder;
+import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.openapi.util.TextRange;
 import ros.integrate.pkg.xml.PackageXmlUtil;
 import ros.integrate.pkg.xml.TagTextRange;
@@ -41,6 +42,7 @@ class PackageDependencyAnnotator {
 
     /**
      * construct the annotator
+     *
      * @param pkgXml the reference package.xml file
      * @param holder the annotation holder.
      */
@@ -59,9 +61,10 @@ class PackageDependencyAnnotator {
     void annSelfDependency() {
         for (int i = 0; i < dependencies.size(); i++) {
             if (pkgXml.getPackage().equals(dependencies.get(i).getPackage())) {
-                Annotation ann = holder.createErrorAnnotation(depTrs.get(i).value(),
-                        "A package cannot depend on itself.");
-                ann.registerFix(new RemoveDependencyQuickFix(pkgXml, i));
+                holder.newAnnotation(HighlightSeverity.ERROR, "A package cannot depend on itself.")
+                        .range(depTrs.get(i).value())
+                        .withFix(new RemoveDependencyQuickFix(pkgXml, i))
+                        .create();
             }
         }
     }
@@ -78,11 +81,13 @@ class PackageDependencyAnnotator {
         for (int i = 0; i < dependencies.size(); i++) {
             String tagName = dependencies.get(i).getType().getTagName();
             if (relevant.contains(tagName)) {
-                Annotation ann = holder.createErrorAnnotation(depTrs.get(i).name(),
+                holder.newAnnotation(HighlightSeverity.ERROR,
                         "Dependency tag " + tagName + " may not be used in manifest format " +
-                                pkgXml.getFormat() + ".");
-                ann.registerFix(new RemoveDependencyQuickFix(pkgXml, i));
-                ann.registerFix(new ReformatPackageXmlFix(pkgXml, false));
+                                pkgXml.getFormat() + ".")
+                        .range(depTrs.get(i).name())
+                        .withFix(new RemoveDependencyQuickFix(pkgXml, i))
+                        .withFix(new ReformatPackageXmlFix(pkgXml, false))
+                        .create();
             }
         }
     }
@@ -93,9 +98,10 @@ class PackageDependencyAnnotator {
     void annEmptyDependency() {
         for (int i = 0; i < dependencies.size(); i++) {
             if (depTrs.get(i).value() == depTrs.get(i)) {
-                Annotation ann = holder.createErrorAnnotation(depTrs.get(i).name(),
-                        "Empty dependency tag.");
-                ann.registerFix(new RemoveDependencyQuickFix(pkgXml, i));
+                holder.newAnnotation(HighlightSeverity.ERROR, "Empty dependency tag.")
+                        .range(depTrs.get(i).name())
+                        .withFix(new RemoveDependencyQuickFix(pkgXml, i))
+                        .create();
             }
         }
     }
@@ -126,12 +132,11 @@ class PackageDependencyAnnotator {
                 trsToAnn.add(i);
             }
         }
-        trsToAnn.forEach(i -> {
-            Annotation ann = holder.createErrorAnnotation(depTrs.get(i).value(),
-                    "Dependency Tag conflicts with another tag in the file.");
-            ann.registerFix(new RemoveDependencyQuickFix(pkgXml, i));
-            ann.registerFix(new ReformatPackageXmlFix(pkgXml, false));
-        });
+        trsToAnn.forEach(i -> holder.newAnnotation(HighlightSeverity.ERROR, "Dependency Tag conflicts with another tag in the file.")
+                .range(depTrs.get(i).value())
+                .withFix(new RemoveDependencyQuickFix(pkgXml, i))
+                .withFix(new ReformatPackageXmlFix(pkgXml, false))
+                .create());
     }
 
     /**
@@ -145,13 +150,14 @@ class PackageDependencyAnnotator {
             }
             if (dep.getPackage() == ROSPackage.ORPHAN
                     && depTrs.get(i).value() != depTrs.get(i)) {
-                Annotation ann = holder.createErrorAnnotation(depTrs.get(i).value(),
-                        "Unresolved dependency");
-                ann.setHighlightType(ProblemHighlightType.ERROR);
-                ann.registerFix(new RemoveDependencyQuickFix(pkgXml, i));
+                AnnotationBuilder ann = holder.newAnnotation(HighlightSeverity.ERROR, "Unresolved dependency")
+                        .range(depTrs.get(i).value())
+                        .highlightType(ProblemHighlightType.ERROR)
+                        .withFix(new RemoveDependencyQuickFix(pkgXml, i));
                 if (pkgXml.getPackage().getProject().getService(ROSDepKeyCache.class).inOfflineMode()) {
-                    ann.registerFix(new ForceCacheQuickFix());
+                    ann = ann.withFix(new ForceCacheQuickFix());
                 }
+                ann.create();
             }
         }
     }
@@ -165,10 +171,12 @@ class PackageDependencyAnnotator {
             Dependency dep = dependencies.get(i);
             if (dep.getPackage() != ROSPackage.ORPHAN && dep.getVersionRange().isNotValid()) {
                 for (TextRange tr : depTrs.get(i).attrQuery(null,
-                        "version_lt","version_lte","version_gt","version_gte","version_eq")) {
-                    Annotation ann = holder.createErrorAnnotation(tr, "Invalid version restriction(s).");
-                    ann.registerFix(new AmputateDependencyQuickFix(pkgXml, i));
-                    ann.registerFix(new FixDependencyQuickFix(pkgXml, i, false));
+                        "version_lt", "version_lte", "version_gt", "version_gte", "version_eq")) {
+                    holder.newAnnotation(HighlightSeverity.ERROR, "Invalid version restriction(s).")
+                            .range(tr)
+                            .withFix(new AmputateDependencyQuickFix(pkgXml, i))
+                            .withFix(new FixDependencyQuickFix(pkgXml, i, false))
+                            .create();
                 }
             }
         }
@@ -199,7 +207,7 @@ class PackageDependencyAnnotator {
             TagTextRange queryable = depTrs.get(i);
             if (hasEq && (hasGt || hasGte || hasLt || hasLte)) {
                 raised = queryable.attrQuery(TagTextRange.Prefix.NAME,
-                        "version_lt","version_lte","version_gt","version_gte","version_eq");
+                        "version_lt", "version_lte", "version_gt", "version_gte", "version_eq");
             } else {
                 if (hasGt && hasGte) {
                     raised.add(queryable.attrName("version_gt"));
@@ -212,10 +220,11 @@ class PackageDependencyAnnotator {
             }
             if (raised.size() > 1) {
                 for (TextRange tr : raised) {
-                    Annotation ann = holder.createErrorAnnotation(tr,
-                            "Conflicting version restrictions.");
-                    ann.registerFix(new AmputateDependencyQuickFix(pkgXml, i));
-                    ann.registerFix(new FixDependencyQuickFix(pkgXml, i, false));
+                    holder.newAnnotation(HighlightSeverity.ERROR, "Conflicting version restrictions.")
+                            .range(tr)
+                            .withFix(new AmputateDependencyQuickFix(pkgXml, i))
+                            .withFix(new FixDependencyQuickFix(pkgXml, i, false))
+                            .create();
                 }
             }
         }
@@ -227,8 +236,10 @@ class PackageDependencyAnnotator {
     void annIgnoredCondition() {
         for (int i = 0; i < dependencies.size(); i++) {
             if (PackageXmlUtil.conditionEvaluatesToFalse(dependencies.get(i), format)) {
-                Annotation ann = holder.createInfoAnnotation(depTrs.get(i), null);
-                ann.setTextAttributes(ROSConditionSyntaxHighlighter.IGNORED);
+                holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+                        .range(depTrs.get(i))
+                        .textAttributes(ROSConditionSyntaxHighlighter.IGNORED)
+                        .create();
             }
         }
     }
@@ -238,9 +249,10 @@ class PackageDependencyAnnotator {
      */
     public void annNoBuildtoolDependency() {
         if (pkgXml.getDependencies(DependencyType.BUILDTOOL).isEmpty()) {
-            Annotation ann = holder.createErrorAnnotation(pkgXml.getRootTextRange(),
-                    "Package must include at least one buildtool dependency.");
-            ann.registerFix(new AddBuildtoolDependencyFix(pkgXml));
+            holder.newAnnotation(HighlightSeverity.ERROR, "Package must include at least one buildtool dependency.")
+                    .range(pkgXml.getRootTextRange())
+                    .withFix(new AddBuildtoolDependencyFix(pkgXml))
+                    .create();
         }
     }
 }

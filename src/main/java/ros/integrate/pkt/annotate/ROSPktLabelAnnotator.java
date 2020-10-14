@@ -1,7 +1,7 @@
 package ros.integrate.pkt.annotate;
 
-import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
+import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.openapi.util.TextRange;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkt.intention.ChangeNameQuickFix;
@@ -14,13 +14,16 @@ import ros.integrate.pkt.psi.ROSPktLabel;
  */
 class ROSPktLabelAnnotator extends ROSPktAnnotatorBase {
 
-    private final @NotNull String fieldName;
-    private final @NotNull ROSPktLabel label;
+    private final @NotNull
+    String fieldName;
+    private final @NotNull
+    ROSPktLabel label;
 
     /**
      * construct the annotator
-     * @param holder the annotation holder
-     * @param label the PSI element pointing to the name of the field
+     *
+     * @param holder    the annotation holder
+     * @param label     the PSI element pointing to the name of the field
      * @param fieldName the name of the field
      */
     ROSPktLabelAnnotator(@NotNull AnnotationHolder holder,
@@ -38,8 +41,10 @@ class ROSPktLabelAnnotator extends ROSPktAnnotatorBase {
         if (notFirstDefinition(label)) {
             TextRange range = new TextRange(label.getTextRange().getStartOffset(),
                     label.getTextRange().getEndOffset());
-            Annotation ann = holder.createErrorAnnotation(range, "Field label '" + fieldName + "' is already used");
-            ann.registerFix(new ChangeNameQuickFix((ROSPktFieldBase) label.getParent(), label));
+            holder.newAnnotation(HighlightSeverity.ERROR, "Field label '" + fieldName + "' is already used")
+                    .range(range)
+                    .withFix(new ChangeNameQuickFix((ROSPktFieldBase) label.getParent(), label))
+                    .create();
         }
     }
 
@@ -48,25 +53,28 @@ class ROSPktLabelAnnotator extends ROSPktAnnotatorBase {
      */
     void annIllegalLabel() {
         String regex = "[a-zA-Z][a-zA-Z0-9_]*";
-        if(!fieldName.matches(regex)) {
+        if (!fieldName.matches(regex)) {
             TextRange range = new TextRange(label.getTextRange().getStartOffset(),
                     label.getTextRange().getEndOffset());
             String message;
-            if(fieldName.matches("[a-zA-Z0-9_]+")) {
+            if (fieldName.matches("[a-zA-Z0-9_]+")) {
                 message = "Field names must start with a letter, not a number or underscore";
             } else {
                 message = "Field names may only contain alphanumeric characters or underscores";
             }
-            Annotation ann = holder.createErrorAnnotation(range, message);
-            ann.registerFix(new ChangeNameQuickFix((ROSPktFieldBase) label.getParent(), label));
+            holder.newAnnotation(HighlightSeverity.ERROR, message)
+                    .range(range)
+                    .withFix(new ChangeNameQuickFix((ROSPktFieldBase) label.getParent(), label))
+                    .create();
         }
     }
 
     /**
      * checks whether of not the label provided is the first label in this section that has its name.
+     *
      * @param name the field to test
      * @return <code>true</code> if {@param field} is the first first defined label with the provided name in this file,
-     *         <code>false</code> otherwise.
+     * <code>false</code> otherwise.
      */
     private boolean notFirstDefinition(@NotNull ROSPktLabel name) {
         for (ROSPktFieldBase field : name.getContainingSection().getFields(ROSPktFieldBase.class, false)) {

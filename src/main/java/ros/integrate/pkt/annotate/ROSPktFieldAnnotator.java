@@ -2,6 +2,7 @@ package ros.integrate.pkt.annotate;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.annotation.AnnotationHolder;
+import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.openapi.util.TextRange;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkt.psi.ROSPktFieldBase;
@@ -20,8 +21,9 @@ class ROSPktFieldAnnotator extends ROSPktAnnotatorBase {
 
     /**
      * construct the annotator
+     *
      * @param holder the annotation holder
-     * @param field the field being checked and annotated.
+     * @param field  the field being checked and annotated.
      */
     ROSPktFieldAnnotator(AnnotationHolder holder, @NotNull ROSPktFieldBase field) {
         super(holder);
@@ -38,7 +40,7 @@ class ROSPktFieldAnnotator extends ROSPktAnnotatorBase {
      * This is a multi-annotator, that is, it makes multiple annotations.
      */
     void annBadStructure() {
-        if(!field.isComplete()) { // a shortcut to skip all tests
+        if (!field.isComplete()) { // a shortcut to skip all tests
             checkMissingLabel();
             checkConst();
         }
@@ -48,20 +50,26 @@ class ROSPktFieldAnnotator extends ROSPktAnnotatorBase {
         ASTNode equalAST = field.getNode().findChildByType(ROSPktTypes.CONST_ASSIGNER);
         boolean equalSign = equalAST != null,
                 constant = field.getConst() != null;
-        if(equalSign && !constant) {
+        if (equalSign && !constant) {
             int equalSignOffset = equalAST.getTextRange().getEndOffset();
-            holder.createErrorAnnotation(new TextRange(equalSignOffset, equalSignOffset + 1), "Expected a constant value for the constant field");
+            holder.newAnnotation(HighlightSeverity.ERROR, "Expected a constant value for the constant field")
+                    .range(new TextRange(equalSignOffset, equalSignOffset + 1))
+                    .create();
         }
         if (!equalSign && constant) {
             int labelEndOffset = Objects.requireNonNull(field.getLabel()).getTextRange().getEndOffset();
-            holder.createErrorAnnotation(new TextRange(labelEndOffset, labelEndOffset + 1), "'=' expected");
+            holder.newAnnotation(HighlightSeverity.ERROR, "'=' expected")
+                    .range(new TextRange(labelEndOffset, labelEndOffset + 1))
+                    .create();
         }
     }
 
     private void checkMissingLabel() {
-        if(field.getLabel() == null) {
+        if (field.getLabel() == null) {
             int typeEndOffset = field.getTypeBase().getTextRange().getEndOffset();
-            holder.createErrorAnnotation(new TextRange(typeEndOffset, typeEndOffset + 1), "Expected a name for the field");
+            holder.newAnnotation(HighlightSeverity.ERROR, "Expected a name for the field")
+                    .range(new TextRange(typeEndOffset, typeEndOffset + 1))
+                    .create();
         }
     }
 }

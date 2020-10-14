@@ -142,6 +142,7 @@ public class VersionRange {
      * @param version the version string to check
      * @return true if version is in this range, false otherwise.
      */
+    @SuppressWarnings({"unused", "RedundantSuppression"})
     public boolean contains(@NotNull String version) {
         if (isNotValid() || !version.matches(VERSION_REGEX)) {
             return false;

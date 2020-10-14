@@ -48,6 +48,7 @@ public interface ROSPackageFinder {
      *           packages are mapped by their package.xml name
      *           which should be the same as the directory name and the CMake project name.
      */
+    @SuppressWarnings({"unused", "RedundantSuppression"})
     void findAndCacheOneFile(@NotNull VirtualFile vXml, Project project, ConcurrentMap<String, ROSPackage> pkgCache);
 
     /**
