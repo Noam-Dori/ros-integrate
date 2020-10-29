@@ -51,9 +51,8 @@ class ROSPktFieldAnnotator extends ROSPktAnnotatorBase {
         boolean equalSign = equalAST != null,
                 constant = field.getConst() != null;
         if (equalSign && !constant) {
-            int equalSignOffset = equalAST.getTextRange().getEndOffset();
             holder.newAnnotation(HighlightSeverity.ERROR, "Expected a constant value for the constant field")
-                    .range(new TextRange(equalSignOffset, equalSignOffset + 1))
+                    .afterEndOfLine()
                     .create();
         }
         if (!equalSign && constant) {
@@ -66,9 +65,8 @@ class ROSPktFieldAnnotator extends ROSPktAnnotatorBase {
 
     private void checkMissingLabel() {
         if (field.getLabel() == null) {
-            int typeEndOffset = field.getTypeBase().getTextRange().getEndOffset();
             holder.newAnnotation(HighlightSeverity.ERROR, "Expected a name for the field")
-                    .range(new TextRange(typeEndOffset, typeEndOffset + 1))
+                    .afterEndOfLine()
                     .create();
         }
     }

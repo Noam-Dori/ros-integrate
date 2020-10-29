@@ -180,7 +180,7 @@ public class ROSPktTypeAnnotator extends ROSPktAnnotatorBase {
         if (message != null) {
             holder.newAnnotation(HighlightSeverity.ERROR, message)
                     .range(type.raw().getTextRange())
-                    .withFix(new RenameTypeQuickFix.RenameTypeIntention(type, message))
+                    .withFix(new RenameTypeQuickFix(null))
                     .create();
         }
     }
@@ -224,9 +224,15 @@ public class ROSPktTypeAnnotator extends ROSPktAnnotatorBase {
         if (type.getNode().getFirstChildNode().findChildByType(ROSPktTypes.RBRACKET) == null &&
                 type.getNode().findChildByType(ROSPktTypes.RBRACKET) == null) {
             int typeEndOffset = type.getTextRange().getEndOffset();
-            holder.newAnnotation(HighlightSeverity.ERROR, "']' expected")
-                    .range(new TextRange(typeEndOffset, typeEndOffset + 1))
-                    .create();
+            AnnotationBuilder ann = holder.newAnnotation(HighlightSeverity.ERROR, "']' expected");
+            if (((ROSPktFieldBase)type.getParent()).getLabel() != null) {
+                ann = ann.range(new TextRange(typeEndOffset, typeEndOffset + 1));
+            }
+            else
+            {
+                ann = ann.afterEndOfLine();
+            }
+            ann.create();
         }
     }
 }
