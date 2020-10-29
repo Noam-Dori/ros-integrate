@@ -16,6 +16,7 @@ import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.xml.XmlFile;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkt.psi.ROSPktFile;
 import ros.integrate.settings.ROSSettings;
 import ros.integrate.pkg.psi.ROSPackage;
@@ -44,9 +45,11 @@ public class ROSCompiledPackageFinder extends ROSPackageFinderBase {
         });
     }
 
+    @Nullable
     private VirtualFile getROSRoot(Project project) {
         Library origin = getLibrary(project);
-        return Objects.requireNonNull(origin).getFiles(OrderRootType.CLASSES)[0];
+        VirtualFile[] ret = Objects.requireNonNull(origin).getFiles(OrderRootType.CLASSES);
+        return ret.length > 0 ? ret[0] : null;
     }
 
     @Override
@@ -127,10 +130,12 @@ public class ROSCompiledPackageFinder extends ROSPackageFinderBase {
     }
 
     boolean notInFinder(@NotNull VirtualFile vFile, @NotNull Project project) {
-        return !ROSPackageUtil.belongsToRoot(getROSRoot(project), vFile);
+        VirtualFile root = getROSRoot(project);
+        return root == null || !ROSPackageUtil.belongsToRoot(root, vFile);
     }
 
     boolean inFinder(@NotNull VFileEvent event, @NotNull Project project) {
-        return ROSPackageUtil.belongsToRoot(getROSRoot(project), event);
+        VirtualFile root = getROSRoot(project);
+        return root != null && ROSPackageUtil.belongsToRoot(root, event);
     }
 }
