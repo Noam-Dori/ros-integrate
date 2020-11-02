@@ -4,6 +4,7 @@ import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.openapi.util.TextRange;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkt.intention.ChangeNameQuickFix;
 import ros.integrate.pkt.psi.ROSPktFieldBase;
 import ros.integrate.pkt.psi.ROSPktLabel;
@@ -12,7 +13,7 @@ import ros.integrate.pkt.psi.ROSPktLabel;
  * An annotator dedicated to {@link ROSPktLabel}, the name of each property in the message
  * @author Noam Dori
  */
-class ROSPktLabelAnnotator extends ROSPktAnnotatorBase {
+public class ROSPktLabelAnnotator extends ROSPktAnnotatorBase {
 
     private final @NotNull
     String fieldName;
@@ -52,21 +53,23 @@ class ROSPktLabelAnnotator extends ROSPktAnnotatorBase {
      * annotates if this label does not follow naming rules (alphanumeric,starts with letter)
      */
     void annIllegalLabel() {
-        String regex = "[a-zA-Z][a-zA-Z0-9_]*";
-        if (!fieldName.matches(regex)) {
+        String message = getIllegalLabelMessage(fieldName);
+        if (message != null) {
             TextRange range = new TextRange(label.getTextRange().getStartOffset(),
                     label.getTextRange().getEndOffset());
-            String message;
-            if (fieldName.matches("[a-zA-Z0-9_]+")) {
-                message = "Field names must start with a letter, not a number or underscore";
-            } else {
-                message = "Field names may only contain alphanumeric characters or underscores";
-            }
             holder.newAnnotation(HighlightSeverity.ERROR, message)
                     .range(range)
                     .withFix(new ChangeNameQuickFix((ROSPktFieldBase) label.getParent(), label))
                     .create();
         }
+    }
+
+    @Nullable
+    public static String getIllegalLabelMessage(@NotNull String labelText) {
+        return labelText.matches("[a-zA-Z][a-zA-Z0-9_]*") ? null :
+                labelText.matches("[a-zA-Z0-9_]+") ?
+                        "Field names must start with a letter, not a number or underscore" :
+                        "Field names may only contain alphanumeric characters or underscores";
     }
 
     /**
@@ -84,7 +87,4 @@ class ROSPktLabelAnnotator extends ROSPktAnnotatorBase {
         }
         return false;
     }
-
-    //TODO: a warning which checks for snake_case in names. make sure to check JB-inspection first
-    // fix: offer conversion to snake_case
 }

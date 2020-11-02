@@ -42,7 +42,7 @@ public class CamelCaseInspection extends ROSPktInspectionBase {
         String regex = inProject ? "[A-Z]" + camelCase
                 : "([a-zA-Z][a-zA-Z0-9_]*/)?[A-Z]" + camelCase;
         if(!fieldType.matches(regex)) {
-            return "Field type is not written in CamelCase";
+            return "Field type is not written in PascalCase";
         }
         return null;
     }

@@ -31,6 +31,9 @@
         <localInspection language="ROSPkt" implementationClass="ros.integrate.pkt.inspection.CamelCaseInspection"
                          level="WARNING" enabledByDefault="true" shortName="type-not-camelcase"
                          groupName="ROS" displayName="Type not in PascalCase"/>
+        <localInspection language="ROSPkt" implementationClass="ros.integrate.pkt.inspection.SnakeCaseInspection"
+                         level="WARNING" enabledByDefault="true" shortName="label-not-snake-case"
+                         groupName="ROS" displayName="Type not in snake_case"/>
         <localInspection language="ROSPkt" implementationClass="ros.integrate.pkt.inspection.DeprecatedTypeInspection"
                          level="WARNING" enabledByDefault="true" shortName="deprecated-type"
                          groupName="ROS" displayName="Deprecated type"/>
