@@ -36,7 +36,7 @@ public class SnakeCaseInspection extends ROSPktInspectionBase {
     @Contract(pure = true)
     @Nullable
     public static String getUnorthodoxLabelMessage(@NotNull String fieldLabel) {
-        String snakeCase = "[A-Za-z][0-9A-Za-z]*(_[0-9A-Za-z]+)*";
+        String snakeCase = "[0-9a-z]+(_[0-9a-z]+)*";
         if(!fieldLabel.matches(snakeCase)) {
             return "Field name is not written in snake_case";
         }
@@ -50,9 +50,9 @@ public class SnakeCaseInspection extends ROSPktInspectionBase {
             String message = getUnorthodoxLabelMessage(label.getText());
             if (message != null) {
                 ProblemDescriptor descriptor = manager.createProblemDescriptor(label, label, message,
-                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING, isOnTheFly/*,
+                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING, isOnTheFly,
                         new RenameTypeQuickFix(FileEditorManager.getInstance(
-                                field.getProject()).getSelectedEditor())*/);
+                                field.getProject()).getSelectedEditor(), "label"));
                 descriptors.add(descriptor);
             }
         }

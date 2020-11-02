@@ -180,7 +180,7 @@ public class ROSPktTypeAnnotator extends ROSPktAnnotatorBase {
         if (message != null) {
             holder.newAnnotation(HighlightSeverity.ERROR, message)
                     .range(type.raw().getTextRange())
-                    .withFix(new RenameTypeQuickFix(null))
+                    .withFix(new RenameTypeQuickFix(null, "type"))
                     .create();
         }
     }

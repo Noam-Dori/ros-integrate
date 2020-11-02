@@ -56,7 +56,7 @@ public class CamelCaseInspection extends ROSPktInspectionBase {
                 ProblemDescriptor descriptor = manager.createProblemDescriptor(custom, custom, message,
                         ProblemHighlightType.GENERIC_ERROR_OR_WARNING, isOnTheFly,
                         new RenameTypeQuickFix(FileEditorManager.getInstance(
-                                field.getProject()).getSelectedEditor()));
+                                field.getProject()).getSelectedEditor(), "type"));
                 descriptors.add(descriptor);
             }
         }

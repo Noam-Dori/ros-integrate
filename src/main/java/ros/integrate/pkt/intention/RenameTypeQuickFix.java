@@ -27,20 +27,24 @@ import java.util.Objects;
 public class RenameTypeQuickFix extends BaseIntentionAction implements LocalQuickFix {
     @Nullable
     private final FileEditor fileEditor;
+    @NotNull
+    private final String msgComponent;
 
     /**
      * construct a new intention
      *
      * @param editor the editor of the file this intention applies to
+     * @param msgComponent the component's name to be edited. Used in the message.
      */
-    public RenameTypeQuickFix(@Nullable FileEditor editor) {
+    public RenameTypeQuickFix(@Nullable FileEditor editor, @NotNull String msgComponent) {
         this.fileEditor = editor;
+        this.msgComponent = msgComponent;
     }
 
     @NotNull
     @Override
     public String getFamilyName() {
-        return fileEditor == null ? "ROS message/service" : "Rename message type";
+        return fileEditor == null ? "ROS message/service" : getText();
     }
 
     @Override
@@ -56,7 +60,7 @@ public class RenameTypeQuickFix extends BaseIntentionAction implements LocalQuic
     @NotNull
     @Override
     public @IntentionName String getText() {
-        return "Rename message type";
+        return "Rename field " + msgComponent;
     }
 
     @Override
