@@ -21,14 +21,14 @@ public class ROSPktNameSuggestionProvider extends PreferrableNameSuggestionProvi
     @Override
     public SuggestedNameInfo getSuggestedNames(@NotNull PsiElement elementToRename, @Nullable PsiElement psiContext, @NotNull Set<String> result) {
         if (psiContext instanceof ROSPktTypeBase) { // context should be the complete type
-            typeBasedSuggestions(result, psiContext);
+            typeBasedSuggestions(result, psiContext, elementToRename instanceof ROSPktFile);
         } else if (psiContext instanceof ROSPktFile) {
             result.remove(((ROSPktFile) psiContext).getName());
             result.add(((ROSPktFile) psiContext).getPacketName());
         } else if (psiContext instanceof ROSPktLabel) {
             Stack<String> parts = split(elementToRename.getText());
-            assemble(parts, result, null);
-            typeBasedSuggestions(result, ((ROSPktFieldBase)psiContext.getParent()).getTypeBase());
+            assembleSnakeCase(parts, result, null);
+            typeBasedSuggestions(result, ((ROSPktFieldBase)psiContext.getParent()).getTypeBase(), false);
         }
 
         return SuggestedNameInfo.NULL_INFO;
@@ -54,7 +54,7 @@ public class ROSPktNameSuggestionProvider extends PreferrableNameSuggestionProvi
         return parts;
     }
 
-    void assemble(@NotNull Stack<String> parts, Set<String> result, String list) {
+    void assembleSnakeCase(@NotNull Stack<String> parts, Set<String> result, String list) {
         StringBuilder builder = new StringBuilder();
         while (!parts.isEmpty()) {
             builder.insert(0, parts.pop());
@@ -68,7 +68,24 @@ public class ROSPktNameSuggestionProvider extends PreferrableNameSuggestionProvi
         }
     }
 
-    void typeBasedSuggestions(Set<String> result, @NotNull PsiElement typeBase) {
+    void assemblePascalCase(@NotNull Stack<String> parts, Set<String> result, String list) {
+        StringBuilder builder = new StringBuilder();
+        while (!parts.isEmpty()) {
+            builder.insert(0, capitalize(parts.pop()));
+            if (list != null) {
+                result.add(builder.toString() + capitalize(list));
+                result.add(builder.toString() + "s");
+            } else {
+                result.add(builder.toString());
+            }
+        }
+    }
+
+    String capitalize(@NotNull String string) {
+        return string.substring(0,1).toUpperCase() + string.substring(1).toLowerCase();
+    }
+
+    void typeBasedSuggestions(Set<String> result, @NotNull PsiElement typeBase, boolean pascalCase) {
         // for type "ClassType" suggest "type" and "class_type"
         // for type "Type[]" suggest "type_list" or "types"
         // for type "type[?]" suggest "type_array" or "types"
@@ -83,6 +100,10 @@ public class ROSPktNameSuggestionProvider extends PreferrableNameSuggestionProvi
         }
         fullType = fullType.replaceAll("\\[[0-9]*]", "");
         Stack<String> parts = split(fullType);
-        assemble(parts, result, list);
+        if (pascalCase) {
+            assemblePascalCase(parts, result, list);
+        } else {
+            assembleSnakeCase(parts, result, list);
+        }
     }
 }

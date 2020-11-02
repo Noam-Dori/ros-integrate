@@ -61,27 +61,4 @@ public class CamelCaseInspection extends ROSPktInspectionBase {
             }
         }
     }
-
-    /* // if forced rename ever becomes available, here is some starting code to camelcase a string
-    @Contract("null -> null")
-    private static String camelCase(String text) { //notTODO: add grammar processing to improve fix
-        if(text == null) { return null;}
-        if(Character.isLowerCase(text.charAt(0))) {
-            text = Character.toUpperCase(text.charAt(0)) + (text.length() > 1 ? text.substring(1) : "");
-        }
-        for(int i = 0; i < text.length() - 1; i++) {
-            if(text.charAt(i) == '_') {
-                String newText = text.substring(0,i) + Character.toUpperCase(text.charAt(i + 1));
-                if (i < text.length() - 2) {text = newText + text.substring(i + 2);}
-                else {text = newText;}
-            }
-            if(Character.isDigit(text.charAt(i)) && Character.isLowerCase(text.charAt(i + 1))) {
-                String newText = text.substring(0,i + 1) + Character.toUpperCase(text.charAt(i + 1));
-                if (i < text.length() - 2) {text = newText + text.substring(i + 2);}
-                else {text = newText;}
-            }
-        }
-        return text;
-    }
-    */
 }
