@@ -1,4 +1,4 @@
-package ros.integrate.pkt.dialogue;
+package ros.integrate.pkt.dialog;
 
 import com.intellij.ide.util.DirectoryUtil;
 import com.intellij.openapi.actionSystem.ActionManager;
@@ -15,12 +15,14 @@ import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.TextComponentAccessor;
 import com.intellij.openapi.util.Disposer;
+import com.intellij.openapi.util.Pair;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.refactoring.RefactoringBundle;
 import com.intellij.refactoring.copy.CopyFilesOrDirectoriesDialog;
 import com.intellij.refactoring.util.CommonRefactoringUtil;
+import com.intellij.spellchecker.SpellCheckerManager;
 import com.intellij.ui.DocumentAdapter;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.RecentsManager;
@@ -33,54 +35,69 @@ import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import ros.integrate.pkt.annotate.ROSPktTypeAnnotator;
-import ros.integrate.pkt.inspection.CamelCaseInspection;
 import ros.integrate.pkg.ROSPackageManager;
 import ros.integrate.pkg.psi.ROSPackage;
 import ros.integrate.pkg.psi.impl.ROSSourcePackage;
+import ros.integrate.pkt.annotate.ROSPktTypeAnnotator;
+import ros.integrate.pkt.inspection.CamelCaseInspection;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
-import java.awt.*;
 import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 /**
- * the user interface dialogue that allows the user to fill information used when creating a new message type.
+ * the user interface dialog that allows the user to fill information used when creating a new message type.
  * @author Noam Dori
  */
-public class NewROSMsgDialogue extends DialogWrapper {
-    // TODO: 8/29/2018 add error annotation for illegal message types somehow. spelling would be nice too
+public class NewROSMsgDialog extends DialogWrapper {
 
     private final String RECENT_KEYS = "NewMsg.RECENT_KEYS";
 
-    private final JBTextField msgNameField = new MyTextField();
+    private final JBTextField msgNameField = new JBTextField();
     private final JBLabel msgNameTooltip = createToolTip();
     private final JLabel msgNameLabel = new JLabel("Name:"),
             targetDirLabel = new JBLabel("Destination Folder:");
     private final TextFieldWithHistoryWithBrowseButton targetDirField = new TextFieldWithHistoryWithBrowseButton();
     private PsiDirectory targetDir;
-    private final Project prj;
+    private final Project project;
+    @NotNull
+    private static final List<BiFunction<String, Project, Pair<String, JBColor>>> tooltips = getTooltipGenerators();
+
+    @NotNull
+    private static List<BiFunction<String, Project, Pair<String, JBColor>>> getTooltipGenerators() {
+        List<BiFunction<String, Project, Pair<String, JBColor>>> ret = new LinkedList<>();
+        ret.add((text, project) -> Optional.ofNullable(ROSPktTypeAnnotator.getIllegalTypeMessage(text, true))
+                .map(message -> new Pair<>(message, JBColor.RED)).orElse(null));
+        ret.add((text, project) -> Optional.ofNullable(CamelCaseInspection.getUnorthodoxTypeMessage(text, true))
+                .map(message -> new Pair<>(message, new JBColor(0xC4A000,0xEFBF6A))).orElse(null));
+        ret.add((text, project) -> SpellCheckerManager.getInstance(project).hasProblem(text) ?
+                new Pair<>("Typo: In word '" + text + "'", new JBColor(0x659C6B, 0xB0D1AB)) : null);
+        ret.add((text, project) -> new Pair<>(" ", JBColor.BLACK));
+        return ret;
+    }
 
     /**
      * construct the dialogue
-     * @param prj the project this dialog belongs to
+     * @param project the project this dialog belongs to
      * @param suggestedPkg the initial package the interface should suggest to place the message in
      * @param suggestedName the initial name this message should have.
      *                      This can still be changed by the user in the dialogue
-     * @param origFile the original file that triggered the dialogue
+     * @param callingFile the original file that triggered the dialogue
      */
-    public NewROSMsgDialogue(@NotNull Project prj, @Nullable ROSPackage suggestedPkg, @Nullable String suggestedName,
-                             @NotNull PsiFile origFile) {
-        super(prj);
-        this.prj = prj;
+    public NewROSMsgDialog(@NotNull Project project, @Nullable ROSPackage suggestedPkg, @Nullable String suggestedName,
+                           @NotNull PsiFile callingFile) {
+        super(project);
+        this.project = project;
 
         targetDir = suggestedPkg == null || !suggestedPkg.isEditable() || suggestedPkg.getMsgRoot() == null ?
-                origFile.getContainingDirectory() : suggestedPkg.getMsgRoot();
+                callingFile.getContainingDirectory() : suggestedPkg.getMsgRoot();
         if (targetDir == null) {
-            targetDir = prj.getService(ROSPackageManager.class).getAllPackages()
+            targetDir = project.getService(ROSPackageManager.class).getAllPackages()
                     .stream().filter(pkg -> pkg instanceof ROSSourcePackage)
                     .collect(Collectors.toList()).get(0).getMsgRoot();
         }
@@ -88,7 +105,8 @@ public class NewROSMsgDialogue extends DialogWrapper {
         msgNameField.setText(suggestedName);
         msgNameField.getDocument().addDocumentListener(new DocumentAdapter() {
             @Override
-            protected void textChanged(@NotNull DocumentEvent e) { validateOKButton(); updateMsgNameTooltip();
+            protected void textChanged(@NotNull DocumentEvent e) {
+                validateOKButton(); updateMsgNameTooltip();
             }
         });
 
@@ -99,32 +117,32 @@ public class NewROSMsgDialogue extends DialogWrapper {
     @Nullable
     @Override
     protected JComponent createCenterPanel() {
-        return new JPanel(new BorderLayout());
-    }
-
-    @Nullable
-    @Override
-    protected JComponent createNorthPanel() {
-
         // folder browser history
         FileChooserDescriptor descriptor = FileChooserDescriptorFactory.createSingleFolderDescriptor();
-        targetDirField.addBrowseFolderListener("Choose Target Directory",
-                "The ROS Message file will be created here",
-                prj, descriptor, TextComponentAccessor.TEXT_FIELD_WITH_HISTORY_WHOLE_TEXT);
-
-        List<String> recentEntries = RecentsManager.getInstance(prj).getRecentEntries(RECENT_KEYS);
-        if (recentEntries == null) {
-            recentEntries = new LinkedList<>();
-        }
         String curDir = targetDir.getVirtualFile().getPath();
-        recentEntries.remove(curDir); // doing this and the line below will move curDir to the top regardless if it exists or not
-        recentEntries.add(0,curDir);
-        targetDirField.getChildComponent().setHistory(recentEntries);
 
-        // add current PSI dir as current selection
+        installHistory(descriptor, curDir);
+        // add current PSI dir as current text
         targetDirField.getChildComponent().setText(curDir);
 
-        // folder text field
+        installFileCompletion(descriptor);
+
+        String shortcutText = KeymapUtil.getFirstKeyboardShortcutText(
+                ActionManager.getInstance().getAction(IdeActions.ACTION_CODE_COMPLETION));
+
+        validateOKButton();
+        updateMsgNameTooltip();
+        // grand return
+        return FormBuilder.createFormBuilder()
+                .addLabeledComponent(msgNameLabel,msgNameField)
+                .addComponentToRightColumn(msgNameTooltip,1)
+                .addComponent(targetDirLabel)
+                .addComponent(targetDirField)
+                .addTooltip(RefactoringBundle.message("path.completion.shortcut", shortcutText))
+                .getPanel();
+    }
+
+    private void installFileCompletion(FileChooserDescriptor descriptor) {
         final JTextField textField = targetDirField.getChildComponent().getTextEditor();
         FileChooserFactory.getInstance().installFileCompletion(textField, descriptor, true, getDisposable());
         textField.getDocument().addDocumentListener(new DocumentAdapter() {
@@ -135,28 +153,21 @@ public class NewROSMsgDialogue extends DialogWrapper {
         });
         targetDirField.setTextFieldPreferredWidth(CopyFilesOrDirectoriesDialog.MAX_PATH_LENGTH);
 
-        // autocompletion
-        // FIXME: 8/14/2018 the autocompletion never worked. look @ MoveFilesOrDirectoriesDialog for reference
-        FileChooserFactory.getInstance().installFileCompletion(textField, descriptor, true, getDisposable());
-        textField.getDocument().addDocumentListener(new DocumentAdapter() {
-            @Override
-            protected void textChanged(@NotNull DocumentEvent e) {
-                validateOKButton();
-            }
-        });
         Disposer.register(getDisposable(), targetDirField);
-        String shortcutText = KeymapUtil.getFirstKeyboardShortcutText(
-                ActionManager.getInstance().getAction(IdeActions.ACTION_CODE_COMPLETION));
+    }
 
-        validateOKButton();
-        updateMsgNameTooltip();
-        // grand return
-        return FormBuilder.createFormBuilder()
-                .addLabeledComponent(msgNameLabel,msgNameField)
-                .addComponentToRightColumn(msgNameTooltip,1)
-                .addLabeledComponentFillVertically(targetDirLabel.getText(),targetDirField)
-                .addTooltip(RefactoringBundle.message("path.completion.shortcut", shortcutText))
-                .getPanel();
+    void installHistory(FileChooserDescriptor descriptor, String currentEntry) {
+        targetDirField.addBrowseFolderListener("Choose Target Directory",
+                "The ROS Message file will be created here",
+                project, descriptor, TextComponentAccessor.TEXT_FIELD_WITH_HISTORY_WHOLE_TEXT);
+
+        List<String> recentEntries = Optional.ofNullable(RecentsManager.getInstance(project).getRecentEntries(RECENT_KEYS))
+                        .orElse(new LinkedList<>());
+
+        // moves the current entry to the top of the history list
+        recentEntries.remove(currentEntry);
+        recentEntries.add(0,currentEntry);
+        targetDirField.getChildComponent().setHistory(recentEntries);
     }
 
     @NotNull
@@ -173,18 +184,13 @@ public class NewROSMsgDialogue extends DialogWrapper {
     }
 
     private void updateMsgNameTooltip() {
-        String message = ROSPktTypeAnnotator.getIllegalTypeMessage(msgNameField.getText(),true);
-        if (message == null) {
-            message = CamelCaseInspection.getUnorthodoxTypeMessage(msgNameField.getText(),true);
-            if (message == null) {
-                msgNameTooltip.setText(" ");
-            } else {
-                msgNameTooltip.setForeground(new JBColor(0xC4A000,0xEFBF6A));
-                msgNameTooltip.setText(message);
+        for (BiFunction<String, Project, Pair<String, JBColor>> tooltip : tooltips) {
+            Pair<String, JBColor> result = tooltip.apply(msgNameField.getText(), project);
+            if (result != null) {
+                msgNameTooltip.setForeground(result.second);
+                msgNameTooltip.setText(result.first);
+                break;
             }
-        } else {
-            msgNameTooltip.setForeground(JBColor.RED);
-            msgNameTooltip.setText(message);
         }
     }
 
@@ -192,19 +198,20 @@ public class NewROSMsgDialogue extends DialogWrapper {
     protected void doOKAction() {
 
         // adds history
-        RecentsManager.getInstance(prj).registerRecentEntry(RECENT_KEYS, targetDirField.getChildComponent().getText());
+        RecentsManager.getInstance(project).registerRecentEntry(RECENT_KEYS, targetDirField.getChildComponent().getText());
 
-        if (DumbService.isDumb(prj)) {
-            Messages.showMessageDialog(prj, "Move refactoring is not available while indexing is in progress", "Indexing", null);
+        if (DumbService.isDumb(project)) {
+            Messages.showMessageDialog(project,
+                    "Move refactoring is not available while indexing is in progress", "Indexing", null);
             return;
         }
 
         // sets targetDir to chosen dir
-        CommandProcessor.getInstance().executeCommand(prj, () -> {
+        CommandProcessor.getInstance().executeCommand(project, () -> {
             final Runnable action = () -> {
                 String directoryName = targetDirField.getChildComponent().getText().replace(File.separatorChar, '/');
                 try {
-                    targetDir = DirectoryUtil.mkdirs(PsiManager.getInstance(prj), directoryName);
+                    targetDir = DirectoryUtil.mkdirs(PsiManager.getInstance(project), directoryName);
                 }
                 catch (IncorrectOperationException e) {
                     // ignore
@@ -214,7 +221,7 @@ public class NewROSMsgDialogue extends DialogWrapper {
             ApplicationManager.getApplication().runWriteAction(action);
             if (targetDir == null) {
                 CommonRefactoringUtil.showErrorMessage(getTitle(),
-                        RefactoringBundle.message("cannot.create.directory"), null, prj);
+                        RefactoringBundle.message("cannot.create.directory"), null, project);
                 return;
             }
 
@@ -234,18 +241,5 @@ public class NewROSMsgDialogue extends DialogWrapper {
      */
     public PsiDirectory getDirectory() {
         return targetDir;
-    }
-
-    /**
-     * specific implementation of a text field. This has a custom width
-     */
-    private static class MyTextField extends JBTextField {
-        @Override
-        public Dimension getPreferredSize() {
-            Dimension size = super.getPreferredSize();
-            FontMetrics fontMetrics = getFontMetrics(getFont());
-            size.width = fontMetrics.charWidth('a') * 40;
-            return size;
-        }
     }
 }

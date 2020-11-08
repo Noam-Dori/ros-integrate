@@ -199,10 +199,10 @@ public class ROSPktTypeAnnotator extends ROSPktAnnotatorBase {
         }
         if (!fieldType.matches("[a-zA-Z][a-zA-Z0-9_]*" + (inProject ? "" : "/?") + "[a-zA-Z0-9_]*")) {
             if (fieldType.matches("[0-9/_].*")) {
-                return "Field types must start with a letter, not a number, underscore, or slash";
+                return "Field types must start with a letter";
             } else if (fieldType.matches(".*/.*" + (inProject ? "" : "/" + ".*"))) {
                 return inProject ? "Project messages cannot be placed within packages"
-                        : "Messages cannot have a sub-package, therefore field types may use only 1 slash";
+                        : "Field types may use 1 slash at most";
             } else {
                 return "Field types may only contain alphanumeric characters or underscores";
             }

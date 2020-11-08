@@ -14,7 +14,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.Contract;
-import ros.integrate.pkt.dialogue.NewROSMsgDialogue;
+import ros.integrate.pkt.dialog.NewROSMsgDialog;
 import ros.integrate.pkt.file.ROSMsgFileType;
 import ros.integrate.pkt.psi.ROSPktElementFactory;
 import ros.integrate.pkt.psi.ROSMsgFile;
@@ -67,7 +67,7 @@ public class AddROSMsgQuickFix extends BaseIntentionAction {
         ROSPackageManager manager = project.getService(ROSPackageManager.class);
         ROSPackage pkg = manager.findPackage(fullMsgName.first);
 
-        NewROSMsgDialogue dialogue = new NewROSMsgDialogue(project, pkg, fullMsgName.second, file);
+        NewROSMsgDialog dialogue = new NewROSMsgDialog(project, pkg, fullMsgName.second, file);
         dialogue.show();
         if (dialogue.getExitCode() != DialogWrapper.OK_EXIT_CODE) {
             return;
