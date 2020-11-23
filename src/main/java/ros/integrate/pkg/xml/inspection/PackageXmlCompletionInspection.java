@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PackageXmlCompletionInspection extends LocalInspectionTool {
-    public ResolutionStrategy selectedStrategy = ResolutionStrategy.MANUAL_FIX;
+    public ResolutionStrategy selectedStrategy = ResolutionStrategy.AUTO_FIX;
 
     private enum ResolutionStrategy {
         AUTO_FIX,

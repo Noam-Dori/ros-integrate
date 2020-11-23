@@ -14,7 +14,7 @@ public class VersionRepairUtil {
      * @return the valid version string containing the data of the broken string
      */
     @NotNull
-    static String repairVersion(@Nullable String brokenVersion) {
+    public static String repairVersion(@Nullable String brokenVersion) {
         if (brokenVersion == null) {
             return "1.0.0";
         }

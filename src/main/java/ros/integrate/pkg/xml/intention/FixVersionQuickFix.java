@@ -26,13 +26,6 @@ public class FixVersionQuickFix extends AddElementQuickFix {
         setText(prefix + " package version");
     }
 
-    @Nls(capitalization = Nls.Capitalization.Sentence)
-    @NotNull
-    @Override
-    public String getFamilyName() {
-        return "ROS XML";
-    }
-
     @Override
     public boolean isAvailable(@NotNull Project project, Editor editor, PsiFile file) {
         return true;
