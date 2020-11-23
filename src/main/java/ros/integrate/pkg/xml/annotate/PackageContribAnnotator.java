@@ -41,19 +41,6 @@ class PackageContribAnnotator {
     }
 
     /**
-     * annotates package that have no maintainers as errors.
-     */
-    void annNoMaintainers() {
-        if (maintainers.isEmpty()) {
-            holder.newAnnotation(HighlightSeverity.ERROR, "Package should have at least one maintainer.")
-                    .range(maintainerTr.get(0))
-                    .withFix(new AddMaintainerQuickFix(pkgXml))
-                    .withFix(new DeclareOrphanQuickFix(pkgXml))
-                    .create();
-        }
-    }
-
-    /**
      * annotates maintainer tags that are either:
      * <ul>
      *     <li>missing email</li>

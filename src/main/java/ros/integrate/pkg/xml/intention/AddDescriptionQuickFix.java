@@ -1,14 +1,11 @@
 package ros.integrate.pkg.xml.intention;
 
-import com.intellij.codeInsight.intention.impl.BaseIntentionAction;
 import com.intellij.openapi.editor.Caret;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiFile;
-import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.xml.ROSPackageXml;
 
@@ -16,8 +13,7 @@ import ros.integrate.pkg.xml.ROSPackageXml;
  * an intention that adds a description tag to a package.xml
  * @author Noam Dori
  */
-public class AddDescriptionQuickFix extends BaseIntentionAction {
-    private final ROSPackageXml pkgXml;
+public class AddDescriptionQuickFix extends AddElementQuickFix {
 
     /**
      * construct a new intention
@@ -25,14 +21,7 @@ public class AddDescriptionQuickFix extends BaseIntentionAction {
      */
     @Contract(pure = true)
     public AddDescriptionQuickFix(ROSPackageXml pkgXml) {
-        this.pkgXml = pkgXml;
-    }
-
-    @Nls(capitalization = Nls.Capitalization.Sentence)
-    @NotNull
-    @Override
-    public String getFamilyName() {
-        return "ROS XML";
+        super(pkgXml);
     }
 
     @NotNull
@@ -46,8 +35,7 @@ public class AddDescriptionQuickFix extends BaseIntentionAction {
         return pkgXml.getDescription() == null;
     }
 
-    @Override
-    public void invoke(@NotNull Project project, @NotNull Editor editor, PsiFile file) throws IncorrectOperationException {
+    void doFix(@NotNull Editor editor) {
         pkgXml.setDescription("\nPackage description here\n");
         TextRange range = pkgXml.getDescriptionTextRange();
         Caret caret = editor.getCaretModel().getCurrentCaret();

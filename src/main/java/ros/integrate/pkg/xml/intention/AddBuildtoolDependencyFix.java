@@ -1,11 +1,9 @@
 package ros.integrate.pkg.xml.intention;
 
-import com.intellij.codeInsight.intention.impl.BaseIntentionAction;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.IncorrectOperationException;
-import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.psi.ROSPackage;
 import ros.integrate.pkg.xml.DependencyType;
@@ -16,23 +14,14 @@ import ros.integrate.pkg.xml.VersionRange;
  * an intention that adds a buildtool_depend tag to a package.xml
  * @author Noam Dori
  */
-public class AddBuildtoolDependencyFix extends BaseIntentionAction {
-    @NotNull
-    private final ROSPackageXml pkgXml;
+public class AddBuildtoolDependencyFix extends AddElementQuickFix {
 
     /**
      * construct a new intention
      * @param pkgXml the relevant package.xml file
      */
     public AddBuildtoolDependencyFix(@NotNull ROSPackageXml pkgXml) {
-        this.pkgXml = pkgXml;
-    }
-
-    @Nls(capitalization = Nls.Capitalization.Sentence)
-    @NotNull
-    @Override
-    public String getFamilyName() {
-        return "ROS XML";
+        super(pkgXml);
     }
 
     @NotNull
@@ -47,7 +36,7 @@ public class AddBuildtoolDependencyFix extends BaseIntentionAction {
     }
 
     @Override
-    public void invoke(@NotNull Project project, @NotNull Editor editor, PsiFile file) throws IncorrectOperationException {
+    public void doFix(@NotNull Editor editor) throws IncorrectOperationException {
         pkgXml.addDependency(DependencyType.BUILDTOOL, ROSPackage.ORPHAN, VersionRange.any(), null, false);
     }
 }

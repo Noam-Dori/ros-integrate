@@ -7,7 +7,6 @@ import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.xml.ROSPackageXml;
 import ros.integrate.pkg.xml.ROSPackageXml.License;
 import ros.integrate.pkg.xml.TagTextRange;
-import ros.integrate.pkg.xml.intention.AddLicenceQuickFix;
 import ros.integrate.pkg.xml.intention.FixLicenseQuickFix;
 import ros.integrate.pkg.xml.intention.RemoveLicenseQuickFix;
 import ros.integrate.pkg.xml.intention.SplitLicenseQuickFix;
@@ -38,18 +37,6 @@ class PackageLicenseAnnotator {
         this.holder = holder;
         licenses = pkgXml.getLicences();
         licenseTrs = pkgXml.getLicenceTextRanges();
-    }
-
-    /**
-     * annotates packages with no license tags
-     */
-    void annNoLicenses() {
-        if (licenses.isEmpty()) {
-            holder.newAnnotation(HighlightSeverity.ERROR, "Package must have at least one licence.")
-                    .range(licenseTrs.get(0))
-                    .withFix(new AddLicenceQuickFix(pkgXml))
-                    .create();
-        }
     }
 
     /**

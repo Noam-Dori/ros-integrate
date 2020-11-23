@@ -58,25 +58,20 @@ public class PackageXmlAnnotator implements Annotator {
             }
 
             PackageIdAnnotator idAnn = new PackageIdAnnotator(pkgXml, holder);
-            idAnn.annNoName();
             idAnn.annNameNotLowercase();
             idAnn.annPkgNameMatch();
-            idAnn.annNoVersion();
             idAnn.annBadVersion();
             idAnn.annBadVersionCompatibility();
             idAnn.annCompatibilityHigherThanVersion();
-            idAnn.annNoDescription();
             idAnn.annTooManyNames();
             idAnn.annTooManyVersions();
             idAnn.annTooManyDescriptions();
 
             PackageLicenseAnnotator licAnn = new PackageLicenseAnnotator(pkgXml, holder);
-            licAnn.annNoLicenses();
             licAnn.annBadLicenses();
             licAnn.annTodoLicense();
 
             PackageContribAnnotator contribAnn = new PackageContribAnnotator(pkgXml, holder);
-            contribAnn.annNoMaintainers();
             contribAnn.annBadMaintainer();
             contribAnn.annBadAuthor();
 
@@ -105,7 +100,6 @@ public class PackageXmlAnnotator implements Annotator {
             depAnn.annInvalidDependencyVersionAttr();
             depAnn.annConflictingVersionAttr();
             depAnn.annIgnoredCondition();
-            depAnn.annNoBuildtoolDependency();
 
             PackageExportAnnotator expAnn = new PackageExportAnnotator(pkgXml, holder);
             expAnn.annEmptyMessageGenerator();

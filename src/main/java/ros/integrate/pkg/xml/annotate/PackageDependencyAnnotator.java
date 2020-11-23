@@ -244,15 +244,4 @@ class PackageDependencyAnnotator {
         }
     }
 
-    /**
-     * annotates packages that no no buildtool_depend tags.
-     */
-    public void annNoBuildtoolDependency() {
-        if (pkgXml.getDependencies(DependencyType.BUILDTOOL).isEmpty()) {
-            holder.newAnnotation(HighlightSeverity.ERROR, "Package must include at least one buildtool dependency.")
-                    .range(pkgXml.getRootTextRange())
-                    .withFix(new AddBuildtoolDependencyFix(pkgXml))
-                    .create();
-        }
-    }
 }

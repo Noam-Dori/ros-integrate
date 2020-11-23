@@ -22,9 +22,9 @@ class PackageIdAnnotator {
     @NotNull
     private final AnnotationHolder holder;
     @NotNull
-    private final TagTextRange nameTr, versionTr, descriptionTr;
+    private final TagTextRange nameTr, versionTr;
     @Nullable
-    private final String name, description;
+    private final String name;
     @Nullable
     private final ROSPackageXml.Version version;
     private final int format;
@@ -41,25 +41,11 @@ class PackageIdAnnotator {
         this.holder = holder;
         nameTr = pkgXml.getNameTextRange();
         versionTr = pkgXml.getVersionTextRange();
-        descriptionTr = pkgXml.getDescriptionTextRange();
         name = pkgXml.getPkgName();
         version = pkgXml.getVersion();
-        description = pkgXml.getDescription();
         format = pkgXml.getFormat();
     }
 
-
-    /**
-     * annotates packages that have no name tag
-     */
-    void annNoName() {
-        if (name == null) {
-            holder.newAnnotation(HighlightSeverity.ERROR, "Package must give a name to the package")
-                    .range(nameTr)
-                    .withFix(new FixNameQuickFix(pkgXml, "Add"))
-                    .create();
-        }
-    }
 
     /**
      * annotates tags with names that are not lower case
@@ -77,22 +63,10 @@ class PackageIdAnnotator {
      * annotates name tags that do not match the name of their parent directory
      */
     void annPkgNameMatch() {
-        if (!pkgXml.getPackage().getName().equals(name)) {
+        if (name != null && !pkgXml.getPackage().getName().equals(name)) {
             holder.newAnnotation(HighlightSeverity.ERROR, "Package name should match its parent directory")
                     .range(nameTr.value())
                     .withFix(new FixNameQuickFix(pkgXml, "Fix"))
-                    .create();
-        }
-    }
-
-    /**
-     * annotates packages that have no version
-     */
-    void annNoVersion() {
-        if (version == null) {
-            holder.newAnnotation(HighlightSeverity.ERROR, "Package must have a version.")
-                    .range(versionTr)
-                    .withFix(new FixVersionQuickFix(pkgXml, "Add"))
                     .create();
         }
     }
@@ -118,18 +92,6 @@ class PackageIdAnnotator {
             holder.newAnnotation(HighlightSeverity.ERROR, "Invalid version compatibility: versions should be written in the form \"NUMBER.NUMBER.NUMBER\"")
                     .range(versionTr.attrValue("compatibility"))
                     .withFix(new FixVersionQuickFix(pkgXml, "Fix"))
-                    .create();
-        }
-    }
-
-    /**
-     * annotates packages that have no description tag
-     */
-    void annNoDescription() {
-        if (description == null) {
-            holder.newAnnotation(HighlightSeverity.ERROR, "Package must have a description.")
-                    .range(descriptionTr)
-                    .withFix(new AddDescriptionQuickFix(pkgXml))
                     .create();
         }
     }
