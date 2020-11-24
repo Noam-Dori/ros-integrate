@@ -34,7 +34,7 @@ public class AddLicenseQuickFix extends AddElementQuickFix {
     }
 
     void doFix(@NotNull Editor editor) {
-        pkgXml.addLicence("TODO", null);
+        pkgXml.addLicense("TODO", null);
         TextRange range = pkgXml.getLicenceTextRanges().get(0);
         Caret caret = editor.getCaretModel().getCurrentCaret();
         caret.moveToOffset(range.getStartOffset());

@@ -103,7 +103,7 @@ public class ReformatPackageXmlFix extends BaseIntentionAction implements LocalQ
         version.ifPresent(pkgXml::setVersion);
         description.ifPresent(pkgXml::setDescription);
         maintainers.forEach(maintainer -> pkgXml.addMaintainer(maintainer.getName(), maintainer.getEmail()));
-        licenses.forEach(license -> pkgXml.addLicence(license.getValue(), license.getFile()));
+        licenses.forEach(pkgXml::addLicense);
         urls.forEach(url -> pkgXml.addURL(url.first, url.second));
         authors.forEach(author -> pkgXml.addAuthor(author.getName(), author.getEmail().isEmpty() ? null :
                 author.getEmail()));

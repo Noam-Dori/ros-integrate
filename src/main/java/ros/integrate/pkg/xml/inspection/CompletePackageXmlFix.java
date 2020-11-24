@@ -4,16 +4,18 @@ import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.codeInspection.util.IntentionFamilyName;
 import com.intellij.codeInspection.util.IntentionName;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.DialogWrapper;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkg.psi.ROSPackage;
 import ros.integrate.pkg.xml.DependencyType;
+import ros.integrate.pkg.xml.PackageXmlUtil;
 import ros.integrate.pkg.xml.ROSPackageXml;
 import ros.integrate.pkg.xml.VersionRange;
+import ros.integrate.pkg.xml.ui.PackageXmlDialog;
 import ros.integrate.pkg.xml.intention.VersionRepairUtil;
-
-import java.util.List;
-
 public class CompletePackageXmlFix implements LocalQuickFix {
     private final boolean withDialog;
     @NotNull
@@ -38,40 +40,53 @@ public class CompletePackageXmlFix implements LocalQuickFix {
 
     @Override
     public void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor) {
-        // collect relevant information
-        int format = pkgXml.getFormat();
-        String name = pkgXml.getPkgName(),
-                description = pkgXml.getDescription();
-        ROSPackageXml.Version version = pkgXml.getVersion();
-        List<ROSPackageXml.Contributor> maintainers = pkgXml.getMaintainers();
-        List<ROSPackageXml.License> licenses = pkgXml.getLicences();
-        List<ROSPackageXml.Dependency> buildtoolDependencies = pkgXml.getDependencies(DependencyType.BUILDTOOL);
+        if (withDialog) {
+            doDialogFix(project);
+        } else {
+            doAutoFix();
+        }
+    }
 
-        if (format == 0) {
+    private void doDialogFix(Project project) {
+        PackageXmlDialog dialog = new PackageXmlDialog(project, pkgXml);
+        ApplicationManager.getApplication().invokeLater(() -> {
+            dialog.show();
+            WriteCommandAction.runWriteCommandAction(project, () -> {
+                if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
+                    PackageXmlUtil.overwrite(dialog, pkgXml);
+                }
+            });
+        });
+
+    }
+
+    private void doAutoFix() {
+
+        if (pkgXml.getFormat() == 0) {
             pkgXml.setFormat(ROSPackageXml.getLatestFormat());
         }
 
-        if (name == null) {
+        if (pkgXml.getPkgName() == null) {
             pkgXml.setPkgName(pkgXml.getPackage().getName());
         }
 
-        if (version == null) {
+        if (pkgXml.getVersion() == null) {
             pkgXml.setVersion(new ROSPackageXml.Version(VersionRepairUtil.repairVersion(null), null));
         }
 
-        if (description == null) {
+        if (pkgXml.getDescription() == null) {
             pkgXml.setDescription("\nPackage description here\n");
         }
 
-        if (maintainers.isEmpty()) {
+        if (pkgXml.getMaintainers().isEmpty()) {
             pkgXml.addMaintainer("user","user@todo.todo");
         }
 
-        if (licenses.isEmpty()) {
-            pkgXml.addLicence("TODO", null);
+        if (pkgXml.getLicences().isEmpty()) {
+            pkgXml.addLicense("TODO", null);
         }
 
-        if (buildtoolDependencies.isEmpty()) {
+        if (pkgXml.getDependencies(DependencyType.BUILDTOOL).isEmpty()) {
             pkgXml.addDependency(DependencyType.BUILDTOOL, ROSPackage.ORPHAN, VersionRange.any(), null, false);
         }
     }

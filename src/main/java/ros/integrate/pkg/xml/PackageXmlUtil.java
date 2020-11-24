@@ -19,12 +19,15 @@ import ros.integrate.pkg.psi.ROSPackage;
 import ros.integrate.pkg.xml.condition.psi.ROSCondition;
 import ros.integrate.pkg.xml.condition.psi.ROSCondition.Conditioned;
 import ros.integrate.pkg.xml.condition.psi.ROSConditionElementFactory;
+import ros.integrate.pkg.xml.ui.PackageXmlDialog;
 import ros.integrate.settings.ROSSettings;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -248,5 +251,33 @@ public class PackageXmlUtil {
                 Objects.equals(condL, condR) || // takes care of null and identical conditions
                 (condL != null && condR != null && condL.checkValid() && condR.checkValid()
                         && !condL.evaluate().isEmpty() && !condR.evaluate().isEmpty()); // both conditions eval to true
+    }
+
+    /**
+     * Copies user collected information into the package.xml file.
+     * @param dialog a completed dialog with details about the package.xml
+     * @param pkgXml the package.xml to write the information into
+     */
+    public static void overwrite(@NotNull PackageXmlDialog dialog, @NotNull ROSPackageXml pkgXml) {
+        pkgXml.setFormat(dialog.getFormat());
+        pkgXml.setPkgName(dialog.getName());
+//        pkgXml.setVersion(dialog.getVersion());
+        pkgXml.setDescription(dialog.getDescription());
+//        overwriteList(dialog.getLicenses() ,pkgXml.getLicences().size(), pkgXml::setLicense, pkgXml::addLicense);
+//        overwriteList(dialog.getMaintainers() ,pkgXml.getMaintainers().size(), pkgXml::setMaintainer, pkgXml::addMaintainer);
+//        overwriteList(dialog.getDependencies() ,pkgXml.getDependencies(null).size(), pkgXml::setDependency, pkgXml::addDependency);
+    }
+
+    private static <T> void overwriteList(@NotNull List<T> list, int existing, BiConsumer<Integer, T> set,
+                                          Consumer<T> add) {
+        int id = 0;
+        for (T item : list) {
+            if (id < existing) {
+                set.accept(id, item);
+            } else {
+                add.accept(item);
+            }
+            id++;
+        }
     }
 }

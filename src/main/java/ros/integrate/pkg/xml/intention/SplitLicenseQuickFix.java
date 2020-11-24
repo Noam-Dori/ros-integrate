@@ -55,7 +55,7 @@ public class SplitLicenseQuickFix extends BaseIntentionAction {
         String licenseFile = pkgXml.getLicences().get(id).getFile();
         pkgXml.removeLicense(id);
         for (String license : allLicenses) {
-            pkgXml.addLicence(license, licenseFile);
+            pkgXml.addLicense(license, licenseFile);
         }
     }
 }

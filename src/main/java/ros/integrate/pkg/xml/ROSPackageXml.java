@@ -483,10 +483,18 @@ public interface ROSPackageXml {
 
     /**
      * adds a new license to the package
+     * @param license the new license to add
+     */
+    default void addLicense(@NotNull License license) {
+        addLicense(license.getValue(), license.getFile());
+    }
+
+    /**
+     * adds a new license to the package
      * @param licenseName the name of the new license, use licenses.properties for reference
      * @param file A path relative to the <code>package.xml</code> file containing the full license text.
      */
-    void addLicence(@NotNull String licenseName, @Nullable String file);
+    void addLicense(@NotNull String licenseName, @Nullable String file);
 
     /**
      * adds a url
@@ -504,6 +512,14 @@ public interface ROSPackageXml {
 
     /**
      * adds a new maintainer to the package.
+     * @param contributor the maintainer to add
+     */
+    default void addMaintainer(@NotNull Contributor contributor) {
+        addMaintainer(contributor.name, contributor.email);
+    }
+
+    /**
+     * adds a new maintainer to the package.
      * @param name the name of the maintainer
      * @param email the email of the maintainer
      */
@@ -515,6 +531,14 @@ public interface ROSPackageXml {
      * @param email the email of the author. if null, no email is added.
      */
     void addAuthor(@NotNull String name, @Nullable String email);
+
+    /**
+     * adds a new dependency for this package.
+     * @param dependency the new dependency to add
+     */
+    default void addDependency(@NotNull Dependency dependency) {
+        addDependency(dependency.type, dependency.pkg, dependency.versionRange, dependency.condition, true);
+    }
 
     /**
      * adds a new dependency for this package.

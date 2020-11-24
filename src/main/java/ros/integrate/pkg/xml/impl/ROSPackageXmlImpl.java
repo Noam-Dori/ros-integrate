@@ -310,7 +310,7 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
     }
 
     @Override
-    public void addLicence(@NotNull String licenseName, @Nullable String licenseFile) {
+    public void addLicense(@NotNull String licenseName, @Nullable String licenseFile) {
         if (file.getRootTag() == null) {
             addRootTag();
         }
