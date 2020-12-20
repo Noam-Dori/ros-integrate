@@ -261,7 +261,7 @@ public class PackageXmlUtil {
     public static void overwrite(@NotNull PackageXmlDialog dialog, @NotNull ROSPackageXml pkgXml) {
         pkgXml.setFormat(dialog.getFormat());
         pkgXml.setPkgName(dialog.getName());
-//        pkgXml.setVersion(dialog.getVersion());
+        pkgXml.setVersion(dialog.getVersion());
         pkgXml.setDescription(dialog.getDescription());
 //        overwriteList(dialog.getLicenses() ,pkgXml.getLicences().size(), pkgXml::setLicense, pkgXml::addLicense);
 //        overwriteList(dialog.getMaintainers() ,pkgXml.getMaintainers().size(), pkgXml::setMaintainer, pkgXml::addMaintainer);
