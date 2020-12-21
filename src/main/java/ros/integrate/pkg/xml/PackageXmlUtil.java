@@ -263,7 +263,7 @@ public class PackageXmlUtil {
         pkgXml.setPkgName(dialog.getName());
         pkgXml.setVersion(dialog.getVersion());
         pkgXml.setDescription(dialog.getDescription());
-//        overwriteList(dialog.getLicenses() ,pkgXml.getLicences().size(), pkgXml::setLicense, pkgXml::addLicense);
+        overwriteList(dialog.getLicenses() ,pkgXml.getLicences().size(), pkgXml::setLicense, pkgXml::addLicense);
 //        overwriteList(dialog.getMaintainers() ,pkgXml.getMaintainers().size(), pkgXml::setMaintainer, pkgXml::addMaintainer);
 //        overwriteList(dialog.getDependencies() ,pkgXml.getDependencies(null).size(), pkgXml::setDependency, pkgXml::addDependency);
     }
