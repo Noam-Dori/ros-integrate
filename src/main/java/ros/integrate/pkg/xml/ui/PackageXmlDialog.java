@@ -39,6 +39,9 @@ public class PackageXmlDialog extends DialogWrapper {
     private final LicenseTable licenses = new LicenseTable();
     private final JBLabel licenseLabel = new JBLabel();
 
+    private final MaintainerTable maintainers = new MaintainerTable();
+    private final JBLabel maintainerLabel = new JBLabel();
+
     public PackageXmlDialog(@NotNull Project project, @Nullable ROSPackageXml pkgXml) {
         super(project);
         this.pkgXml = pkgXml;
@@ -56,8 +59,9 @@ public class PackageXmlDialog extends DialogWrapper {
         formatLabel.setText("Format:");
         latestFormatLabel.setText("Use latest format");
         versionLabel.setText("Version:");
-        version.setCompatibilityLabel("compatibility:");
+        version.setCompatibilityLabel("Compatibility:");
         licenseLabel.setText("Licenses:");
+        maintainerLabel.setText("Maintainers:");
 
         Optional<ROSPackageXml> oPkgXml = Optional.ofNullable(pkgXml);
         format.setValue(oPkgXml.map(ROSPackageXml::getFormat).filter(i -> i != 0).orElse(getLatestFormat()));
@@ -67,6 +71,7 @@ public class PackageXmlDialog extends DialogWrapper {
         }
         oPkgXml.map(ROSPackageXml::getVersion).ifPresent(version::setVersion);
         oPkgXml.map(ROSPackageXml::getLicences).ifPresent(licenses::setLicenses);
+        oPkgXml.map(ROSPackageXml::getMaintainers).ifPresent(maintainers::setMaintainers);
         description.setText(oPkgXml.map(ROSPackageXml::getDescription).orElse("\nPackage description here\n"));
         name.setText(oPkgXml.map(ROSPackageXml::getPackage).map(ROSPackage::getName).orElse(""));
         name.setEnabled(!oPkgXml.isPresent());
@@ -87,6 +92,7 @@ public class PackageXmlDialog extends DialogWrapper {
                 .addLabeledComponent(versionLabel, version)
                 .addLabeledComponent(descriptionLabel, new JBScrollPane(description))
                 .addLabeledComponent(licenseLabel, licenses.getComponent())
+                .addLabeledComponent(maintainerLabel, maintainers.getComponent())
                 .getPanel();
     }
 
@@ -145,7 +151,7 @@ public class PackageXmlDialog extends DialogWrapper {
 
     @NotNull
     public List<ROSPackageXml.Contributor> getMaintainers() {
-        return null;
+        return maintainers.getMaintainers();
     }
 
     @NotNull
