@@ -1,16 +1,28 @@
 package ros.integrate.pkg.xml.ui;
 
 import com.intellij.execution.util.ListTableWithButtons;
+import com.intellij.openapi.ui.ComboBox;
 import com.intellij.util.ui.ListTableModel;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import ros.integrate.pkg.xml.ROSLicenses;
 import ros.integrate.pkg.xml.ROSPackageXml.License;
 
+import javax.swing.*;
+import javax.swing.table.TableCellEditor;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class LicenseTable extends ListTableWithButtons<LicenseTable.Entry> {
+    private static final String[] LICENSE_OPTIONS = getLicenseOptions();
+
+    @NotNull
+    @Contract(value = " -> new", pure = true)
+    private static String[] getLicenseOptions() {
+        return ROSLicenses.AVAILABLE_LICENSES.keySet().stream().sorted().toArray(String[]::new);
+    }
+
     /**
      * the physical path. This is the entry row of the table
      */
@@ -69,6 +81,14 @@ public class LicenseTable extends ListTableWithButtons<LicenseTable.Entry> {
             @Override
             public boolean isCellEditable(Entry path) {
                 return true;
+            }
+
+            @NotNull
+            @Override
+            public TableCellEditor getEditor(Entry entry) {
+                ComboBox<String> choices = new ComboBox<>(LICENSE_OPTIONS);
+                choices.setEditable(true);
+                return new DefaultCellEditor(choices);
             }
         }, new ElementsColumnInfoBase<Entry>("file") {
             @Nullable

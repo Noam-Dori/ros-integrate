@@ -43,6 +43,7 @@ public class PackageXmlDialog extends DialogWrapper {
         super(project);
         this.pkgXml = pkgXml;
 
+        //noinspection DialogTitleCapitalization
         setTitle("Complete package.xml");
         init();
     }
@@ -50,13 +51,13 @@ public class PackageXmlDialog extends DialogWrapper {
     @Nullable
     @Override
     protected JComponent createCenterPanel() {
-        nameLabel.setText("name:");
-        descriptionLabel.setText("description:");
-        formatLabel.setText("format:");
-        latestFormatLabel.setText("use latest format");
-        versionLabel.setText("version:");
+        nameLabel.setText("Name:");
+        descriptionLabel.setText("Description:");
+        formatLabel.setText("Format:");
+        latestFormatLabel.setText("Use latest format");
+        versionLabel.setText("Version:");
         version.setCompatibilityLabel("compatibility:");
-        licenseLabel.setText("licenses:");
+        licenseLabel.setText("Licenses:");
 
         Optional<ROSPackageXml> oPkgXml = Optional.ofNullable(pkgXml);
         format.setValue(oPkgXml.map(ROSPackageXml::getFormat).filter(i -> i != 0).orElse(getLatestFormat()));
