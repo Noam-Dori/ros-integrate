@@ -2,6 +2,7 @@ package ros.integrate.pkg.xml.ui;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.ui.DocumentAdapter;
 import com.intellij.ui.components.*;
 import com.intellij.ui.components.fields.IntegerField;
 import com.intellij.util.ui.FormBuilder;
@@ -9,9 +10,11 @@ import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkg.psi.ROSPackage;
+import ros.integrate.pkg.xml.DependencyType;
 import ros.integrate.pkg.xml.ROSPackageXml;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
 import java.awt.*;
 import java.util.List;
 import java.util.Optional;
@@ -42,8 +45,12 @@ public class PackageXmlDialog extends DialogWrapper {
     private final MaintainerTable maintainers = new MaintainerTable();
     private final JBLabel maintainerLabel = new JBLabel();
 
+    private final DependencyTable dependencies;
+    private final JBLabel dependencyLabel = new JBLabel();
+
     public PackageXmlDialog(@NotNull Project project, @Nullable ROSPackageXml pkgXml) {
         super(project);
+        dependencies = new DependencyTable(project, format);
         this.pkgXml = pkgXml;
 
         //noinspection DialogTitleCapitalization
@@ -62,6 +69,7 @@ public class PackageXmlDialog extends DialogWrapper {
         version.setCompatibilityLabel("Compatibility:");
         licenseLabel.setText("Licenses:");
         maintainerLabel.setText("Maintainers:");
+        dependencyLabel.setText("Dependencies:");
 
         Optional<ROSPackageXml> oPkgXml = Optional.ofNullable(pkgXml);
         format.setValue(oPkgXml.map(ROSPackageXml::getFormat).filter(i -> i != 0).orElse(getLatestFormat()));
@@ -72,12 +80,13 @@ public class PackageXmlDialog extends DialogWrapper {
         oPkgXml.map(ROSPackageXml::getVersion).ifPresent(version::setVersion);
         oPkgXml.map(ROSPackageXml::getLicences).ifPresent(licenses::setLicenses);
         oPkgXml.map(ROSPackageXml::getMaintainers).ifPresent(maintainers::setMaintainers);
+        oPkgXml.map(pkgXml -> pkgXml.getDependencies(null)).ifPresent(dependencies::setDependencies);
         description.setText(oPkgXml.map(ROSPackageXml::getDescription).orElse("\nPackage description here\n"));
         name.setText(oPkgXml.map(ROSPackageXml::getPackage).map(ROSPackage::getName).orElse(""));
         name.setEnabled(!oPkgXml.isPresent());
 
         format.setMinValue(1);
-        latestFormat.addChangeListener(status -> {
+        latestFormat.addItemListener(status -> {
             format.setEnabled(!latestFormat.isSelected());
             if (latestFormat.isSelected()) {
                 format.setValue(getLatestFormat());
@@ -86,6 +95,14 @@ public class PackageXmlDialog extends DialogWrapper {
 
         version.installKeyEvents();
 
+        format.getDocument().addDocumentListener(new DocumentAdapter() {
+            @Override
+            protected void textChanged(@NotNull DocumentEvent e) {
+                validateOKButton();
+            }
+        });
+        dependencies.getTableView().getModel().addTableModelListener(e -> validateOKButton());
+
         return FormBuilder.createFormBuilder()
                 .addLabeledComponent(formatLabel, getFormatPanel())
                 .addLabeledComponent(nameLabel, name)
@@ -93,6 +110,7 @@ public class PackageXmlDialog extends DialogWrapper {
                 .addLabeledComponent(descriptionLabel, new JBScrollPane(description))
                 .addLabeledComponent(licenseLabel, licenses.getComponent())
                 .addLabeledComponent(maintainerLabel, maintainers.getComponent())
+                .addLabeledComponent(dependencyLabel, dependencies.getComponent())
                 .getPanel();
     }
 
@@ -156,6 +174,11 @@ public class PackageXmlDialog extends DialogWrapper {
 
     @NotNull
     public List<ROSPackageXml.Dependency> getDependencies() {
-        return null;
+        return dependencies.getDependencies();
+    }
+
+    private void validateOKButton() {
+        setOKActionEnabled(format.getValue() > 0 && dependencies.getDependencies().stream()
+                .anyMatch(dep -> dep.getType() == DependencyType.BUILDTOOL));
     }
 }

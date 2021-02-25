@@ -263,21 +263,27 @@ public class PackageXmlUtil {
         pkgXml.setPkgName(dialog.getName());
         pkgXml.setVersion(dialog.getVersion());
         pkgXml.setDescription(dialog.getDescription());
-        overwriteList(dialog.getLicenses() ,pkgXml.getLicences().size(), pkgXml::setLicense, pkgXml::addLicense);
-        overwriteList(dialog.getMaintainers() ,pkgXml.getMaintainers().size(), pkgXml::setMaintainer, pkgXml::addMaintainer);
-//        overwriteList(dialog.getDependencies() ,pkgXml.getDependencies(null).size(), pkgXml::setDependency, pkgXml::addDependency);
+        overwriteList(dialog.getLicenses() ,pkgXml.getLicences(), pkgXml::setLicense, pkgXml::addLicense,
+                pkgXml::removeLicense);
+        overwriteList(dialog.getMaintainers() ,pkgXml.getMaintainers(), pkgXml::setMaintainer, pkgXml::addMaintainer,
+                pkgXml::removeMaintainer);
+        overwriteList(dialog.getDependencies() ,pkgXml.getDependencies(null), pkgXml::setDependency,
+                pkgXml::addDependency, pkgXml::removeDependency);
     }
 
-    private static <T> void overwriteList(@NotNull List<T> list, int existing, BiConsumer<Integer, T> set,
-                                          Consumer<T> add) {
-        int id = 0;
+    private static <T> void overwriteList(@NotNull List<T> list, @NotNull List<T> existing, BiConsumer<Integer, T> set,
+                                          Consumer<T> add, Consumer<Integer> remove) {
+        int id = 0, currentSize = existing.size();
         for (T item : list) {
-            if (id < existing) {
+            if (id < currentSize) {
                 set.accept(id, item);
             } else {
                 add.accept(item);
             }
             id++;
+        }
+        for (; id < currentSize; id++) {
+            remove.accept(id);
         }
     }
 }
