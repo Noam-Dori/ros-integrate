@@ -7,6 +7,8 @@
         <!-- ROS Settings -->
         <projectConfigurable instance="ros.integrate.settings.ROSSettingsPage" groupId="language" id="ROS"
                              displayName="ROS"/>
+        <projectConfigurable instance="ros.integrate.buildtool.ROSProfileSettingsPage" groupId="build" id="ROS.Profiles"
+        displayName="ROS Profiles"/>
         <projectService serviceImplementation="ros.integrate.settings.ROSSettings"/>
     </extensions>
 </idea-plugin>
