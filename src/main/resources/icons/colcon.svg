@@ -1,6 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg"
-     width="32" height="36" viewBox="8 6 32 36">
-  <rect fill="#2980B9" height="36" width="32" x="8" y="6" rx="2"/>
-  <path d="M12 18h16v4h-12v12h12v4h-16z" fill="#ffffff"/>
-  <path d="M20 10h16v20h-16v-4h12v-12h-12z" fill="#ffffff"/>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="12pt" height="13pt" viewBox="0 0 12 13" version="1.1">
+<g id="surface1">
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(16.078431%,50.196078%,72.54902%);fill-opacity:1;" d="M 0.75 0 L 11.25 0 C 11.664062 0 12 0.324219 12 0.722656 L 12 12.277344 C 12 12.675781 11.664062 13 11.25 13 L 0.75 13 C 0.335938 13 0 12.675781 0 12.277344 L 0 0.722656 C 0 0.324219 0.335938 0 0.75 0 Z M 0.75 0 "/>
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(100%,100%,100%);fill-opacity:1;" d="M 1.5 4.332031 L 7.5 4.332031 L 7.5 5.777344 L 3 5.777344 L 3 10.109375 L 7.5 10.109375 L 7.5 11.554688 L 1.5 11.554688 Z M 1.5 4.332031 "/>
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(100%,100%,100%);fill-opacity:1;" d="M 4.5 1.445312 L 10.5 1.445312 L 10.5 8.667969 L 4.5 8.667969 L 4.5 7.222656 L 9 7.222656 L 9 2.890625 L 4.5 2.890625 Z M 4.5 1.445312 "/>
+</g>
 </svg>

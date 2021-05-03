@@ -1,6 +1,7 @@
 package ros.integrate.buildtool;
 
 import com.intellij.openapi.options.SearchableConfigurable;
+import com.intellij.openapi.project.Project;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.util.ui.FormBuilder;
@@ -17,7 +18,22 @@ import java.awt.*;
  * @author Noam Dori
  */
 public class ROSProfileSettingsPage implements SearchableConfigurable {
-    private final SelectableListTable profileList = new SelectableListTable();
+    private final ROSProfiles data;
+    private final SelectableListTable profileList;
+    private final Project project;
+
+    /**
+     * construct a new settings page
+     * @param project the project this settings page belongs to
+     */
+    public ROSProfileSettingsPage(Project project) {
+        this.project = project;
+        data = ROSProfiles.getInstance(project);
+        profileList = new SelectableListTable(data::requestId,
+                id -> data.getProfileProperty(id, ROSProfile::getName),
+                id -> data.getProfileProperty(id, ROSProfile::getIcon));
+    }
+
 
     @NotNull
     @Override

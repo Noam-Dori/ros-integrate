@@ -9,3 +9,4 @@ opencv
 eigen
 metapackage
 ament
+colcon

@@ -10,5 +10,6 @@
         <projectConfigurable instance="ros.integrate.buildtool.ROSProfileSettingsPage" groupId="build" id="ROS.Profiles"
         displayName="ROS Profiles"/>
         <projectService serviceImplementation="ros.integrate.settings.ROSSettings"/>
+        <projectService serviceImplementation="ros.integrate.buildtool.ROSProfiles"/>
     </extensions>
 </idea-plugin>
