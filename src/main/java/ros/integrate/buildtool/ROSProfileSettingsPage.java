@@ -4,10 +4,9 @@ import com.intellij.openapi.options.SearchableConfigurable;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.components.JBLabel;
-import com.intellij.ui.components.JBTextField;
-import com.intellij.util.ui.FormBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import ros.integrate.buildtool.ui.ROSProfileForm;
 import ros.integrate.buildtool.ui.SelectableListTable;
 
 import javax.swing.*;
@@ -23,8 +22,7 @@ import java.util.Map;
 public class ROSProfileSettingsPage implements SearchableConfigurable {
     private final ROSProfiles data;
     private final SelectableListTable profileList;
-    private final Project project;
-    private final Map<Integer, JPanel> profileForms = new HashMap<>();
+    private final Map<Integer, ROSProfileForm> profileForms = new HashMap<>();
     private Integer selectedId = null;
 
     /**
@@ -32,10 +30,9 @@ public class ROSProfileSettingsPage implements SearchableConfigurable {
      * @param project the project this settings page belongs to
      */
     public ROSProfileSettingsPage(Project project) {
-        this.project = project;
         data = ROSProfiles.getInstance(project);
         profileList = new SelectableListTable(data::requestId,
-                id -> data.getProfileProperty(id, ROSProfile::getName),
+                id -> data.getProfileProperty(id, ROSProfile::getGuiName),
                 id -> data.getProfileProperty(id, ROSProfile::getIcon));
     }
 
@@ -91,28 +88,39 @@ public class ROSProfileSettingsPage implements SearchableConfigurable {
         formLayout.insets.left = 10;
         formLayout.insets.top = 5;
 
+        profileList.getTableView().getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         profileList.getTableView().getSelectionModel().addListSelectionListener(e -> {
-            int newId = profileList.getTableView().getRow(e.getFirstIndex());
+            int row = e.getFirstIndex(),
+                    size = profileList.getTableView().getListTableModel().getRowCount();
+            if (size == 0) {
+                if (selectedId != null) {
+                    profileForms.get(selectedId).getPanel().setVisible(false);
+                    detailLabel.setVisible(true);
+                    selectedId = null;
+                }
+                return;
+            }
+            if (row >= size) {
+                row = size - 1;
+            }
+            int newId = profileList.getTableView().getRow(row);
             if (selectedId != null && selectedId.equals(newId)) {
                 return;
             }
-            JPanel formToSelect = profileForms.get(newId);
+            ROSProfileForm formToSelect = profileForms.get(newId);
             if (formToSelect == null) {
-                formToSelect = new FormBuilder()
-                        .addLabeledComponent(new JBLabel("Name:"), new JBTextField())
-                        .addComponent(new JSeparator())
-                        .getPanel();
-                ret.add(formToSelect, formLayout);
+                formToSelect = new ROSProfileForm();
+                ret.add(formToSelect.getPanel(), formLayout);
                 profileForms.put(newId, formToSelect);
-                // TODO: 5/4/2021 read data and load into form
+                formToSelect.loadData(data.getProfile(newId), profileList::refresh);
             }
             if (selectedId != null) {
-                profileForms.get(selectedId).setVisible(false);
+                profileForms.get(selectedId).getPanel().setVisible(false);
             } else {
                 detailLabel.setVisible(false);
             }
             selectedId = newId;
-            formToSelect.setVisible(true);
+            formToSelect.getPanel().setVisible(true);
         });
 
         return ret;
