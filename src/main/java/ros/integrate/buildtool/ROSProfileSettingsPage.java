@@ -33,7 +33,7 @@ public class ROSProfileSettingsPage implements SearchableConfigurable {
         data = ROSProfiles.getInstance(project);
         profileList = new SelectableListTable(data::requestId,
                 id -> data.getProfileProperty(id, ROSProfile::getGuiName),
-                id -> data.getProfileProperty(id, ROSProfile::getIcon));
+                id -> data.getProfileProperty(id, profile -> profile.getGuiBuildtool().getIcon()));
     }
 
 

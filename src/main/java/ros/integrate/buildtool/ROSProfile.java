@@ -1,9 +1,6 @@
 package ros.integrate.buildtool;
 
 import org.jetbrains.annotations.NotNull;
-import ros.integrate.ROSIcons;
-
-import javax.swing.*;
 
 /**
  * stores information about one ROS build profile, independent of the buildtool.
@@ -11,32 +8,46 @@ import javax.swing.*;
  */
 // TODO: 5/4/2021 implement away the mock stuff
 public class ROSProfile {
-    private String name = "mock name";
+    @NotNull
+    private String name = "new profile";
+    @NotNull
+    private ROSBuildTool buildtool = ROSBuildTool.CATKIN_MAKE;
+
+    @NotNull
     private String guiName = name;
+    @NotNull
+    private ROSBuildTool guiBuildtool = buildtool;
 
     @NotNull
     public String getName() {
         return name;
     }
 
+    @NotNull
+    public ROSBuildTool getBuildtool() {
+        return buildtool;
+    }
+
+    @NotNull
     String getGuiName() {
         return guiName;
     }
 
-    @NotNull
-    public Icon getIcon() {
-        return ROSIcons.CATKIN_MAKE;
-    }
-
-    public void setGuiName(String newName) {
+    public void setGuiName(@NotNull String newName) {
         guiName = newName;
     }
 
-    public void setName(String newName) {
-        name = newName;
+    public void save() {
+        name = guiName;
+        buildtool = guiBuildtool;
     }
 
-    public void saveName() {
-        name = guiName;
+    @NotNull
+    public ROSBuildTool getGuiBuildtool() {
+        return guiBuildtool;
+    }
+
+    public void setGuiBuildtool(@NotNull ROSBuildTool newBuildtool) {
+        guiBuildtool = newBuildtool;
     }
 }

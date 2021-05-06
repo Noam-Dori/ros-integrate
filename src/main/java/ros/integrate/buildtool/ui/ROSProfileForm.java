@@ -1,10 +1,12 @@
 package ros.integrate.buildtool.ui;
 
+import com.intellij.openapi.ui.ComboBox;
 import com.intellij.ui.DocumentAdapter;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.util.ui.FormBuilder;
 import org.jetbrains.annotations.NotNull;
+import ros.integrate.buildtool.ROSBuildTool;
 import ros.integrate.buildtool.ROSProfile;
 
 import javax.swing.*;
@@ -20,13 +22,28 @@ public class ROSProfileForm {
     private final JPanel panel;
 
     private final JBTextField name = new JBTextField();
+    private final ComboBox<ROSBuildTool> buildtool = new ComboBox<>(ROSBuildTool.values());
 
     public ROSProfileForm() {
         JBLabel nameLabel = new JBLabel("Name:");
+        JBLabel buildtoolLabel = new JBLabel("Build Tool:");
+
+        buildtool.setEditable(false);
+        buildtool.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public JLabel getListCellRendererComponent(JList<?> list, Object value, int index,
+                                                          boolean isSelected, boolean cellHasFocus) {
+                JLabel ret = (JLabel) super.getListCellRendererComponent(list, value.toString().toLowerCase(),
+                        index, isSelected, cellHasFocus);
+                ret.setIcon(ROSBuildTool.valueOf(value.toString()).getIcon());
+                return ret;
+            }
+        });
 
         panel = new FormBuilder()
                 .addLabeledComponent(nameLabel, name)
                 .addComponent(new JSeparator())
+                .addLabeledComponent(buildtoolLabel, buildtool)
                 .getPanel();
     }
 
@@ -37,6 +54,7 @@ public class ROSProfileForm {
 
     public void loadData(@NotNull ROSProfile profile, Runnable update) {
         name.setText(profile.getName());
+        buildtool.setItem(profile.getBuildtool());
 
         name.getDocument().addDocumentListener(new DocumentAdapter() {
             @Override
@@ -44,6 +62,11 @@ public class ROSProfileForm {
                 profile.setGuiName(name.getText());
                 update.run();
             }
+        });
+
+        buildtool.addItemListener(event -> {
+            profile.setGuiBuildtool(buildtool.getItem());
+            update.run();
         });
     }
 }
