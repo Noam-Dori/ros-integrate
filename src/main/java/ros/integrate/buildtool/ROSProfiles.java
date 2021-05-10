@@ -4,6 +4,8 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -25,18 +27,43 @@ public class ROSProfiles {
         return project.getService(ROSProfiles.class);
     }
 
+    /**
+     * The database. It is important to note that the identifiers are not persistent in any capacity.
+     * Reloading this database will load new identifiers, so no point in storing them.
+     * Store the name of the profile instead.
+     */
+    @NotNull
+    private final Map<Integer, ROSProfile> profiles = new HashMap<>();
+    private int nextId = 0;
+
+    /**
+     * A shortcut operation that gets you a property of the profile with the given ID
+     * @param id the ID of the profile in this database.
+     * @param method the method applied on the profile to get the property
+     * @param <T> the return type of the method
+     * @return the result of applying method on the profile with id ID
+     */
     @Nullable
     public <T> T getProfileProperty(int id, Function<ROSProfile, T> method) {
         return Optional.ofNullable(getProfile(id)).map(method).orElse(null);
     }
 
+    /**
+     * lookup the profile with the corresponding ID
+     * @param id the ID to query from the database
+     * @return <code>null</code> if there is no profile with the given ID, otherwise, the profile with the ID provided
+     */
+    @Nullable
     public ROSProfile getProfile(int id) {
-        return mockProfile;
+        return profiles.get(id);
     }
 
+    /**
+     * generate a new profile and request its identifier
+     * @return the ID of the newly generated profile
+     */
     public Integer requestId() {
-        return 1;
+        profiles.put(nextId, new ROSProfile());
+        return nextId++;
     }
-
-    private final ROSProfile mockProfile = new ROSProfile();
 }

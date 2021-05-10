@@ -23,7 +23,7 @@ public class ROSProfileForm {
     @NotNull
     private final JPanel panel;
 
-    private final JBTextField name = new JBTextField();
+    private final JBTextField name = new FocusTextField();
     private final ComboBox<ROSBuildTool> buildtool = new ComboBox<>(ROSBuildTool.values());
     private final JBCheckBox doInstall = new JBCheckBox("Run install step");
     private final ComboBox<Boolean> doIsolation = new ComboBox<>(new Boolean[]{true, false});

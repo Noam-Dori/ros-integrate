@@ -11,8 +11,10 @@ import ros.integrate.buildtool.ui.SelectableListTable;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * the user interface that allows the user to add,get, or modify the project's ROS buildtool configurations,
@@ -90,7 +92,7 @@ public class ROSProfileSettingsPage implements SearchableConfigurable {
 
         profileList.getTableView().getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         profileList.getTableView().getSelectionModel().addListSelectionListener(e -> {
-            int row = e.getFirstIndex(),
+            int row = profileList.getTableView().getSelectedRow(),
                     size = profileList.getTableView().getListTableModel().getRowCount();
             if (size == 0) {
                 if (selectedId != null) {
@@ -100,19 +102,22 @@ public class ROSProfileSettingsPage implements SearchableConfigurable {
                 }
                 return;
             }
-            if (row >= size) {
+            if (row >= size || row < 0) {
                 row = size - 1;
             }
             int newId = profileList.getTableView().getRow(row);
             if (selectedId != null && selectedId.equals(newId)) {
                 return;
             }
+            if (profileList.getTableView().getSelection().isEmpty()) {
+                profileList.getTableView().setSelection(Collections.singleton(newId));
+            }
             ROSProfileForm formToSelect = profileForms.get(newId);
             if (formToSelect == null) {
                 formToSelect = new ROSProfileForm();
                 ret.add(formToSelect.getPanel(), formLayout);
                 profileForms.put(newId, formToSelect);
-                formToSelect.loadData(data.getProfile(newId), profileList::refresh);
+                formToSelect.loadData(Objects.requireNonNull(data.getProfile(newId)), profileList::refresh);
             }
             if (selectedId != null) {
                 profileForms.get(selectedId).getPanel().setVisible(false);
