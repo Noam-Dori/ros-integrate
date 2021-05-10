@@ -17,6 +17,8 @@ public class ROSProfile {
     private String guiName = name;
     @NotNull
     private ROSBuildTool guiBuildtool = buildtool;
+    private boolean doInstall = false;
+    private boolean doIsolation = true;
 
     @NotNull
     public String getName() {
@@ -49,5 +51,21 @@ public class ROSProfile {
 
     public void setGuiBuildtool(@NotNull ROSBuildTool newBuildtool) {
         guiBuildtool = newBuildtool;
+    }
+
+    public boolean isInstall() {
+        return doInstall;
+    }
+
+    public void setInstall(boolean doInstall) {
+        this.doInstall = doInstall;
+    }
+
+    public boolean getIsolation() {
+        return doIsolation;
+    }
+
+    public void setIsolation(boolean doIsolation) {
+        this.doIsolation = doIsolation;
     }
 }
