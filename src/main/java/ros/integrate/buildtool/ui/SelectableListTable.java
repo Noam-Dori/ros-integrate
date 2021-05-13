@@ -19,12 +19,14 @@ import java.util.function.Supplier;
 /**
  * A GUI object representing a list of objects that cannot be edited manually, but rather selected.
  * The list allows:
- * - adding & removing entities like a normal list table
- * - displaying a text and/or icon pulled from some database
- * - refreshing the render via {@link SelectableListTable#refresh()}
- * - selecting objects in the list to show (or edit) details about the selected object via
- *   {@link com.intellij.ui.table.TableView#getSelectionModel()}
- * - bulk load identifiers from external source via {@link ListTableWithButtons#setValues(java.util.List)}
+ * <ul>
+ *     <li>adding & removing entities like a normal list table</li>
+ *     <li>displaying a text and/or icon pulled from some database</li>
+ *     <li>refreshing the render via {@link SelectableListTable#refresh()}</li>
+ *     <li>selecting objects in the list to show (or edit) details about the selected object via
+ *     {@link com.intellij.ui.table.TableView#getSelectionModel()}</li>
+ *     <li>bulk load identifiers from external source via {@link ListTableWithButtons#setValues(java.util.List)}</li>
+ * </ul>
  * @author Noam Dori
  */
 public class SelectableListTable extends ListTableWithButtons<Integer> {

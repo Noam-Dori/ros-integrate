@@ -1,4 +1,4 @@
-package ros.integrate.settings;
+package ros.integrate.ui;
 
 import com.intellij.ui.components.JBLabel;
 import com.intellij.util.ui.FormBuilder;
@@ -22,10 +22,12 @@ public class SectionedFormBuilder extends FormBuilder {
      * an extension of the form builder that builds one section
      */
     public static class SectionBuilder extends FormBuilder {
+        @Nullable
         private final String name;
+        @NotNull
         private final SectionedFormBuilder parent;
 
-        private JPanel newSectionHeader(String sectionName) {
+        private JPanel newSectionHeader(@NotNull String sectionName) {
             JBLabel name = new JBLabel(sectionName);
             Font oldFont = name.getFont();
             name.setFont(new Font(oldFont.getName(), oldFont.getStyle(), oldFont.getSize() - 2));
@@ -40,7 +42,7 @@ public class SectionedFormBuilder extends FormBuilder {
          * @param name the name of the section
          * @param parent the form builder this belongs to
          */
-        SectionBuilder(String name, SectionedFormBuilder parent) {
+        SectionBuilder(@Nullable String name, @NotNull SectionedFormBuilder parent) {
             this.name = name;
             this.parent = parent;
         }
@@ -49,9 +51,12 @@ public class SectionedFormBuilder extends FormBuilder {
          * builds the section and appends it to the parent form builder
          * @return the parent form builder
          */
-        SectionedFormBuilder closeSection() {
-            return (SectionedFormBuilder) parent.addComponent(newSectionHeader(name), UIUtil.LARGE_VGAP)
-                    .addComponentToRightColumn(super.getPanel());
+        public SectionedFormBuilder closeSection() {
+            return (SectionedFormBuilder) parent
+                    .addComponent(name == null ? new JSeparator() : newSectionHeader(name), UIUtil.LARGE_VGAP)
+                    .setFormLeftIndent(name == null ? 0 : UIUtil.DEFAULT_HGAP * 2)
+                    .addComponent(super.getPanel())
+                    .setFormLeftIndent(0);
         }
 
         @Override
@@ -113,7 +118,7 @@ public class SectionedFormBuilder extends FormBuilder {
      * @param name the name of the new section
      * @return a new section builder
      */
-    SectionBuilder addSection(String name) {
+    public SectionBuilder addSection(@Nullable String name) {
         return new SectionBuilder(name, this);
     }
 

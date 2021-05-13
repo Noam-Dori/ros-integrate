@@ -5,10 +5,11 @@ import com.intellij.ui.DocumentAdapter;
 import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBTextField;
-import com.intellij.util.ui.FormBuilder;
+import com.intellij.ui.components.fields.ExpandableTextField;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.buildtool.ROSBuildTool;
 import ros.integrate.buildtool.ROSProfile;
+import ros.integrate.ui.SectionedFormBuilder;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -27,11 +28,16 @@ public class ROSProfileForm {
     private final ComboBox<ROSBuildTool> buildtool = new ComboBox<>(ROSBuildTool.values());
     private final JBCheckBox doInstall = new JBCheckBox("Run install step");
     private final ComboBox<Boolean> doIsolation = new ComboBox<>(new Boolean[]{true, false});
+    private final ExpandableTextField makeArgs = new ExpandableTextField(), cmakeArgs = new ExpandableTextField(),
+            buildtoolArgs = new ExpandableTextField();
 
     public ROSProfileForm() {
         JBLabel nameLabel = new JBLabel("Name:");
         JBLabel buildtoolLabel = new JBLabel("Build tool:");
         JBLabel isolationLabel = new JBLabel("Build layout:");
+        JBLabel makeArgsLabel = new JBLabel("<html><code>Make</code> build args:</html>");
+        JBLabel cmakeArgsLabel = new JBLabel("<html><code>CMake</code> build args:</html>");
+        JBLabel buildtoolArgsLabel = new JBLabel("Buildtool specific build args:");
 
         buildtool.setEditable(false);
         buildtool.setRenderer(new DefaultListCellRenderer() {
@@ -65,12 +71,16 @@ public class ROSProfileForm {
             }
         });
 
-        panel = new FormBuilder()
+        panel = SectionedFormBuilder.createFormBuilder()
                 .addLabeledComponent(nameLabel, name)
-                .addComponent(new JSeparator())
+                .addSection(null)
                 .addLabeledComponent(buildtoolLabel, buildtool)
                 .addComponent(doInstall)
                 .addLabeledComponent(isolationLabel, doIsolation)
+                .addLabeledComponent(cmakeArgsLabel, cmakeArgs)
+                .addLabeledComponent(buildtoolArgsLabel, buildtoolArgs)
+                .addLabeledComponent(makeArgsLabel, makeArgs)
+                .closeSection()
                 .getPanel();
     }
 
@@ -84,6 +94,9 @@ public class ROSProfileForm {
         buildtool.setItem(profile.getBuildtool());
         doInstall.setSelected(profile.isInstall());
         doIsolation.setSelectedItem(profile.getIsolation());
+        makeArgs.setText(profile.getMakeArgs());
+        cmakeArgs.setText(profile.getCmakeArgs());
+        buildtoolArgs.setText(profile.getBuildtoolArgs());
 
         name.getDocument().addDocumentListener(new DocumentAdapter() {
             @Override

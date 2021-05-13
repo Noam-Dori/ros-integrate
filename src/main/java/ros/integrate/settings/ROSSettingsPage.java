@@ -22,6 +22,7 @@ import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkg.ROSDepKeyCache;
 import ros.integrate.pkg.xml.ROSLicenses;
 import ros.integrate.settings.BrowserOptions.HistoryKey;
+import ros.integrate.ui.SectionedFormBuilder;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -101,13 +102,13 @@ public class ROSSettingsPage implements SearchableConfigurable {
         String rosdep = "Dependencies";
 
         rosSettingsLabel.setText("In here, you can configure your interactions with ROS in the IDE");
-        rosRootLabel.setText("ROS Path:");
+        rosRootLabel.setText("ROS path:");
         workspaceLabel.setText("Workspace:");
-        additionalSourcesLabel.setText("Additional Package Paths:");
+        additionalSourcesLabel.setText("Additional package paths:");
         resetSourcesButton.setText("Set to $ROS_PACKAGE_PATH");
         excludedXmlsLabel.setText("Excluded XML files:");
-        licenseLinkTypeLabel.setText("License Details Preference:");
-        rosdepSourcesLabel.setText("Online ROSDep Source Lists:");
+        licenseLinkTypeLabel.setText("License details preference:");
+        rosdepSourcesLabel.setText("Online ROSDep source lists:");
         knownRosdepKeysLabel.setText("Known ROSDep Keys:");
         fetchSourceListsButton.setText("Fetch ROSDep Source Lists");
 

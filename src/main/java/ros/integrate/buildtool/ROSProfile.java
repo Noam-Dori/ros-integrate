@@ -19,6 +19,8 @@ public class ROSProfile {
     private ROSBuildTool guiBuildtool = buildtool;
     private boolean doInstall = false;
     private boolean doIsolation = true;
+    @NotNull
+    private String makeArgs = "", cmakeArgs = "", buildtoolArgs = "";
 
     @NotNull
     public String getName() {
@@ -67,5 +69,33 @@ public class ROSProfile {
 
     public void setIsolation(boolean doIsolation) {
         this.doIsolation = doIsolation;
+    }
+
+
+    @NotNull
+    public String getMakeArgs() {
+        return makeArgs;
+    }
+
+    public void setMakeArgs(@NotNull String makeArgs) {
+        this.makeArgs = makeArgs;
+    }
+
+    @NotNull
+    public String getCmakeArgs() {
+        return cmakeArgs;
+    }
+
+    public void setCmakeArgs(@NotNull String cmakeArgs) {
+        this.cmakeArgs = cmakeArgs;
+    }
+
+    @NotNull
+    public String getBuildtoolArgs() {
+        return buildtoolArgs;
+    }
+
+    public void setBuildtoolArgs(@NotNull String buildtoolArgs) {
+        this.buildtoolArgs = buildtoolArgs;
     }
 }
