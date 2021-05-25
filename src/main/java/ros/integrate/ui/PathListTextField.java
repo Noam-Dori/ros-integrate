@@ -1,4 +1,4 @@
-package ros.integrate.settings;
+package ros.integrate.ui;
 
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.refactoring.copy.CopyFilesOrDirectoriesDialog;
@@ -18,7 +18,7 @@ import java.util.Optional;
  * This field also saves history
  * @author Noam Dori
  */
-class PathListTextField extends TextFieldWithHistoryWithBrowseButton {
+public class PathListTextField extends TextFieldWithHistoryWithBrowseButton {
     /**
      * the dialogue wrapper that pops up when clicking on ...
      * this implements the OK button and uses the path list table
@@ -70,7 +70,7 @@ class PathListTextField extends TextFieldWithHistoryWithBrowseButton {
      * @param options an options object loading a bunch of useful settings like window title,
      *                history storage, etc.
      */
-    void installHistoryAndDialog(@NotNull RecentsManager historyCache, @NotNull BrowserOptions options) {
+    public void installHistoryAndDialog(@NotNull RecentsManager historyCache, @NotNull BrowserOptions options) {
         addActionListener(actionEvent -> new PackagePathDialog(this, options).show());
 
         List<String> recentEntries = Optional.ofNullable(historyCache.getRecentEntries(options.getKey()))

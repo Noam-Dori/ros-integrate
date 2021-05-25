@@ -6,7 +6,7 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkg.psi.impl.ROSDepKey;
-import ros.integrate.settings.BrowserOptions;
+import ros.integrate.ui.BrowserOptions;
 import ros.integrate.settings.ROSSettings;
 
 import java.io.IOException;

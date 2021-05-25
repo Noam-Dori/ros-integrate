@@ -14,7 +14,7 @@ import com.intellij.util.containers.SortedList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkg.psi.ROSPackage;
-import ros.integrate.settings.BrowserOptions;
+import ros.integrate.ui.BrowserOptions;
 import ros.integrate.settings.ROSSettings;
 
 import java.util.*;

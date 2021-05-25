@@ -21,7 +21,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkg.ROSDepKeyCache;
 import ros.integrate.pkg.xml.ROSLicenses;
-import ros.integrate.settings.BrowserOptions.HistoryKey;
+import ros.integrate.ui.BrowserOptions;
+import ros.integrate.ui.BrowserOptions.HistoryKey;
+import ros.integrate.ui.PathListTextField;
+import ros.integrate.ui.PathListUtil;
 import ros.integrate.ui.SectionedFormBuilder;
 
 import javax.swing.*;

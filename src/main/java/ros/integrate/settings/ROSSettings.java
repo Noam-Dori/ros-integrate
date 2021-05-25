@@ -7,6 +7,7 @@ import com.intellij.util.xmlb.XmlSerializerUtil;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import ros.integrate.ui.PathListUtil;
 
 import java.io.IOException;
 import java.util.*;

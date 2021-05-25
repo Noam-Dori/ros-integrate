@@ -25,13 +25,16 @@ public class ROSProfileSettingsPage implements SearchableConfigurable {
     private final ROSProfiles data;
     private final SelectableListTable profileList;
     private final Map<Integer, ROSProfileForm> profileForms = new HashMap<>();
+    @NotNull
+    private final Project project;
     private Integer selectedId = null;
 
     /**
      * construct a new settings page
      * @param project the project this settings page belongs to
      */
-    public ROSProfileSettingsPage(Project project) {
+    public ROSProfileSettingsPage(@NotNull Project project) {
+        this.project = project;
         data = ROSProfiles.getInstance(project);
         profileList = new SelectableListTable(data::requestId,
                 id -> data.getProfileProperty(id, ROSProfile::getGuiName),
@@ -114,7 +117,7 @@ public class ROSProfileSettingsPage implements SearchableConfigurable {
             }
             ROSProfileForm formToSelect = profileForms.get(newId);
             if (formToSelect == null) {
-                formToSelect = new ROSProfileForm();
+                formToSelect = new ROSProfileForm(project);
                 ret.add(formToSelect.getPanel(), formLayout);
                 profileForms.put(newId, formToSelect);
                 formToSelect.loadData(Objects.requireNonNull(data.getProfile(newId)), profileList::refresh);

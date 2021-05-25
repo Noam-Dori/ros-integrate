@@ -1,4 +1,4 @@
-package ros.integrate.settings;
+package ros.integrate.ui;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -10,14 +10,14 @@ import java.util.stream.Collectors;
  * a collection of utility functions for handling path list de/serialization
  * @author Noam Dori
  */
-class PathListUtil {
+public class PathListUtil {
     /**
      * deserializes a path list string using : as delimiter.
      * @param rawPathList the string containing all paths to be split up
      * @return a list of paths to all relevant files. This deserializer respects Windows drives as part of the path
      * (for example C:)
      */
-    static List<String> parsePathList(@NotNull String rawPathList) {
+    public static List<String> parsePathList(@NotNull String rawPathList) {
         return Arrays.stream(rawPathList.split("(?<!(:|^)[A-Z]):(?!/{2,})"))
                 .filter(item -> !item.isEmpty())
                 .collect(Collectors.toList());
@@ -44,7 +44,7 @@ class PathListUtil {
      * @param pathList the list of paths ot serialize
      * @return a string containing all paths
      */
-    static String serializePathList(@NotNull List<String> pathList) {
+    public static String serializePathList(@NotNull List<String> pathList) {
         return pathList.stream().filter(path -> !path.isEmpty()).collect(Collectors.joining(":"));
     }
 

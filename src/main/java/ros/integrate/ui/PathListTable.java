@@ -1,4 +1,4 @@
-package ros.integrate.settings;
+package ros.integrate.ui;
 
 import com.intellij.execution.util.ListTableWithButtons;
 import com.intellij.icons.AllIcons;

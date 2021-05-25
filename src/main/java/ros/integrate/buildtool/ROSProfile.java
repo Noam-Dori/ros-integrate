@@ -21,6 +21,8 @@ public class ROSProfile {
     private boolean doIsolation = true;
     @NotNull
     private String makeArgs = "", cmakeArgs = "", buildtoolArgs = "";
+    @NotNull
+    private String sourceDir = "", buildDir = "", develDir = "", installDir = "";
 
     @NotNull
     public String getName() {
@@ -97,5 +99,38 @@ public class ROSProfile {
 
     public void setBuildtoolArgs(@NotNull String buildtoolArgs) {
         this.buildtoolArgs = buildtoolArgs;
+    }
+
+    public String getSourceDirectory() {
+        return sourceDir;
+    }
+
+    public String getBuildDirectory() {
+        return buildDir;
+    }
+
+    public String getDevelDirectory() {
+        return develDir;
+    }
+
+    public String getInstallDirectory() {
+        return installDir;
+    }
+
+    public void setSourceDir(@NotNull String sourceDir) {
+        this.sourceDir = sourceDir;
+    }
+
+
+    public void setBuildDir(@NotNull String buildDir) {
+        this.buildDir = buildDir;
+    }
+
+    public void setDevelDir(@NotNull String develDir) {
+        this.develDir = develDir;
+    }
+
+    public void setInstallDir(@NotNull String installDir) {
+        this.installDir = installDir;
     }
 }

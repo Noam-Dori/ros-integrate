@@ -1,4 +1,4 @@
-package ros.integrate.settings;
+package ros.integrate.ui;
 
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.Contract;
@@ -12,13 +12,17 @@ public class BrowserOptions {
      * describes different keys to look for past user choices in the history cache
      */
     public enum HistoryKey {
-        DEFAULT("RECENT_KEYS"),
-        WORKSPACE("WORKSPACE"),
-        EXTRA_SOURCES("EXTRA_SOURCES"),
-        EXCLUDED_XMLS("EXCLUDED_XMLS"),
-        ROSDEP_SOURCES("ROSDEP_SOURCES"),
-        KNOWN_ROSDEP_KEYS("KNOWN_ROSDEP_KEYS"),
-        LICENSE_LINK_TYPE("LICENSE_LINK_TYPE");
+        DEFAULT("ROSSettings","RECENT_KEYS"),
+        WORKSPACE("ROSSettings","WORKSPACE"),
+        EXTRA_SOURCES("ROSSettings","EXTRA_SOURCES"),
+        EXCLUDED_XMLS("ROSSettings","EXCLUDED_XMLS"),
+        ROSDEP_SOURCES("ROSSettings","ROSDEP_SOURCES"),
+        KNOWN_ROSDEP_KEYS("ROSSettings","KNOWN_ROSDEP_KEYS"),
+        LICENSE_LINK_TYPE("ROSSettings","LICENSE_LINK_TYPE"),
+        PROFILE_SOURCE("ROSProfile","SOURCE_DIR"),
+        PROFILE_BUILD("ROSProfile","BUILD_DIR"),
+        PROFILE_DEVEL("ROSProfile","DEVEL_DIR"),
+        PROFILE_INSTALL("ROSProfile","INSTALL_DIR");
 
         private final String historyKey;
 
@@ -27,8 +31,8 @@ public class BrowserOptions {
          * @param lookupKey the name of the key.
          */
         @Contract(pure = true)
-        HistoryKey(String lookupKey) {
-            this.historyKey = "ROSSettings." + lookupKey;
+        HistoryKey(String category, String lookupKey) {
+            this.historyKey = category + "." + lookupKey;
         }
 
         /**
@@ -42,7 +46,7 @@ public class BrowserOptions {
 
     final Project project;
 
-    String title = "", description = "", dialogTitle = "";
+    public String title = "", description = "", dialogTitle = "";
     char delimiter = ':';
     boolean addBrowser = true;
     private HistoryKey key = HistoryKey.DEFAULT;
@@ -52,7 +56,7 @@ public class BrowserOptions {
      * @param project the project this options belongs to
      */
     @Contract(pure = true)
-    BrowserOptions(Project project) {
+    public BrowserOptions(Project project) {
         this.project = project;
     }
 
@@ -61,7 +65,7 @@ public class BrowserOptions {
      * @param project the project this options belongs to
      */
     @Contract(pure = true)
-    BrowserOptions(Project project, HistoryKey historyKey) {
+    public BrowserOptions(Project project, HistoryKey historyKey) {
         this.project = project;
         this.key = historyKey;
     }
@@ -71,7 +75,7 @@ public class BrowserOptions {
      * @param description the new string to use
      * @return this with the modifications applied
      */
-    BrowserOptions withDescription(String description) {
+    public BrowserOptions withDescription(String description) {
         this.description = description;
         return this;
     }
@@ -81,7 +85,7 @@ public class BrowserOptions {
      * @param title the new string to use
      * @return this with the modifications applied
      */
-    BrowserOptions withTitle(String title) {
+    public BrowserOptions withTitle(String title) {
         this.title = title;
         return this;
     }
@@ -91,7 +95,7 @@ public class BrowserOptions {
      * @param dialogTitle the new string to use
      * @return this with the modifications applied
      */
-    BrowserOptions withDialogTitle(String dialogTitle) {
+    public BrowserOptions withDialogTitle(String dialogTitle) {
         this.dialogTitle = dialogTitle;
         return this;
     }
@@ -101,7 +105,7 @@ public class BrowserOptions {
      * @param delimiter the new delimiter
      * @return this with the modifications applied
      */
-    BrowserOptions withDelimiter(@SuppressWarnings("SameParameterValue") char delimiter) {
+    public BrowserOptions withDelimiter(@SuppressWarnings("SameParameterValue") char delimiter) {
         this.delimiter = delimiter;
         return this;
     }
@@ -110,7 +114,7 @@ public class BrowserOptions {
      * removes the "browse for file" option from the dialog
      * @return this with the modifications applied
      */
-    BrowserOptions noFilePaths() {
+    public BrowserOptions noFilePaths() {
         this.addBrowser = false;
         return this;
     }
@@ -118,7 +122,7 @@ public class BrowserOptions {
     /**
      * @return the lookup key to use for history lookup.
      */
-    String getKey() {
+    public String getKey() {
         return key.get();
     }
 }
