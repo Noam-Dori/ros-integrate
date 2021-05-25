@@ -1,36 +1,25 @@
 package ros.integrate.settings;
 
-import com.intellij.openapi.fileChooser.FileChooserDescriptor;
-import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
-import com.intellij.openapi.fileChooser.FileChooserFactory;
 import com.intellij.openapi.options.SearchableConfigurable;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
-import com.intellij.openapi.ui.TextComponentAccessor;
-import com.intellij.refactoring.copy.CopyFilesOrDirectoriesDialog;
 import com.intellij.ui.DocumentAdapter;
-import com.intellij.ui.RecentsManager;
-import com.intellij.ui.TextFieldWithHistoryWithBrowseButton;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.util.Consumer;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkg.ROSDepKeyCache;
 import ros.integrate.pkg.xml.ROSLicenses;
-import ros.integrate.ui.BrowserOptions;
+import ros.integrate.ui.*;
 import ros.integrate.ui.BrowserOptions.HistoryKey;
-import ros.integrate.ui.PathListTextField;
-import ros.integrate.ui.PathListUtil;
-import ros.integrate.ui.SectionedFormBuilder;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -49,15 +38,14 @@ public class ROSSettingsPage implements SearchableConfigurable {
     }
 
     private final Project project;
-    private final RecentsManager recentsManager;
     private final ROSSettings data;
 
     private final JBLabel rosSettingsLabel = new JBLabel();
 
-    private final TextFieldWithHistoryWithBrowseButton rosRoot = new TextFieldWithHistoryWithBrowseButton();
+    private final PathTextFieldWithHistory rosRoot = new PathTextFieldWithHistory();
     private final JBLabel rosRootLabel = new JBLabel();
 
-    private final TextFieldWithHistoryWithBrowseButton workspace = new TextFieldWithHistoryWithBrowseButton();
+    private final PathTextFieldWithHistory workspace = new PathTextFieldWithHistory();
     private final JBLabel workspaceLabel = new JBLabel();
 
     private final PathListTextField additionalSources = new PathListTextField();
@@ -85,7 +73,6 @@ public class ROSSettingsPage implements SearchableConfigurable {
      */
     public ROSSettingsPage(Project project) {
         this.project = project;
-        recentsManager = RecentsManager.getInstance(project);
         data = ROSSettings.getInstance(project);
     }
 
@@ -115,29 +102,29 @@ public class ROSSettingsPage implements SearchableConfigurable {
         knownRosdepKeysLabel.setText("Known ROSDep Keys:");
         fetchSourceListsButton.setText("Fetch ROSDep Source Lists");
 
-        installBrowserHistory(rosRoot, new BrowserOptions(project)
+        rosRoot.installFeatures(new BrowserOptions(project)
                 .withTitle("Choose Target Directory")
                 .withDescription("This Directory is the Root ROS Library."));
-        installBrowserHistory(workspace, new BrowserOptions(project, HistoryKey.WORKSPACE)
+        workspace.installFeatures(new BrowserOptions(project, HistoryKey.WORKSPACE)
                 .withTitle("Choose Target Workspace")
                 .withDialogTitle("Configure Path to Workspace")
                 .withDescription("This is the root directory of this project's workspace"));
-        additionalSources.installHistoryAndDialog(recentsManager, new BrowserOptions(project, HistoryKey.EXTRA_SOURCES)
+        additionalSources.installFeatures(new BrowserOptions(project, HistoryKey.EXTRA_SOURCES)
                 .withTitle("Modify source path")
                 .withDialogTitle("Configure Paths to Source")
                 .withDescription("This is the a root directory to additional sources outside of the workspace."));
-        excludedXmls.installHistoryAndDialog(recentsManager, new BrowserOptions(project, HistoryKey.EXCLUDED_XMLS)
+        excludedXmls.installFeatures(new BrowserOptions(project, HistoryKey.EXCLUDED_XMLS)
                 .withTitle("Modify Excluded XMLs")
                 .withDialogTitle("Configure excluded XMLs")
                 .withDescription("These XML files will not be processed by the ROS plugin, and will not get extra context."));
-        rosdepSources.installHistoryAndDialog(recentsManager, new BrowserOptions(project, HistoryKey.ROSDEP_SOURCES)
+        rosdepSources.installFeatures(new BrowserOptions(project, HistoryKey.ROSDEP_SOURCES)
                 .withDialogTitle("Configure ROSDep Lists")
                 .withDelimiter('"')
                 .noFilePaths());
-        knownRosdepKeys.installHistoryAndDialog(recentsManager, new BrowserOptions(project, HistoryKey.KNOWN_ROSDEP_KEYS)
+        knownRosdepKeys.installFeatures(new BrowserOptions(project, HistoryKey.KNOWN_ROSDEP_KEYS)
                 .withDialogTitle("Configure Saved ROSDep Keys")
                 .noFilePaths());
-        additionalSources.getChildComponent().getTextEditor().getDocument().addDocumentListener(new DocumentAdapter() {
+        additionalSources.getTextEditor().getDocument().addDocumentListener(new DocumentAdapter() {
             @Override
             protected void textChanged(@NotNull DocumentEvent e) {
                 resetSourcesButton.setEnabled(!rosPackagePathEnv().equals(additionalSources.getText()));
@@ -175,50 +162,31 @@ public class ROSSettingsPage implements SearchableConfigurable {
                 .getPanel();
     }
 
-    private void installBrowserHistory(@NotNull TextFieldWithHistoryWithBrowseButton field, @NotNull BrowserOptions options) {
-        FileChooserDescriptor descriptor = FileChooserDescriptorFactory.createSingleFolderDescriptor();
-        field.addBrowseFolderListener(options.title,
-                options.description,
-                project, descriptor, TextComponentAccessor.TEXT_FIELD_WITH_HISTORY_WHOLE_TEXT);
-
-        List<String> recentEntries = Optional.ofNullable(recentsManager.getRecentEntries(options.getKey()))
-                .orElse(new LinkedList<>());
-        recentEntries.remove(field.getText()); // doing this and the line below will move curDir to the top regardless if it exists or not
-        recentEntries.add(0, field.getText());
-        field.getChildComponent().setHistory(recentEntries);
-
-        // folder text field
-        final JTextField textField = field.getChildComponent().getTextEditor();
-        FileChooserFactory.getInstance().installFileCompletion(textField, descriptor, true, null);
-        field.setTextFieldPreferredWidth(CopyFilesOrDirectoriesDialog.MAX_PATH_LENGTH);
-    }
-
     @Override
     public boolean isModified() {
-        return isModified(rosRoot.getChildComponent().getTextEditor(), data.getROSPath())
-                || isModified(workspace.getChildComponent().getTextEditor(), data.getWorkspacePath())
-                || isModified(additionalSources.getChildComponent().getTextEditor(), data.getRawAdditionalSources())
-                || isModified(excludedXmls.getChildComponent().getTextEditor(), data.getRawExcludedXmls())
+        return isModified(rosRoot.getTextEditor(), data.getROSPath())
+                || isModified(workspace.getTextEditor(), data.getWorkspacePath())
+                || isModified(additionalSources.getTextEditor(), data.getRawAdditionalSources())
+                || isModified(excludedXmls.getTextEditor(), data.getRawExcludedXmls())
                 || isModified(licenseLinkType, data.getLicenseLinkType())
-                || isModified(rosdepSources.getChildComponent().getTextEditor(), data.getRawROSDepSources())
-                || isModified(knownRosdepKeys.getChildComponent().getTextEditor(), data.getRawKnownROSDepKeys());
+                || isModified(rosdepSources.getTextEditor(), data.getRawROSDepSources())
+                || isModified(knownRosdepKeys.getTextEditor(), data.getRawKnownROSDepKeys());
     }
 
-    private void addToHistory(@NotNull TextFieldWithHistoryWithBrowseButton field, @NotNull HistoryKey historyKey,
-                              @NotNull Consumer<String> updateAction) {
-        recentsManager.registerRecentEntry(historyKey.get(), field.getChildComponent().getText());
-        updateAction.consume(field.getText());
-        data.triggerListeners(historyKey.get());
+    @NotNull
+    @Contract(pure = true)
+    private Consumer<String> withTrigger(Consumer<String> function) {
+        return topic -> {function.consume(topic); data.triggerListeners(topic);};
     }
 
     @Override
     public void apply() {
-        addToHistory(rosRoot, HistoryKey.DEFAULT, data::setRosPath);
-        addToHistory(workspace, HistoryKey.WORKSPACE, data::setWorkspacePath);
-        addToHistory(additionalSources, HistoryKey.EXTRA_SOURCES, data::setAdditionalSources);
-        addToHistory(excludedXmls, HistoryKey.EXCLUDED_XMLS, data::setExcludedXmls);
-        addToHistory(knownRosdepKeys, HistoryKey.KNOWN_ROSDEP_KEYS, data::setKnownROSDepKeys);
-        addToHistory(rosdepSources, HistoryKey.ROSDEP_SOURCES, data::setROSDepSources);
+        rosRoot.addToHistory(project, withTrigger(data::setRosPath));
+        workspace.addToHistory(project, withTrigger(data::setWorkspacePath));
+        additionalSources.addToHistory(project, withTrigger(data::setAdditionalSources));
+        excludedXmls.addToHistory(project, withTrigger(data::setExcludedXmls));
+        knownRosdepKeys.addToHistory(project, withTrigger(data::setKnownROSDepKeys));
+        rosdepSources.addToHistory(project, withTrigger(data::setROSDepSources));
         data.setLicenseLinkType((String) licenseLinkType.getSelectedItem());
         data.triggerListeners(HistoryKey.LICENSE_LINK_TYPE.get());
     }

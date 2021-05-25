@@ -22,4 +22,6 @@ public interface ROSIcons {
     /** 13x13 */ Icon CATKIN_MAKE = IconLoader.getIcon("/icons/catkin_make.svg");
     /** 13x12 */ Icon COLCON = IconLoader.getIcon("/icons/colcon.svg");
     /** 16x16 */ Icon GROUP = AllIcons.Nodes.Tag;
+    /** 16x16 */ Icon LIST_FILES = IconLoader.getIcon("/icons/listFiles.svg");
+    /** 16x16 */ Icon LIST_FILES_HOVER = IconLoader.getIcon("/icons/listFilesHover.svg");
 }

@@ -1,6 +1,7 @@
 package ros.integrate.ui;
 
 import com.intellij.ui.components.JBLabel;
+import com.intellij.ui.components.fields.ExpandableTextField;
 import com.intellij.util.ui.FormBuilder;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.Contract;
@@ -11,6 +12,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * an extension of the form builder that supports sections.
@@ -71,10 +74,7 @@ public class SectionedFormBuilder extends FormBuilder {
 
         @Override
         protected int getFill(JComponent component) {
-            if(parent.getUnfilledClasses().stream().anyMatch(clazz -> clazz.isInstance(component))) {
-                return GridBagConstraints.NONE;
-            }
-            return super.getFill(component);
+            return parent.getFill(component);
         }
 
         @Override
@@ -83,10 +83,12 @@ public class SectionedFormBuilder extends FormBuilder {
         }
     }
 
-    private final List<Class<? extends JComponent>> unfilledClasses;
+    private final List<Class<? extends JComponent>> unfilledClasses, horizontalClasses;
 
     private SectionedFormBuilder() {
         unfilledClasses = Collections.singletonList(JButton.class);
+        horizontalClasses = Stream.of(PathTextFieldWithHistory.class, ExpandableTextField.class)
+                .collect(Collectors.toList());
         setHorizontalGap(20);
     }
 
@@ -95,12 +97,10 @@ public class SectionedFormBuilder extends FormBuilder {
         if(unfilledClasses.stream().anyMatch(clazz -> clazz.isInstance(component))) {
             return GridBagConstraints.NONE;
         }
+        if (horizontalClasses.stream().anyMatch(clazz -> clazz.isInstance(component))) {
+            return GridBagConstraints.HORIZONTAL;
+        }
         return super.getFill(component);
-    }
-
-    @Contract(pure = true)
-    private List<Class<? extends JComponent>> getUnfilledClasses() {
-        return unfilledClasses;
     }
 
     /**

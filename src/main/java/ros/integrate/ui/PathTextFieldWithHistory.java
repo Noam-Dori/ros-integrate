@@ -1,13 +1,14 @@
 package ros.integrate.ui;
 
+import com.intellij.icons.AllIcons;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
-import com.intellij.openapi.fileChooser.FileChooserFactory;
-import com.intellij.openapi.ui.TextComponentAccessor;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
-import com.intellij.refactoring.copy.CopyFilesOrDirectoriesDialog;
+import com.intellij.openapi.util.Pair;
 import com.intellij.ui.RecentsManager;
 import com.intellij.ui.TextFieldWithHistory;
+import com.intellij.util.Consumer;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -18,7 +19,18 @@ import java.util.Optional;
 
 public class PathTextFieldWithHistory extends TextFieldWithHistory {
 
-    private final TextFieldWithBrowseButton field = new TextFieldWithBrowseButton();
+    protected final TextFieldWithBrowseButton field = new TextFieldWithBrowseButton() {
+        @Override
+        protected @NotNull Icon getDefaultIcon() {
+            return getBuiltinIcons().first;
+        }
+
+        @Override
+        protected @NotNull Icon getHoveredIcon() {
+            return getBuiltinIcons().second;
+        }
+    };
+    protected String historyIndex = "";
 
     public PathTextFieldWithHistory() {
         setEditable(true);
@@ -30,21 +42,36 @@ public class PathTextFieldWithHistory extends TextFieldWithHistory {
         });
     }
 
-    public void installBrowserHistory(@NotNull BrowserOptions options) {
-        FileChooserDescriptor descriptor = FileChooserDescriptorFactory.createSingleFolderDescriptor();
-        field.addBrowseFolderListener(options.title,
-                options.description,
-                options.project, descriptor, TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT);
+    /**
+     * attaches functionality to the ... button as well as a history lookup when filling in the text in the text field
+     * @param options an options object loading a bunch of useful settings like window title,
+     *                history storage, etc.
+     */
+    public void installFeatures(@NotNull BrowserOptions options) {
 
         List<String> recentEntries = Optional.ofNullable(RecentsManager.getInstance(options.project)
                 .getRecentEntries(options.getKey()))
                 .orElse(new LinkedList<>());
-        recentEntries.remove(field.getText()); // doing this and the line below will move curDir to the top regardless if it exists or not
-        recentEntries.add(0, field.getText());
+        recentEntries.remove(getText()); // doing this and the line below will move curDir to the top regardless if it exists or not
+        recentEntries.add(0, getText());
         setHistory(recentEntries);
+        historyIndex = options.getKey();
 
-        // folder text field
-        FileChooserFactory.getInstance().installFileCompletion(field.getTextField(), descriptor, true, null);
-        field.setTextFieldPreferredWidth(CopyFilesOrDirectoriesDialog.MAX_PATH_LENGTH);
+        installBrowseButton(options);
+    }
+
+    protected void installBrowseButton(@NotNull BrowserOptions options) {
+        FileChooserDescriptor descriptor = FileChooserDescriptorFactory.createSingleFolderDescriptor();
+        field.addBrowseFolderListener(options.title, options.description, options.project, descriptor);
+    }
+
+
+    public void addToHistory(Project project, @NotNull Consumer<String> updateAction) {
+        RecentsManager.getInstance(project).registerRecentEntry(historyIndex, field.getText());
+        updateAction.consume(field.getText());
+    }
+
+    protected Pair<Icon, Icon> getBuiltinIcons() {
+        return new Pair<>(AllIcons.General.OpenDisk, AllIcons.General.OpenDiskHover);
     }
 }
