@@ -16,8 +16,6 @@ import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkg.ROSDepKeyCache;
 import ros.integrate.pkg.xml.ROSLicenses;
 import ros.integrate.ui.*;
-import ros.integrate.ui.BrowserOptions.HistoryKey;
-
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import java.util.Optional;
@@ -102,28 +100,22 @@ public class ROSSettingsPage implements SearchableConfigurable {
         knownRosdepKeysLabel.setText("Known ROSDep Keys:");
         fetchSourceListsButton.setText("Fetch ROSDep Source Lists");
 
-        rosRoot.installFeatures(new BrowserOptions(project)
-                .withTitle("Choose Target Directory")
-                .withDescription("This Directory is the Root ROS Library."));
-        workspace.installFeatures(new BrowserOptions(project, HistoryKey.WORKSPACE)
-                .withTitle("Choose Target Workspace")
-                .withDialogTitle("Configure Path to Workspace")
-                .withDescription("This is the root directory of this project's workspace"));
-        additionalSources.installFeatures(new BrowserOptions(project, HistoryKey.EXTRA_SOURCES)
-                .withTitle("Modify source path")
-                .withDialogTitle("Configure Paths to Source")
-                .withDescription("This is the a root directory to additional sources outside of the workspace."));
-        excludedXmls.installFeatures(new BrowserOptions(project, HistoryKey.EXCLUDED_XMLS)
-                .withTitle("Modify Excluded XMLs")
-                .withDialogTitle("Configure excluded XMLs")
-                .withDescription("These XML files will not be processed by the ROS plugin, and will not get extra context."));
-        rosdepSources.installFeatures(new BrowserOptions(project, HistoryKey.ROSDEP_SOURCES)
-                .withDialogTitle("Configure ROSDep Lists")
-                .withDelimiter('"')
-                .noFilePaths());
-        knownRosdepKeys.installFeatures(new BrowserOptions(project, HistoryKey.KNOWN_ROSDEP_KEYS)
-                .withDialogTitle("Configure Saved ROSDep Keys")
-                .noFilePaths());
+        rosRoot.installHistory(project, HistoryKey.ROS_ROOT);
+        rosRoot.installBrowser("Choose Target Directory", "This Directory is the Root ROS Library.");
+        workspace.installHistory(project, HistoryKey.WORKSPACE);
+        workspace.installBrowser("Choose Target Workspace", "This is the root directory of this project's workspace");
+        additionalSources.installHistory(project, HistoryKey.EXTRA_SOURCES);
+        additionalSources.installBrowser("Modify source path",
+                "This is the a root directory to additional sources outside of the workspace.");
+                additionalSources.installListExpansion("Configure Paths to Source");
+        excludedXmls.installHistory(project, HistoryKey.EXCLUDED_XMLS);
+        excludedXmls.installBrowser("Modify Excluded XMLs",
+                "These XML files will not be processed by the ROS plugin, and will not get extra context.");
+        excludedXmls.installListExpansion("Configure excluded XMLs");
+        rosdepSources.installHistory(project, HistoryKey.ROSDEP_SOURCES);
+        rosdepSources.installListExpansion("Configure ROSDep Lists", '"');
+        knownRosdepKeys.installHistory(project, HistoryKey.KNOWN_ROSDEP_KEYS);
+        knownRosdepKeys.installListExpansion("Configure Saved ROSDep Keys");
         additionalSources.getTextEditor().getDocument().addDocumentListener(new DocumentAdapter() {
             @Override
             protected void textChanged(@NotNull DocumentEvent e) {

@@ -5,8 +5,8 @@ import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.startup.StartupActivity;
 import org.jetbrains.annotations.NotNull;
-import ros.integrate.ui.BrowserOptions;
 import ros.integrate.settings.ROSSettings;
+import ros.integrate.ui.HistoryKey;
 
 import java.util.Arrays;
 
@@ -27,7 +27,7 @@ public class ROSLibraryBuilder implements StartupActivity {
             if (ROSPackageFinder.FINDERS.stream().map(finder -> finder.updateLibraries(project))
                     .reduce((sum, val) -> sum || val).orElse(false))
                 project.getService(ROSPackageManager.class).reloadIndex();
-        }), new String[]{BrowserOptions.HistoryKey.EXTRA_SOURCES.get(),
-                BrowserOptions.HistoryKey.WORKSPACE.get()});
+        }), new String[]{HistoryKey.EXTRA_SOURCES.get(),
+                HistoryKey.WORKSPACE.get()});
     }
 }

@@ -23,6 +23,7 @@ public class ROSProfile {
     private String makeArgs = "", cmakeArgs = "", buildtoolArgs = "";
     @NotNull
     private String sourceDir = "", buildDir = "", develDir = "", installDir = "";
+    private String allowList = "", denyList = "";
 
     @NotNull
     public String getName() {
@@ -132,5 +133,21 @@ public class ROSProfile {
 
     public void setInstallDir(@NotNull String installDir) {
         this.installDir = installDir;
+    }
+
+    public String getAllowList() {
+        return allowList;
+    }
+
+    public String getDenyList() {
+        return denyList;
+    }
+
+    public void setDenyList(String denyList) {
+        this.denyList = denyList;
+    }
+
+    public void setAllowList(String allowList) {
+        this.allowList = allowList;
     }
 }

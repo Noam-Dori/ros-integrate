@@ -4,6 +4,7 @@ import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.util.Pair;
 import com.intellij.refactoring.copy.CopyFilesOrDirectoriesDialog;
 import com.intellij.ui.GuiUtils;
+import com.intellij.ui.TextFieldWithAutoCompletionListProvider;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.ROSIcons;
@@ -27,22 +28,26 @@ public class PathListTextField extends PathTextFieldWithHistory {
         private final PathListTextField parent;
 
         private final PathListTable data;
-        private final BrowserOptions options;
+        private final char delimiter;
 
         /**
          * constructs the new dialogue
          * @param component the parent component that called this dialogue
-         * @param options an options object loading a bunch of useful settings like window title,
-         *                history storage, etc.
+         * @param delimiter the character that splits between entries in the text form
+         * @param browserTitle the title of the browse dialog
+         * @param browserDescription the subtitle (or description) given in the browse dialog
+         * @param dialogTitle the title of this dialog window
          */
-        PackagePathDialog(PathListTextField component, BrowserOptions options) {
+        PackagePathDialog(PathListTextField component, char delimiter, String dialogTitle,
+                          @Nullable String browserTitle, @Nullable String browserDescription,
+                          @Nullable TextFieldWithAutoCompletionListProvider<String> completionEngine) {
             super(component, true);
             parent = component;
-            data = new PathListTable(options);
-            this.options = options;
+            data = new PathListTable(component.project, browserTitle, browserDescription, completionEngine);
+            this.delimiter = delimiter;
 
-            setTitle(options.dialogTitle);
-            data.setValues(PathListUtil.parsePathList(component.getText(), options.delimiter, options.addBrowser));
+            setTitle(dialogTitle);
+            data.setValues(PathListUtil.parsePathList(component.getText(), delimiter, browserTitle != null));
             display.add(data.getComponent(),BorderLayout.CENTER);
             Dimension oneRow = GuiUtils.getSizeByChars(CopyFilesOrDirectoriesDialog.MAX_PATH_LENGTH, display);
             display.setPreferredSize(new Dimension(oneRow.width, oneRow.height * 3));
@@ -59,14 +64,45 @@ public class PathListTextField extends PathTextFieldWithHistory {
         protected void doOKAction() {
             data.stopEditing();
 
-            parent.setPaths(data.getPaths(), options.delimiter);
+            parent.setPaths(data.getPaths(), delimiter);
 
             super.doOKAction();
         }
     }
 
-    protected void installBrowseButton(@NotNull BrowserOptions options) {
-        field.addActionListener(actionEvent -> new PackagePathDialog(this, options).show());
+    @Nullable
+    private String browserTitle = null, browserDescription = null;
+    @Nullable
+    private TextFieldWithAutoCompletionListProvider<String> completionEngine = null;
+
+    @Override
+    public void installBrowser(@NotNull String title, String description) {
+        this.browserTitle = title;
+        this.browserDescription = description;
+    }
+
+    /**
+     * installs the list expansion.
+     * @param dialogTitle the title of the result dialog window
+     * @param delimiter the character that splits between entries in the text form
+     */
+    public void installListExpansion(String dialogTitle, char delimiter) {
+        field.addActionListener(actionEvent ->
+                new PackagePathDialog(this, delimiter, dialogTitle, browserTitle, browserDescription,
+                        completionEngine).show());
+    }
+
+    public void installListExpansion(String dialogTitle) {
+        installListExpansion(dialogTitle, ':');
+    }
+
+
+    /**
+     * install an autocompletion feature to the cell entries
+     * @param completionEngine a provider that gives a lookup of possible string entries
+     */
+    public void installAutoCompletion(TextFieldWithAutoCompletionListProvider<String> completionEngine) {
+        this.completionEngine = completionEngine;
     }
 
     /**

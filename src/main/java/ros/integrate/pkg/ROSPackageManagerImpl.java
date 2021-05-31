@@ -14,8 +14,8 @@ import com.intellij.util.containers.SortedList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkg.psi.ROSPackage;
-import ros.integrate.ui.BrowserOptions;
 import ros.integrate.settings.ROSSettings;
+import ros.integrate.ui.HistoryKey;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -41,7 +41,7 @@ public class ROSPackageManagerImpl implements ROSPackageManager {
         this.project = project;
         loaded = false;
         ROSSettings.getInstance(project).addListener(settings -> reloadIndex(),
-                BrowserOptions.HistoryKey.EXCLUDED_XMLS.get());
+                HistoryKey.EXCLUDED_XMLS.get());
     }
 
     private void loadIndex() {

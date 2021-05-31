@@ -6,8 +6,8 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkg.psi.impl.ROSDepKey;
-import ros.integrate.ui.BrowserOptions;
 import ros.integrate.settings.ROSSettings;
+import ros.integrate.ui.HistoryKey;
 
 import java.io.IOException;
 import java.net.URL;
@@ -52,7 +52,7 @@ public class ROSDepKeyCacheImpl implements ROSDepKeyCache {
             internetAttempted = false;
             offlineMode = true;
         };
-        settings.addListener(doOfflineCaching, BrowserOptions.HistoryKey.KNOWN_ROSDEP_KEYS.get());
+        settings.addListener(doOfflineCaching, HistoryKey.KNOWN_ROSDEP_KEYS.get());
         doOfflineCaching.accept(settings);
     }
 

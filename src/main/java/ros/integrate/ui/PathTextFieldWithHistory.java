@@ -10,6 +10,7 @@ import com.intellij.ui.RecentsManager;
 import com.intellij.ui.TextFieldWithHistory;
 import com.intellij.util.Consumer;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicComboBoxEditor;
@@ -30,7 +31,8 @@ public class PathTextFieldWithHistory extends TextFieldWithHistory {
             return getBuiltinIcons().second;
         }
     };
-    protected String historyIndex = "";
+    protected HistoryKey lookupKey;
+    protected Project project;
 
     public PathTextFieldWithHistory() {
         setEditable(true);
@@ -43,31 +45,38 @@ public class PathTextFieldWithHistory extends TextFieldWithHistory {
     }
 
     /**
-     * attaches functionality to the ... button as well as a history lookup when filling in the text in the text field
-     * @param options an options object loading a bunch of useful settings like window title,
-     *                history storage, etc.
+     * attaches functionality to the history lookup when filling in the text in the text field
+     * @param project the project this is used to customize
+     * @param lookupKey the index to look for previous entries
      */
-    public void installFeatures(@NotNull BrowserOptions options) {
-
-        List<String> recentEntries = Optional.ofNullable(RecentsManager.getInstance(options.project)
-                .getRecentEntries(options.getKey()))
+    public void installHistory(Project project, @NotNull HistoryKey lookupKey) {
+        List<String> recentEntries = Optional.ofNullable(RecentsManager.getInstance(project)
+                .getRecentEntries(lookupKey.get()))
                 .orElse(new LinkedList<>());
         recentEntries.remove(getText()); // doing this and the line below will move curDir to the top regardless if it exists or not
         recentEntries.add(0, getText());
         setHistory(recentEntries);
-        historyIndex = options.getKey();
-
-        installBrowseButton(options);
+        this.lookupKey = lookupKey;
+        this.project = project;
     }
 
-    protected void installBrowseButton(@NotNull BrowserOptions options) {
+    /**
+     * installs the browse functionality for the component
+     * @param title the title of the browse dialog
+     * @param description the subtitle (or description) given in the browse dialog
+     */
+    public void installBrowser(@NotNull String title, @Nullable String description) {
         FileChooserDescriptor descriptor = FileChooserDescriptorFactory.createSingleFolderDescriptor();
-        field.addBrowseFolderListener(options.title, options.description, options.project, descriptor);
+        field.addBrowseFolderListener(title, description, project, descriptor);
     }
 
-
+    /**
+     * append a new entry to this field's history.
+     * @param project the project this field is used to customize
+     * @param updateAction an additional, optional trigger of other functions.
+     */
     public void addToHistory(Project project, @NotNull Consumer<String> updateAction) {
-        RecentsManager.getInstance(project).registerRecentEntry(historyIndex, field.getText());
+        RecentsManager.getInstance(project).registerRecentEntry(lookupKey.get(), field.getText());
         updateAction.consume(field.getText());
     }
 

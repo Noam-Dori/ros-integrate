@@ -12,6 +12,7 @@ import com.intellij.util.ui.ColumnInfo;
 import com.intellij.util.ui.ListTableModel;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkg.ROSDepKeyCache;
 import ros.integrate.pkg.ROSPackageManager;
 import ros.integrate.pkg.psi.ROSPackage;
@@ -165,6 +166,11 @@ public class DependencyTable extends ListTableWithButtons<DependencyTable.Entry>
                             @Override
                             protected String getLookupString(@NotNull ROSPackage item) {
                                 return item.getName();
+                            }
+
+                            @Override
+                            protected @Nullable Icon getIcon(@NotNull ROSPackage item) {
+                                return item.getIcon(0);
                             }
                         };
                 TextFieldWithAutoCompletion<ROSPackage> field = new TextFieldWithAutoCompletion<>(project,
