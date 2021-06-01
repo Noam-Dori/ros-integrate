@@ -14,7 +14,6 @@ import ros.integrate.buildtool.ROSBuildTool;
 import ros.integrate.buildtool.ROSProfile;
 import ros.integrate.pkg.ROSDepKeyCache;
 import ros.integrate.pkg.ROSPackageManager;
-import ros.integrate.pkg.psi.ROSPackage;
 import ros.integrate.ui.HistoryKey;
 import ros.integrate.ui.PathListTextField;
 import ros.integrate.ui.PathTextFieldWithHistory;
@@ -23,9 +22,8 @@ import ros.integrate.ui.SectionedFormBuilder;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import java.awt.*;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * the GUI component that allows editing details about a specific profile while remaining
@@ -49,7 +47,7 @@ public class ROSProfileForm {
             installDir = new PathTextFieldWithHistory();
 
     private final PathListTextField allowList = new PathListTextField(), denyList = new PathListTextField();
-    private final Collection<ROSPackage> packages = new HashSet<>();
+    private final Map<String, Icon> packages = new HashMap<>();
 
     public ROSProfileForm(@NotNull Project project) {
         JBLabel nameLabel = new JBLabel("Name:");
@@ -65,11 +63,12 @@ public class ROSProfileForm {
         JBLabel denyListLabel = new JBLabel("Denied packages");
         buildtoolArgsLabel.setText("<html><code>Buildtool</code> args:</html>");
 
-        packages.addAll(project.getService(ROSPackageManager.class).getAllPackages());
-        packages.addAll(project.getService(ROSDepKeyCache.class).getAllKeys());
+        project.getService(ROSPackageManager.class).getAllPackages()
+                .forEach(pkg -> packages.put(pkg.getName(), pkg.getIcon(0)));
+        project.getService(ROSDepKeyCache.class).getAllKeys()
+                .forEach(pkg -> packages.put(pkg.getName(), pkg.getIcon(0)));
         TextFieldWithAutoCompletionListProvider<String> provider =
-                new TextFieldWithAutoCompletionListProvider<String>(
-                        packages.stream().map(ROSPackage::getName).collect(Collectors.toList())){
+                new TextFieldWithAutoCompletionListProvider<String>(packages.keySet()){
                     @NotNull
                     @Override
                     protected String getLookupString(@NotNull String item) {
@@ -78,8 +77,7 @@ public class ROSProfileForm {
 
                     @Override
                     protected @Nullable Icon getIcon(@NotNull String item) {
-                        return packages.stream().filter(pkg -> item.equals(pkg.getName()))
-                                .findFirst().orElse(ROSPackage.ORPHAN).getIcon(0);
+                        return packages.get(item);
                     }
                 };
 
