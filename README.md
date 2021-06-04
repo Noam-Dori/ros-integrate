@@ -1,3 +1,6 @@
+![Downloads](https://img.shields.io/jetbrains/plugin/d/ros-integrate)
+![Version](https://img.shields.io/jetbrains/plugin/v/ros-integrate)
+
 # What is this plugin about?
 [ROS](https://www.ros.org/) is a framework that makes writing robot software significantly easier.
 However, implementing a feature for your robot in ROS requires writing a significant amount of code, 

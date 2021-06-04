@@ -80,6 +80,9 @@ public class PathTextFieldWithHistory extends TextFieldWithHistory {
         updateAction.consume(field.getText());
     }
 
+    /**
+     * @return the button icons for the built-in icon
+     */
     protected Pair<Icon, Icon> getBuiltinIcons() {
         return new Pair<>(AllIcons.General.OpenDisk, AllIcons.General.OpenDiskHover);
     }
