@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 
 /**
@@ -16,8 +17,9 @@ import java.util.function.Function;
  * and the IDE will hold information missing from those files in a separate, persistent database.
  * @author Noam Dori
  */
-// TODO: 5/4/2021 implement away the mock stuff
 public class ROSProfiles {
+    private final Project project;
+
     /**
      * a shortcut to get the ROS profiles database
      * @param project the project from which to get the profiles DB
@@ -25,6 +27,10 @@ public class ROSProfiles {
      */
     public static ROSProfiles getInstance(@NotNull Project project) {
         return project.getService(ROSProfiles.class);
+    }
+
+    private ROSProfiles(Project project) {
+        this.project = project;
     }
 
     /**
@@ -65,5 +71,24 @@ public class ROSProfiles {
     public Integer requestId() {
         profiles.put(nextId, new ROSProfile());
         return nextId++;
+    }
+
+    /**
+     * loads all profiles onto this database
+     * @return the key list of all profiles loaded in.
+     * @apiNote this is a heavy operation as it does a lot of reading. Use sparingly.
+     *          this also wipes any existing data.
+     */
+    public Set<Integer> loadProfiles() {
+        profiles.clear();
+        nextId = 0;
+        ROSProfileLoader profileLoader = new ROSProfileLoader(project);
+        for (ROSBuildTool buildTool: ROSBuildTool.values()) {
+            profileLoader.load(buildTool).forEach(profile -> {
+                profiles.put(nextId, profile);
+                nextId++;
+            });
+        }
+        return profiles.keySet();
     }
 }

@@ -12,7 +12,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.buildtool.ROSBuildTool;
 import ros.integrate.buildtool.ROSProfile;
-import ros.integrate.pkg.ROSDepKeyCache;
 import ros.integrate.pkg.ROSPackageManager;
 import ros.integrate.ui.HistoryKey;
 import ros.integrate.ui.PathListTextField;
@@ -68,8 +67,6 @@ public class ROSProfileForm {
         buildtoolArgsLabel.setText("<html><code>Buildtool</code> args:</html>");
 
         project.getService(ROSPackageManager.class).getAllPackages()
-                .forEach(pkg -> packages.put(pkg.getName(), pkg.getIcon(0)));
-        project.getService(ROSDepKeyCache.class).getAllKeys()
                 .forEach(pkg -> packages.put(pkg.getName(), pkg.getIcon(0)));
         TextFieldWithAutoCompletionListProvider<String> provider =
                 new TextFieldWithAutoCompletionListProvider<String>(packages.keySet()){

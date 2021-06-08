@@ -11,10 +11,7 @@ import ros.integrate.buildtool.ui.SelectableListTable;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * the user interface that allows the user to add,get, or modify the project's ROS buildtool configurations,
@@ -130,6 +127,8 @@ public class ROSProfileSettingsPage implements SearchableConfigurable {
             selectedId = newId;
             formToSelect.getPanel().setVisible(true);
         });
+
+        profileList.setValues(new ArrayList<>(data.loadProfiles()));
 
         return ret;
     }

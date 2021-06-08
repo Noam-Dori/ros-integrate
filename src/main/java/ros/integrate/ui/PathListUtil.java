@@ -54,7 +54,7 @@ public class PathListUtil {
      * @param delimiter the delimiter to use between the paths
      * @return a string containing all paths
      */
-    static String serializePathList(@NotNull List<String> pathList, char delimiter) {
+    public static String serializePathList(@NotNull List<String> pathList, char delimiter) {
         return pathList.stream().filter(path -> !path.isEmpty()).collect(Collectors.joining(String.valueOf(delimiter)));
     }
 }
