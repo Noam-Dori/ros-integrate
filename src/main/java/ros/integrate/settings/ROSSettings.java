@@ -3,7 +3,6 @@ package ros.integrate.settings;
 import com.intellij.openapi.components.*;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.containers.MultiMap;
-import com.intellij.util.xmlb.XmlSerializerUtil;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -38,7 +37,7 @@ public class ROSSettings implements PersistentStateComponent<ROSSettings.State> 
     }
 
     /**
-     * the actual data os the settings
+     * the actual data of the settings
      */
     @SuppressWarnings("WeakerAccess")
     static class State {
@@ -50,7 +49,7 @@ public class ROSSettings implements PersistentStateComponent<ROSSettings.State> 
         public String knownKeys;
         public String depSources;
     }
-    private final State state = new State();
+    private State state = new State();
     private final MultiMap<String,Consumer<ROSSettings>> listeners = new MultiMap<>();
 
     /**
@@ -103,10 +102,7 @@ public class ROSSettings implements PersistentStateComponent<ROSSettings.State> 
 
     @Override
     public void loadState(@NotNull State state) {
-        //noinspection UnstableApiUsage
-        XmlSerializerUtil.getAccessors(State.class).forEach(accessor ->
-                Optional.ofNullable(accessor.read(state))
-                        .ifPresent(val -> accessor.set(this.state, val)));
+        this.state = state;
     }
 
     /**
