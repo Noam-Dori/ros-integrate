@@ -34,19 +34,39 @@ public class ROSProfileLoader {
         }
     }
 
+    @State(name = "ColconProfiles", storages = @Storage("colcon.xml"))
+    static class ColconProfiles implements PersistentStateComponent<List<ROSProfile>> {
+        private final List<ROSProfile> data = new ArrayList<>();
+
+        @Override
+        public @NotNull List<ROSProfile> getState() {
+            return data;
+        }
+
+        @Override
+        public void loadState(@NotNull List<ROSProfile> state) {
+            data.clear();
+            data.addAll(state);
+        }
+    }
+
     private static final Logger LOG = Logger.getInstance("#ros.integrate.buildtool.ROSProfileLoader");
     @NotNull
     private final ROSSettings settings;
     @NotNull
     private final CatkinMakeProfiles catkinMakeProfiles;
+    @NotNull
+    private final ColconProfiles colconProfiles;
     private static final VirtualFileSystem FILE_SYSTEM = VirtualFileManager.getInstance()
             .getFileSystem(LocalFileSystem.PROTOCOL);
 
     public ROSProfileLoader(Project project) {
         settings = ROSSettings.getInstance(project);
         catkinMakeProfiles = new CatkinMakeProfiles();
+        colconProfiles = new ColconProfiles();
     }
 
+    @NotNull
     public List<ROSProfile> load(@NotNull ROSBuildTool buildTool) {
         if (settings.getWorkspacePath().isEmpty()) {
             return Collections.emptyList();
@@ -64,7 +84,51 @@ public class ROSProfileLoader {
 
     @NotNull
     private List<ROSProfile> loadColcon() {
-        return Collections.emptyList();
+        // load existing profiles from persistent state component.
+        List<ROSProfile> ret = colconProfiles.getState();
+        // if there are no profiles in the XML, and the .catkin_workspace file exists, load that as a profile.
+        if (ret.isEmpty()) {
+            // find out if colcon is loaded
+            String defaultPath = System.getenv("COLCON_DEFAULTS_FILE");
+            if (defaultPath == null) {
+                defaultPath = System.getenv("COLCON_HOME");
+                if (defaultPath == null) {
+                    return Collections.emptyList();
+                }
+                defaultPath += "/defaults.yaml";
+            }
+            VirtualFile colconDefaults = FILE_SYSTEM.findFileByPath(defaultPath);
+            if (colconDefaults == null) {
+                return Collections.emptyList();
+            }
+            Yaml config = new Yaml();
+            try {
+                Map<String, Object> data = config.load(colconDefaults.getInputStream());
+                ROSProfile profile = new ROSProfile();
+                profile.setGuiName("colcon_defaults");
+                profile.setGuiBuildtool(ROSBuildTool.COLCON);
+                profile.setIsolation(true);
+
+                @SuppressWarnings("unchecked")
+                Map<String, Object> buildVerb = (Map<String, Object>) data.get("build");
+                if (buildVerb != null) {
+                    profile.setBuildDir(extendPath(buildVerb, "build-base", "build"));
+                    profile.setInstallDir(extendPath(buildVerb, "install-base", "install"));
+                    profile.setCmakeArgs(serialize(buildVerb, "cmake-args", ' '));
+
+                    profile.setDenyList(serialize(buildVerb, "packages-skip", ' '));
+                    profile.setAllowList(serialize(buildVerb, "packages-select", ' '));
+                    profile.setSourceDir(extendPath(getFirst(buildVerb, "paths", "src")));
+                }
+                profile.setInstall(true);
+
+                profile.save();
+                ret.add(profile);
+            } catch (IOException e) {
+                LOG.error(String.format("Read of file [%s] failed with exception", colconDefaults.getPath()), e);
+            }
+        }
+        return ret;
     }
 
     @NotNull
@@ -130,8 +194,13 @@ public class ROSProfileLoader {
 
     @SuppressWarnings("unchecked")
     private String serialize(@NotNull Map<String, Object> data, String lookupKey, char delimiter) {
-        return PathListUtil.serializePathList((List<String>)
-                data.getOrDefault(lookupKey, Collections.emptyList()), delimiter);
+        Object list = data.get(lookupKey);
+        if (list instanceof List<?>) {
+            return PathListUtil.serializePathList((List<String>)
+                    data.getOrDefault(lookupKey, Collections.emptyList()), delimiter);
+        } else {
+            return (String) data.getOrDefault(lookupKey, "");
+        }
     }
 
     private String extendPath(@NotNull Map<String, Object> data, String lookupKey, String def) {
@@ -141,5 +210,15 @@ public class ROSProfileLoader {
 
     private String extendPath(@NotNull String raw) {
         return raw.startsWith("/") ? raw : settings.getWorkspacePath() + "/" + raw;
+    }
+
+    @SuppressWarnings("SameParameterValue")
+    private String getFirst(@NotNull Map<String, Object> data, String lookupKey, String def) {
+        Object ret = data.getOrDefault(lookupKey, def);
+        if (ret instanceof List<?>) {
+            return (String) ((List<?>) ret).get(0);
+        } else {
+            return (String) ret;
+        }
     }
 }
