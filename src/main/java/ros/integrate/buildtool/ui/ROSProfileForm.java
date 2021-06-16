@@ -47,6 +47,7 @@ public class ROSProfileForm {
 
     private final PathListTextField allowList = new PathListTextField(), denyList = new PathListTextField();
     private final Map<String, Icon> packages = new HashMap<>();
+    private ROSProfile profile;
 
     /**
      * create a new profile form
@@ -195,5 +196,24 @@ public class ROSProfileForm {
             profile.setGuiBuildtool(buildtool.getItem());
             update.run();
         });
+
+        this.profile = profile;
+    }
+
+    public boolean isModified() {
+        boolean sumFlags = name.getText().equals(profile.getName())
+                && buildtool.getItem().equals(profile.getBuildtool())
+                && doInstall.isSelected() == profile.isInstall()
+                && doIsolation.getItem().equals(profile.getIsolation())
+                && makeArgs.getText().equals(profile.getMakeArgs())
+                && cmakeArgs.getText().equals(profile.getCmakeArgs())
+                && buildtoolArgs.getText().equals(profile.getBuildtoolArgs())
+                && sourceDir.getText().equals(profile.getSourceDirectory())
+                && buildDir.getText().equals(profile.getBuildDirectory())
+                && develDir.getText().equals(profile.getDevelDirectory())
+                && installDir.getText().equals(profile.getInstallDirectory())
+                && allowList.getText().equals(profile.getAllowList())
+                && denyList.getText().equals(profile.getDenyList());
+        return !sumFlags;
     }
 }

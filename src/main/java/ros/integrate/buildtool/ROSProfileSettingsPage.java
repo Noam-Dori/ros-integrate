@@ -12,6 +12,7 @@ import ros.integrate.buildtool.ui.SelectableListTable;
 import javax.swing.*;
 import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 /**
  * the user interface that allows the user to add,get, or modify the project's ROS buildtool configurations,
@@ -25,6 +26,7 @@ public class ROSProfileSettingsPage implements SearchableConfigurable {
     @NotNull
     private final Project project;
     private Integer selectedId = null;
+    private List<Integer> existingProfiles;
 
     /**
      * construct a new settings page
@@ -128,14 +130,16 @@ public class ROSProfileSettingsPage implements SearchableConfigurable {
             formToSelect.getPanel().setVisible(true);
         });
 
-        profileList.setValues(new ArrayList<>(data.loadProfiles()));
+        existingProfiles = new ArrayList<>(data.loadProfiles());
+        profileList.setValues(existingProfiles);
 
         return ret;
     }
 
     @Override
     public boolean isModified() {
-        return false;
+        return !profileList.getTableView().getItems().equals(existingProfiles)
+                || profileForms.values().stream().anyMatch(ROSProfileForm::isModified);
     }
 
     @Override
