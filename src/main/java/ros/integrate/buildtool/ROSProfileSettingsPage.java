@@ -144,6 +144,9 @@ public class ROSProfileSettingsPage implements SearchableConfigurable {
 
     @Override
     public void apply() {
-
+        List<Integer> removedProfiles = new LinkedList<>(profileList.getTableView().getItems());
+        removedProfiles.removeAll(existingProfiles);
+        data.removeProfiles(removedProfiles);
+        profileForms.forEach((key, value) -> data.updateProfile(key, value.saveProfile()));
     }
 }

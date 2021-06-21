@@ -11,5 +11,6 @@
         displayName="ROS Profiles"/>
         <projectService serviceImplementation="ros.integrate.settings.ROSSettings"/>
         <projectService serviceImplementation="ros.integrate.buildtool.ROSProfiles"/>
+        <projectService serviceImplementation="ros.integrate.buildtool.ROSProfileDatabase"/>
     </extensions>
 </idea-plugin>

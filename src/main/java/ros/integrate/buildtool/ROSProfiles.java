@@ -1,13 +1,12 @@
 package ros.integrate.buildtool;
 
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.io.IOException;
+import java.util.*;
 import java.util.function.Function;
 
 /**
@@ -18,6 +17,7 @@ import java.util.function.Function;
  * @author Noam Dori
  */
 public class ROSProfiles {
+    private static final Logger LOG = Logger.getInstance("#ros.integrate.buildtool.ROSProfileDatabase");
     private final Project project;
 
     /**
@@ -82,7 +82,7 @@ public class ROSProfiles {
     public Set<Integer> loadProfiles() {
         profiles.clear();
         nextId = 0;
-        ROSProfileLoader profileLoader = new ROSProfileLoader(project);
+        ROSProfileDatabase profileLoader = project.getService(ROSProfileDatabase.class);
         for (ROSBuildTool buildTool: ROSBuildTool.values()) {
             profileLoader.load(buildTool).forEach(profile -> {
                 profiles.put(nextId, profile);
@@ -90,5 +90,29 @@ public class ROSProfiles {
             });
         }
         return profiles.keySet();
+    }
+
+    public void removeProfiles(@NotNull List<Integer> profileIds) {
+        ROSProfileDatabase profileKiller = project.getService(ROSProfileDatabase.class);
+        for (Integer id : profileIds) {
+            ROSProfile profile = profiles.get(id);
+            if (profile == null) {
+                continue;
+            }
+            try {
+                profileKiller.removeProfile(profile);
+                profiles.remove(id);
+            } catch (IOException e) {
+                LOG.error(String.format("Attempted to remove profile [%s] from buildtool [%s] but got an IO error.",
+                        profile.getName(), profile.getBuildtool()), e);
+            }
+        }
+    }
+
+    public void updateProfile(Integer id, ROSProfile profile) {
+        ROSProfile oldProfile = profiles.get(id);
+        ROSProfileDatabase profileSaver = project.getService(ROSProfileDatabase.class);
+        profileSaver.updateProfile(oldProfile, profile);
+        profiles.put(id, profile);
     }
 }

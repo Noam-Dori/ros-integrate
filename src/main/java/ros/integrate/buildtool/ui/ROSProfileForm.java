@@ -216,4 +216,21 @@ public class ROSProfileForm {
                 && denyList.getText().equals(profile.getDenyList());
         return !sumFlags;
     }
+
+    public ROSProfile saveProfile() {
+        profile.setGuiName(name.getText());
+        profile.setGuiBuildtool(buildtool.getItem());
+        profile.setInstall(doInstall.isSelected());
+        profile.setIsolation(doIsolation.getItem());
+        profile.setMakeArgs(makeArgs.getText());
+        profile.setCmakeArgs(cmakeArgs.getText());
+        profile.setBuildtoolArgs(buildtoolArgs.getText());
+        profile.setSourceDirectory(sourceDir.getText());
+        profile.setBuildDirectory(buildDir.getText());
+        profile.setDevelDirectory(develDir.getText());
+        profile.setInstallDirectory(installDir.getText());
+        profile.setAllowList(allowList.getText());
+        profile.setDenyList(denyList.getText());
+        return profile;
+    }
 }
