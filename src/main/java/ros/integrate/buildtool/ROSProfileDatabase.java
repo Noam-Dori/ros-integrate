@@ -23,12 +23,26 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.*;
 
+/**
+ * the persistence layer of the profile model.
+ * this service interacts with each buildtool's way to store profiles. This service does not store profiles,
+ * only interacts with the files. If you want to interact with profiles, use {@link ROSProfiles}.
+ * Some buildtools (for instance, {@link ROSBuildTool#CATKIN_MAKE}) do store any data about build configurations,
+ * so the IDE takes care of that with a config file named <code>profiles.xml</code>
+ * @author Noam Dori
+ */
 @State(name = "ROSProfileDatabase", storages = @Storage("profiles.xml"))
 public class ROSProfileDatabase implements PersistentStateComponent<ROSProfileDatabase.State> {
+    /**
+     * a function that accepts 3 variables. nothing special.
+     */
     interface TriConsumer<X1, X2, X3> {
         void accept(X1 x1, X2 x2, X3 x3);
     }
 
+    /**
+     * represents a profile from profiles.xml
+     */
     @Tag("profile")
     static class ProfileState {
         @XMap
@@ -42,6 +56,10 @@ public class ROSProfileDatabase implements PersistentStateComponent<ROSProfileDa
         public ProfileState() { }
     }
 
+    /**
+     * represents the contents of profiles.xml, which includes a map from the buildtool
+     * to a list of all the raw profiles.
+     */
     static class State {
         public Map<ROSBuildTool, List<ProfileState>> data;
 
@@ -56,6 +74,11 @@ public class ROSProfileDatabase implements PersistentStateComponent<ROSProfileDa
     @NotNull
     private static final Yaml YAML = getYaml();
 
+    /**
+     * since catkin_tools (and colcon) use yaml files to store data, this service has a yaml service to
+     * interpret said data.
+     * @return the YAML service with the needed options applied.
+     */
     @NotNull
     private static Yaml getYaml() {
         DumperOptions options = new DumperOptions();
@@ -92,6 +115,12 @@ public class ROSProfileDatabase implements PersistentStateComponent<ROSProfileDa
         });
     }
 
+    /**
+     * load all profiles associated with a buildtool
+     * @param buildTool the buildtool the loaded profiles should be associated with
+     * @return a list of freshly loaded profiles.
+     * @apiNote this is a heavy operation as it reads a lot of files. Use sparingly.
+     */
     @NotNull
     public List<ROSProfile> load(@NotNull ROSBuildTool buildTool) {
         if (settings.getWorkspacePath().isEmpty()) {
@@ -108,7 +137,11 @@ public class ROSProfileDatabase implements PersistentStateComponent<ROSProfileDa
         return Collections.emptyList();
     }
 
-
+    /**
+     * delete a profile.
+     * @param profile the profile to remove.
+     * @throws IOException if the write action could not be completed.
+     */
     public void removeProfile(@NotNull ROSProfile profile) throws IOException {
         state.data.get(profile.getBuildtool())
                 .removeIf(dataProfile -> profile.getName().equals(dataProfile.profile.get("name")));
@@ -125,6 +158,12 @@ public class ROSProfileDatabase implements PersistentStateComponent<ROSProfileDa
         }
     }
 
+    /**
+     * update or add a new profile
+     * @param oldProfile the old profile to change. Set to null if you are adding a new profile.
+     * @param newProfile the new data of this profile (or the new profile)
+     * @throws IOException if the write action could not be completed.
+     */
     public void updateProfile(@Nullable ROSProfile oldProfile, @NotNull ROSProfile newProfile) throws IOException {
         if (newProfile.getGuiBuildtool() == ROSBuildTool.CATKIN_TOOLS) {
             VirtualFile profilesDir = FILE_SYSTEM.findFileByPath(settings.getWorkspacePath() + "/.catkin_tools/profiles");

@@ -200,6 +200,9 @@ public class ROSProfileForm {
         this.profile = profile;
     }
 
+    /**
+     * @return true if the user changed any value in the form, false otherwise.
+     */
     public boolean isModified() {
         boolean sumFlags = name.getText().equals(profile.getName())
                 && buildtool.getItem().equals(profile.getBuildtool())
@@ -217,6 +220,10 @@ public class ROSProfileForm {
         return !sumFlags;
     }
 
+    /**
+     * saves changed data into the linked profile
+     * @return the linked profile that was just modified.
+     */
     public ROSProfile saveProfile() {
         profile.setGuiName(name.getText());
         profile.setGuiBuildtool(buildtool.getItem());

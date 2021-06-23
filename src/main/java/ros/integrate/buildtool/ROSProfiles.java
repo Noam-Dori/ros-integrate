@@ -92,6 +92,10 @@ public class ROSProfiles {
         return profiles.keySet();
     }
 
+    /**
+     * deletes the profiles with the corresponding IDs from the database and the persistence layer.
+     * @param profileIds a list of IDs corresponding to the profiles to remove.
+     */
     public void removeProfiles(@NotNull List<Integer> profileIds) {
         ROSProfileDatabase profileKiller = project.getService(ROSProfileDatabase.class);
         for (Integer id : profileIds) {
@@ -109,6 +113,11 @@ public class ROSProfiles {
         }
     }
 
+    /**
+     * create or edit a profile in the database and the persistence layer.
+     * @param id the ID of the profile you want to change. If you don't have an ID, use {@link ROSProfiles#requestId()}
+     * @param profile the new profile to override the old one with.
+     */
     public void updateProfile(Integer id, ROSProfile profile) {
         ROSProfile oldProfile = profiles.get(id);
         ROSProfileDatabase profileSaver = project.getService(ROSProfileDatabase.class);
