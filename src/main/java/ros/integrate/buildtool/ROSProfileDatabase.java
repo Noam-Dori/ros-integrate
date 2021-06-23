@@ -1,5 +1,6 @@
 package ros.integrate.buildtool;
 
+import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
@@ -13,15 +14,21 @@ import com.intellij.util.xmlb.annotations.Tag;
 import com.intellij.util.xmlb.annotations.XMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import ros.integrate.settings.ROSSettings;
 import ros.integrate.ui.PathListUtil;
 
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.*;
 
 @State(name = "ROSProfileDatabase", storages = @Storage("profiles.xml"))
 public class ROSProfileDatabase implements PersistentStateComponent<ROSProfileDatabase.State> {
+    interface TriConsumer<X1, X2, X3> {
+        void accept(X1 x1, X2 x2, X3 x3);
+    }
+
     @Tag("profile")
     static class ProfileState {
         @XMap
@@ -44,6 +51,17 @@ public class ROSProfileDatabase implements PersistentStateComponent<ROSProfileDa
                 data.put(buildTool, new ArrayList<>());
             }
         }
+    }
+
+    @NotNull
+    private static final Yaml YAML = getYaml();
+
+    @NotNull
+    private static Yaml getYaml() {
+        DumperOptions options = new DumperOptions();
+        options.setPrettyFlow(true);
+        options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+        return new Yaml(options);
     }
 
     private static final Logger LOG = Logger.getInstance("#ros.integrate.buildtool.ROSProfileDatabase");
@@ -101,24 +119,44 @@ public class ROSProfileDatabase implements PersistentStateComponent<ROSProfileDa
             }
             for (VirtualFile profileDir : profilesDir.getChildren()) {
                 if (profileDir.getName().equals(profile.getName())) {
-                    profileDir.delete(null);
+                    WriteAction.run(() -> profileDir.delete(this));
                 }
             }
         }
     }
 
-    public void updateProfile(@Nullable ROSProfile oldProfile, @NotNull ROSProfile newProfile) {
-        if (newProfile.getBuildtool() == ROSBuildTool.CATKIN_TOOLS) {
+    public void updateProfile(@Nullable ROSProfile oldProfile, @NotNull ROSProfile newProfile) throws IOException {
+        if (newProfile.getGuiBuildtool() == ROSBuildTool.CATKIN_TOOLS) {
             VirtualFile profilesDir = FILE_SYSTEM.findFileByPath(settings.getWorkspacePath() + "/.catkin_tools/profiles");
             if (profilesDir == null) {
                 return;
             }
-            for (VirtualFile profileDir : profilesDir.getChildren()) {
-                if (profileDir.getName().equals(newProfile.getName())) {
-                    Yaml config = new Yaml();
-                    VirtualFile configFile = Optional.ofNullable(profileDir.findChild("config.yaml"))
-                            .orElseGet(() -> profileDir.findChild("build.yaml"));
-                    // TODO: 6/20/2021 update yaml files
+            if (oldProfile == null) {
+                newProfile.save();
+                WriteAction.run(() -> {
+                    VirtualFile profileDir = profilesDir.createChildDirectory(this, newProfile.getName());
+                    VirtualFile configFile = profileDir.createChildData(this, "config.yaml");
+                    Map<String, Object> data = extractCatkinToolsData(newProfile);
+                    OutputStreamWriter configWriter = new OutputStreamWriter(configFile.getOutputStream(this));
+                    YAML.dump(data, configWriter);
+                    configWriter.close();
+                });
+            } else for (VirtualFile profileDir : profilesDir.getChildren()) {
+                if (profileDir.getName().equals(oldProfile.getName())) {
+                    newProfile.save();
+                    WriteAction.run(() -> {
+                        VirtualFile configFile = Optional.ofNullable(profileDir.findChild("config.yaml"))
+                                .orElseGet(() -> profileDir.findChild("build.yaml"));
+                        if (configFile == null) {
+                            configFile = profileDir.createChildData(this, "config.yaml");
+                        }
+                        Map<String, Object> data = YAML.load(configFile.getInputStream());
+                        data.putAll(extractCatkinToolsData(newProfile));
+                        OutputStreamWriter configWriter = new OutputStreamWriter(configFile.getOutputStream(this));
+                        YAML.dump(data, configWriter);
+                        configWriter.close();
+                        profileDir.rename(this, newProfile.getName());
+                    });
                     break;
                 }
             }
@@ -136,6 +174,29 @@ public class ROSProfileDatabase implements PersistentStateComponent<ROSProfileDa
                 state.data.get(newProfile.getBuildtool()).add(new ProfileState(newProfile.getRawData()));
             }
         }
+    }
+
+    @NotNull
+    private Map<String, Object> extractCatkinToolsData(@NotNull ROSProfile newProfile) {
+        Map<String, Object> ret = new HashMap<>();
+        Map<String, String> raw = newProfile.getRawData();
+        TriConsumer<String, String, Character> doPutArgs = (rawKey, yamlKey, c) -> {
+            List<String> preview = toList(raw.get(rawKey), c);
+            if (!preview.isEmpty()) {
+                ret.put(yamlKey, preview);
+            }
+        };
+        ret.put("install", "true".equals(raw.get("doInstall")));
+        doPutArgs.accept("buildtoolArgs", "catkin_make_args", ' ');
+        doPutArgs.accept("cmakeArgs", "cmake_args", ' ');
+        doPutArgs.accept("makeArgs", "make_args", ' ');
+        ret.put("build_space", toRelativePath(raw.get("buildDir")));
+        ret.put("devel_space", toRelativePath(raw.get("develDir")));
+        ret.put("install_space", toRelativePath(raw.get("installDir")));
+        ret.put("source_space", toRelativePath(raw.get("sourceDir")));
+        doPutArgs.accept("allowList", "whitelist", ',');
+        doPutArgs.accept("denyList", "blacklist", ',');
+        return ret;
     }
 
     @NotNull
@@ -158,9 +219,8 @@ public class ROSProfileDatabase implements PersistentStateComponent<ROSProfileDa
             if (colconDefaults == null) {
                 return Collections.emptyList();
             }
-            Yaml config = new Yaml();
             try {
-                Map<String, Object> data = config.load(colconDefaults.getInputStream());
+                Map<String, Object> data = YAML.load(colconDefaults.getInputStream());
                 ROSProfile profile = new ROSProfile();
                 profile.setGuiName("colcon_defaults");
                 profile.setGuiBuildtool(ROSBuildTool.COLCON);
@@ -225,14 +285,13 @@ public class ROSProfileDatabase implements PersistentStateComponent<ROSProfileDa
         }
         List<ROSProfile> ret = new ArrayList<>();
         for (VirtualFile profileDir : profilesDir.getChildren()) {
-            Yaml config = new Yaml();
             VirtualFile configFile = Optional.ofNullable(profileDir.findChild("config.yaml"))
                     .orElseGet(() -> profileDir.findChild("build.yaml"));
             if (configFile == null) {
                 continue;
             }
             try {
-                Map<String, Object> data = config.load(configFile.getInputStream());
+                Map<String, Object> data = YAML.load(configFile.getInputStream());
                 ROSProfile profile = new ROSProfile();
                 profile.setGuiBuildtool(ROSBuildTool.CATKIN_TOOLS);
                 profile.setGuiName(profileDir.getName());
@@ -267,6 +326,15 @@ public class ROSProfileDatabase implements PersistentStateComponent<ROSProfileDa
         }
     }
 
+    @NotNull
+    private List<String> toList(String data, char delimiter) {
+        List<String> ret = delimiter == ':' ? PathListUtil.parsePathList(data) : Arrays.asList(data.split("" + delimiter));
+        if (ret.size() == 1 && ret.get(0).isEmpty()) {
+            return Collections.emptyList();
+        }
+        return ret;
+    }
+
     private String extendPath(@NotNull Map<String, Object> data, String lookupKey, String def) {
         String raw = (String) data.getOrDefault(lookupKey, def);
         return raw.startsWith("/") ? raw : settings.getWorkspacePath() + "/" + raw;
@@ -274,6 +342,14 @@ public class ROSProfileDatabase implements PersistentStateComponent<ROSProfileDa
 
     private String extendPath(@NotNull String raw) {
         return raw.startsWith("/") ? raw : settings.getWorkspacePath() + "/" + raw;
+    }
+
+    @NotNull
+    private String toRelativePath(@NotNull String fullPath) {
+        if (fullPath.startsWith(settings.getWorkspacePath() + "/")) {
+            return fullPath.substring(settings.getWorkspacePath().length() + 1);
+        }
+        return fullPath;
     }
 
     @SuppressWarnings("SameParameterValue")

@@ -104,7 +104,7 @@ public class ROSProfiles {
                 profiles.remove(id);
             } catch (IOException e) {
                 LOG.error(String.format("Attempted to remove profile [%s] from buildtool [%s] but got an IO error.",
-                        profile.getName(), profile.getBuildtool()), e);
+                        profile.getGuiName(), profile.getGuiBuildtool()), e);
             }
         }
     }
@@ -112,7 +112,12 @@ public class ROSProfiles {
     public void updateProfile(Integer id, ROSProfile profile) {
         ROSProfile oldProfile = profiles.get(id);
         ROSProfileDatabase profileSaver = project.getService(ROSProfileDatabase.class);
-        profileSaver.updateProfile(oldProfile, profile);
-        profiles.put(id, profile);
+        try {
+            profileSaver.updateProfile(oldProfile, profile);
+            profiles.put(id, profile);
+        } catch (IOException e) {
+            LOG.error(String.format("Attempted to %s profile [%s] from buildtool [%s] but got an IO error.",
+                    oldProfile == null ? "add" : "update", profile.getGuiName(), profile.getGuiBuildtool()), e);
+        }
     }
 }
