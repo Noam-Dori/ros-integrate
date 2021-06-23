@@ -161,10 +161,14 @@ public class ROSProfileDatabase implements PersistentStateComponent<ROSProfileDa
     /**
      * update or add a new profile
      * @param oldProfile the old profile to change. Set to null if you are adding a new profile.
-     * @param newProfile the new data of this profile (or the new profile)
+     * @param newProfile the new data of this profile (or the new profile). This profile should not run the "save" operation.
      * @throws IOException if the write action could not be completed.
      */
     public void updateProfile(@Nullable ROSProfile oldProfile, @NotNull ROSProfile newProfile) throws IOException {
+        ROSBuildTool oldBuildTool = oldProfile == null ? null : oldProfile.getBuildtool();
+        if (oldBuildTool != null && oldBuildTool != newProfile.getGuiBuildtool()) {
+            removeProfile(oldProfile); // this runs if we are migrating a profile
+        }
         if (newProfile.getGuiBuildtool() == ROSBuildTool.CATKIN_TOOLS) {
             VirtualFile profilesDir = FILE_SYSTEM.findFileByPath(settings.getWorkspacePath() + "/.catkin_tools/profiles");
             if (profilesDir == null) {
