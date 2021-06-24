@@ -112,7 +112,7 @@ public abstract class ROSPackageFinderBase implements ROSPackageFinder {
                 ret.putValues(newPkg, new ArrayList<>(0));
             }
         });
-        events.parallelStream().forEach(event -> sortEventByRoot(event, ret));
+        events.forEach(event -> sortEventByRoot(event, ret));
         return ret;
     }
 
