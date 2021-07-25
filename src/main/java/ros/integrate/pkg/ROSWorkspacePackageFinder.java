@@ -24,6 +24,7 @@ import ros.integrate.pkt.psi.ROSPktFile;
 import ros.integrate.settings.ROSSettings;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -39,8 +40,8 @@ public class ROSWorkspacePackageFinder extends ROSPackageFinderBase {
     private static final VirtualFileSystem FILE_SYSTEM = VirtualFileManager.getInstance()
             .getFileSystem(LocalFileSystem.PROTOCOL);
 
-    final Map<Project, Library> wsLib = new HashMap<>(1);
-    final Map<Project, String> wsPath = new HashMap<>(1);
+    private final Map<Project, Library> wsLib = new ConcurrentHashMap<>(1);
+    private final Map<Project, String> wsPath = new HashMap<>(1);
 
     @Nullable
     private VirtualFile toVirtualFile(@Nullable String path) {
@@ -79,7 +80,7 @@ public class ROSWorkspacePackageFinder extends ROSPackageFinderBase {
     @Override
     ROSPackage tryNewROSPackage(Project project, String pkgName, PsiDirectory xmlRoot, XmlFile pkgXml, List<ROSPktFile> pkgPackets) {
         ROSPackage newPkg = new ROSSourcePackage(project, pkgName, xmlRoot, pkgXml, pkgPackets);
-        if (newPkg == ROSPackage.ORPHAN) {
+        if (newPkg.equals(ROSPackage.ORPHAN)) {
             LOG.error("Failed indexing a valid ROS package",
                     "the project package finder tried finding a ros package, and failed.",
                     "Name: [" + pkgName + "]",
@@ -107,7 +108,7 @@ public class ROSWorkspacePackageFinder extends ROSPackageFinderBase {
                 .map(root -> root.findChild("src"))
                 .map(VirtualFile::getChildren)
                 .ifPresent(children -> Collections.addAll(files, children));
-        files.removeAll(getWorkspaceRoots(project));
+        getWorkspaceRoots(project).forEach(files::remove);
         GlobalSearchScope projectScope = GlobalSearchScope.projectScope(project);
         Library.ModifiableModel model = getLibrary(project).getModifiableModel();
         for (VirtualFile file : files) {
