@@ -8,7 +8,6 @@ import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.util.Pair;
 import com.intellij.ui.RecentsManager;
 import com.intellij.ui.TextFieldWithHistory;
-import com.intellij.util.Consumer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,6 +16,7 @@ import javax.swing.plaf.basic.BasicComboBoxEditor;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 
 public class PathTextFieldWithHistory extends TextFieldWithHistory {
 
@@ -75,9 +75,9 @@ public class PathTextFieldWithHistory extends TextFieldWithHistory {
      * @param project the project this field is used to customize
      * @param updateAction an additional, optional trigger of other functions.
      */
-    public void addToHistory(Project project, @NotNull Consumer<String> updateAction) {
+    public void addToHistory(Project project, @NotNull BiConsumer<String, String> updateAction) {
         RecentsManager.getInstance(project).registerRecentEntry(lookupKey.get(), field.getText());
-        updateAction.consume(field.getText());
+        updateAction.accept(field.getText(), lookupKey.get());
     }
 
     /**

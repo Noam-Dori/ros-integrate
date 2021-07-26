@@ -19,6 +19,7 @@ import ros.integrate.ui.*;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 /**
@@ -167,8 +168,8 @@ public class ROSSettingsPage implements SearchableConfigurable {
 
     @NotNull
     @Contract(pure = true)
-    private Consumer<String> withTrigger(Consumer<String> function) {
-        return topic -> {function.consume(topic); data.triggerListeners(topic);};
+    private BiConsumer<String, String> withTrigger(Consumer<String> function) {
+        return (fieldName, topic) -> {function.consume(fieldName); data.triggerListeners(topic);};
     }
 
     @Override
