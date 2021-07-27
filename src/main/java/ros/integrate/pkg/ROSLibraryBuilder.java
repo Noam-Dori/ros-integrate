@@ -1,5 +1,6 @@
 package ros.integrate.pkg;
 
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
@@ -26,7 +27,7 @@ public class ROSLibraryBuilder implements StartupActivity {
         ROSSettings.getInstance(project).addListener(settings -> WriteCommandAction.runWriteCommandAction(project, () -> {
             if (ROSPackageFinder.FINDERS.stream().map(finder -> finder.updateLibraries(project))
                     .reduce((sum, val) -> sum || val).orElse(false))
-                project.getService(ROSPackageManager.class).reloadIndex();
+                project.getService(ROSPackageManager.class).invalidateIndex();
         }), new String[]{HistoryKey.EXTRA_SOURCES.get(),
                 HistoryKey.WORKSPACE.get()});
     }

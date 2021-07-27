@@ -84,9 +84,9 @@ public interface ROSPackageManager {
     Collection<ROSPackage> findGroupDependents(@NotNull String groupName);
 
     /**
-     * reloads the package manager index.
+     * invalidates the index, forcing it to be reloaded the next time someone wishes to use it.
      */
-    void reloadIndex();
+    void invalidateIndex();
 
     /**
      * indicates that relevant files changed, so the index should try updating

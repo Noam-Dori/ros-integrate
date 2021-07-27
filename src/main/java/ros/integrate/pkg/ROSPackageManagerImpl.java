@@ -40,7 +40,7 @@ public class ROSPackageManagerImpl implements ROSPackageManager {
     public ROSPackageManagerImpl(@NotNull Project project) {
         this.project = project;
         loaded = false;
-        ROSSettings.getInstance(project).addListener(settings -> reloadIndex(),
+        ROSSettings.getInstance(project).addListener(settings -> invalidateIndex(),
                 HistoryKey.EXCLUDED_XMLS.get());
     }
 
@@ -52,10 +52,10 @@ public class ROSPackageManagerImpl implements ROSPackageManager {
     }
 
     @Override
-    public void reloadIndex() {
+    public void invalidateIndex() {
         if (loaded) {
             pkgCache.clear();
-            findPackages();
+            loaded = false;
         }
     }
 
