@@ -5,18 +5,16 @@
     <!-- extensions defined (and sometimes used) by this plugin. note that identifies are also here. -->
     <xi:include href="/pluginXml/ROSPluginExtensions.xml" xpointer="xpointer(/idea-plugin/*)"/>
 
-    <extensions defaultExtensionNs="com.intellij">
-        <!-- misc. features not specific to the plugin model. -->
-        <xi:include href="/pluginXml/generalExtensions.xml" xpointer="xpointer(/idea-plugin/extensions/*)"/>
+    <!-- misc. features not specific to the plugin model. -->
+    <xi:include href="/pluginXml/generalExtensions.xml" xpointer="xpointer(/idea-plugin/*)"/>
 
-        <!-- features defining the language used for packet files (*.msg, *.srv, *.action), and their functions. -->
-        <xi:include href="/pluginXml/ROSPktExtensions.xml" xpointer="xpointer(/idea-plugin/extensions/*)"/>
+    <!-- features defining the language used for packet files (*.msg, *.srv, *.action), and their functions. -->
+    <xi:include href="/pluginXml/ROSPktExtensions.xml" xpointer="xpointer(/idea-plugin/*)"/>
 
-        <!-- features implementing the package model used throughout ROS. -->
-        <xi:include href="/pluginXml/ROSPackageExtensions.xml" xpointer="xpointer(/idea-plugin/extensions/*)"/>
+    <!-- features implementing the package model used throughout ROS. -->
+    <xi:include href="/pluginXml/ROSPackageExtensions.xml" xpointer="xpointer(/idea-plugin/*)"/>
 
-        <!-- features implementing the manifests of ROS packages, named package.xml. -->
-        <xi:include href="/pluginXml/ROSPkgXmlExtensions.xml" xpointer="xpointer(/idea-plugin/extensions/*)"/>
+    <!-- features implementing the manifests of ROS packages, named package.xml. -->
+    <xi:include href="/pluginXml/ROSPkgXmlExtensions.xml" xpointer="xpointer(/idea-plugin/*)"/>
 
-    </extensions>
 </idea-plugin>
