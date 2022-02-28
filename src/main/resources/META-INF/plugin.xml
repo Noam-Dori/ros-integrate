@@ -8,6 +8,9 @@
     <!-- misc. features not specific to the plugin model. -->
     <xi:include href="/pluginXml/generalExtensions.xml" xpointer="xpointer(/idea-plugin/*)"/>
 
+    <!-- features extending the CMake build language (CMakeLists.txt, *.cmake) -->
+    <xi:include href="/pluginXml/CMakeExtensions.xml" xpointer="xpointer(/idea-plugin/*)"/>
+
     <!-- features defining the language used for packet files (*.msg, *.srv, *.action), and their functions. -->
     <xi:include href="/pluginXml/ROSPktExtensions.xml" xpointer="xpointer(/idea-plugin/*)"/>
 

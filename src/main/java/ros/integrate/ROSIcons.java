@@ -24,4 +24,5 @@ public interface ROSIcons {
     /** 16x16 */ Icon GROUP = AllIcons.Nodes.Tag;
     /** 16x16 */ Icon LIST_FILES = IconLoader.getIcon("/icons/listFiles.svg");
     /** 16x16 */ Icon LIST_FILES_HOVER = IconLoader.getIcon("/icons/listFilesHover.svg");
+    /** 16x16 */ Icon CMAKE_FILE = IconLoader.getIcon("/icons/cmake.svg");
 }
