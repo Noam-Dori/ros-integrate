@@ -41,7 +41,6 @@ import java.util.Stack;
 %}
 
 SPACE = [ \t]
-ESCAPE = \\([^A-Za-z0-9]|\t|\r)
 NEXTLINE = \R
 
 %state BRACKET,PAREN,QUOTE,COMMENT
@@ -68,7 +67,10 @@ NEXTLINE = \R
 }
 
 <BRACKET> {
-    ]=*]                                   { if(yylength() == bracketDepth) {yyPop(); return CMakeTypes.BRACKET_CLOSE;}}
+    ]=*]                                   { if(yylength() == bracketDepth) {
+                                                 yyPop(); return CMakeTypes.BRACKET_CLOSE;
+                                             } else return CMakeTypes.TEXT_ELEMENT;
+                                           }
     !(!]|]=*])                             { /* ignore. Used to include single braces in the text. */ }
     [^\]]+                                 { return CMakeTypes.TEXT_ELEMENT; }
 }

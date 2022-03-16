@@ -26,8 +26,7 @@ public class CMakeParserDefinition implements ParserDefinition {
 
     @Override
     public @NotNull Lexer createLexer(Project project) {
-        return new FlexAdapter(new CMakeLexer(null)) {
-        };
+        return new CMakeLexerAdapter();
     }
 
     @Override
