@@ -1,15 +1,13 @@
 // This is a generated file. Not intended for manual editing.
-package ros.integrate.pkt.psi;
+package ros.integrate.cmake.psi;
 
 import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface ROSPktLabel extends ROSPktIdentifier {
+public interface CMakeJunk extends PsiElement {
 
   @NotNull
-  PsiElement set(String newName);
-
-  String getName();
+  List<CMakeBracketComment> getBracketCommentList();
 
 }

@@ -1,0 +1,52 @@
+{
+    parserClass="ros.integrate.cmake.parser.CMakeParser"
+
+    extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+    psiClassPrefix="CMake"
+    psiImplClassSuffix="Impl"
+    psiPackage="ros.integrate.cmake.psi"
+    psiImplPackage="ros.integrate.cmake.psi.impl"
+
+    elementTypeHolderClass="ros.integrate.cmake.psi.CMakeTypes"
+    elementTypeClass="ros.integrate.cmake.psi.CMakeElementType"
+    tokenTypeClass="ros.integrate.cmake.psi.CMakeTokenType"
+
+//    psiImplUtilClass="ros.integrate.cmake.psi.impl.CMakePsiImplUtil"
+}
+
+// taken directly from the official CMake documentation
+// https://cmake.org/cmake/help/latest/manual/cmake-language.7.html
+// with some modifications
+
+
+// section 1 - source files
+cmakeFile         ::=  file_element*
+private file_element ::=  command | bracket_comment | line_ending | junk
+private line_ending  ::=  line_comment? NEXTLINE
+
+// section 2 - command invocations
+command  ::=  TEXT_ELEMENT PAREN_OPEN argument PAREN_CLOSE
+
+// section 3 - command arguments
+junk     ::= argument_element+
+argument ::= argument_element*
+private argument_element ::=  bracket_argument | quoted_argument | unquoted_argument
+
+// section 3.1 - bracket arguments
+private bracket_argument ::=  BRACKET_OPEN TEXT_ELEMENT* BRACKET_CLOSE
+
+// section 3.2 - quoted arguments
+private quoted_argument     ::=  QUOTE quoted_element* QUOTE
+private quoted_element      ::=  TEXT_ELEMENT | ESCAPE_SEQUENCE | CONTINUATION
+
+// section 3.3 - unquoted arguments
+private unquoted_argument ::=  (bracket_comment | TEXT_ELEMENT | NEXTLINE | ESCAPE_SEQUENCE |
+                               (PAREN_OPEN argument_element? PAREN_CLOSE?))+
+
+// section 6 - comments
+// section 6.1 - bracket comments
+bracket_comment ::=  COMMENT_START bracket_argument
+
+// section 6.2 - line comments
+line_comment ::=  COMMENT_START TEXT_ELEMENT

@@ -20,12 +20,14 @@ public class ROSPktLabelImpl extends ROSPktIdentifierImpl implements ROSPktLabel
     visitor.visitLabel(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof ROSPktVisitor) accept((ROSPktVisitor)visitor);
     else super.accept(visitor);
   }
 
   @Override
+  @NotNull
   public PsiElement set(String newName) {
     return ROSPktPsiImplUtil.set(this, newName);
   }

@@ -20,6 +20,7 @@ public class ROSPktFieldImpl extends ROSPktFieldBaseImpl implements ROSPktField 
     visitor.visitField(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof ROSPktVisitor) accept((ROSPktVisitor)visitor);
     else super.accept(visitor);

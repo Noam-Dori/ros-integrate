@@ -21,6 +21,7 @@ public class ROSPktConstImpl extends ASTWrapperPsiElement implements ROSPktConst
     visitor.visitConst(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof ROSPktVisitor) accept((ROSPktVisitor)visitor);
     else super.accept(visitor);

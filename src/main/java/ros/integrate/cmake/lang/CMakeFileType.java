@@ -8,6 +8,10 @@ import ros.integrate.ROSIcons;
 
 import javax.swing.Icon;
 
+/**
+ * Defines CMake files for non-CLion IDEs
+ * @author Noam Dori
+ */
 public class CMakeFileType extends LanguageFileType {
     public static final FileType INSTANCE = new CMakeFileType();
 
@@ -17,13 +21,13 @@ public class CMakeFileType extends LanguageFileType {
 
     @Override
     public @NotNull String getName() {
-        return "CMake File";
+        return "CMake";
     }
 
     @Override
     public @NotNull
     String getDescription() {
-        return "CMake File";
+        return "CMake";
     }
 
     @Override
