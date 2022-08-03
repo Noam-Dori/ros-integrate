@@ -1,5 +1,7 @@
 package ros.integrate.cmake.lang;
 
+import com.intellij.lang.Language;
+import com.intellij.lang.LanguageCommenters;
 import com.intellij.lang.LanguageParserDefinitions;
 import com.intellij.openapi.fileTypes.FileNameMatcher;
 import com.intellij.openapi.fileTypes.FileTypeConsumer;
@@ -24,6 +26,7 @@ public class CMakeFileTypeFactory extends FileTypeFactory {
         LanguageParserDefinitions.INSTANCE.addExplicitExtension(CMakeLanguage.INSTANCE, new CMakeParserDefinition());
         SyntaxHighlighterFactory.LANGUAGE_FACTORY.addExplicitExtension(CMakeLanguage.INSTANCE,
                 new CMakeSyntaxHighlighterFactory());
+        LanguageCommenters.INSTANCE.addExplicitExtension(CMakeLanguage.INSTANCE, new CMakeCommenter());
         consumer.consume(CMakeFileType.INSTANCE, new FileNameMatcher() {
             @Override
             public @NotNull String getPresentableString() {
