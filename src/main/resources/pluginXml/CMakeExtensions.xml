@@ -4,5 +4,6 @@
         <psi.referenceContributor language="CMake" implementation="ros.integrate.cmake.ref.ROSCmakeReferenceContributor"/>
         <!--suppress PluginXmlValidity -->
         <fileTypeFactory implementation="ros.integrate.cmake.lang.CMakeFileTypeFactory"/>
+        <colorSettingsPage implementation="ros.integrate.cmake.highlight.CMakeColorSettings"/>
     </extensions>
 </idea-plugin>

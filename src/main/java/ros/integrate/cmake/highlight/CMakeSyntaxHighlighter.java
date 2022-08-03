@@ -23,28 +23,28 @@ public class CMakeSyntaxHighlighter extends SyntaxHighlighterBase {
             createTextAttributesKey("CMAKE_STRING", DefaultLanguageHighlighterColors.STRING);
     public static final TextAttributesKey ESCAPE =
             createTextAttributesKey("CMAKE_ESCAPE", DefaultLanguageHighlighterColors.VALID_STRING_ESCAPE);
-    public static final TextAttributesKey QUOTE_STRING =
-            createTextAttributesKey("CMAKE_QUOTE_STRING", DefaultLanguageHighlighterColors.STRING);
-    public static final TextAttributesKey BRACKET_STRING =
-            createTextAttributesKey("CMAKE_BRACKET_STRING", DefaultLanguageHighlighterColors.STRING);
+    public static final TextAttributesKey QUOTE =
+            createTextAttributesKey("CMAKE_QUOTE", DefaultLanguageHighlighterColors.STRING);
     public static final TextAttributesKey COMMAND_DECLARATION =
             createTextAttributesKey("CMAKE_COMMAND_DECLARATION", DefaultLanguageHighlighterColors.FUNCTION_DECLARATION);
-    public static final TextAttributesKey COMMAND_DEFINITION =
+    public static final TextAttributesKey COMMAND_CALL =
             createTextAttributesKey("CMAKE_COMMAND_CALL", DefaultLanguageHighlighterColors.FUNCTION_CALL);
     public static final TextAttributesKey VARIABLE =
             createTextAttributesKey("CMAKE_VARIABLE", DefaultLanguageHighlighterColors.LOCAL_VARIABLE);
-    public static final TextAttributesKey VARIABLE_CALL =
-            createTextAttributesKey("CMAKE_VARIABLE_CALL", DefaultLanguageHighlighterColors.KEYWORD);
+    public static final TextAttributesKey VARIABLE_BRACES =
+            createTextAttributesKey("CMAKE_VARIABLE_BRACES", DefaultLanguageHighlighterColors.KEYWORD);
+    public static final TextAttributesKey PARAMETER =
+            createTextAttributesKey("CMAKE_PARAMETER", DefaultLanguageHighlighterColors.PARAMETER);
     public static final TextAttributesKey KEYWORD =
             createTextAttributesKey("CMAKE_KEYWORD", DefaultLanguageHighlighterColors.KEYWORD);
     public static final TextAttributesKey ARGUMENT_NAME =
-            createTextAttributesKey("CMAKE_ARGUMENT_NAME", DefaultLanguageHighlighterColors.NUMBER);
+            createTextAttributesKey("CMAKE_ARGUMENT_NAME", DefaultLanguageHighlighterColors.MARKUP_ATTRIBUTE);
     public static final TextAttributesKey LINE_COMMENT =
             createTextAttributesKey("CMAKE_LINE_COMMENT", DefaultLanguageHighlighterColors.LINE_COMMENT);
     public static final TextAttributesKey BLOCK_COMMENT =
             createTextAttributesKey("CMAKE_BLOCK_COMMENT", DefaultLanguageHighlighterColors.BLOCK_COMMENT);
     public static final TextAttributesKey CONTINUATION =
-            createTextAttributesKey("CMAKE_BLOCK_COMMENT", DefaultLanguageHighlighterColors.OPERATION_SIGN);
+            createTextAttributesKey("CMAKE_CONTINUATION", DefaultLanguageHighlighterColors.OPERATION_SIGN);
 
 
     @Override
@@ -62,7 +62,7 @@ public class CMakeSyntaxHighlighter extends SyntaxHighlighterBase {
             return new TextAttributesKey[]{BRACKETS};
         }
         if (Arrays.asList(CMakeTypes.PAREN_CLOSE, CMakeTypes.PAREN_OPEN).contains(tokenType)) {
-            return new TextAttributesKey[]{BRACKETS};
+            return new TextAttributesKey[]{PARENTHESES};
         }
         if (tokenType.equals(CMakeTypes.COMMENT_START)) {
             return new TextAttributesKey[]{LINE_COMMENT};
@@ -74,7 +74,7 @@ public class CMakeSyntaxHighlighter extends SyntaxHighlighterBase {
             return new TextAttributesKey[]{ESCAPE};
         }
         if (tokenType.equals(CMakeTypes.QUOTE)) {
-            return new TextAttributesKey[]{QUOTE_STRING};
+            return new TextAttributesKey[]{QUOTE};
         }
         return EMPTY_ARRAY;
     }
