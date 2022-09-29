@@ -1,5 +1,7 @@
 {
     parserClass="ros.integrate.cmake.parser.CMakeParser"
+    parserUtilClass="ros.integrate.cmake.parser.impl.CMakeParserUtil"
+
 
     extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
 
@@ -22,8 +24,24 @@
 
 // section 1 - source files
 cmakeFile         ::=  file_element*
-private file_element ::=  command | bracket_comment | line_ending | junk
+private file_element ::=  function | macro | if_block | while_block | for_block | command | bracket_comment | line_ending | junk
 private line_ending  ::=  line_comment? NEXTLINE
+
+// section 1.A block command organization into control flow
+function ::= <<namedCommand "function">> in_function* <<namedCommand "endfunction">>
+macro    ::= <<namedCommand "macro">> in_function* <<namedCommand "endmacro">>
+while_block ::= <<namedCommand "while">> in_while* <<namedCommand "endwhile">>
+for_block ::= <<namedCommand "foreach">> in_for* <<namedCommand "endforeach">>
+if_block ::= <<namedCommand "if">> in_if*
+            (<<namedCommand "elseif">> in_if*)*
+            (<<namedCommand "else">> in_else*)?
+            <<namedCommand "endif">>
+
+private in_function ::= if_block | while_block | for_block | <<unnamedCommand "endfunction">> | bracket_comment | line_ending
+private in_while ::= if_block | while_block | for_block | <<unnamedCommand "endwhile">> | bracket_comment | line_ending
+private in_for ::= if_block | while_block | for_block | <<unnamedCommand "endforeach">> | bracket_comment | line_ending
+private in_if ::= if_block | while_block | for_block | <<unnamedCommand "elseif" "else" "endif">> | bracket_comment | line_ending
+private in_else ::= if_block | while_block | for_block | <<unnamedCommand "else" "endif">> | bracket_comment | line_ending
 
 // section 2 - command invocations
 command  ::=  TEXT_ELEMENT PAREN_OPEN argument PAREN_CLOSE

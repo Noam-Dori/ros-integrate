@@ -27,8 +27,8 @@ public class CMakeSyntaxHighlighter extends SyntaxHighlighterBase {
             createTextAttributesKey("CMAKE_QUOTE", DefaultLanguageHighlighterColors.STRING);
     public static final TextAttributesKey COMMAND_DECLARATION =
             createTextAttributesKey("CMAKE_COMMAND_DECLARATION", DefaultLanguageHighlighterColors.FUNCTION_DECLARATION);
-    public static final TextAttributesKey COMMAND_CALL =
-            createTextAttributesKey("CMAKE_COMMAND_CALL", DefaultLanguageHighlighterColors.FUNCTION_CALL);
+    public static final TextAttributesKey COMMAND_CALL = // for some reason, function call is completely null, which breaks things.
+            createTextAttributesKey("CMAKE_COMMAND_CALL", DefaultLanguageHighlighterColors.IDENTIFIER);
     public static final TextAttributesKey VARIABLE =
             createTextAttributesKey("CMAKE_VARIABLE", DefaultLanguageHighlighterColors.LOCAL_VARIABLE);
     public static final TextAttributesKey VARIABLE_BRACES =

@@ -4,7 +4,7 @@ package ros.integrate.cmake.parser;
 import com.intellij.lang.PsiBuilder;
 import com.intellij.lang.PsiBuilder.Marker;
 import static ros.integrate.cmake.psi.CMakeTypes.*;
-import static com.intellij.lang.parser.GeneratedParserUtilBase.*;
+import static ros.integrate.cmake.parser.impl.CMakeParserUtil.*;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.tree.TokenSet;
@@ -125,14 +125,238 @@ public class CMakeParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // command | bracket_comment | line_ending | junk
+  // function | macro | if_block | while_block | for_block | command | bracket_comment | line_ending | junk
   static boolean file_element(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "file_element")) return false;
     boolean r;
-    r = command(b, l + 1);
+    r = function(b, l + 1);
+    if (!r) r = macro(b, l + 1);
+    if (!r) r = if_block(b, l + 1);
+    if (!r) r = while_block(b, l + 1);
+    if (!r) r = for_block(b, l + 1);
+    if (!r) r = command(b, l + 1);
     if (!r) r = bracket_comment(b, l + 1);
     if (!r) r = line_ending(b, l + 1);
     if (!r) r = junk(b, l + 1);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // <<namedCommand "foreach">> in_for* <<namedCommand "endforeach">>
+  public static boolean for_block(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "for_block")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, FOR_BLOCK, "<for block>");
+    r = namedCommand(b, l + 1, "foreach");
+    r = r && for_block_1(b, l + 1);
+    r = r && namedCommand(b, l + 1, "endforeach");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // in_for*
+  private static boolean for_block_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "for_block_1")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!in_for(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "for_block_1", c)) break;
+    }
+    return true;
+  }
+
+  /* ********************************************************** */
+  // <<namedCommand "function">> in_function* <<namedCommand "endfunction">>
+  public static boolean function(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "function")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, FUNCTION, "<function>");
+    r = namedCommand(b, l + 1, "function");
+    r = r && function_1(b, l + 1);
+    r = r && namedCommand(b, l + 1, "endfunction");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // in_function*
+  private static boolean function_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "function_1")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!in_function(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "function_1", c)) break;
+    }
+    return true;
+  }
+
+  /* ********************************************************** */
+  // <<namedCommand "if">> in_if*
+  //             (<<namedCommand "elseif">> in_if*)*
+  //             (<<namedCommand "else">> in_else*)?
+  //             <<namedCommand "endif">>
+  public static boolean if_block(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "if_block")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, IF_BLOCK, "<if block>");
+    r = namedCommand(b, l + 1, "if");
+    r = r && if_block_1(b, l + 1);
+    r = r && if_block_2(b, l + 1);
+    r = r && if_block_3(b, l + 1);
+    r = r && namedCommand(b, l + 1, "endif");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // in_if*
+  private static boolean if_block_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "if_block_1")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!in_if(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "if_block_1", c)) break;
+    }
+    return true;
+  }
+
+  // (<<namedCommand "elseif">> in_if*)*
+  private static boolean if_block_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "if_block_2")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!if_block_2_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "if_block_2", c)) break;
+    }
+    return true;
+  }
+
+  // <<namedCommand "elseif">> in_if*
+  private static boolean if_block_2_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "if_block_2_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = namedCommand(b, l + 1, "elseif");
+    r = r && if_block_2_0_1(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // in_if*
+  private static boolean if_block_2_0_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "if_block_2_0_1")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!in_if(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "if_block_2_0_1", c)) break;
+    }
+    return true;
+  }
+
+  // (<<namedCommand "else">> in_else*)?
+  private static boolean if_block_3(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "if_block_3")) return false;
+    if_block_3_0(b, l + 1);
+    return true;
+  }
+
+  // <<namedCommand "else">> in_else*
+  private static boolean if_block_3_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "if_block_3_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = namedCommand(b, l + 1, "else");
+    r = r && if_block_3_0_1(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // in_else*
+  private static boolean if_block_3_0_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "if_block_3_0_1")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!in_else(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "if_block_3_0_1", c)) break;
+    }
+    return true;
+  }
+
+  /* ********************************************************** */
+  // if_block | while_block | for_block | <<unnamedCommand "else" "endif">> | bracket_comment | line_ending
+  static boolean in_else(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "in_else")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = if_block(b, l + 1);
+    if (!r) r = while_block(b, l + 1);
+    if (!r) r = for_block(b, l + 1);
+    if (!r) r = unnamedCommand(b, l + 1, "else", "endif");
+    if (!r) r = bracket_comment(b, l + 1);
+    if (!r) r = line_ending(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // if_block | while_block | for_block | <<unnamedCommand "endforeach">> | bracket_comment | line_ending
+  static boolean in_for(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "in_for")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = if_block(b, l + 1);
+    if (!r) r = while_block(b, l + 1);
+    if (!r) r = for_block(b, l + 1);
+    if (!r) r = unnamedCommand(b, l + 1, "endforeach");
+    if (!r) r = bracket_comment(b, l + 1);
+    if (!r) r = line_ending(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // if_block | while_block | for_block | <<unnamedCommand "endfunction">> | bracket_comment | line_ending
+  static boolean in_function(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "in_function")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = if_block(b, l + 1);
+    if (!r) r = while_block(b, l + 1);
+    if (!r) r = for_block(b, l + 1);
+    if (!r) r = unnamedCommand(b, l + 1, "endfunction");
+    if (!r) r = bracket_comment(b, l + 1);
+    if (!r) r = line_ending(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // if_block | while_block | for_block | <<unnamedCommand "elseif" "else" "endif">> | bracket_comment | line_ending
+  static boolean in_if(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "in_if")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = if_block(b, l + 1);
+    if (!r) r = while_block(b, l + 1);
+    if (!r) r = for_block(b, l + 1);
+    if (!r) r = unnamedCommand(b, l + 1, "elseif", "else", "endif");
+    if (!r) r = bracket_comment(b, l + 1);
+    if (!r) r = line_ending(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // if_block | while_block | for_block | <<unnamedCommand "endwhile">> | bracket_comment | line_ending
+  static boolean in_while(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "in_while")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = if_block(b, l + 1);
+    if (!r) r = while_block(b, l + 1);
+    if (!r) r = for_block(b, l + 1);
+    if (!r) r = unnamedCommand(b, l + 1, "endwhile");
+    if (!r) r = bracket_comment(b, l + 1);
+    if (!r) r = line_ending(b, l + 1);
+    exit_section_(b, m, null, r);
     return r;
   }
 
@@ -181,6 +405,30 @@ public class CMakeParser implements PsiParser, LightPsiParser {
   private static boolean line_ending_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "line_ending_0")) return false;
     line_comment(b, l + 1);
+    return true;
+  }
+
+  /* ********************************************************** */
+  // <<namedCommand "macro">> in_function* <<namedCommand "endmacro">>
+  public static boolean macro(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "macro")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, MACRO, "<macro>");
+    r = namedCommand(b, l + 1, "macro");
+    r = r && macro_1(b, l + 1);
+    r = r && namedCommand(b, l + 1, "endmacro");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // in_function*
+  private static boolean macro_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "macro_1")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!in_function(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "macro_1", c)) break;
+    }
     return true;
   }
 
@@ -275,6 +523,30 @@ public class CMakeParser implements PsiParser, LightPsiParser {
   private static boolean unquoted_argument_0_4_2(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "unquoted_argument_0_4_2")) return false;
     consumeToken(b, PAREN_CLOSE);
+    return true;
+  }
+
+  /* ********************************************************** */
+  // <<namedCommand "while">> in_while* <<namedCommand "endwhile">>
+  public static boolean while_block(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "while_block")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, WHILE_BLOCK, "<while block>");
+    r = namedCommand(b, l + 1, "while");
+    r = r && while_block_1(b, l + 1);
+    r = r && namedCommand(b, l + 1, "endwhile");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // in_while*
+  private static boolean while_block_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "while_block_1")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!in_while(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "while_block_1", c)) break;
+    }
     return true;
   }
 

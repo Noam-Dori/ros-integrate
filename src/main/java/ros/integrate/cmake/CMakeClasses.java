@@ -1,7 +1,16 @@
 package ros.integrate.cmake;
 
+import com.intellij.lang.LanguageAnnotators;
+import com.intellij.lang.LanguageCommenters;
+import com.intellij.lang.LanguageParserDefinitions;
+import com.intellij.openapi.fileTypes.SyntaxHighlighterFactory;
 import com.intellij.psi.PsiNameIdentifierOwner;
 import org.jetbrains.annotations.Nullable;
+import ros.integrate.cmake.annotate.CMakeHomeAnnotator;
+import ros.integrate.cmake.highlight.CMakeSyntaxHighlighterFactory;
+import ros.integrate.cmake.lang.CMakeCommenter;
+import ros.integrate.cmake.lang.CMakeLanguage;
+import ros.integrate.cmake.lang.CMakeParserDefinition;
 
 @SuppressWarnings("unchecked")
 public interface CMakeClasses {
@@ -32,5 +41,13 @@ public interface CMakeClasses {
         return (Class<? extends PsiNameIdentifierOwner>)
                 getClass("psi.CMakeLiteral.class",
                         "psi.CMakeUnquotedArgumentMaybeVariableContainer");
+    }
+
+    static void addHomeDependencies() {
+        LanguageParserDefinitions.INSTANCE.addExplicitExtension(CMakeLanguage.INSTANCE, new CMakeParserDefinition());
+        SyntaxHighlighterFactory.LANGUAGE_FACTORY.addExplicitExtension(CMakeLanguage.INSTANCE,
+                new CMakeSyntaxHighlighterFactory());
+        LanguageCommenters.INSTANCE.addExplicitExtension(CMakeLanguage.INSTANCE, new CMakeCommenter());
+        LanguageAnnotators.INSTANCE.addExplicitExtension(CMakeLanguage.INSTANCE, new CMakeHomeAnnotator());
     }
 }

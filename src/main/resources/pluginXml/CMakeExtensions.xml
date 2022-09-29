@@ -3,7 +3,9 @@
         <!--suppress PluginXmlValidity (CMake exists as a language ID both in CLion and and using the alternate)-->
         <psi.referenceContributor language="CMake" implementation="ros.integrate.cmake.ref.ROSCmakeReferenceContributor"/>
         <!--suppress PluginXmlValidity -->
+        <!-- This class is used to initialize all "home" CMake plugin components, as there is no "depend unless" option. -->
         <fileTypeFactory implementation="ros.integrate.cmake.lang.CMakeFileTypeFactory"/>
+        <!-- this will be used by both the CLion plugin and the PyCharm one. -->
         <colorSettingsPage implementation="ros.integrate.cmake.highlight.CMakeColorSettings"/>
     </extensions>
 </idea-plugin>

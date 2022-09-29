@@ -11,8 +11,13 @@ public interface CMakeTypes {
   IElementType ARGUMENT = new CMakeElementType("ARGUMENT");
   IElementType BRACKET_COMMENT = new CMakeElementType("BRACKET_COMMENT");
   IElementType COMMAND = new CMakeElementType("COMMAND");
+  IElementType FOR_BLOCK = new CMakeElementType("FOR_BLOCK");
+  IElementType FUNCTION = new CMakeElementType("FUNCTION");
+  IElementType IF_BLOCK = new CMakeElementType("IF_BLOCK");
   IElementType JUNK = new CMakeElementType("JUNK");
   IElementType LINE_COMMENT = new CMakeElementType("LINE_COMMENT");
+  IElementType MACRO = new CMakeElementType("MACRO");
+  IElementType WHILE_BLOCK = new CMakeElementType("WHILE_BLOCK");
 
   IElementType BRACKET_CLOSE = new CMakeTokenType("BRACKET_CLOSE");
   IElementType BRACKET_OPEN = new CMakeTokenType("BRACKET_OPEN");
@@ -37,11 +42,26 @@ public interface CMakeTypes {
       else if (type == COMMAND) {
         return new CMakeCommandImpl(node);
       }
+      else if (type == FOR_BLOCK) {
+        return new CMakeForBlockImpl(node);
+      }
+      else if (type == FUNCTION) {
+        return new CMakeFunctionImpl(node);
+      }
+      else if (type == IF_BLOCK) {
+        return new CMakeIfBlockImpl(node);
+      }
       else if (type == JUNK) {
         return new CMakeJunkImpl(node);
       }
       else if (type == LINE_COMMENT) {
         return new CMakeLineCommentImpl(node);
+      }
+      else if (type == MACRO) {
+        return new CMakeMacroImpl(node);
+      }
+      else if (type == WHILE_BLOCK) {
+        return new CMakeWhileBlockImpl(node);
       }
       throw new AssertionError("Unknown element type: " + type);
     }
