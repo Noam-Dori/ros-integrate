@@ -5,7 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface CMakeIfBlock extends PsiElement {
+public interface CMakeIfBlock extends CMakeBlock {
 
   @NotNull
   List<CMakeBracketComment> getBracketCommentList();

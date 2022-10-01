@@ -14,7 +14,7 @@
     elementTypeClass="ros.integrate.cmake.psi.CMakeElementType"
     tokenTypeClass="ros.integrate.cmake.psi.CMakeTokenType"
 
-//    psiImplUtilClass="ros.integrate.cmake.psi.impl.CMakePsiImplUtil"
+    psiImplUtilClass="ros.integrate.cmake.psi.impl.CMakePsiImplUtil"
 }
 
 // taken directly from the official CMake documentation
@@ -28,23 +28,37 @@ private file_element ::=  function | macro | if_block | while_block | for_block 
 private line_ending  ::=  line_comment? NEXTLINE
 
 // section 1.A block command organization into control flow
-function ::= <<namedCommand "function">> in_function* <<namedCommand "endfunction">>
-macro    ::= <<namedCommand "macro">> in_function* <<namedCommand "endmacro">>
-while_block ::= <<namedCommand "while">> in_while* <<namedCommand "endwhile">>
-for_block ::= <<namedCommand "foreach">> in_for* <<namedCommand "endforeach">>
+function ::= <<namedCommand "function">> in_function* <<namedCommand "endfunction">> {
+    implements = "ros.integrate.cmake.psi.CMakeBlock"
+}
+macro    ::= <<namedCommand "macro">> in_macro* <<namedCommand "endmacro">> {
+    implements = "ros.integrate.cmake.psi.CMakeBlock"
+}
+while_block ::= <<namedCommand "while">> in_while* <<namedCommand "endwhile">> {
+    implements = "ros.integrate.cmake.psi.CMakeBlock"
+}
+for_block ::= <<namedCommand "foreach">> in_for* <<namedCommand "endforeach">> {
+    implements = "ros.integrate.cmake.psi.CMakeBlock"
+}
 if_block ::= <<namedCommand "if">> in_if*
             (<<namedCommand "elseif">> in_if*)*
             (<<namedCommand "else">> in_else*)?
-            <<namedCommand "endif">>
+            <<namedCommand "endif">> {
+    implements = "ros.integrate.cmake.psi.CMakeBlock"
+}
 
 private in_function ::= if_block | while_block | for_block | <<unnamedCommand "endfunction">> | bracket_comment | line_ending
+private in_macro ::= if_block | while_block | for_block | <<unnamedCommand "endmacro">> | bracket_comment | line_ending
 private in_while ::= if_block | while_block | for_block | <<unnamedCommand "endwhile">> | bracket_comment | line_ending
 private in_for ::= if_block | while_block | for_block | <<unnamedCommand "endforeach">> | bracket_comment | line_ending
 private in_if ::= if_block | while_block | for_block | <<unnamedCommand "elseif" "else" "endif">> | bracket_comment | line_ending
 private in_else ::= if_block | while_block | for_block | <<unnamedCommand "else" "endif">> | bracket_comment | line_ending
 
 // section 2 - command invocations
-command  ::=  TEXT_ELEMENT PAREN_OPEN argument PAREN_CLOSE
+command  ::=  command_name PAREN_OPEN argument PAREN_CLOSE {
+    implements = "ros.integrate.cmake.psi.CMakeOperation"
+}
+command_name ::= TEXT_ELEMENT
 
 // section 3 - command arguments
 junk     ::= argument_element+

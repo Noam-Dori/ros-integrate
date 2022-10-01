@@ -11,32 +11,20 @@ import static ros.integrate.cmake.psi.CMakeTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import ros.integrate.cmake.psi.*;
 
-public class CMakeCommandImpl extends ASTWrapperPsiElement implements CMakeCommand {
+public class CMakeCommandNameImpl extends ASTWrapperPsiElement implements CMakeCommandName {
 
-  public CMakeCommandImpl(@NotNull ASTNode node) {
+  public CMakeCommandNameImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull CMakeVisitor visitor) {
-    visitor.visitCommand(this);
+    visitor.visitCommandName(this);
   }
 
   @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof CMakeVisitor) accept((CMakeVisitor)visitor);
     else super.accept(visitor);
-  }
-
-  @Override
-  @NotNull
-  public CMakeArgument getArgument() {
-    return findNotNullChildByClass(CMakeArgument.class);
-  }
-
-  @Override
-  @NotNull
-  public CMakeCommandName getCommandName() {
-    return findNotNullChildByClass(CMakeCommandName.class);
   }
 
 }

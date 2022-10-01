@@ -11,6 +11,7 @@ public interface CMakeTypes {
   IElementType ARGUMENT = new CMakeElementType("ARGUMENT");
   IElementType BRACKET_COMMENT = new CMakeElementType("BRACKET_COMMENT");
   IElementType COMMAND = new CMakeElementType("COMMAND");
+  IElementType COMMAND_NAME = new CMakeElementType("COMMAND_NAME");
   IElementType FOR_BLOCK = new CMakeElementType("FOR_BLOCK");
   IElementType FUNCTION = new CMakeElementType("FUNCTION");
   IElementType IF_BLOCK = new CMakeElementType("IF_BLOCK");
@@ -41,6 +42,9 @@ public interface CMakeTypes {
       }
       else if (type == COMMAND) {
         return new CMakeCommandImpl(node);
+      }
+      else if (type == COMMAND_NAME) {
+        return new CMakeCommandNameImpl(node);
       }
       else if (type == FOR_BLOCK) {
         return new CMakeForBlockImpl(node);

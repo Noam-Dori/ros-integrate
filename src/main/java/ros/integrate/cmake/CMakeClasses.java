@@ -3,10 +3,12 @@ package ros.integrate.cmake;
 import com.intellij.lang.LanguageAnnotators;
 import com.intellij.lang.LanguageCommenters;
 import com.intellij.lang.LanguageParserDefinitions;
+import com.intellij.lang.folding.LanguageFolding;
 import com.intellij.openapi.fileTypes.SyntaxHighlighterFactory;
 import com.intellij.psi.PsiNameIdentifierOwner;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.cmake.annotate.CMakeHomeAnnotator;
+import ros.integrate.cmake.folding.CMakeFoldingBuilder;
 import ros.integrate.cmake.highlight.CMakeSyntaxHighlighterFactory;
 import ros.integrate.cmake.lang.CMakeCommenter;
 import ros.integrate.cmake.lang.CMakeLanguage;
@@ -49,5 +51,6 @@ public interface CMakeClasses {
                 new CMakeSyntaxHighlighterFactory());
         LanguageCommenters.INSTANCE.addExplicitExtension(CMakeLanguage.INSTANCE, new CMakeCommenter());
         LanguageAnnotators.INSTANCE.addExplicitExtension(CMakeLanguage.INSTANCE, new CMakeHomeAnnotator());
+        LanguageFolding.INSTANCE.addExplicitExtension(CMakeLanguage.INSTANCE, new CMakeFoldingBuilder());
     }
 }

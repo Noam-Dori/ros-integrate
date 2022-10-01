@@ -16,19 +16,23 @@ public class CMakeVisitor extends PsiElementVisitor {
   }
 
   public void visitCommand(@NotNull CMakeCommand o) {
+    visitOperation(o);
+  }
+
+  public void visitCommandName(@NotNull CMakeCommandName o) {
     visitPsiElement(o);
   }
 
   public void visitForBlock(@NotNull CMakeForBlock o) {
-    visitPsiElement(o);
+    visitBlock(o);
   }
 
   public void visitFunction(@NotNull CMakeFunction o) {
-    visitPsiElement(o);
+    visitBlock(o);
   }
 
   public void visitIfBlock(@NotNull CMakeIfBlock o) {
-    visitPsiElement(o);
+    visitBlock(o);
   }
 
   public void visitJunk(@NotNull CMakeJunk o) {
@@ -40,10 +44,18 @@ public class CMakeVisitor extends PsiElementVisitor {
   }
 
   public void visitMacro(@NotNull CMakeMacro o) {
-    visitPsiElement(o);
+    visitBlock(o);
   }
 
   public void visitWhileBlock(@NotNull CMakeWhileBlock o) {
+    visitBlock(o);
+  }
+
+  public void visitBlock(@NotNull CMakeBlock o) {
+    visitPsiElement(o);
+  }
+
+  public void visitOperation(@NotNull CMakeOperation o) {
     visitPsiElement(o);
   }
 

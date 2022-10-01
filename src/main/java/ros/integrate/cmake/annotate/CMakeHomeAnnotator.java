@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import ros.integrate.cmake.highlight.CMakeSyntaxHighlighter;
 import ros.integrate.cmake.psi.CMakeBracketComment;
 import ros.integrate.cmake.psi.CMakeCommand;
+import ros.integrate.cmake.psi.CMakeCommandName;
 import ros.integrate.cmake.psi.CMakeLineComment;
 import ros.integrate.settings.ROSSettings;
 
@@ -49,15 +50,15 @@ public class CMakeHomeAnnotator implements Annotator {
                     .textAttributes(CMakeSyntaxHighlighter.BLOCK_COMMENT)
                     .create();
         }
-        if (element instanceof CMakeCommand) {
+        if (element instanceof CMakeCommandName) {
             TextAttributesKey textColor;
-            if (KEYWORDS.contains(element.getFirstChild().getText())) {
+            if (KEYWORDS.contains(element.getText())) {
                 textColor = CMakeSyntaxHighlighter.KEYWORD;
             } else {
                 textColor = CMakeSyntaxHighlighter.COMMAND_CALL;
             }
             holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
-                    .range(element.getFirstChild())
+                    .range(element)
                     .textAttributes(textColor)
                     .create();
         }

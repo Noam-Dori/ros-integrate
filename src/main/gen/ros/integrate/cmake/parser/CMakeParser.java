@@ -111,16 +111,29 @@ public class CMakeParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // TEXT_ELEMENT PAREN_OPEN argument PAREN_CLOSE
+  // command_name PAREN_OPEN argument PAREN_CLOSE
   public static boolean command(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "command")) return false;
     if (!nextTokenIs(b, TEXT_ELEMENT)) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeTokens(b, 0, TEXT_ELEMENT, PAREN_OPEN);
+    r = command_name(b, l + 1);
+    r = r && consumeToken(b, PAREN_OPEN);
     r = r && argument(b, l + 1);
     r = r && consumeToken(b, PAREN_CLOSE);
     exit_section_(b, m, COMMAND, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // TEXT_ELEMENT
+  public static boolean command_name(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "command_name")) return false;
+    if (!nextTokenIs(b, TEXT_ELEMENT)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, TEXT_ELEMENT);
+    exit_section_(b, m, COMMAND_NAME, r);
     return r;
   }
 
@@ -345,6 +358,22 @@ public class CMakeParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // if_block | while_block | for_block | <<unnamedCommand "endmacro">> | bracket_comment | line_ending
+  static boolean in_macro(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "in_macro")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = if_block(b, l + 1);
+    if (!r) r = while_block(b, l + 1);
+    if (!r) r = for_block(b, l + 1);
+    if (!r) r = unnamedCommand(b, l + 1, "endmacro");
+    if (!r) r = bracket_comment(b, l + 1);
+    if (!r) r = line_ending(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  /* ********************************************************** */
   // if_block | while_block | for_block | <<unnamedCommand "endwhile">> | bracket_comment | line_ending
   static boolean in_while(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "in_while")) return false;
@@ -409,7 +438,7 @@ public class CMakeParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // <<namedCommand "macro">> in_function* <<namedCommand "endmacro">>
+  // <<namedCommand "macro">> in_macro* <<namedCommand "endmacro">>
   public static boolean macro(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "macro")) return false;
     boolean r;
@@ -421,12 +450,12 @@ public class CMakeParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // in_function*
+  // in_macro*
   private static boolean macro_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "macro_1")) return false;
     while (true) {
       int c = current_position_(b);
-      if (!in_function(b, l + 1)) break;
+      if (!in_macro(b, l + 1)) break;
       if (!empty_element_parsed_guard_(b, "macro_1", c)) break;
     }
     return true;

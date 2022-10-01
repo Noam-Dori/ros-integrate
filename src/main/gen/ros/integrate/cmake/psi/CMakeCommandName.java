@@ -5,12 +5,6 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface CMakeCommand extends CMakeOperation {
-
-  @NotNull
-  CMakeArgument getArgument();
-
-  @NotNull
-  CMakeCommandName getCommandName();
+public interface CMakeCommandName extends PsiElement {
 
 }
