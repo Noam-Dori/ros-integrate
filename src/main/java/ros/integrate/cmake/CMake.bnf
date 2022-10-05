@@ -55,26 +55,36 @@ private in_if ::= if_block | while_block | for_block | <<unnamedCommand "elseif"
 private in_else ::= if_block | while_block | for_block | <<unnamedCommand "else" "endif">> | bracket_comment | line_ending
 
 // section 2 - command invocations
-command  ::=  command_name PAREN_OPEN argument PAREN_CLOSE {
+command  ::=  command_name PAREN_OPEN argument_list PAREN_CLOSE {
     implements = "ros.integrate.cmake.psi.CMakeOperation"
+    methods = [getArguments]
 }
 command_name ::= TEXT_ELEMENT
 
 // section 3 - command arguments
 junk     ::= argument_element+
-argument ::= argument_element*
+argument_list ::= argument_element*
 private argument_element ::=  bracket_argument | quoted_argument | unquoted_argument
+                                | NEXTLINE | bracket_comment
 
 // section 3.1 - bracket arguments
-private bracket_argument ::=  BRACKET_OPEN TEXT_ELEMENT* BRACKET_CLOSE
+bracket_argument ::=  BRACKET_OPEN TEXT_ELEMENT* BRACKET_CLOSE {
+    implements = "ros.integrate.cmake.psi.CMakeArgument"
+    methods = [getArgTextRange]
+}
 
 // section 3.2 - quoted arguments
-private quoted_argument     ::=  QUOTE quoted_element* QUOTE
+quoted_argument     ::=  QUOTE quoted_element* QUOTE {
+    implements = "ros.integrate.cmake.psi.CMakeArgument"
+    methods = [getArgTextRange]
+}
 private quoted_element      ::=  TEXT_ELEMENT | ESCAPE_SEQUENCE | CONTINUATION
 
 // section 3.3 - unquoted arguments
-private unquoted_argument ::=  (bracket_comment | TEXT_ELEMENT | NEXTLINE | ESCAPE_SEQUENCE |
-                               (PAREN_OPEN argument_element? PAREN_CLOSE?))+
+unquoted_argument ::=  <<unquotedElement>> {
+    implements = "ros.integrate.cmake.psi.CMakeArgument"
+    methods = [getArgTextRange]
+}
 
 // section 6 - comments
 // section 6.1 - bracket comments

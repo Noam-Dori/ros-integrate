@@ -11,14 +11,14 @@ import static ros.integrate.cmake.psi.CMakeTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import ros.integrate.cmake.psi.*;
 
-public class CMakeArgumentImpl extends ASTWrapperPsiElement implements CMakeArgument {
+public class CMakeArgumentListImpl extends ASTWrapperPsiElement implements CMakeArgumentList {
 
-  public CMakeArgumentImpl(@NotNull ASTNode node) {
+  public CMakeArgumentListImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull CMakeVisitor visitor) {
-    visitor.visitArgument(this);
+    visitor.visitArgumentList(this);
   }
 
   @Override
@@ -29,8 +29,26 @@ public class CMakeArgumentImpl extends ASTWrapperPsiElement implements CMakeArgu
 
   @Override
   @NotNull
+  public List<CMakeBracketArgument> getBracketArgumentList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, CMakeBracketArgument.class);
+  }
+
+  @Override
+  @NotNull
   public List<CMakeBracketComment> getBracketCommentList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, CMakeBracketComment.class);
+  }
+
+  @Override
+  @NotNull
+  public List<CMakeQuotedArgument> getQuotedArgumentList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, CMakeQuotedArgument.class);
+  }
+
+  @Override
+  @NotNull
+  public List<CMakeUnquotedArgument> getUnquotedArgumentList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, CMakeUnquotedArgument.class);
   }
 
 }

@@ -36,33 +36,36 @@ public class CMakeParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // argument_element*
-  public static boolean argument(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "argument")) return false;
-    Marker m = enter_section_(b, l, _NONE_, ARGUMENT, "<argument>");
-    while (true) {
-      int c = current_position_(b);
-      if (!argument_element(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "argument", c)) break;
-    }
-    exit_section_(b, l, m, true, false, null);
-    return true;
-  }
-
-  /* ********************************************************** */
   // bracket_argument | quoted_argument | unquoted_argument
+  //                                 | NEXTLINE | bracket_comment
   static boolean argument_element(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "argument_element")) return false;
     boolean r;
     r = bracket_argument(b, l + 1);
     if (!r) r = quoted_argument(b, l + 1);
     if (!r) r = unquoted_argument(b, l + 1);
+    if (!r) r = consumeToken(b, NEXTLINE);
+    if (!r) r = bracket_comment(b, l + 1);
     return r;
   }
 
   /* ********************************************************** */
+  // argument_element*
+  public static boolean argument_list(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "argument_list")) return false;
+    Marker m = enter_section_(b, l, _NONE_, ARGUMENT_LIST, "<argument list>");
+    while (true) {
+      int c = current_position_(b);
+      if (!argument_element(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "argument_list", c)) break;
+    }
+    exit_section_(b, l, m, true, false, null);
+    return true;
+  }
+
+  /* ********************************************************** */
   // BRACKET_OPEN TEXT_ELEMENT* BRACKET_CLOSE
-  static boolean bracket_argument(PsiBuilder b, int l) {
+  public static boolean bracket_argument(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "bracket_argument")) return false;
     if (!nextTokenIs(b, BRACKET_OPEN)) return false;
     boolean r;
@@ -70,7 +73,7 @@ public class CMakeParser implements PsiParser, LightPsiParser {
     r = consumeToken(b, BRACKET_OPEN);
     r = r && bracket_argument_1(b, l + 1);
     r = r && consumeToken(b, BRACKET_CLOSE);
-    exit_section_(b, m, null, r);
+    exit_section_(b, m, BRACKET_ARGUMENT, r);
     return r;
   }
 
@@ -111,7 +114,7 @@ public class CMakeParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // command_name PAREN_OPEN argument PAREN_CLOSE
+  // command_name PAREN_OPEN argument_list PAREN_CLOSE
   public static boolean command(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "command")) return false;
     if (!nextTokenIs(b, TEXT_ELEMENT)) return false;
@@ -119,7 +122,7 @@ public class CMakeParser implements PsiParser, LightPsiParser {
     Marker m = enter_section_(b);
     r = command_name(b, l + 1);
     r = r && consumeToken(b, PAREN_OPEN);
-    r = r && argument(b, l + 1);
+    r = r && argument_list(b, l + 1);
     r = r && consumeToken(b, PAREN_CLOSE);
     exit_section_(b, m, COMMAND, r);
     return r;
@@ -463,7 +466,7 @@ public class CMakeParser implements PsiParser, LightPsiParser {
 
   /* ********************************************************** */
   // QUOTE quoted_element* QUOTE
-  static boolean quoted_argument(PsiBuilder b, int l) {
+  public static boolean quoted_argument(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "quoted_argument")) return false;
     if (!nextTokenIs(b, QUOTE)) return false;
     boolean r;
@@ -471,7 +474,7 @@ public class CMakeParser implements PsiParser, LightPsiParser {
     r = consumeToken(b, QUOTE);
     r = r && quoted_argument_1(b, l + 1);
     r = r && consumeToken(b, QUOTE);
-    exit_section_(b, m, null, r);
+    exit_section_(b, m, QUOTED_ARGUMENT, r);
     return r;
   }
 
@@ -498,61 +501,14 @@ public class CMakeParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // (bracket_comment | TEXT_ELEMENT | NEXTLINE | ESCAPE_SEQUENCE |
-  //                                (PAREN_OPEN argument_element? PAREN_CLOSE?))+
-  static boolean unquoted_argument(PsiBuilder b, int l) {
+  // <<unquotedElement>>
+  public static boolean unquoted_argument(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "unquoted_argument")) return false;
     boolean r;
-    Marker m = enter_section_(b);
-    r = unquoted_argument_0(b, l + 1);
-    while (r) {
-      int c = current_position_(b);
-      if (!unquoted_argument_0(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "unquoted_argument", c)) break;
-    }
-    exit_section_(b, m, null, r);
+    Marker m = enter_section_(b, l, _NONE_, UNQUOTED_ARGUMENT, "<unquoted argument>");
+    r = unquotedElement(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
     return r;
-  }
-
-  // bracket_comment | TEXT_ELEMENT | NEXTLINE | ESCAPE_SEQUENCE |
-  //                                (PAREN_OPEN argument_element? PAREN_CLOSE?)
-  private static boolean unquoted_argument_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "unquoted_argument_0")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = bracket_comment(b, l + 1);
-    if (!r) r = consumeToken(b, TEXT_ELEMENT);
-    if (!r) r = consumeToken(b, NEXTLINE);
-    if (!r) r = consumeToken(b, ESCAPE_SEQUENCE);
-    if (!r) r = unquoted_argument_0_4(b, l + 1);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // PAREN_OPEN argument_element? PAREN_CLOSE?
-  private static boolean unquoted_argument_0_4(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "unquoted_argument_0_4")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, PAREN_OPEN);
-    r = r && unquoted_argument_0_4_1(b, l + 1);
-    r = r && unquoted_argument_0_4_2(b, l + 1);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // argument_element?
-  private static boolean unquoted_argument_0_4_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "unquoted_argument_0_4_1")) return false;
-    argument_element(b, l + 1);
-    return true;
-  }
-
-  // PAREN_CLOSE?
-  private static boolean unquoted_argument_0_4_2(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "unquoted_argument_0_4_2")) return false;
-    consumeToken(b, PAREN_CLOSE);
-    return true;
   }
 
   /* ********************************************************** */

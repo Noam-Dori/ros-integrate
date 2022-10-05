@@ -4,10 +4,10 @@ package ros.integrate.cmake.psi;
 import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
+import com.intellij.openapi.util.TextRange;
 
-public interface CMakeBracketComment extends PsiElement {
+public interface CMakeUnquotedArgument extends CMakeArgument {
 
-  @NotNull
-  CMakeBracketArgument getBracketArgument();
+  TextRange getArgTextRange();
 
 }

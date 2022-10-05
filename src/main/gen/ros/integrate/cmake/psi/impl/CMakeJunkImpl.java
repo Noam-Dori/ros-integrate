@@ -29,8 +29,26 @@ public class CMakeJunkImpl extends ASTWrapperPsiElement implements CMakeJunk {
 
   @Override
   @NotNull
+  public List<CMakeBracketArgument> getBracketArgumentList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, CMakeBracketArgument.class);
+  }
+
+  @Override
+  @NotNull
   public List<CMakeBracketComment> getBracketCommentList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, CMakeBracketComment.class);
+  }
+
+  @Override
+  @NotNull
+  public List<CMakeQuotedArgument> getQuotedArgumentList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, CMakeQuotedArgument.class);
+  }
+
+  @Override
+  @NotNull
+  public List<CMakeUnquotedArgument> getUnquotedArgumentList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, CMakeUnquotedArgument.class);
   }
 
 }

@@ -8,7 +8,8 @@ import ros.integrate.cmake.psi.impl.*;
 
 public interface CMakeTypes {
 
-  IElementType ARGUMENT = new CMakeElementType("ARGUMENT");
+  IElementType ARGUMENT_LIST = new CMakeElementType("ARGUMENT_LIST");
+  IElementType BRACKET_ARGUMENT = new CMakeElementType("BRACKET_ARGUMENT");
   IElementType BRACKET_COMMENT = new CMakeElementType("BRACKET_COMMENT");
   IElementType COMMAND = new CMakeElementType("COMMAND");
   IElementType COMMAND_NAME = new CMakeElementType("COMMAND_NAME");
@@ -18,6 +19,8 @@ public interface CMakeTypes {
   IElementType JUNK = new CMakeElementType("JUNK");
   IElementType LINE_COMMENT = new CMakeElementType("LINE_COMMENT");
   IElementType MACRO = new CMakeElementType("MACRO");
+  IElementType QUOTED_ARGUMENT = new CMakeElementType("QUOTED_ARGUMENT");
+  IElementType UNQUOTED_ARGUMENT = new CMakeElementType("UNQUOTED_ARGUMENT");
   IElementType WHILE_BLOCK = new CMakeElementType("WHILE_BLOCK");
 
   IElementType BRACKET_CLOSE = new CMakeTokenType("BRACKET_CLOSE");
@@ -34,8 +37,11 @@ public interface CMakeTypes {
   class Factory {
     public static PsiElement createElement(ASTNode node) {
       IElementType type = node.getElementType();
-      if (type == ARGUMENT) {
-        return new CMakeArgumentImpl(node);
+      if (type == ARGUMENT_LIST) {
+        return new CMakeArgumentListImpl(node);
+      }
+      else if (type == BRACKET_ARGUMENT) {
+        return new CMakeBracketArgumentImpl(node);
       }
       else if (type == BRACKET_COMMENT) {
         return new CMakeBracketCommentImpl(node);
@@ -63,6 +69,12 @@ public interface CMakeTypes {
       }
       else if (type == MACRO) {
         return new CMakeMacroImpl(node);
+      }
+      else if (type == QUOTED_ARGUMENT) {
+        return new CMakeQuotedArgumentImpl(node);
+      }
+      else if (type == UNQUOTED_ARGUMENT) {
+        return new CMakeUnquotedArgumentImpl(node);
       }
       else if (type == WHILE_BLOCK) {
         return new CMakeWhileBlockImpl(node);

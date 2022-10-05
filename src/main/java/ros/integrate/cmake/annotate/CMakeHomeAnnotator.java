@@ -3,15 +3,12 @@ package ros.integrate.cmake.annotate;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.lang.annotation.HighlightSeverity;
-import com.intellij.openapi.editor.HighlighterColors;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.psi.PsiElement;
+import org.codehaus.plexus.util.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.cmake.highlight.CMakeSyntaxHighlighter;
-import ros.integrate.cmake.psi.CMakeBracketComment;
-import ros.integrate.cmake.psi.CMakeCommand;
-import ros.integrate.cmake.psi.CMakeCommandName;
-import ros.integrate.cmake.psi.CMakeLineComment;
+import ros.integrate.cmake.psi.*;
 import ros.integrate.settings.ROSSettings;
 
 import java.io.IOException;
@@ -24,6 +21,7 @@ import java.util.logging.Logger;
 public class CMakeHomeAnnotator implements Annotator {
     private static final Logger LOG = Logger.getLogger("#ros.integrate.cmake.PackageXmlCompletionContributor");
     private static final List<String> KEYWORDS = loadKeywords();
+    private static final List<String> F_BLOCK_TYPES = Arrays.asList("function", "macro");
 
     @NotNull
     private static List<String> loadKeywords() {
@@ -61,6 +59,33 @@ public class CMakeHomeAnnotator implements Annotator {
                     .range(element)
                     .textAttributes(textColor)
                     .create();
+        }
+        if (element instanceof CMakeBlock && F_BLOCK_TYPES.contains(((CMakeBlock) element).getBlockType())) {
+            CMakeBlock block = (CMakeBlock) element;
+            List<CMakeArgument> args = block.getStartCommand().getArguments();
+            boolean isFuncName = true;
+            for (CMakeArgument arg : args) {
+                TextAttributesKey textColor;
+                String errorMessage;
+                if (isFuncName) {
+                    textColor = CMakeSyntaxHighlighter.COMMAND_DECLARATION;
+                    errorMessage = StringUtils.capitalise(block.getBlockType()) + " name must be unquoted";
+                } else {
+                    textColor = CMakeSyntaxHighlighter.VARIABLE;
+                    errorMessage = "Named arguments must be unquoted";
+                }
+                isFuncName = false;
+                holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+                        .range(arg.getArgTextRange())
+                        .textAttributes(textColor)
+                        .create();
+                if (!(arg instanceof CMakeUnquotedArgument)) {
+                    holder.newAnnotation(HighlightSeverity.ERROR, errorMessage)
+                            .range(arg)
+                            .create();
+                }
+            }
+            // iterate over all functions and annotate the named argument from the definition, ARGC, ARGV, ARGV# as variables.
         }
     }
 }

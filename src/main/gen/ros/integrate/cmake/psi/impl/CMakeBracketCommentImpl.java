@@ -27,4 +27,10 @@ public class CMakeBracketCommentImpl extends ASTWrapperPsiElement implements CMa
     else super.accept(visitor);
   }
 
+  @Override
+  @NotNull
+  public CMakeBracketArgument getBracketArgument() {
+    return findNotNullChildByClass(CMakeBracketArgument.class);
+  }
+
 }

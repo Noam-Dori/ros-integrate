@@ -4,16 +4,11 @@ package ros.integrate.cmake.psi;
 import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
+import com.intellij.openapi.util.TextRange;
 
-public interface CMakeCommand extends CMakeOperation {
-
-  @NotNull
-  CMakeArgumentList getArgumentList();
+public interface CMakeQuotedArgument extends CMakeArgument {
 
   @NotNull
-  CMakeCommandName getCommandName();
-
-  @NotNull
-  List<CMakeArgument> getArguments();
+  TextRange getArgTextRange();
 
 }

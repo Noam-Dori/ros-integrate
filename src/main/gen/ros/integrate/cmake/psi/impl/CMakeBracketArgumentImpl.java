@@ -10,15 +10,16 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static ros.integrate.cmake.psi.CMakeTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import ros.integrate.cmake.psi.*;
+import com.intellij.openapi.util.TextRange;
 
-public class CMakeCommandImpl extends ASTWrapperPsiElement implements CMakeCommand {
+public class CMakeBracketArgumentImpl extends ASTWrapperPsiElement implements CMakeBracketArgument {
 
-  public CMakeCommandImpl(@NotNull ASTNode node) {
+  public CMakeBracketArgumentImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull CMakeVisitor visitor) {
-    visitor.visitCommand(this);
+    visitor.visitBracketArgument(this);
   }
 
   @Override
@@ -29,20 +30,8 @@ public class CMakeCommandImpl extends ASTWrapperPsiElement implements CMakeComma
 
   @Override
   @NotNull
-  public CMakeArgumentList getArgumentList() {
-    return findNotNullChildByClass(CMakeArgumentList.class);
-  }
-
-  @Override
-  @NotNull
-  public CMakeCommandName getCommandName() {
-    return findNotNullChildByClass(CMakeCommandName.class);
-  }
-
-  @Override
-  @NotNull
-  public List<CMakeArgument> getArguments() {
-    return CMakePsiImplUtil.getArguments(this);
+  public TextRange getArgTextRange() {
+    return CMakePsiImplUtil.getArgTextRange(this);
   }
 
 }

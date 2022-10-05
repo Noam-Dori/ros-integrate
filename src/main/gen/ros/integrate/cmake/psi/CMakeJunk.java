@@ -8,6 +8,15 @@ import com.intellij.psi.PsiElement;
 public interface CMakeJunk extends PsiElement {
 
   @NotNull
+  List<CMakeBracketArgument> getBracketArgumentList();
+
+  @NotNull
   List<CMakeBracketComment> getBracketCommentList();
+
+  @NotNull
+  List<CMakeQuotedArgument> getQuotedArgumentList();
+
+  @NotNull
+  List<CMakeUnquotedArgument> getUnquotedArgumentList();
 
 }

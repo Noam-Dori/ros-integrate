@@ -17,6 +17,10 @@ public interface CMakeBlock extends CMakeOperation {
         return allCommands;
     }
 
+    default String getBlockType() {
+        return getStartCommand().getCommandName().getText().toLowerCase();
+    }
+
     default CMakeCommand getStartCommand() {
         return PsiTreeUtil.getChildOfAnyType(this, CMakeCommand.class);
     }

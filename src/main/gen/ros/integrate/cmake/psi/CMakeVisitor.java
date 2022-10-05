@@ -7,8 +7,12 @@ import com.intellij.psi.PsiElement;
 
 public class CMakeVisitor extends PsiElementVisitor {
 
-  public void visitArgument(@NotNull CMakeArgument o) {
+  public void visitArgumentList(@NotNull CMakeArgumentList o) {
     visitPsiElement(o);
+  }
+
+  public void visitBracketArgument(@NotNull CMakeBracketArgument o) {
+    visitArgument(o);
   }
 
   public void visitBracketComment(@NotNull CMakeBracketComment o) {
@@ -47,8 +51,20 @@ public class CMakeVisitor extends PsiElementVisitor {
     visitBlock(o);
   }
 
+  public void visitQuotedArgument(@NotNull CMakeQuotedArgument o) {
+    visitArgument(o);
+  }
+
+  public void visitUnquotedArgument(@NotNull CMakeUnquotedArgument o) {
+    visitArgument(o);
+  }
+
   public void visitWhileBlock(@NotNull CMakeWhileBlock o) {
     visitBlock(o);
+  }
+
+  public void visitArgument(@NotNull CMakeArgument o) {
+    visitPsiElement(o);
   }
 
   public void visitBlock(@NotNull CMakeBlock o) {
