@@ -61,9 +61,9 @@ NEXTLINE = \R
 }
 
 <PAREN> {
-    \"                                     { yyPush(QUOTE); return CMakeTypes.QUOTE;}
-    \)                                     { yyPop(); return CMakeTypes.PAREN_CLOSE;}
-    !(!([^\) \t\n]+)|.*(\[=*\[|\").*)      { return CMakeTypes.TEXT_ELEMENT; }
+    \"                                                    { yyPush(QUOTE); return CMakeTypes.QUOTE;}
+    \)                                                    { yyPop(); return CMakeTypes.PAREN_CLOSE;}
+    !(!(([^\) \t\n\\]|\\[^\)\n]?)+)|.*(\[=*\[).*|\".*)    { return CMakeTypes.TEXT_ELEMENT; }
 }
 
 <BRACKET> {

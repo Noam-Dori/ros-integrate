@@ -22,7 +22,7 @@ public class CMakeParserUtil extends GeneratedParserUtilBase {
     public static boolean unquotedElement(@NotNull PsiBuilder b, int l) {
         if (!recursion_guard_(b, l, "unquotedElement")) return false;
         boolean r;
-        PsiBuilder.Marker m = enter_section_(b, l, _COLLAPSE_, UNQUOTED_ARGUMENT, "<unquoted argument>");
+        PsiBuilder.Marker m = enter_section_(b);
         r = unquotedPiece(b, l + 1);
         if (r)
             while (" \t".indexOf(b.getOriginalText().charAt(b.getCurrentOffset() - 1)) < 0) {
@@ -30,7 +30,7 @@ public class CMakeParserUtil extends GeneratedParserUtilBase {
                 if (!unquotedPiece(b, l + 1)) break;
                 if (!empty_element_parsed_guard_(b, "unquotedElement", c)) break;
             }
-        exit_section_(b, l, m, r, false, null);
+        exit_section_(b, m, null, r);
         return r;
     }
 
