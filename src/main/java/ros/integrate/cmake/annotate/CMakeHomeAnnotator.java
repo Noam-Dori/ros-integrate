@@ -22,6 +22,7 @@ public class CMakeHomeAnnotator implements Annotator {
     private static final Logger LOG = Logger.getLogger("#ros.integrate.cmake.PackageXmlCompletionContributor");
     private static final List<String> KEYWORDS = loadKeywords();
     private static final List<String> F_BLOCK_TYPES = Arrays.asList("function", "macro");
+    private static final List<String> VAR_TYPES = Arrays.asList("set", "unset");
 
     @NotNull
     private static List<String> loadKeywords() {
@@ -86,6 +87,25 @@ public class CMakeHomeAnnotator implements Annotator {
                 }
             }
             // iterate over all functions and annotate the named argument from the definition, ARGC, ARGV, ARGV# as variables.
+        }
+        if (element instanceof CMakeCommand) {
+            CMakeCommand cmd = (CMakeCommand) element;
+            List<CMakeArgument> args = cmd.getArguments();
+            if (VAR_TYPES.contains(cmd.getCommandName().getText().toLowerCase())) {
+                // first argument is a new variable name to keep track of
+                if (!args.isEmpty()) {
+                    CMakeArgument varArg = args.get(0);
+                    holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+                            .range(varArg.getArgTextRange())
+                            .textAttributes(CMakeSyntaxHighlighter.VARIABLE)
+                            .create();
+                    if (!(varArg instanceof CMakeUnquotedArgument)) {
+                        holder.newAnnotation(HighlightSeverity.ERROR, "Named arguments must be unquoted")
+                                .range(varArg)
+                                .create();
+                    }
+                }
+            }
         }
     }
 }
