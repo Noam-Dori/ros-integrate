@@ -7,10 +7,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.cmake.psi.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class CMakePsiImplUtil {
     @NotNull
@@ -60,9 +57,10 @@ public class CMakePsiImplUtil {
 
     @NotNull
     public static String argText(@NotNull CMakeArgument arg) {
-        List<PsiElement> elements = new ArrayList<>(Arrays.asList(arg.getChildren()));
-        elements.remove(0);
-        elements.remove(elements.size() - 1);
-        return elements.stream().map(PsiElement::getText).collect(Collectors.joining());
+        StringBuilder builder = new StringBuilder();
+        for (PsiElement i = arg.getFirstChild().getNextSibling(); !i.equals(arg.getLastChild()); i = i.getNextSibling()) {
+            builder.append(i.getText());
+        }
+        return builder.toString();
     }
 }
