@@ -81,7 +81,7 @@ quoted_argument     ::=  QUOTE quoted_element* QUOTE {
 private quoted_element      ::=  TEXT_ELEMENT | ESCAPE_SEQUENCE | CONTINUATION
 
 // section 3.3 - unquoted arguments
-unquoted_argument ::=  <<unquotedElement>> {
+unquoted_argument ::=  <<unquotedElement paren_element>> {
     implements = "ros.integrate.cmake.psi.CMakeArgument"
     methods = [getArgTextRange getArgText]
 }
@@ -92,3 +92,5 @@ bracket_comment ::=  COMMENT_START bracket_argument
 
 // section 6.2 - line comments
 line_comment ::=  COMMENT_START TEXT_ELEMENT
+
+private paren_element ::= PAREN_OPEN argument_list PAREN_CLOSE

@@ -465,6 +465,20 @@ public class CMakeParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // PAREN_OPEN argument_list PAREN_CLOSE
+  static boolean paren_element(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "paren_element")) return false;
+    if (!nextTokenIs(b, PAREN_OPEN)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, PAREN_OPEN);
+    r = r && argument_list(b, l + 1);
+    r = r && consumeToken(b, PAREN_CLOSE);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  /* ********************************************************** */
   // QUOTE quoted_element* QUOTE
   public static boolean quoted_argument(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "quoted_argument")) return false;
@@ -501,12 +515,12 @@ public class CMakeParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // <<unquotedElement>>
+  // <<unquotedElement paren_element>>
   public static boolean unquoted_argument(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "unquoted_argument")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, UNQUOTED_ARGUMENT, "<unquoted argument>");
-    r = unquotedElement(b, l + 1);
+    r = unquotedElement(b, l + 1, CMakeParser::paren_element);
     exit_section_(b, l, m, r, false, null);
     return r;
   }

@@ -1,6 +1,8 @@
 package ros.integrate.cmake;
 
+import com.intellij.codeInsight.highlighting.BraceMatcher;
 import com.intellij.lang.LanguageAnnotators;
+import com.intellij.lang.LanguageBraceMatching;
 import com.intellij.lang.LanguageCommenters;
 import com.intellij.lang.LanguageParserDefinitions;
 import com.intellij.lang.folding.LanguageFolding;
@@ -52,5 +54,6 @@ public interface CMakeClasses {
         LanguageCommenters.INSTANCE.addExplicitExtension(CMakeLanguage.INSTANCE, new CMakeCommenter());
         LanguageAnnotators.INSTANCE.addExplicitExtension(CMakeLanguage.INSTANCE, new CMakeHomeAnnotator());
         LanguageFolding.INSTANCE.addExplicitExtension(CMakeLanguage.INSTANCE, new CMakeFoldingBuilder());
+        LanguageBraceMatching.INSTANCE.addExplicitExtension(CMakeLanguage.INSTANCE, new CMakeBraceMatcher());
     }
 }
