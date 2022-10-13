@@ -70,20 +70,20 @@ private argument_element ::=  bracket_argument | quoted_argument | unquoted_argu
 // section 3.1 - bracket arguments
 bracket_argument ::=  BRACKET_OPEN TEXT_ELEMENT* BRACKET_CLOSE {
     implements = "ros.integrate.cmake.psi.CMakeArgument"
-    methods = [getArgTextRange]
+    methods = [getArgTextRange getArgText]
 }
 
 // section 3.2 - quoted arguments
 quoted_argument     ::=  QUOTE quoted_element* QUOTE {
     implements = "ros.integrate.cmake.psi.CMakeArgument"
-    methods = [getArgTextRange]
+    methods = [getArgTextRange getArgText]
 }
 private quoted_element      ::=  TEXT_ELEMENT | ESCAPE_SEQUENCE | CONTINUATION
 
 // section 3.3 - unquoted arguments
 unquoted_argument ::=  <<unquotedElement>> {
     implements = "ros.integrate.cmake.psi.CMakeArgument"
-    methods = [getArgTextRange]
+    methods = [getArgTextRange getArgText]
 }
 
 // section 6 - comments

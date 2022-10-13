@@ -7,4 +7,6 @@ import com.intellij.psi.PsiElement;
 public interface CMakeArgument extends PsiElement {
 
   TextRange getArgTextRange();
+
+  String getArgText();
 }

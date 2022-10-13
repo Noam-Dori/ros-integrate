@@ -34,4 +34,10 @@ public class CMakeQuotedArgumentImpl extends ASTWrapperPsiElement implements CMa
     return CMakePsiImplUtil.getArgTextRange(this);
   }
 
+  @Override
+  @NotNull
+  public String getArgText() {
+    return CMakePsiImplUtil.getArgText(this);
+  }
+
 }

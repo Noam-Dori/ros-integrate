@@ -4,7 +4,9 @@ import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
+import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.util.PsiTreeUtil;
 import org.codehaus.plexus.util.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.cmake.highlight.CMakeSyntaxHighlighter;
@@ -17,6 +19,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static com.intellij.lang.annotation.HighlightSeverity.INFORMATION;
+import static ros.integrate.cmake.highlight.CMakeSyntaxHighlighter.*;
 
 public class CMakeHomeAnnotator implements Annotator {
     private static final Logger LOG = Logger.getLogger("#ros.integrate.cmake.PackageXmlCompletionContributor");
@@ -40,23 +47,23 @@ public class CMakeHomeAnnotator implements Annotator {
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
         if (element instanceof CMakeLineComment) {
-            holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
-                    .textAttributes(CMakeSyntaxHighlighter.LINE_COMMENT)
+            holder.newSilentAnnotation(INFORMATION)
+                    .textAttributes(LINE_COMMENT)
                     .create();
         }
         if (element instanceof CMakeBracketComment) {
-            holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
-                    .textAttributes(CMakeSyntaxHighlighter.BLOCK_COMMENT)
+            holder.newSilentAnnotation(INFORMATION)
+                    .textAttributes(BLOCK_COMMENT)
                     .create();
         }
         if (element instanceof CMakeCommandName) {
             TextAttributesKey textColor;
             if (KEYWORDS.contains(element.getText())) {
-                textColor = CMakeSyntaxHighlighter.KEYWORD;
+                textColor = KEYWORD;
             } else {
-                textColor = CMakeSyntaxHighlighter.COMMAND_CALL;
+                textColor = COMMAND_CALL;
             }
-            holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+            holder.newSilentAnnotation(INFORMATION)
                     .range(element)
                     .textAttributes(textColor)
                     .create();
@@ -69,14 +76,14 @@ public class CMakeHomeAnnotator implements Annotator {
                 TextAttributesKey textColor;
                 String errorMessage;
                 if (isFuncName) {
-                    textColor = CMakeSyntaxHighlighter.COMMAND_DECLARATION;
+                    textColor = COMMAND_DECLARATION;
                     errorMessage = StringUtils.capitalise(block.getBlockType()) + " name must be unquoted";
                 } else {
-                    textColor = CMakeSyntaxHighlighter.VARIABLE;
+                    textColor = VARIABLE;
                     errorMessage = "Named arguments must be unquoted";
                 }
                 isFuncName = false;
-                holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+                holder.newSilentAnnotation(INFORMATION)
                         .range(arg.getArgTextRange())
                         .textAttributes(textColor)
                         .create();
@@ -95,9 +102,9 @@ public class CMakeHomeAnnotator implements Annotator {
                 // first argument is a new variable name to keep track of
                 if (!args.isEmpty()) {
                     CMakeArgument varArg = args.get(0);
-                    holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+                    holder.newSilentAnnotation(INFORMATION)
                             .range(varArg.getArgTextRange())
-                            .textAttributes(CMakeSyntaxHighlighter.VARIABLE)
+                            .textAttributes(VARIABLE)
                             .create();
                     if (!(varArg instanceof CMakeUnquotedArgument)) {
                         holder.newAnnotation(HighlightSeverity.ERROR, "Named arguments must be unquoted")
@@ -105,6 +112,32 @@ public class CMakeHomeAnnotator implements Annotator {
                                 .create();
                     }
                 }
+            }
+        }
+        if (element instanceof CMakeArgument && !(element instanceof CMakeBracketArgument)) {
+            CMakeArgument arg = (CMakeArgument) element;
+            // highlight ${} and rerun on insides
+            annVarUse(arg.getArgText(), arg.getTextOffset(), holder);
+        }
+    }
+
+    private static void annVarUse(String text, int offset, @NotNull AnnotationHolder holder) {
+        Matcher varMatcher = Pattern.compile("\\$(?:ENV)?\\{(.*)}").matcher(text);
+        while (varMatcher.find()) {
+            holder.newSilentAnnotation(INFORMATION)
+                    .range(TextRange.create(varMatcher.start(), varMatcher.start(1)).shiftRight(offset))
+                    .textAttributes(VARIABLE_BRACES)
+                    .create();
+            holder.newSilentAnnotation(INFORMATION)
+                    .range(TextRange.create(varMatcher.end(1), varMatcher.end()).shiftRight(offset))
+                    .textAttributes(VARIABLE_BRACES)
+                    .create();
+            if (varMatcher.start(1) < varMatcher.end(1)) {
+                holder.newSilentAnnotation(INFORMATION)
+                        .range(TextRange.create(varMatcher.start(1), varMatcher.end(1)).shiftRight(offset))
+                        .textAttributes(VARIABLE)
+                        .create();
+                annVarUse(varMatcher.group(1), offset + varMatcher.start(1), holder);
             }
         }
     }

@@ -33,4 +33,10 @@ public class CMakeUnquotedArgumentImpl extends ASTWrapperPsiElement implements C
     return CMakePsiImplUtil.getArgTextRange(this);
   }
 
+  @Override
+  @NotNull
+  public String getArgText() {
+    return CMakePsiImplUtil.getArgText(this);
+  }
+
 }

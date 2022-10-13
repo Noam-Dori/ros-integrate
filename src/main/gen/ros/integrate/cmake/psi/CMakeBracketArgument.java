@@ -11,4 +11,7 @@ public interface CMakeBracketArgument extends CMakeArgument {
   @NotNull
   TextRange getArgTextRange();
 
+  @NotNull
+  String getArgText();
+
 }

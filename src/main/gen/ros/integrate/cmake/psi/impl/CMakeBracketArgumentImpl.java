@@ -34,4 +34,10 @@ public class CMakeBracketArgumentImpl extends ASTWrapperPsiElement implements CM
     return CMakePsiImplUtil.getArgTextRange(this);
   }
 
+  @Override
+  @NotNull
+  public String getArgText() {
+    return CMakePsiImplUtil.getArgText(this);
+  }
+
 }

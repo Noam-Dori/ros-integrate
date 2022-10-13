@@ -10,4 +10,7 @@ public interface CMakeUnquotedArgument extends CMakeArgument {
 
   TextRange getArgTextRange();
 
+  @NotNull
+  String getArgText();
+
 }
