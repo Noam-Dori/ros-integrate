@@ -7,7 +7,9 @@ import com.intellij.lang.LanguageCommenters;
 import com.intellij.lang.LanguageParserDefinitions;
 import com.intellij.lang.folding.LanguageFolding;
 import com.intellij.openapi.fileTypes.SyntaxHighlighterFactory;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNameIdentifierOwner;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.cmake.annotate.CMakeHomeAnnotator;
 import ros.integrate.cmake.folding.CMakeFoldingBuilder;
@@ -15,20 +17,19 @@ import ros.integrate.cmake.highlight.CMakeSyntaxHighlighterFactory;
 import ros.integrate.cmake.lang.CMakeCommenter;
 import ros.integrate.cmake.lang.CMakeLanguage;
 import ros.integrate.cmake.lang.CMakeParserDefinition;
+import ros.integrate.cmake.psi.CMakeArgument;
+import ros.integrate.cmake.psi.CMakeCommand;
 
 @SuppressWarnings("unchecked")
 public interface CMakeClasses {
     boolean CLION = checkCLion();
 
-    @Nullable
-    static Class<?> getClass(String clionClassName, String pluginClassName) {
+    @NotNull
+    static Class<?> getClass(String clionClassName, Class<?> internalClass) {
         try {
             return Class.forName("com.jetbrains.cmake." + clionClassName);
         } catch (ClassNotFoundException ignored) {}
-        try {
-            return Class.forName("com.cmakeplugin." + pluginClassName);
-        } catch (ClassNotFoundException ignored) {}
-        return null;
+        return internalClass;
     }
 
     static boolean checkCLion() {
@@ -40,11 +41,11 @@ public interface CMakeClasses {
         }
     }
 
-    @Nullable
+    @NotNull
     static Class<? extends PsiNameIdentifierOwner> getCMakeArgClass() {
         return (Class<? extends PsiNameIdentifierOwner>)
                 getClass("psi.CMakeLiteral.class",
-                        "psi.CMakeUnquotedArgumentMaybeVariableContainer");
+                        CMakeArgument.class);
     }
 
     static void addHomeDependencies() {
@@ -55,5 +56,10 @@ public interface CMakeClasses {
         LanguageAnnotators.INSTANCE.addExplicitExtension(CMakeLanguage.INSTANCE, new CMakeHomeAnnotator());
         LanguageFolding.INSTANCE.addExplicitExtension(CMakeLanguage.INSTANCE, new CMakeFoldingBuilder());
         LanguageBraceMatching.INSTANCE.addExplicitExtension(CMakeLanguage.INSTANCE, new CMakeBraceMatcher());
+    }
+
+    @NotNull
+    static Class<? extends PsiElement> getCommandClass() {
+        return (Class<? extends PsiElement>) getClass("TODO", CMakeCommand.class);
     }
 }

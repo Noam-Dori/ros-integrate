@@ -27,4 +27,15 @@ public class CMakeCommandNameImpl extends ASTWrapperPsiElement implements CMakeC
     else super.accept(visitor);
   }
 
+  @Override
+  @NotNull
+  public String getName() {
+    return CMakePsiImplUtil.getName(this);
+  }
+
+  @Override
+  public PsiElement setName(@NotNull String newName) {
+    return CMakePsiImplUtil.setName(this, newName);
+  }
+
 }

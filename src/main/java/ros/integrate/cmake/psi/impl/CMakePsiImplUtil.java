@@ -2,6 +2,7 @@ package ros.integrate.cmake.psi.impl;
 
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiNamedElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -62,5 +63,28 @@ public class CMakePsiImplUtil {
             builder.append(i.getText());
         }
         return builder.toString();
+    }
+
+    @NotNull
+    public static String getName(@NotNull CMakeCommandName cmdName) {
+        return cmdName.getText();
+    }
+
+    public static PsiElement setName(@NotNull CMakeCommandName cmdName, @NotNull String newName) {
+        return cmdName.replace(CMakeElementFactory.createCommand(cmdName.getProject(), newName));
+    }
+
+    @NotNull
+    public static String getName(@NotNull CMakeCommand cmd) {
+        return cmd.getCommandName().getText();
+    }
+
+    public static PsiElement setName(@NotNull CMakeCommand cmd, @NotNull String newName) {
+        return cmd.getCommandName().setName(newName);
+    }
+
+    @NotNull
+    public static CMakeCommandName getNameIdentifier(@NotNull CMakeCommand cmd) {
+        return cmd.getCommandName();
     }
 }

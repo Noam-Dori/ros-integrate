@@ -4,6 +4,8 @@ package ros.integrate.cmake.psi;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiNamedElement;
+import com.intellij.psi.PsiNameIdentifierOwner;
 
 public class CMakeVisitor extends PsiElementVisitor {
 
@@ -21,10 +23,11 @@ public class CMakeVisitor extends PsiElementVisitor {
 
   public void visitCommand(@NotNull CMakeCommand o) {
     visitOperation(o);
+    // visitPsiNameIdentifierOwner(o);
   }
 
   public void visitCommandName(@NotNull CMakeCommandName o) {
-    visitPsiElement(o);
+    visitPsiNamedElement(o);
   }
 
   public void visitForBlock(@NotNull CMakeForBlock o) {
@@ -61,6 +64,10 @@ public class CMakeVisitor extends PsiElementVisitor {
 
   public void visitWhileBlock(@NotNull CMakeWhileBlock o) {
     visitBlock(o);
+  }
+
+  public void visitPsiNamedElement(@NotNull PsiNamedElement o) {
+    visitElement(o);
   }
 
   public void visitArgument(@NotNull CMakeArgument o) {

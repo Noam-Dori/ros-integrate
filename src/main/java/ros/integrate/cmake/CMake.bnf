@@ -56,10 +56,13 @@ private in_else ::= if_block | while_block | for_block | <<unnamedCommand "else"
 
 // section 2 - command invocations
 command  ::=  command_name PAREN_OPEN argument_list PAREN_CLOSE {
-    implements = "ros.integrate.cmake.psi.CMakeOperation"
-    methods = [getArguments]
+    implements = ["ros.integrate.cmake.psi.CMakeOperation" "com.intellij.psi.PsiNameIdentifierOwner"]
+    methods = [getArguments getName setName getNameIdentifier]
 }
-command_name ::= TEXT_ELEMENT
+command_name ::= TEXT_ELEMENT {
+    implements = "com.intellij.psi.PsiNamedElement"
+    methods = [getName setName]
+}
 
 // section 3 - command arguments
 junk     ::= argument_element+

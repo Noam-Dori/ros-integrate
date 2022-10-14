@@ -1,7 +1,8 @@
 <idea-plugin>
     <extensions defaultExtensionNs="com.intellij">
-        <!--suppress PluginXmlValidity (CMake exists as a language ID both in CLion and and using the alternate)-->
+        <!-- (CMake exists as a language ID both in CLion and and using the alternate)-->
         <psi.referenceContributor language="CMake" implementation="ros.integrate.cmake.ref.ROSCmakeReferenceContributor"/>
+        <psi.referenceContributor language="CMake" implementation="ros.integrate.cmake.ref.CMakeReferenceContributor"/>
         <!--suppress PluginXmlValidity -->
         <!-- This class is used to initialize all "home" CMake plugin components, as there is no "depend unless" option. -->
         <fileTypeFactory implementation="ros.integrate.cmake.lang.CMakeFileTypeFactory"/>

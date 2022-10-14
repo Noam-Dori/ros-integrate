@@ -4,8 +4,9 @@ package ros.integrate.cmake.psi;
 import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiNameIdentifierOwner;
 
-public interface CMakeCommand extends CMakeOperation {
+public interface CMakeCommand extends CMakeOperation, PsiNameIdentifierOwner {
 
   @NotNull
   CMakeArgumentList getArgumentList();
@@ -15,5 +16,13 @@ public interface CMakeCommand extends CMakeOperation {
 
   @NotNull
   List<CMakeArgument> getArguments();
+
+  @NotNull
+  String getName();
+
+  PsiElement setName(@NotNull String newName);
+
+  @NotNull
+  CMakeCommandName getNameIdentifier();
 
 }

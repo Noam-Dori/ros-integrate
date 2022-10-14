@@ -11,6 +11,6 @@ public class CMakeLanguage extends Language {
     public static final Language INSTANCE = new CMakeLanguage();
 
     protected CMakeLanguage() {
-        super("cmake");
+        super("CMake");
     }
 }

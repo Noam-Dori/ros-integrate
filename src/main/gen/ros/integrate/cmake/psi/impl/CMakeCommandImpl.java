@@ -45,4 +45,21 @@ public class CMakeCommandImpl extends ASTWrapperPsiElement implements CMakeComma
     return CMakePsiImplUtil.getArguments(this);
   }
 
+  @Override
+  @NotNull
+  public String getName() {
+    return CMakePsiImplUtil.getName(this);
+  }
+
+  @Override
+  public PsiElement setName(@NotNull String newName) {
+    return CMakePsiImplUtil.setName(this, newName);
+  }
+
+  @Override
+  @NotNull
+  public CMakeCommandName getNameIdentifier() {
+    return CMakePsiImplUtil.getNameIdentifier(this);
+  }
+
 }
