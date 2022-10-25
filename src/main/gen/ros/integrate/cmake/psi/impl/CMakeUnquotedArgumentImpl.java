@@ -39,4 +39,14 @@ public class CMakeUnquotedArgumentImpl extends ASTWrapperPsiElement implements C
     return CMakePsiImplUtil.getArgText(this);
   }
 
+  @Override
+  public String getName() {
+    return CMakePsiImplUtil.getName(this);
+  }
+
+  @Override
+  public PsiElement setName(@NotNull String newName) {
+    return CMakePsiImplUtil.setName(this, newName);
+  }
+
 }

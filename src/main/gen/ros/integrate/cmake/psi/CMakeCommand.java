@@ -5,6 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNameIdentifierOwner;
+import com.intellij.psi.PsiReference;
 
 public interface CMakeCommand extends CMakeOperation, PsiNameIdentifierOwner {
 
@@ -24,5 +25,8 @@ public interface CMakeCommand extends CMakeOperation, PsiNameIdentifierOwner {
 
   @NotNull
   CMakeCommandName getNameIdentifier();
+
+  @NotNull
+  PsiReference getReference();
 
 }

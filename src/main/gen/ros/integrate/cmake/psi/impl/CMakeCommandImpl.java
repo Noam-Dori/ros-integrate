@@ -10,6 +10,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static ros.integrate.cmake.psi.CMakeTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import ros.integrate.cmake.psi.*;
+import com.intellij.psi.PsiReference;
 
 public class CMakeCommandImpl extends ASTWrapperPsiElement implements CMakeCommand {
 
@@ -60,6 +61,12 @@ public class CMakeCommandImpl extends ASTWrapperPsiElement implements CMakeComma
   @NotNull
   public CMakeCommandName getNameIdentifier() {
     return CMakePsiImplUtil.getNameIdentifier(this);
+  }
+
+  @Override
+  @NotNull
+  public PsiReference getReference() {
+    return CMakePsiImplUtil.getReference(this);
   }
 
 }
