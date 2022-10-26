@@ -83,7 +83,7 @@ private quoted_element      ::=  TEXT_ELEMENT | ESCAPE_SEQUENCE | CONTINUATION
 // section 3.3 - unquoted arguments
 unquoted_argument ::=  <<unquotedElement paren_element>> {
     implements = ["ros.integrate.cmake.psi.CMakeArgument" "com.intellij.psi.PsiNamedElement"]
-    methods = [getArgTextRange getArgText getName setName]
+    methods = [getArgTextRange getArgText getName setName getReferences]
 }
 
 // section 6 - comments

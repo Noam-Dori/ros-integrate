@@ -72,6 +72,11 @@ public interface CMakeClasses {
     }
 
     @NotNull
+    static Class<? extends PsiElement> getArgClass() {
+        return (Class<? extends PsiElement>) getClass("TODO", CMakeArgument.class);
+    }
+
+    @NotNull
     static Class<? extends PsiElement> getBlockClass() {
         return (Class<? extends PsiElement>) getClass("TODO", CMakeBlock.class);
     }

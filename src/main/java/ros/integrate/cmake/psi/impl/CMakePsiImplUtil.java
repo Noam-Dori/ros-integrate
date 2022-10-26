@@ -8,8 +8,12 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.cmake.psi.*;
 import ros.integrate.cmake.ref.CMakeCommandReference;
+import ros.integrate.cmake.ref.CMakeVariableReference;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CMakePsiImplUtil {
     @NotNull
@@ -92,5 +96,29 @@ public class CMakePsiImplUtil {
     @Contract("_ -> new")
     public static PsiReference getReference(@NotNull CMakeCommand cmd) {
         return new CMakeCommandReference(cmd);
+    }
+
+    @NotNull
+    public static CMakeVariableReference[] getReferences(@NotNull CMakeUnquotedArgument arg) {
+        return getVarTextRanges(arg.getText(), 0).stream()
+                .map(range -> new CMakeVariableReference(arg, range))
+                .toArray(CMakeVariableReference[]::new);
+    }
+
+    @NotNull
+    private static List<TextRange> getVarTextRanges(String text, int offset) {
+        Matcher varMatcher = Pattern.compile("\\$(?:ENV)?\\{(.*)}").matcher(text);
+        List<TextRange> result = new ArrayList<>();
+        while (varMatcher.find()) {
+            if (varMatcher.start(1) < varMatcher.end(1)) {
+                // there is a found variable
+                List<TextRange> insideResult = getVarTextRanges(varMatcher.group(1), offset + varMatcher.start(1));
+                if (insideResult.isEmpty()) {
+                    // this is the leaf variable level - add a reference!
+                    result.add(TextRange.create(varMatcher.start(1), varMatcher.end(1)).shiftRight(offset));
+                }
+            }
+        }
+        return result;
     }
 }
