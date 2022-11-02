@@ -63,21 +63,21 @@ public interface CMakeClasses {
 
     @NotNull
     static Class<? extends PsiElement> getCommandClass() {
-        return (Class<? extends PsiElement>) getClass("TODO", CMakeCommand.class);
+        return (Class<? extends PsiElement>) getClass("psi.CMakeCommand.class", CMakeCommand.class);
     }
 
     @NotNull
     static Class<? extends PsiElement> getUnquotedArgClass() {
-        return (Class<? extends PsiElement>) getClass("TODO", CMakeUnquotedArgument.class);
+        return (Class<? extends PsiElement>) getClass("psi.CMakeArgument.class", CMakeUnquotedArgument.class);
     }
 
     @NotNull
     static Class<? extends PsiElement> getArgClass() {
-        return (Class<? extends PsiElement>) getClass("TODO", CMakeArgument.class);
+        return (Class<? extends PsiElement>) getClass("psi.CMakeArgument.class", CMakeArgument.class);
     }
 
     @NotNull
     static Class<? extends PsiElement> getBlockClass() {
-        return (Class<? extends PsiElement>) getClass("TODO", CMakeBlock.class);
+        return (Class<? extends PsiElement>) getClass("psi.CMakeBodyBlock.class", CMakeBlock.class);
     }
 }
