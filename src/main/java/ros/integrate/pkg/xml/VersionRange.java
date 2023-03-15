@@ -2,8 +2,8 @@ package ros.integrate.pkg.xml;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -268,8 +268,7 @@ public class VersionRange {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof VersionRange)) return false;
-        VersionRange range = (VersionRange) o;
+        if (!(o instanceof VersionRange range)) return false;
         return isStrictMin() == range.isStrictMin() &&
                 isStrictMax() == range.isStrictMax() &&
                 Objects.equals(getMin(), range.getMin()) &&
