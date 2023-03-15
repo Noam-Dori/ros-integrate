@@ -77,9 +77,8 @@ public abstract class ROSPackageBase extends PsiElementBase implements ROSPackag
         return this;
     }
 
-    @NotNull
     @Override
-    public PsiElement[] getChildren() {
+    public PsiElement @NotNull [] getChildren() {
         // concrete packages don't have child packages, but they do contain things.
         ArrayList<PsiElement> ret = new ArrayList<>();
         Arrays.stream(getRoots()).forEach(root -> {
@@ -95,7 +94,7 @@ public abstract class ROSPackageBase extends PsiElementBase implements ROSPackag
     }
 
     @Override
-    public void putInfo(@NotNull Map<String, String> info) {
+    public void putInfo(@NotNull Map<? super String, ? super String> info) {
         info.put("fileName", getName());
     }
 
