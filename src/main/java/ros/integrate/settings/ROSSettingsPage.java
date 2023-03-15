@@ -166,6 +166,10 @@ public class ROSSettingsPage implements SearchableConfigurable {
                 || isModified(knownRosdepKeys.getTextEditor(), data.getRawKnownROSDepKeys());
     }
 
+    private boolean isModified(@NotNull ComboBox<String> field, @NotNull String value) {
+        return !value.equals(field.getSelectedItem());
+    }
+
     @NotNull
     @Contract(pure = true)
     private BiConsumer<String, String> withTrigger(Consumer<String> function) {

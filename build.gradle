@@ -1,19 +1,17 @@
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-}
-
 plugins {
     id 'java'
-    id 'org.jetbrains.intellij' version '0.4.10'
+    id 'org.jetbrains.intellij' version '1.13.2'
+}
+
+repositories {
+    mavenCentral()
 }
 
 apply plugin: 'idea'
 apply plugin: 'java'
 apply plugin: 'org.jetbrains.intellij'
 
-sourceCompatibility = 1.8
+sourceCompatibility = 17
 
 dependencies {
     //testCompile group: 'junit', name: 'junit', version: '4.12'
@@ -21,8 +19,8 @@ dependencies {
 
 intellij {
 //    version 'LATEST-EAP-SNAPSHOT'
-    version 'IC-2020.2'
-    updateSinceUntilBuild false
+    version.set('IC-2022.3.2')
+    updateSinceUntilBuild.set(false)
 }
 
 sourceSets {
@@ -40,9 +38,9 @@ String changes = new File("changelog.html").text
 
 patchPluginXml {
     version pluginVersion
-    sinceBuild 202.6397
-    pluginDescription "Extends IntelliJ-Based IDEs with ROS specific development tools"
-    changeNotes changes
+    sinceBuild.set("202.6397")
+    pluginDescription.set("Extends IntelliJ-Based IDEs with ROS specific development tools")
+    changeNotes.set(changes)
 }
 
 group pluginIndex

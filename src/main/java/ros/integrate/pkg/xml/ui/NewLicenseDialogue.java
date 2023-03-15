@@ -13,7 +13,7 @@ import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.ui.TextComponentAccessor;
+import com.intellij.openapi.ui.TextComponentAccessors;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiFileSystemItem;
 import com.intellij.psi.PsiManager;
@@ -110,7 +110,7 @@ public class NewLicenseDialogue extends DialogWrapper {
         // folder browser
         FileChooserDescriptor descriptor = FileChooserDescriptorFactory.createSingleFolderDescriptor();
         targetDirField.addBrowseFolderListener(browserTitle, browserDescription,
-                project, descriptor, TextComponentAccessor.TEXT_FIELD_WITH_HISTORY_WHOLE_TEXT);
+                project, descriptor, TextComponentAccessors.TEXT_FIELD_WITH_HISTORY_WHOLE_TEXT);
 
         // folder completion?
         final JTextField textField = targetDirField.getChildComponent().getTextEditor();
@@ -194,7 +194,7 @@ public class NewLicenseDialogue extends DialogWrapper {
             }
 
             close(OK_EXIT_CODE);
-        }, "Creating new File", null);
+        }, "Creating New File", null);
     }
 
     private void installHistory(@NotNull TextFieldWithHistory field, @NotNull String key, @NotNull String curText) {
