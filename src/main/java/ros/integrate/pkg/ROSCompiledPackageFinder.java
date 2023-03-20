@@ -63,7 +63,7 @@ public class ROSCompiledPackageFinder extends ROSPackageFinderBase {
         Map<RootType, PsiDirectory> rootMap = new HashMap<>();
         rootMap.put(RootType.SHARE, xmlRoot);
         ROSPackage newPkg = new ROSCompiledPackage(project, pkgName, rootMap, pkgXml, pkgPackets);
-        if (newPkg == ROSPackage.ORPHAN) {
+        if (newPkg.equals(ROSPackage.ORPHAN)) {
             LOG.error("Failed indexing a valid ROS package",
                     "the compiled package finder tried finding a ros package, and failed.",
                     "Name: [" + pkgName + "]",

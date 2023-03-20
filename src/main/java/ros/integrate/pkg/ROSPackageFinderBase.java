@@ -33,7 +33,7 @@ public abstract class ROSPackageFinderBase implements ROSPackageFinder {
     @Override
     public void findAndCache(Project project, ConcurrentMap<String, ROSPackage> pkgCache) {
         /*
-         * the files that actually determine whether or not a directory is a package is the package.xml file.
+         * the files that actually determine whether a directory is a package is the package.xml file.
          * the following condition is true:
          * A directory is a ROS package iff one of its roots directly contains a package.xml file
          */
@@ -55,28 +55,25 @@ public abstract class ROSPackageFinderBase implements ROSPackageFinder {
     @NotNull
     private ROSPackage investigateXml(@NotNull VirtualFile vXml, Project project,
                                      ConcurrentMap<String, ROSPackage> pkgCache) {
-        // 1. get package name
-        // FIXME for now, since we don't want to read into files just yet, we will use the directory to name packages.
+        // 1. get package name. This is considered to be the name of the directory, not what's in package.xml.
         String pkgName = vXml.getParent().getName();
         // 2. search for the package in the cache. If it exists, move on to next xml.
-        if (pkgCache != null && pkgCache.getOrDefault(pkgName, ROSPackage.ORPHAN) != ROSPackage.ORPHAN)
-            return ROSPackage.ORPHAN;
+        if (pkgCache != null && pkgCache.getOrDefault(pkgName, ORPHAN) != ORPHAN)
+            return ORPHAN;
         // 3. get package.xml file in XML PSI form
         XmlFile pkgXml = (XmlFile) Objects.requireNonNull(PsiManager.getInstance(project).findFile(vXml));
         // 4. get package root dir
         PsiDirectory xmlRoot = pkgXml.getContainingDirectory();
         // 4.5. TODO other roots of compiled packages: lib,include,bin(?),etc
-        // 5. TODO try getting CMakeLists.txt since this is a project package
-        // 6. find all packet files
-        // FIXME for now they will just be searched in the project regardless of CMakeLists.txt
-        List<ROSPktFile> pkgPackets = findPacketFiles(xmlRoot/*,pkgCMake*/);
-        // 7. make package and cache it. MAKE SURE IT IS NOT ROSPackage.ORPHAN
+        // 6. find all packet files. since we want to account for misplaced messages, we search for packets in the entire directory.
+        List<ROSPktFile> pkgPackets = findPacketFiles(xmlRoot);
+        // 5. make package and cache it. MAKE SURE IT IS NOT ROSPackage.ORPHAN
 
         return tryNewROSPackage(project, pkgName, xmlRoot , pkgXml, pkgPackets);
     }
 
     @NotNull
-    private List<ROSPktFile> findPacketFiles(@NotNull PsiDirectory pkgRoot) {
+    protected List<ROSPktFile> findPacketFiles(@NotNull PsiDirectory pkgRoot) {
         List<ROSPktFile> ret = new SortedList<>(Comparator.comparing(ROSPktFile::getQualifiedName));
         for (PsiFile file : pkgRoot.getFiles()) {
             if (file.getLanguage() == ROSPktLanguage.INSTANCE) {
@@ -108,7 +105,7 @@ public abstract class ROSPackageFinderBase implements ROSPackageFinder {
                 .forEach(pkgFiles::addAll);
         pkgFiles.forEach(xml -> {
             ROSPackage newPkg = investigateXml(xml.getVirtualFile(), project, null);
-            if (newPkg != ROSPackage.ORPHAN) {
+            if (newPkg != ORPHAN) {
                 ret.putValues(newPkg, new ArrayList<>(0));
             }
         });
@@ -157,7 +154,7 @@ public abstract class ROSPackageFinderBase implements ROSPackageFinder {
         // 0. check the package is under the jurisdiction of this finder.
         PsiDirectory xmlRoot = Objects.requireNonNull(pkg.getRoot(RootType.SHARE));
         if(notInFinder(xmlRoot.getVirtualFile(), project)) { // something is up with the root
-            if(xmlRoot.getParentDirectory() != null && // check parent - if its in the project, the dir was deleted.
+            if(xmlRoot.getParentDirectory() != null && // check parent - if it's in the project, the dir was deleted.
                     notInFinder(xmlRoot.getParentDirectory().getVirtualFile(), project)) {
                 return null;
             }

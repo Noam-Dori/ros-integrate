@@ -13,11 +13,13 @@ import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.openapi.vfs.VirtualFileSystem;
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
 import com.intellij.psi.PsiDirectory;
+import com.intellij.psi.PsiManager;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.GlobalSearchScopesCore;
 import com.intellij.psi.xml.XmlFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import ros.integrate.cmake.adapter.CMakeFileAdapter;
 import ros.integrate.pkg.psi.ROSPackage;
 import ros.integrate.pkg.psi.impl.ROSSourcePackage;
 import ros.integrate.pkt.psi.ROSPktFile;
@@ -78,8 +80,11 @@ public class ROSWorkspacePackageFinder extends ROSPackageFinderBase {
 
     @NotNull
     @Override
-    ROSPackage tryNewROSPackage(Project project, String pkgName, PsiDirectory xmlRoot, XmlFile pkgXml, List<ROSPktFile> pkgPackets) {
-        ROSPackage newPkg = new ROSSourcePackage(project, pkgName, xmlRoot, pkgXml, pkgPackets);
+    ROSPackage tryNewROSPackage(Project project, String pkgName, @NotNull PsiDirectory xmlRoot,
+                                XmlFile pkgXml, List<ROSPktFile> pkgPackets) {
+        var cmakeFile = Optional.ofNullable(xmlRoot.findFile("CMakeLists.txt"))
+                .map(CMakeFileAdapter::new).orElse(null);
+        ROSPackage newPkg = new ROSSourcePackage(project, pkgName, xmlRoot, pkgXml, pkgPackets, cmakeFile);
         if (newPkg.equals(ROSPackage.ORPHAN)) {
             LOG.error("Failed indexing a valid ROS package",
                     "the project package finder tried finding a ros package, and failed.",

@@ -45,3 +45,4 @@ patchPluginXml {
 
 group pluginIndex
 version pluginVersion
+targetCompatibility = JavaVersion.VERSION_17

@@ -146,12 +146,10 @@ public interface ROSPackageXml {
     class Dependency implements ROSCondition.Conditioned {
         @NotNull
         private final DependencyType type;
-        @SuppressWarnings("StatefulEp")
         @NotNull
         private final ROSPackage pkg;
         @NotNull
         private final VersionRange versionRange;
-        @SuppressWarnings("StatefulEp")
         @Nullable
         private final ROSCondition condition;
 
@@ -159,7 +157,7 @@ public interface ROSPackageXml {
          * construct a new dependency
          * @param type the type of dependency, corresponding to the tag name
          * @param pkg the package this dependency points to. If it points to no package, use {@link ROSPackage#ORPHAN}.
-         *            corresponds the the tag value
+         *            corresponds to the tag value
          * @param range the allowed versions that <code>pkg</code> may be in for this package to work.
          *              If it can be any version, use {@link VersionRange#any()}.
          *              corresponds to the version_* attributes
