@@ -74,9 +74,11 @@ public abstract class ROSPackageBase extends PsiElementBase implements ROSPackag
         getPackageManager().updatePackageName(this, name);
         this.name = name;
         Arrays.stream(getRoots()).filter(root -> !root.getName().equals(name)).forEach(root -> root.setName(name));
-        // TODO change CMakeLists.txt
+        extraSetName(name);
         return this;
     }
+
+    protected void extraSetName(@NotNull String name) throws IncorrectOperationException {}
 
     @Override
     public PsiElement @NotNull [] getChildren() {

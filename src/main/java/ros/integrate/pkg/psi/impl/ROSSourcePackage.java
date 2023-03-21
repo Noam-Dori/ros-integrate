@@ -3,6 +3,7 @@ package ros.integrate.pkg.psi.impl;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.xml.XmlFile;
+import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.ROSIcons;
@@ -120,6 +121,15 @@ public class ROSSourcePackage extends ROSPackageBase {
             }
         }
         return commonPath;
+    }
+
+    @Override
+    protected void extraSetName(@NotNull String name) throws IncorrectOperationException {
+        if (cmakeFile != null) {
+            for (var command : cmakeFile.findCommandCalls("project")) {
+                command.getArguments().get(0).setText(name);
+            }
+        }
     }
 
     @Nullable
