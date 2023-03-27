@@ -2,6 +2,7 @@ package ros.integrate.ui;
 
 import com.intellij.execution.util.ListTableWithButtons;
 import com.intellij.icons.AllIcons;
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.project.Project;
@@ -177,9 +178,8 @@ public class PathListTable extends ListTableWithButtons<PathListTable.Path> {
         setValues(paths.stream().map(Path::new).collect(Collectors.toList()));
     }
 
-    @NotNull
     @Override
-    protected AnActionButton[] createExtraActions() {
+    protected AnActionButton @NotNull [] createExtraActions() {
         AnActionButton duplicateButton = new AnActionButton("Duplicate Path", AllIcons.Actions.Copy) {
             @Override
             public void actionPerformed(@NotNull AnActionEvent e) {
@@ -191,9 +191,14 @@ public class PathListTable extends ListTableWithButtons<PathListTable.Path> {
             public boolean isEnabled() {
                 return !getSelection().isEmpty();
             }
+
+            @Override
+            public @NotNull ActionUpdateThread getActionUpdateThread() {
+                return ActionUpdateThread.BGT;
+            }
         };
         if (browserTitle != null) {
-            AnActionButton browseButton = new AnActionButton(UIBundle.message("component.with.browse.button.browse.button.tooltip.text"), AllIcons.Actions.Menu_open) {
+            AnActionButton browseButton = new AnActionButton(UIBundle.message("component.with.browse.button.browse.button.tooltip.text"), AllIcons.Actions.MenuOpen) {
                 private final TextFieldWithBrowseButton dummy = new TextFieldWithBrowseButton();
                 private final BrowseFolderActionListener<?> action =
                         new BrowseFolderActionListener<>(browserTitle, browserDescription, dummy, project,
@@ -211,6 +216,11 @@ public class PathListTable extends ListTableWithButtons<PathListTable.Path> {
                 @Override
                 public boolean isEnabled() {
                     return getSelection().size() == 1;
+                }
+
+                @Override
+                public @NotNull ActionUpdateThread getActionUpdateThread() {
+                    return ActionUpdateThread.BGT;
                 }
             };
             return new AnActionButton[]{duplicateButton, browseButton};

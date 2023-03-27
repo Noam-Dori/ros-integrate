@@ -14,10 +14,7 @@ import ros.integrate.pkg.xml.ROSPackageXml;
 import ros.integrate.pkg.xml.TagTextRange;
 import ros.integrate.pkg.xml.intention.RemoveDependencyQuickFix;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * <p>Checks whether or not the metapackage uses illegal dependencies.</p>
@@ -69,7 +66,7 @@ public class ForbiddenMetapackageDependencyInspection extends LocalInspectionToo
         for (int i = dependencies.size() - 1; i >= 0; i--) {
             DependencyType targetType = dependencies.get(i).getType();
             List<DependencyType> coveredTypes = Arrays.asList(targetType.getCoveredDependencies());
-            if (!ALLOWED_DEP_TYPES.containsAll(coveredTypes)) {
+            if (!new HashSet<>(ALLOWED_DEP_TYPES).containsAll(coveredTypes)) {
                 raiseWarning(i, targetType, ret, manager, file, depTrs, isOnTheFly, pkgXml, true);
                 continue;
             }

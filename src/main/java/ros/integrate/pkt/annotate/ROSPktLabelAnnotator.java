@@ -76,7 +76,7 @@ public class ROSPktLabelAnnotator extends ROSPktAnnotatorBase {
      * checks whether of not the label provided is the first label in this section that has its name.
      *
      * @param name the field to test
-     * @return <code>true</code> if {@param field} is the first first defined label with the provided name in this file,
+     * @return <code>true</code> if {@param field} is the first defined label with the provided name in this file,
      * <code>false</code> otherwise.
      */
     private boolean notFirstDefinition(@NotNull ROSPktLabel name) {

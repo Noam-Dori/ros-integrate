@@ -13,6 +13,7 @@ import ros.integrate.pkg.xml.ROSPackageXml;
  */
 public class RemoveLicenseFileFix implements LocalQuickFix {
     private final int id;
+    @SafeFieldForPreview
     @NotNull
     private final ROSPackageXml pkgXml;
 

@@ -56,7 +56,7 @@ public class LicenseTable extends ListTableWithButtons<LicenseTable.Entry> {
 
     @Override
     protected ListTableModel<?> createListModel() {
-        return new ListTableModel<>(new ElementsColumnInfoBase<Entry>("type") {
+        return new ListTableModel<>(new ElementsColumnInfoBase<Entry>("Type") {
             @NotNull
             @Override
             public String valueOf(@NotNull Entry entry) {
@@ -66,7 +66,7 @@ public class LicenseTable extends ListTableWithButtons<LicenseTable.Entry> {
             @NotNull
             @Override
             protected String getDescription(@NotNull Entry entry) {
-                return "the type of the license";
+                return "The type of the license";
             }
 
             @Override
@@ -90,7 +90,7 @@ public class LicenseTable extends ListTableWithButtons<LicenseTable.Entry> {
                 choices.setEditable(true);
                 return new DefaultCellEditor(choices);
             }
-        }, new ElementsColumnInfoBase<Entry>("file") {
+        }, new ElementsColumnInfoBase<Entry>("File") {
             @Nullable
             @Override
             public String valueOf(@NotNull Entry entry) {

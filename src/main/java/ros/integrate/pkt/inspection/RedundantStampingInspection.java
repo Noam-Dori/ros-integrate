@@ -77,14 +77,11 @@ public class RedundantStampingInspection extends ROSPktInspectionBase {
 
     @Contract(pure = true)
     private boolean mayRaiseProblem(int size) {
-        switch (size) {
-            case -1:
-                return CHECK_OBJECT;
-            case 0:
-                return CHECK_VECTOR;
-            default:
-                return CHECK_ARRAY;
-        }
+        return switch (size) {
+            case -1 -> CHECK_OBJECT;
+            case 0 -> CHECK_VECTOR;
+            default -> CHECK_ARRAY;
+        };
     }
 
     @NotNull

@@ -50,11 +50,11 @@ public class ROSPktParserDefinition implements ParserDefinition {
     }
 
     @Override
-    public IFileElementType getFileNodeType() {
+    public @NotNull IFileElementType getFileNodeType() {
         return FILE;
     }
 
-    public PsiFile createFile(FileViewProvider viewProvider) {
+    public @NotNull PsiFile createFile(@NotNull FileViewProvider viewProvider) {
         if (viewProvider.getFileType() instanceof ROSPktFileType) { // should take care of all ROS pkt view providers
             return ((ROSPktFileType) viewProvider.getFileType()).newPktFile(viewProvider);
         }

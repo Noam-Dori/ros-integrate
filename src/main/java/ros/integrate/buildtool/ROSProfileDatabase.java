@@ -46,7 +46,7 @@ public class ROSProfileDatabase implements PersistentStateComponent<ROSProfileDa
     @Tag("profile")
     static class ProfileState {
         @XMap
-        public Map<String, String> profile = new HashMap<>();
+        public final Map<String, String> profile = new HashMap<>();
 
         public ProfileState(Map<String, String> data) {
             profile.putAll(data);
@@ -61,7 +61,7 @@ public class ROSProfileDatabase implements PersistentStateComponent<ROSProfileDa
      * to a list of all the raw profiles.
      */
     static class State {
-        public Map<ROSBuildTool, List<ProfileState>> data;
+        public final Map<ROSBuildTool, List<ProfileState>> data;
 
         State() {
             data = new HashMap<>();
@@ -126,15 +126,11 @@ public class ROSProfileDatabase implements PersistentStateComponent<ROSProfileDa
         if (settings.getWorkspacePath().isEmpty()) {
             return Collections.emptyList();
         }
-            switch (buildTool) {
-                case COLCON:
-                    return loadColcon();
-                case CATKIN_MAKE:
-                    return loadCatkinMake();
-                case CATKIN_TOOLS:
-                    return loadCatkinTools();
-            }
-        return Collections.emptyList();
+        return switch (buildTool) {
+            case COLCON -> loadColcon();
+            case CATKIN_MAKE -> loadCatkinMake();
+            case CATKIN_TOOLS -> loadCatkinTools();
+        };
     }
 
     /**

@@ -58,9 +58,8 @@ public class ROSMsgFileReference extends PsiReferenceBase<PsiElement> implements
         }
     }
 
-    @NotNull
     @Override
-    public ResolveResult[] multiResolve(boolean incompleteCode) {
+    public ResolveResult @NotNull [] multiResolve(boolean incompleteCode) {
         Project project = myElement.getProject();
         ROSMsgFile file = ROSPktUtil.findMessage(project, pkgName, msgName);
         if (file == null && isFirstHeader(null)) {
@@ -80,9 +79,8 @@ public class ROSMsgFileReference extends PsiReferenceBase<PsiElement> implements
         return resolveResults.length == 1 ? (ROSMsgFile) resolveResults[0].getElement() : null;
     }
 
-    @NotNull
     @Override
-    public Object[] getVariants() {
+    public Object @NotNull [] getVariants() {
         Project project = myElement.getProject();
         List<LookupElement> variants = new ArrayList<>();
         addMessageVariants(project, variants);

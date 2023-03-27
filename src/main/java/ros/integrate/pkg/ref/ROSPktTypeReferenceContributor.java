@@ -27,10 +27,9 @@ public class ROSPktTypeReferenceContributor extends PsiReferenceContributor {
     public void registerReferenceProviders(@NotNull PsiReferenceRegistrar registrar) {
         registrar.registerReferenceProvider(PlatformPatterns.psiElement(ROSPktTypeBase.class),
                 new PsiReferenceProvider() {
-                    @NotNull
                     @Override
-                    public PsiReference[] getReferencesByElement(@NotNull PsiElement element,
-                                                                 @NotNull ProcessingContext context) {
+                    public PsiReference @NotNull [] getReferencesByElement(@NotNull PsiElement element,
+                                                                           @NotNull ProcessingContext context) {
                         ROSPackageReferenceBase<?> ref = getPackageReference(element);
                         if(ref == null) {
                             return PsiReference.EMPTY_ARRAY;

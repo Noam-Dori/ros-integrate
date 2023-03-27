@@ -32,7 +32,7 @@ public class CamelCaseInspection extends ROSPktInspectionBase {
     /**
      * fetches the message for the unorthodox type if available.
      * @param fieldType the name of the type to check.
-     * @param inProject whether or not this type was defined in the project.
+     * @param inProject whether this type was defined in the project.
      * @return null if the type is fine, otherwise the reason this type is named not according to ROS standards.
      */
     @Contract(pure = true)

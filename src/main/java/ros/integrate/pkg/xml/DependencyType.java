@@ -90,7 +90,7 @@ public enum DependencyType {
     /**
      * get the dependency tags that cover this base dependency type.
      * @param format the format of the respective package.xml file.
-     * @return a list of all dependency tags that cover this base dependency type. For base tags,
+     * @return an array of all dependency tags that cover this base dependency type. For base tags,
      * size will be at least 1. For composite types this will be an empty list.
      */
     @NotNull

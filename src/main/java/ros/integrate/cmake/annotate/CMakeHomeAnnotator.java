@@ -68,8 +68,7 @@ public class CMakeHomeAnnotator implements Annotator {
                     .textAttributes(textColor)
                     .create();
         }
-        if (element instanceof CMakeBlock && F_BLOCK_TYPES.contains(((CMakeBlock) element).getBlockType())) {
-            CMakeBlock block = (CMakeBlock) element;
+        if (element instanceof CMakeBlock block && F_BLOCK_TYPES.contains(((CMakeBlock) element).getBlockType())) {
             List<CMakeArgument> args = block.getStartCommand().getArguments();
             boolean isFuncName = true;
             for (CMakeArgument arg : args) {
@@ -95,8 +94,7 @@ public class CMakeHomeAnnotator implements Annotator {
             }
             // iterate over all functions and annotate the named argument from the definition, ARGC, ARGV, ARGV# as variables.
         }
-        if (element instanceof CMakeCommand) {
-            CMakeCommand cmd = (CMakeCommand) element;
+        if (element instanceof CMakeCommand cmd) {
             List<CMakeArgument> args = cmd.getArguments();
             if (VAR_TYPES.contains(cmd.getCommandName().getText().toLowerCase())) {
                 // first argument is a new variable name to keep track of
@@ -114,8 +112,7 @@ public class CMakeHomeAnnotator implements Annotator {
                 }
             }
         }
-        if (element instanceof CMakeArgument && !(element instanceof CMakeBracketArgument)) {
-            CMakeArgument arg = (CMakeArgument) element;
+        if (element instanceof CMakeArgument arg && !(element instanceof CMakeBracketArgument)) {
             // highlight ${} and rerun on insides
             annVarUse(arg.getArgText(), arg.getTextOffset(), holder);
         }

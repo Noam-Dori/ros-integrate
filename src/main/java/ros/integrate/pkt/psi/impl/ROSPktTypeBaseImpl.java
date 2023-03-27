@@ -58,8 +58,7 @@ public abstract class ROSPktTypeBaseImpl extends ROSPktIdentifierImpl implements
         return ROSPktPsiImplUtil.getReference(this);
     }
 
-    @NotNull
-    public PsiReference[] getReferences() {
+    public PsiReference @NotNull [] getReferences() {
         return ROSPktPsiImplUtil.getReferences(this);
     }
 

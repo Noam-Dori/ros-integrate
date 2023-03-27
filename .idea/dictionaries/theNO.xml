@@ -3,6 +3,7 @@
     <words>
       <w>ament</w>
       <w>appname</w>
+      <w>buildtool</w>
       <w>buildtool's</w>
       <w>buildtools</w>
       <w>colcon</w>
@@ -17,6 +18,7 @@
       <w>newvfs</w>
       <w>openapi</w>
       <w>opensource</w>
+      <w>rosdep</w>
       <w>rospkt</w>
       <w>setlocal</w>
       <w>tldr</w>

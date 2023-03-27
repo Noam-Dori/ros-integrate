@@ -47,7 +47,7 @@ public class ROSProfiles {
      * @param id the ID of the profile in this database.
      * @param method the method applied on the profile to get the property
      * @param <T> the return type of the method
-     * @return the result of applying method on the profile with id ID
+     * @return the result of applying method on the profile with the given ID
      */
     @Nullable
     public <T> T getProfileProperty(int id, Function<ROSProfile, T> method) {

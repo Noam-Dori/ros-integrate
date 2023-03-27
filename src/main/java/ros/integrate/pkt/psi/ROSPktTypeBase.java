@@ -8,14 +8,14 @@ import org.jetbrains.annotations.Nullable;
 /**
  * a packet field type. This is a type identifier for a specific field in a packet file (.msg, .srv, .action).
  * It describes the structure of the data in the field (constant or property).
- *
+ * <p>
  * This specific class describes every field type. The type can be complete or broken.
  * The very string describing the type can have missing parts.
  * If the type completely follows the rules, it is considered "complete", if not, it is considered a "fragment".
  * Types are fragments only if they have a left bracket but not a right one (this is the only way to really break them)
  * You can run all functions on fragment fields as if they were complete and expect similar results,
  * at least when it comes to the logical part.
- * Use {@link ROSPktTypeBase#isComplete()} to check whether or not the type is complete.
+ * Use {@link ROSPktTypeBase#isComplete()} to check whether the type is complete.
  * @author Noam Dori
  */
 public interface ROSPktTypeBase extends ROSPktIdentifier {
@@ -41,7 +41,7 @@ public interface ROSPktTypeBase extends ROSPktIdentifier {
     PsiElement custom();
 
     /**
-     * gets the array size of the type, even if its not an array
+     * gets the array size of the type, even if it's not an array
      * @return -1 if the element is not an array,
      *         0 if the element has variable size (since size 0 should not be used)
      *         otherwise, the size of the array
@@ -84,11 +84,10 @@ public interface ROSPktTypeBase extends ROSPktIdentifier {
     @NotNull
     PsiReference getReference();
 
-    @NotNull
-    PsiReference[] getReferences();
+    PsiReference @NotNull [] getReferences();
 
     /**
-     * whether or not the type is complete, or is some sort of fragment.
+     * whether the type is complete, or is some sort of fragment.
      * @return true is it is considered a valid type, false otherwise.
      */
     boolean isComplete();

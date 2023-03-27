@@ -21,7 +21,7 @@ class ROSPktSectionUtil {
      *                         {@link ros.integrate.pkt.psi.ROSPktField}
      *                         if fragments need be searched use {@link ros.integrate.pkt.psi.ROSPktFieldFrag}.
      *                         if you want both, use {@link ros.integrate.pkt.psi.ROSPktFieldBase}
-     * @param includeConstants whether or not constant fields should be included
+     * @param includeConstants whether constant fields should be included
      * @return a list of all available fields in this section in textual order.
      */
     @NotNull

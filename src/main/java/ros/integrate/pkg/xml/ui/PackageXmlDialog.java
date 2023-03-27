@@ -83,7 +83,7 @@ public class PackageXmlDialog extends DialogWrapper {
         oPkgXml.map(pkgXml -> pkgXml.getDependencies(null)).ifPresent(dependencies::setDependencies);
         description.setText(oPkgXml.map(ROSPackageXml::getDescription).orElse("\nPackage description here\n"));
         name.setText(oPkgXml.map(ROSPackageXml::getPackage).map(ROSPackage::getName).orElse(""));
-        name.setEnabled(!oPkgXml.isPresent());
+        name.setEnabled(oPkgXml.isEmpty());
 
         format.setMinValue(1);
         latestFormat.addItemListener(status -> {
@@ -127,12 +127,12 @@ public class PackageXmlDialog extends DialogWrapper {
         c.weighty = 0;
         c.fill = NONE;
         c.anchor = WEST;
-        c.insets = JBUI.insets(0, 0, 0, 5);
+        c.insets = JBUI.insetsRight(5);
         formatPanel.add(latestFormat, c);
 
         c.gridx = 1;
         c.weightx = 1;
-        c.insets = JBUI.insets(0, 0, 0, 0);
+        c.insets = JBUI.emptyInsets();
         formatPanel.add(latestFormatLabel, c);
 
         c.gridx = 2;

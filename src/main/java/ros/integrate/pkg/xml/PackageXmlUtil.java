@@ -62,7 +62,7 @@ public class PackageXmlUtil {
                 .map(XmlTag::getName)
                 .orElse("");
 
-        if (rootTag.isEmpty() || "package".startsWith(rootTag)) {
+        if ("package".startsWith(rootTag)) {
             return result;
         }
 

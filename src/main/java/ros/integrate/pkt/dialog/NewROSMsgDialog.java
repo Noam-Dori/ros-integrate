@@ -48,7 +48,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
-import java.util.stream.Collectors;
 
 /**
  * the user interface dialog that allows the user to fill information used when creating a new message type.
@@ -84,7 +83,7 @@ public class NewROSMsgDialog extends DialogWrapper {
     /**
      * construct the dialogue
      * @param project the project this dialog belongs to
-     * @param suggestedPkg the initial package the interface should suggest to place the message in
+     * @param suggestedPkg the initial package the interface should suggest placing the message in
      * @param suggestedName the initial name this message should have.
      *                      This can still be changed by the user in the dialogue
      * @param callingFile the original file that triggered the dialogue
@@ -99,7 +98,7 @@ public class NewROSMsgDialog extends DialogWrapper {
         if (targetDir == null) {
             targetDir = project.getService(ROSPackageManager.class).getAllPackages()
                     .stream().filter(pkg -> pkg instanceof ROSSourcePackage)
-                    .collect(Collectors.toList()).get(0).getMsgRoot();
+                    .toList().get(0).getMsgRoot();
         }
 
         msgNameField.setText(suggestedName);

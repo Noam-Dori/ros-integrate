@@ -13,6 +13,7 @@ import ros.integrate.pkg.xml.ExportTag;
  */
 public class RemoveBuildTypeConditionFix implements LocalQuickFix {
     private final int id;
+    @SafeFieldForPreview
     @NotNull
     private final ExportTag export;
 

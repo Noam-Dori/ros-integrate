@@ -19,13 +19,13 @@ import java.util.Map;
  */
 public class ROSPktColorSettings implements ColorSettingsPage {
     private static final AttributesDescriptor[] DESCRIPTORS = new AttributesDescriptor[]{
-            new AttributesDescriptor("Builtin Types", ROSPktSyntaxHighlighter.KEYTYPE),
-            new AttributesDescriptor("Custom Types", ROSPktSyntaxHighlighter.TYPE),
-            new AttributesDescriptor("Field Names", ROSPktSyntaxHighlighter.NAME),
+            new AttributesDescriptor("Builtin types", ROSPktSyntaxHighlighter.KEYTYPE),
+            new AttributesDescriptor("Custom types", ROSPktSyntaxHighlighter.TYPE),
+            new AttributesDescriptor("Field names", ROSPktSyntaxHighlighter.NAME),
             new AttributesDescriptor("Numbers", ROSPktSyntaxHighlighter.NUMBER),
             new AttributesDescriptor("Strings", ROSPktSyntaxHighlighter.STRING),
             new AttributesDescriptor("Comments", ROSPktSyntaxHighlighter.COMMENT),
-            new AttributesDescriptor("Service Separator", ROSPktSyntaxHighlighter.SERVICE),
+            new AttributesDescriptor("Service separator", ROSPktSyntaxHighlighter.SERVICE),
     };
 
     @Nullable
@@ -43,17 +43,18 @@ public class ROSPktColorSettings implements ColorSettingsPage {
     @NotNull
     @Override
     public String getDemoText() {
-        return "Header header\n" +
-                "int8 name\n" +
-                "string[] vector\n" +
-                "int[9] array\n" +
-                "Image image\n" +
-                "int32 const = -100\n" +
-                "string string_const = a really really long constant\n" +
-                "# this is a comment\n" +
-                "time t # This is also a comment.\n" +
-                "--- \n" +
-                "# service separator";
+        return """
+                Header header
+                int8 name
+                string[] vector
+                int[9] array
+                Image image
+                int32 const = -100
+                string string_const = a really really long constant
+                # this is a comment
+                time t # This is also a comment.
+                ---\s
+                # service separator""";
     }
 
     @Nullable
@@ -62,15 +63,13 @@ public class ROSPktColorSettings implements ColorSettingsPage {
         return null;
     }
 
-    @NotNull
     @Override
-    public AttributesDescriptor[] getAttributeDescriptors() {
+    public AttributesDescriptor @NotNull [] getAttributeDescriptors() {
         return DESCRIPTORS;
     }
 
-    @NotNull
     @Override
-    public ColorDescriptor[] getColorDescriptors() {
+    public ColorDescriptor @NotNull [] getColorDescriptors() {
         return ColorDescriptor.EMPTY_ARRAY;
     }
 

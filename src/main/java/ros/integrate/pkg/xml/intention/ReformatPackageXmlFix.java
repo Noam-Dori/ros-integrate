@@ -33,7 +33,7 @@ public class ReformatPackageXmlFix extends BaseIntentionAction implements LocalQ
     /**
      * construct a new intention
      * @param pkgXml the relevant package.xml file
-     * @param updateFormat whether or not to also update the format of the file to the latest one
+     * @param updateFormat whether to also update the format of the file to the latest one
      */
     public ReformatPackageXmlFix(@NotNull ROSPackageXml pkgXml, boolean updateFormat) {
         this.pkgXml = pkgXml;
@@ -144,7 +144,7 @@ public class ReformatPackageXmlFix extends BaseIntentionAction implements LocalQ
                 List<DependencyType> coveredDependencyTypes = Arrays.asList(dep.getCoveredDependencies());
                 if (dependencyTypes.containsAll(coveredDependencyTypes)) {
                     dependencies.add(new Dependency(dep, pkgCond.first, versionRange, pkgCond.second));
-                    dependencyTypes.removeAll(coveredDependencyTypes);
+                    coveredDependencyTypes.forEach(dependencyTypes::remove);
                 }
             }
         }

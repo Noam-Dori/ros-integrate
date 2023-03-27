@@ -38,6 +38,7 @@ public class AddLicenseFileFix implements LocalQuickFix {
             FULL_REGEX = "<<.*name=copyright.*>>",
             REMOVE_REGEX = "<<.+>>|\\[.+]";
 
+    @SafeFieldForPreview
     @NotNull
     private final ROSPackageXml pkgXml;
     private final int id;

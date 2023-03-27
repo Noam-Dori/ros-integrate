@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * a template class for ROS message annotators.
- *
+ * <p>
  * Annotators are split based on what element they mark if something goes wrong.
  * The object created by annotators is known as an annotation.
  * @author Noam Dori

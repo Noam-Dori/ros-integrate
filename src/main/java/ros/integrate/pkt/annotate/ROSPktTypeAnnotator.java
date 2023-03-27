@@ -189,7 +189,7 @@ public class ROSPktTypeAnnotator extends ROSPktAnnotatorBase {
      * fetches the message for the illegal type if available.
      *
      * @param fieldType the name of the type to check.
-     * @param inProject whether or not this type was defined in the project.
+     * @param inProject whether this type was defined in the project.
      * @return null if the type is fine, otherwise the reason this type is illegal.
      */
     @Nullable

@@ -42,11 +42,7 @@ public class ROSLicenses {
          * @return a URL to a documentation page about the license
          */
         public String getLink(@NotNull String type) {
-            switch (type) {
-                default:
-                case "Official": return link;
-                case "Summary": return tldr.isEmpty() ? link : tldr;
-            }
+            return type.equals("Official") || tldr.isEmpty() ? link : tldr;
         }
 
         /**

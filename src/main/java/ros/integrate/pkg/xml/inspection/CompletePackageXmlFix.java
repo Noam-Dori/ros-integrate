@@ -16,8 +16,15 @@ import ros.integrate.pkg.xml.ROSPackageXml;
 import ros.integrate.pkg.xml.VersionRange;
 import ros.integrate.pkg.xml.ui.PackageXmlDialog;
 import ros.integrate.pkg.xml.intention.VersionRepairUtil;
+
+/**
+ * A fix that attempts (or asks the user) to complete the package.xml file with the critical details
+ *
+ * @author Noam Dori
+ */
 public class CompletePackageXmlFix implements LocalQuickFix {
     private final boolean withDialog;
+    @SafeFieldForPreview
     @NotNull
     private final ROSPackageXml pkgXml;
 

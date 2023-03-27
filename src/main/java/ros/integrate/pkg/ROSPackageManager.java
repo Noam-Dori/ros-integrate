@@ -20,7 +20,7 @@ public interface ROSPackageManager {
     /**
      * retrieves all packages in the cache (and tries to find more)
      * @return all packages the project knows about.
-     * @apiNote note that is is only a VIEW into the available packages and may only be read.
+     * @apiNote note that it is only a VIEW into the available packages and may only be read.
      * If you want to run changes in a calculation, you must copy this collection.
      * @implNote Only finders can modify the contents of the package manager.
      */
@@ -37,7 +37,7 @@ public interface ROSPackageManager {
 
     /**
      * finds a ROS package that contains the provided directory
-     * @param childDirectory the directory to use as a test whether or not the package is the right one.
+     * @param childDirectory the directory to use as a test whether the package is the right one.
      * @return null is no package was found, otherwise, the package stored in the cache with that directory.
      */
     @Nullable

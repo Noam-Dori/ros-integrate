@@ -74,9 +74,9 @@ public class ROSPackageManagerImpl implements ROSPackageManager {
             boolean orphansRemainedTheSame = false;
             while (!orphansRemainedTheSame) {
                 affectedOrphansOld.forEach(event -> sortToLists(event, affectedPackages, affectedOrphans));
-                // 2. figure out what happened per package per file & react accordingly (create new package, delete new package, modify details)
+                // 2. figure out what happened per package and per file & react accordingly (create new package, delete new package, modify details)
                 affectedPackages.forEach(this::applyChangesToPackage);
-                if (affectedOrphans.containsAll(affectedOrphansOld)) {
+                if (new HashSet<>(affectedOrphans).containsAll(affectedOrphansOld)) {
                     orphansRemainedTheSame = true;
                 } else {
                     affectedOrphansOld.retainAll(affectedOrphans);
@@ -117,18 +117,12 @@ public class ROSPackageManagerImpl implements ROSPackageManager {
                 continue;
             }
             switch (cmd) {
-                case DELETE: {
-                    pkgCache.remove(pkg.getName());
-                    break;
-                }
-                case RENAME: {
+                case DELETE -> pkgCache.remove(pkg.getName());
+                case RENAME -> {
                     pkgCache.remove(oldName);
                     pkgCache.putIfAbsent(pkg.getName(), pkg);
-                    break;
                 }
-                case NONE:
-                default:
-                    break;
+                default -> {}
             }
         }
     }

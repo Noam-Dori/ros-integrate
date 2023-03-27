@@ -54,7 +54,7 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
         dependencyTypes.sort(DependencyType::compare);
         List<String> ret = Arrays.stream(Component.values()).map(Component::get).collect(Collectors.toList());
         ret.addAll(Component.DEPENDENCIES.ordinal(),
-                dependencyTypes.stream().map(DependencyType::getTagName).collect(Collectors.toList()));
+                dependencyTypes.stream().map(DependencyType::getTagName).toList());
         ret.remove(Component.DEPENDENCIES.get());
         return ret;
     }
@@ -517,7 +517,7 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
         for (DependencyType depType : DependencyType.values()) {
             result = Stream.concat(result, Stream.of(root.findSubTags(depType.getTagName())));
         }
-        XmlTag oldTag = result.collect(Collectors.toList()).get(id);
+        XmlTag oldTag = result.toList().get(id);
         XmlTag newTag = root.createChildTag(dependency.getType().getTagName(), null,
                 dependency.getPackage().getName(), false);
         addVersionRangeToDep(newTag, dependency.getVersionRange());
@@ -574,7 +574,7 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
         for (DependencyType dep : DependencyType.values()) {
             result = Stream.concat(result, Stream.of(file.getRootTag().findSubTags(dep.getTagName())));
         }
-        result.collect(Collectors.toList()).get(id).delete();
+        result.toList().get(id).delete();
     }
 
     @Override
@@ -669,8 +669,7 @@ public class ROSPackageXmlImpl implements ROSPackageXml {
 
     @NotNull
     private ROSPackage findPackage(String name) {
-        return Optional.ofNullable(pkgManager.findPackage(name)).map(Optional::of)
-                .orElseGet(() -> Optional.ofNullable(keyCache.findKey(name))).orElse(ROSPackage.ORPHAN);
+        return Optional.ofNullable(pkgManager.findPackage(name)).or(() -> Optional.ofNullable(keyCache.findKey(name))).orElse(ROSPackage.ORPHAN);
     }
 
     @Nullable

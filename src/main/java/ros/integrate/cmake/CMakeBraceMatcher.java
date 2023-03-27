@@ -14,8 +14,7 @@ import java.util.Arrays;
 
 public class CMakeBraceMatcher implements PairedBraceMatcher {
     @Override
-    @NotNull
-    public BracePair[] getPairs() {
+    public BracePair @NotNull [] getPairs() {
         return new BracePair[]{new BracePair(CMakeTypes.PAREN_OPEN, CMakeTypes.PAREN_CLOSE, true)};
     }
 

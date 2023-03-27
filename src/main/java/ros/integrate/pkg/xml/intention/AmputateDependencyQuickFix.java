@@ -13,7 +13,7 @@ import ros.integrate.pkg.xml.VersionRange;
 import java.util.Optional;
 
 /**
- * an intention that removes information from dependency tags so they can be valid.
+ * an intention that removes information from dependency tags, so they can be valid.
  * @author Noam Dori
  */
 public class AmputateDependencyQuickFix extends BaseIntentionAction {

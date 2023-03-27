@@ -16,21 +16,14 @@ public interface ExportTag {
     /**
      * a data representation of the build_type tag
      */
-    class BuildType implements ROSCondition.Conditioned {
-        @NotNull
-        private final String type;
-
-        @Nullable
-        private final ROSCondition condition;
-
+    record BuildType(@NotNull String type, @Nullable ROSCondition condition) implements ROSCondition.Conditioned {
         /**
          * construct a new logical build type tag
-         * @param type the build type itself
+         *
+         * @param type      the build type itself
          * @param condition the condition over which the build type is used.
          */
-        public BuildType(@NotNull String type, @Nullable ROSCondition condition) {
-            this.condition = condition;
-            this.type = type;
+        public BuildType {
         }
 
         @Nullable

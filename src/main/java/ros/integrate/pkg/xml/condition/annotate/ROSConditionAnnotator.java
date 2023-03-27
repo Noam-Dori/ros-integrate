@@ -15,14 +15,13 @@ import java.util.List;
 
 /**
  * an annotator enforcing rules within ROS conditions using annotations and intentions.
- * the rules are specified in REP 149: https://www.ros.org/reps/rep-0149.html
+ * the rules are specified in REP 149: <a href="https://www.ros.org/reps/rep-0149.html">...</a>
  * @author Noam Dori
  */
 public class ROSConditionAnnotator implements Annotator {
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
-        if (element instanceof ROSConditionExpr) {
-            ROSConditionExpr expr = (ROSConditionExpr) element;
+        if (element instanceof ROSConditionExpr expr) {
             int exprSequence = 0;
             List<ROSConditionToken> tokens = expr.getTokens();
             for (ROSConditionToken token : tokens) {

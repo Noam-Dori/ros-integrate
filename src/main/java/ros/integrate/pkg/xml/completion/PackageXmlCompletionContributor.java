@@ -59,7 +59,7 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
     public PackageXmlCompletionContributor() {
         extend(CompletionType.BASIC,
                 PlatformPatterns.psiElement(XmlToken.class).withLanguage(XMLLanguage.INSTANCE),
-                new CompletionProvider<CompletionParameters>() {
+                new CompletionProvider<>() {
                     /**
                      * special completion for values within tags.
                      */
@@ -101,11 +101,11 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
     private void addCompletionsForTagValue(@NotNull XmlTag tag, ROSPackageXml xmlFile, CompletionResultSet resultSet,
                                            @NotNull XmlToken element) {
         if (!element.getParent().getFirstChild().equals(element)) {
-            return; // there is a bug where we cannot process XmlText so we only autocomplete on first non-space item
+            return; // there is a bug where we cannot process XmlText, so we only autocomplete on first non-space item
         }
         if (tag.getName().equals("license")) { // WebReferences do not get completion
             List<String> xmlLicenses = xmlFile.getLicences().stream()
-                    .map(ROSPackageXml.License::getValue).collect(Collectors.toList());
+                    .map(ROSPackageXml.License::getValue).toList();
             ROSLicenses.AVAILABLE_LICENSES.keySet().stream().filter(license -> !xmlLicenses.contains(license))
                     .map(LookupElementBuilder::create).forEach(resultSet::addElement);
         } else if (PackageXmlUtil.isDependencyTag(tag)) {
@@ -154,13 +154,12 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
                 multilineHandler = new OpenTagValue("", false, "", true, false),
                 dataWithCompletionHandler = new OpenTagValue("", false, "", false, true);
         switch (level) {
-            case 0: {
+            case 0 -> {
                 if (xmlFile.getRawXml().getRootTag() == null || xmlFile.getRawXml().getRootTag().getName().isEmpty()) {
                     resultSet.addElement(LookupElementBuilder.create("package").withInsertHandler(multilineHandler));
                 }
-                return;
             }
-            case 1: {
+            case 1 -> {
                 if (xmlFile.getPkgName() == null) {
                     resultSet.addElement(LookupElementBuilder.create("name")
                             .withInsertHandler(new OpenTagValue("", false, xmlFile.getPackage().getName(), false, false)));
@@ -186,9 +185,8 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
                 }
                 resultSet.addElement(LookupElementBuilder.create("group_depend").withInsertHandler(attrHandler));
                 resultSet.addElement(LookupElementBuilder.create("member_of_group").withInsertHandler(attrHandler));
-                return;
             }
-            case 2: {
+            case 2 -> {
                 ExportTag export = xmlFile.getExport();
                 if (parentTag != null && parentTag.getName().equals("export") && export != null) {
                     if (export.getMessageGenerator() == null) {
@@ -213,9 +211,9 @@ public class PackageXmlCompletionContributor extends CompletionContributor {
                                 .withInsertHandler(format >= 3 ? attrHandler : dataWithCompletionHandler));
                     }
                 }
-                return;
             }
-            default:
+            default -> {
+            }
         }
     }
 

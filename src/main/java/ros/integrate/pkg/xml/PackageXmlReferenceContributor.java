@@ -28,10 +28,9 @@ public class PackageXmlReferenceContributor extends PsiReferenceContributor {
     @Override
     public void registerReferenceProviders(@NotNull PsiReferenceRegistrar registrar) {
         registrar.registerReferenceProvider(PlatformPatterns.psiElement(XmlTag.class), new PsiReferenceProvider() {
-            @NotNull
             @Override
-            public PsiReference[] getReferencesByElement(@NotNull PsiElement element,
-                                                         @NotNull ProcessingContext context) {
+            public PsiReference @NotNull [] getReferencesByElement(@NotNull PsiElement element,
+                                                                   @NotNull ProcessingContext context) {
                 ROSPackageXml pkgXml = PackageXmlUtil.getWrapper(element.getContainingFile());
                 if (pkgXml == null) {
                     return PsiReference.EMPTY_ARRAY;
@@ -61,9 +60,8 @@ public class PackageXmlReferenceContributor extends PsiReferenceContributor {
             }
         });
         registrar.registerReferenceProvider(PlatformPatterns.psiElement(XmlAttributeValue.class), new PsiReferenceProvider() {
-            @NotNull
             @Override
-            public PsiReference[] getReferencesByElement(@NotNull PsiElement element, @NotNull ProcessingContext context) {
+            public PsiReference @NotNull [] getReferencesByElement(@NotNull PsiElement element, @NotNull ProcessingContext context) {
                 if (PackageXmlUtil.getWrapper(element.getContainingFile().getOriginalFile()) == null) {
                     return PsiReference.EMPTY_ARRAY;
                 }

@@ -7,7 +7,7 @@ import javax.swing.*;
 
 /**
  * a map containing information for a bunch of usable icons in the ROS plugin
- * A useful list of icons: https://jetbrains.design/intellij/resources/icons_list/
+ * A useful list of icons: <a href="https://jetbrains.design/intellij/resources/icons_list/">...</a>
  * @author Noam Dori
  */
 public interface ROSIcons {

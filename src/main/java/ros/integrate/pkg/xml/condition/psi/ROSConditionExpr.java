@@ -1,7 +1,5 @@
 package ros.integrate.pkg.xml.condition.psi;
 
-import com.intellij.openapi.util.Pair;
-import com.intellij.util.containers.ContainerUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
@@ -37,14 +35,12 @@ public interface ROSConditionExpr extends ROSConditionToken {
 
     String TRUE = "\1", FALSE = ""; // while here we substitute a string values for booleans, python doesn't do that.
     Map<String, Predicate<Integer>> comparisons =
-            ContainerUtil.newHashMap(
-                    Pair.create("!=", compare -> compare != 0),
-                    Pair.create("<", compare -> compare < 0),
-                    Pair.create("<=", compare -> compare <= 0),
-                    Pair.create("==", compare -> compare == 0),
-                    Pair.create(">=", compare -> compare >= 0),
-                    Pair.create(">", compare -> compare > 0)
-            );
+            Map.of("!=", compare -> compare != 0,
+                    "<", compare -> compare < 0,
+                    "<=", compare -> compare <= 0,
+                    "==", compare -> compare == 0,
+                    ">=", compare -> compare >= 0,
+                    ">", compare -> compare > 0);
 
     /**
      * @return get the list of actual tokens that make up this expression. This does not include whitespaces.
@@ -73,16 +69,15 @@ public interface ROSConditionExpr extends ROSConditionToken {
             String operation = iter.next().getText();
             LazyExpr nextExpr = new LazyExpr(iter.next());
             switch (operation) {
-                case "and": {
+                case "and" -> {
                     if (returnValue.isEmpty()) {
                         ignore = true;
                     } else {
                         returnValue = nextExpr.evaluate();
                         lastExpr = nextExpr;
                     }
-                    break;
                 }
-                case "or": {
+                case "or" -> {
                     if (returnValue.isEmpty()) {
                         ignore = false;
                         returnValue = nextExpr.evaluate();
@@ -90,16 +85,14 @@ public interface ROSConditionExpr extends ROSConditionToken {
                     } else {
                         return returnValue; // yes a return value of all things. It's a crazy wORld out there.
                     }
-                    break;
                 }
-                default: { // comparisons: ==,!=,<=,<,>,>=
+                default -> { // comparisons: ==,!=,<=,<,>,>=
                     if (!ignore) {
                         returnValue = comparisons.get(operation)
                                 .test(lastExpr.evaluate().compareTo(nextExpr.evaluate())) ? TRUE : FALSE;
                         ignore = returnValue.isEmpty();
                         lastExpr = nextExpr;
                     }
-                    break;
                 }
             }
         }
@@ -107,7 +100,7 @@ public interface ROSConditionExpr extends ROSConditionToken {
     }
 
     /**
-     * checks whether or not this expression is a legal ROS condition according to REP 149.
+     * checks whether this expression is a legal ROS condition according to REP 149.
      * Even if it is not the entire condition, it still follows the rules of complete conditions.
      * @return true if:
      * <ul>

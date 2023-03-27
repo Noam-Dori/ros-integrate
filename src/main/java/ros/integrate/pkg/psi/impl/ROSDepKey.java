@@ -74,9 +74,8 @@ public class ROSDepKey extends PsiElementBase implements ROSPackage {
         return !project.isDisposed();
     }
 
-    @NotNull
     @Override
-    public PsiElement[] getChildren() {
+    public PsiElement @NotNull [] getChildren() {
         return new PsiElement[0];
     }
 

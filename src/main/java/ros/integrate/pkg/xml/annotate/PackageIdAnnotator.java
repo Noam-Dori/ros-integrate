@@ -130,7 +130,7 @@ class PackageIdAnnotator {
     }
 
     /**
-     * annotates the version tag if its compatibility its higher than the actual version (for example version=1.0.0,
+     * annotates the version tag if its compatibility is higher than the actual version (for example version=1.0.0,
      * compatibility=2.0.0)
      */
     void annCompatibilityHigherThanVersion() {

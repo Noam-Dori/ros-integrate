@@ -73,7 +73,7 @@ public enum ContribType {
      * repairs a specific contributor
      * @param pkgXml the package.xml file to fix a contributor in
      * @param id the index of the tag in the package.xml
-     * @return whether or not the repair was successful
+     * @return whether the repair was successful
      */
     boolean fix(ROSPackageXml pkgXml, int id) {
         Contributor contrib = get(pkgXml, id);
@@ -109,24 +109,11 @@ public enum ContribType {
 
         String repaired;
         switch (tokens.length) {
-            case 0:
-                repaired = "user@todo.todo";
-                break;
-            case 1: {
-                repaired = tokens[0] + "@todo.todo";
-                break;
-            }
-            case 2: {
-                repaired = tokens[0] + "@" + tokens[1] + ".todo";
-                break;
-            }
-            case 3: {
-                repaired = tokens[0] + "@" + tokens[1] + "." + tokens[2];
-                break;
-            }
-            default: {
-                repaired = String.join("#", tokens);
-            }
+            case 0 -> repaired = "user@todo.todo";
+            case 1 -> repaired = tokens[0] + "@todo.todo";
+            case 2 -> repaired = tokens[0] + "@" + tokens[1] + ".todo";
+            case 3 -> repaired = tokens[0] + "@" + tokens[1] + "." + tokens[2];
+            default -> repaired = String.join("#", tokens);
         }
         for (int i = 0; i < tokens.length - 1; i++) {
             repaired = repaired.replaceFirst("#",i == atIndex ? "@" : ".");
@@ -135,7 +122,7 @@ public enum ContribType {
             repaired += repaired.charAt(repaired.length() - 1);
         }
 
-        // last, we do the special repair for the last token, and delete any non alphanumerical character from it.
+        // last, we do the special repair for the last token, and delete any non-alphanumerical character from it.
         repaired = repaired.replaceAll("[^a-zA-Z.](?=[^.]*$)","");
         return repaired;
     }

@@ -7,7 +7,7 @@ import java.awt.event.FocusListener;
 
 /**
  * a specialized text field that selects entire text when focus is gained.
- * @author dacwe https://stackoverflow.com/a/7361369
+ * @author dacwe <a href="https://stackoverflow.com/a/7361369">...</a>
  */
 public class FocusTextField extends JBTextField {
     public FocusTextField() {

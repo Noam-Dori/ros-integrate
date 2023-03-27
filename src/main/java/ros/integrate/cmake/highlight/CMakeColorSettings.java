@@ -15,18 +15,18 @@ import java.util.Map;
 
 public class CMakeColorSettings implements ColorSettingsPage {
     private static final AttributesDescriptor[] DESCRIPTORS = new AttributesDescriptor[]{
-            new AttributesDescriptor("Bracket String Markers", CMakeSyntaxHighlighter.BRACKETS),
+            new AttributesDescriptor("Bracket string markers", CMakeSyntaxHighlighter.BRACKETS),
             new AttributesDescriptor("Strings", CMakeSyntaxHighlighter.STRING),
-            new AttributesDescriptor("Quoted String Markers", CMakeSyntaxHighlighter.QUOTE),
-            new AttributesDescriptor("Command/Function Declaration", CMakeSyntaxHighlighter.COMMAND_DECLARATION),
-            new AttributesDescriptor("Command/Function Call", CMakeSyntaxHighlighter.COMMAND_CALL),
+            new AttributesDescriptor("Quoted string markers", CMakeSyntaxHighlighter.QUOTE),
+            new AttributesDescriptor("Command/function declaration", CMakeSyntaxHighlighter.COMMAND_DECLARATION),
+            new AttributesDescriptor("Command/function call", CMakeSyntaxHighlighter.COMMAND_CALL),
             new AttributesDescriptor("Variable", CMakeSyntaxHighlighter.VARIABLE),
-            new AttributesDescriptor("Variable Braces", CMakeSyntaxHighlighter.VARIABLE_BRACES),
+            new AttributesDescriptor("Variable braces", CMakeSyntaxHighlighter.VARIABLE_BRACES),
             new AttributesDescriptor("Parameter", CMakeSyntaxHighlighter.PARAMETER),
             new AttributesDescriptor("Keywords", CMakeSyntaxHighlighter.KEYWORD),
-            new AttributesDescriptor("Argument Name", CMakeSyntaxHighlighter.ARGUMENT_NAME),
-            new AttributesDescriptor("Line Comment", CMakeSyntaxHighlighter.LINE_COMMENT),
-            new AttributesDescriptor("Block Comment", CMakeSyntaxHighlighter.BLOCK_COMMENT)
+            new AttributesDescriptor("Argument name", CMakeSyntaxHighlighter.ARGUMENT_NAME),
+            new AttributesDescriptor("Line comment", CMakeSyntaxHighlighter.LINE_COMMENT),
+            new AttributesDescriptor("Block comment", CMakeSyntaxHighlighter.BLOCK_COMMENT)
     };
 
     @Override
@@ -41,23 +41,24 @@ public class CMakeColorSettings implements ColorSettingsPage {
 
     @Override
     public @NotNull String getDemoText() {
-        return "<command>cmake_minimum_required</command>(<arg>VERSION</arg> 2.8.11)\n" +
-                "<command>project</command>(HELLO)\n" +
-                "<line_comment># sub-directory command</line_comment>\n" +
-                "<command>add_subdirectory</command>(Hello)\n" +
-                "<command>add_subdirectory</command>(Demo)\n" +
-                "\n" +
-                "<command>add_executable</command>(helloDemo demo.cxx demo_b.cxx)\n" +
-                "<command>target_link_libraries</command> (helloDemo <arg>LINK_PUBLIC</arg> Hello)\n" +
-                "<key>set</key>(<var>var</var> VALUE) <block_comment>#[[This is a block\n" +
-                "                  comment]]</block_comment>\n" +
-                "<key>function</key>(<command_def>greet</command_def> <par>name_arg</par>)\n" +
-                "   <command>message</command>(\"Hello\" <var_b>${</var_b><par>name_arg</par><var_b>}</var_b>)\n" +
-                "<key>endfunction</key>()\n" +
-                "\n" +
-                "<command>greet</command>([=[John J. McKenzie]=]])\n" +
-                "<command>greet</command>(\"mr. \\\"Line\\\" \\\n" +
-                "       break\")";
+        return """
+                <command>cmake_minimum_required</command>(<arg>VERSION</arg> 2.8.11)
+                <command>project</command>(HELLO)
+                <line_comment># sub-directory command</line_comment>
+                <command>add_subdirectory</command>(Hello)
+                <command>add_subdirectory</command>(Demo)
+
+                <command>add_executable</command>(helloDemo demo.cxx demo_b.cxx)
+                <command>target_link_libraries</command> (helloDemo <arg>LINK_PUBLIC</arg> Hello)
+                <key>set</key>(<var>var</var> VALUE) <block_comment>#[[This is a block
+                                  comment]]</block_comment>
+                <key>function</key>(<command_def>greet</command_def> <par>name_arg</par>)
+                   <command>message</command>("Hello" <var_b>${</var_b><par>name_arg</par><var_b>}</var_b>)
+                <key>endfunction</key>()
+
+                <command>greet</command>([=[John J. McKenzie]=]])
+                <command>greet</command>("mr. \\"Line\\" \\
+                       break")""";
     }
 
     @Override
@@ -74,21 +75,18 @@ public class CMakeColorSettings implements ColorSettingsPage {
                 "line_comment", CMakeSyntaxHighlighter.LINE_COMMENT);
     }
 
-    @NotNull
     @Override
-    public AttributesDescriptor[] getAttributeDescriptors() {
+    public AttributesDescriptor @NotNull [] getAttributeDescriptors() {
         return DESCRIPTORS;
     }
 
-    @NotNull
     @Override
-    public ColorDescriptor[] getColorDescriptors() {
+    public ColorDescriptor @NotNull [] getColorDescriptors() {
         return ColorDescriptor.EMPTY_ARRAY;
     }
 
     @Override
-    public @NotNull
-    String getDisplayName() {
+    public @NotNull String getDisplayName() {
         return "CMake";
     }
 }

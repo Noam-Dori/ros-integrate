@@ -13,9 +13,8 @@ import ros.integrate.pkg.xml.condition.psi.ROSConditionTypes;
  * @author Noam Dori
  */
 public class ROSConditionBraceMatcher implements PairedBraceMatcher {
-    @NotNull
     @Override
-    public BracePair[] getPairs() {
+    public BracePair @NotNull [] getPairs() {
         return new BracePair[]{new BracePair(ROSConditionTypes.LPARENTHESIS, ROSConditionTypes.RPARENTHESIS, true)};
     }
 

@@ -23,9 +23,9 @@ import java.util.List;
  * enforces rules for package.xml files using annotations and intentions.
  * The rules are specified by the manifest REPs:
  * <ul>
- *     <li>Format 1 (outdated): https://www.ros.org/reps/rep-0127.html</li>
- *     <li>Format 2 (outdated): https://www.ros.org/reps/rep-0140.html</li>
- *     <li>Format 3 (current): https://www.ros.org/reps/rep-0149.html</li>
+ *     <li>Format 1 (outdated): <a href="https://www.ros.org/reps/rep-0127.html">...</a></li>
+ *     <li>Format 2 (outdated): <a href="https://www.ros.org/reps/rep-0140.html">...</a></li>
+ *     <li>Format 3 (current): <a href="https://www.ros.org/reps/rep-0149.html">...</a></li>
  * </ul>
  * <b>Notes about implementation:</b>
  * <ul>

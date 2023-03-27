@@ -39,7 +39,7 @@ class OpenTagValue implements InsertHandler<LookupElement> {
     }
 
     /**
-     * a convenience constructor with less parameters
+     * a convenience constructor with fewer parameters
      * @param tagName the name of the tag to use when moving to data component.
      * @param inAttr was the completion done in an attribute value?
      */

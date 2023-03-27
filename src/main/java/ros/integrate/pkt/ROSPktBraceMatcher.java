@@ -13,9 +13,8 @@ import ros.integrate.pkt.psi.ROSPktTypes;
  * @author Noam Dori
  */
 public class ROSPktBraceMatcher implements PairedBraceMatcher {
-    @NotNull
     @Override
-    public BracePair[] getPairs() {
+    public BracePair @NotNull [] getPairs() {
         return new BracePair[]{new BracePair(ROSPktTypes.LBRACKET, ROSPktTypes.RBRACKET,false)};
     }
 

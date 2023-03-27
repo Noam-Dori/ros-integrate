@@ -42,7 +42,7 @@ public interface ROSDepKeyCache {
     Collection<ROSDepKey> getAllKeys();
 
     /**
-     * @return whether or not all of the sources were accessed and processed.
+     * @return whether all the sources were accessed and processed.
      *         {@code false} if one of the rosdep lists failed access, and {@code true} if all lists in the Settings
      *         were fully processed.
      */

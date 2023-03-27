@@ -7,11 +7,11 @@ import org.jetbrains.annotations.Nullable;
 /**
  * a packet field. This is one line in a packet files (.msg, .srv, .action).
  * It describes either one property within the packet or one constant value that can be used
- *
+ * <p>
  * This specific class describes every field line, complete or broken. The line can have missing parts.
  * If the line completely follows the rules, it is considered "complete", if not, it is considered a "fragment"
  * You can still so some analytics on fragment fields. They do have types for sure and optionally other things.
- * Use {@link ROSPktFieldBase#isComplete()} to check whether or not the field is complete.
+ * Use {@link ROSPktFieldBase#isComplete()} to check whether the field is complete.
  * @author Noam Dori
  */
 public interface ROSPktFieldBase extends PsiElement {
@@ -49,7 +49,7 @@ public interface ROSPktFieldBase extends PsiElement {
     ROSPktTypeBase getTypeBase();
 
     /**
-     * checks whether or not this field is a sufficient constant,
+     * checks whether this field is a sufficient constant,
      * that is, it can contain the numerical value provided with the given memory it is permitted to use,
      * and is properly formatted to be properly kept.
      * @return false if one of the following is true:
@@ -60,7 +60,7 @@ public interface ROSPktFieldBase extends PsiElement {
     boolean isLegalConstant();
 
     /**
-     * whether or not the field is complete, or is some sort of fragment.
+     * whether the field is complete, or is some sort of fragment.
      * @return true is it is considered a valid type, false otherwise.
      */
     boolean isComplete();

@@ -13,7 +13,7 @@ import ros.integrate.pkg.xml.condition.psi.ROSConditionTypes;
  */
 public class ROSConditionCompletionContributor extends CompletionContributor {
     public ROSConditionCompletionContributor() {
-        extend(CompletionType.BASIC, PlatformPatterns.psiElement(ROSConditionTypes.VARIABLE), new CompletionProvider<CompletionParameters>() {
+        extend(CompletionType.BASIC, PlatformPatterns.psiElement(ROSConditionTypes.VARIABLE), new CompletionProvider<>() {
             @Override
             protected void addCompletions(@NotNull CompletionParameters parameters, @NotNull ProcessingContext context, @NotNull CompletionResultSet result) {
                 for (String env : System.getenv().keySet()) {
@@ -21,7 +21,7 @@ public class ROSConditionCompletionContributor extends CompletionContributor {
                 }
             }
         });
-        extend(CompletionType.BASIC, PlatformPatterns.psiElement(ROSConditionTypes.LITERAL), new CompletionProvider<CompletionParameters>() {
+        extend(CompletionType.BASIC, PlatformPatterns.psiElement(ROSConditionTypes.LITERAL), new CompletionProvider<>() {
             @Override
             protected void addCompletions(@NotNull CompletionParameters parameters, @NotNull ProcessingContext context, @NotNull CompletionResultSet result) {
                 result.addElement(LookupElementBuilder.create("or").bold());

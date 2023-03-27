@@ -28,8 +28,7 @@ public class CMakeFoldingBuilder extends FoldingBuilderEx implements DumbAware {
     }
 
     @Override
-    @NotNull
-    public FoldingDescriptor[] buildFoldRegions(@NotNull PsiElement root, @NotNull Document document, boolean quick) {
+    public FoldingDescriptor @NotNull [] buildFoldRegions(@NotNull PsiElement root, @NotNull Document document, boolean quick) {
         // Initialize the list of folding regions
         List<FoldingDescriptor> descriptors = new ArrayList<>();
         // Evaluate the collection
@@ -41,6 +40,7 @@ public class CMakeFoldingBuilder extends FoldingBuilderEx implements DumbAware {
             List<String> next = NEXT_MAP.get("if");
             CMakeOperation start = block.getStartCommand();
             List<CMakeOperation> ops = block.getCommandList();
+
             ops.add(block.getEndCommand());
             for (CMakeOperation end : ops) {
                 if (end instanceof CMakeCommand && next.contains(end.getFirstChild().getText().toLowerCase())) {

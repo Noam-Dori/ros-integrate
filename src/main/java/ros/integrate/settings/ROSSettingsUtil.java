@@ -27,7 +27,7 @@ class ROSSettingsUtil {
     static String detectWorkspace(@NotNull Project project) {
         GlobalSearchScope scope = GlobalSearchScope.projectScope(project);
         for (String name : WORKSPACE_NAMES) {
-            for (VirtualFile file : FilenameIndex.getVirtualFilesByName(project, name ,true, scope)) {
+            for (VirtualFile file : FilenameIndex.getVirtualFilesByName(name, true, scope)) {
                 return file.getParent().getPath();
             }
         }

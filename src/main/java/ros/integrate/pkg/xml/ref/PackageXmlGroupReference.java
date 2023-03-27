@@ -41,9 +41,8 @@ public class PackageXmlGroupReference extends PsiPolyVariantReferenceBase<XmlTag
         return element.getValue().getTextRange().shiftLeft(element.getTextOffset());
     }
 
-    @NotNull
     @Override
-    public ResolveResult[] multiResolve(boolean incompleteCode) {
+    public ResolveResult @NotNull [] multiResolve(boolean incompleteCode) {
         List<ResolveResult> ret = new ArrayList<>();
         manager.getAllPackages().stream().map(ROSPackage::getPackageXml).filter(Objects::nonNull)
                 .forEach(pkgXml -> Arrays.stream(pkgXml.findSubTags(lookupString))

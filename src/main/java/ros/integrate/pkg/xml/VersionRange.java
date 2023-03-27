@@ -54,7 +54,7 @@ public class VersionRange {
         /**
          * sets the maximum version allowed in the range
          * @param version the version string to use as max
-         * @param strict whether or not this specific version is allowed.
+         * @param strict whether this specific version is allowed.
          *               If true, the restriction is strong and the version is NOT allowed.
          *               If false, the restriction is weak and the version specified IS allowed
          * @return this builder with the modification applied
@@ -69,7 +69,7 @@ public class VersionRange {
         /**
          * sets the minimum version allowed in the range
          * @param version the version string to use as min
-         * @param strict whether or not this specific version is allowed.
+         * @param strict whether this specific version is allowed.
          *               If true, the restriction is strong and the version is NOT allowed.
          *               If false, the restriction is weak and the version specified IS allowed
          * @return this builder with the modification applied

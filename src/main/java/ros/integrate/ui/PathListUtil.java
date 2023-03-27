@@ -27,7 +27,7 @@ public class PathListUtil {
      * deserializes a path list string using : as delimiter.
      * @param rawPathList the string containing all paths to be split up
      * @param delimiter a custom delimiter to use for splitting the paths
-     * @param hasFilePaths whether or not the paths described are not file paths, but rather something else like URLs
+     * @param hasFilePaths whether the paths described are not file paths, but rather something else like URLs
      *                     (or not even a path)
      * @return a list of paths to all relevant files. This deserializer respects Windows drives as part of the path
      * (for example C:)

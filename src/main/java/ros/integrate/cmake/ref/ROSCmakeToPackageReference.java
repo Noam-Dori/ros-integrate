@@ -7,8 +7,8 @@ import ros.integrate.pkg.ref.ROSPackageReferenceBase;
 
 /**
  * links the CMakeLists.txt project name to the package name, which should be identical per ROS1 and ROS2 standards:
- * http://wiki.ros.org/catkin/CMakeLists.txt#Package_name
- * https://docs.ros.org/en/foxy/How-To-Guides/Ament-CMake-Documentation.html#basic-project-outline
+ * <a href="http://wiki.ros.org/catkin/CMakeLists.txt#Package_name">...</a>
+ * <a href="https://docs.ros.org/en/foxy/How-To-Guides/Ament-CMake-Documentation.html#basic-project-outline">...</a>
  */
 public class ROSCmakeToPackageReference extends ROSPackageReferenceBase<PsiElement> {
     /**

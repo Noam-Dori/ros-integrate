@@ -21,11 +21,11 @@ import java.util.Collection;
 /**
  * A ROS package, the base unit of work for indexing. A package implements some functionality,
  *  from actual code, to configurations or a common interface.
- *
+ * <p>
  *  All ROS packages across all versions have one thing in common: the manifest file.
  *  Every package has a package.xml file. This file describes details an indexing engine should know about,
  *  as well as identifiers. More info available at {@link ROSPackageXml}.
- *
+ * <p>
  * note that some ROS2 packages rely on special scripts to generate the package.xml file for them, with a build type
  * "ament_auto". Thus, the package.xml file might not be real in those versions. This is currently not supported in the
  * plugin.
@@ -69,7 +69,7 @@ public interface ROSPackage extends PsiCheckedRenameElement, NavigatablePsiEleme
      *
      * @param pktName the name of the packet file to search for.
      * @param <T>     allows filtering by type of file. If you don't wish to use this filter, set this to <code>ROSPktFile.class</code>
-     * @return null if the packet if not found, otherwise the packet file you are searching for.
+     * @return null if the packet is not found, otherwise the packet file you are searching for.
      */
     @Nullable
     <T extends ROSPktFile> T findPacket(@NotNull String pktName, @NotNull Class<T> pktType);
@@ -138,7 +138,7 @@ public interface ROSPackage extends PsiCheckedRenameElement, NavigatablePsiEleme
 //     *         these can also be generated source code like message sources.
 //     *         for sources, they can be found anywhere within the root dir and below.
 //     *         Use CMakeLists.txt for help where to search.
-//     *         For built packages, they are all placed in their root directory within the include directory
+//     *         For built packages, they are all placed in their root directory within the "include" directory
 //     */
 //    @NotNull
 //    PsiFile[] getSources(@NotNull GlobalSearchScope scope);
@@ -193,9 +193,8 @@ public interface ROSPackage extends PsiCheckedRenameElement, NavigatablePsiEleme
         return "";
     }
 
-    @NotNull
     @Override
-    default char[] textToCharArray() {
+    default char @NotNull [] textToCharArray() {
         return ArrayUtil.EMPTY_CHAR_ARRAY;
     }
 
@@ -309,9 +308,8 @@ public interface ROSPackage extends PsiCheckedRenameElement, NavigatablePsiEleme
         }
 
         @Contract(pure = true)
-        @NotNull
         @Override
-        public PsiElement[] getChildren() {
+        public PsiElement @NotNull [] getChildren() {
             return new PsiElement[0];
         }
 

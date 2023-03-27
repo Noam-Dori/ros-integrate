@@ -106,7 +106,7 @@ public class ChangeNameQuickFix extends BaseIntentionAction {
      * checks the range of the provided offset based on the document length.
      * @param offset the offset to check
      * @param documentLength the max length of the document to check against.
-     * @return the provided offset if it within within allowable range, otherwise the document length.
+     * @return the provided offset if it is within its allowable range, otherwise the document length.
      */
     @Contract(pure = true)
     private static int getDocumentOffset(int offset, int documentLength) {

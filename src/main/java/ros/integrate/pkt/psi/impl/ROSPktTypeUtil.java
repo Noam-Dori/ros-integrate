@@ -150,7 +150,7 @@ class ROSPktTypeUtil {
         ASTNode lbr = type.getNode().findChildByType(ROSPktTypes.LBRACKET);
         ASTNode rbr = type.getNode().findChildByType(ROSPktTypes.RBRACKET);
         if (rbr != null && lbr != null) {
-            type.deleteChildRange(lbr.getPsi(),rbr.getPsi()); // this also deletes whats inside the array.
+            type.deleteChildRange(lbr.getPsi(),rbr.getPsi()); // this also deletes what's inside the array.
         } else { // delete the array from the fragment
             ASTNode numeral = type.getNode().findChildByType(ROSPktTypes.NUMBER);
             if (rbr != null) {

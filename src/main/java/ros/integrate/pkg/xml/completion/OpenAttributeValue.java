@@ -19,7 +19,7 @@ class OpenAttributeValue implements InsertHandler<LookupElement> {
 
     /**
      * constructs a new handler
-     * @param newCompletion whether or not to start a new completion
+     * @param newCompletion whether to start a new completion
      */
     OpenAttributeValue(boolean newCompletion) {
         this.newCompletion = newCompletion;

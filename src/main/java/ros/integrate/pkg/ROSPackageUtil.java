@@ -15,7 +15,7 @@ import ros.integrate.pkg.psi.ROSPackage;
  */
 class ROSPackageUtil {
     /**
-     * checks if the virtual file is an decedent of another file. This check is "recursive"
+     * checks if the virtual file is a decedent of another file. This check is "recursive"
      * @param root the parent virtual file to check against
      * @param vFile the child virtual file to check against
      * @return true if root contains vFile directly in indirectly, false otherwise
@@ -25,7 +25,7 @@ class ROSPackageUtil {
     }
 
     /**
-     * checks if the virtual file affected in the event is an decedent of another directory. This check is "recursive"
+     * checks if the virtual file affected in the event is a decedent of another directory. This check is "recursive"
      * @param root the parent directory to check against
      * @param event the event that affected the child virtual file
      * @return true if root contains vFile directly in indirectly, false otherwise
@@ -35,7 +35,7 @@ class ROSPackageUtil {
     }
 
     /**
-     * checks if the virtual file affected in the event is an decedent of another file. This check is "recursive"
+     * checks if the virtual file affected in the event is a decedent of another file. This check is "recursive"
      * @param root the parent virtual file to check against
      * @param event the event that affected the child virtual file
      * @return true if root contains vFile directly in indirectly, false otherwise

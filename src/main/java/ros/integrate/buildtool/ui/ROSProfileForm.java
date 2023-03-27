@@ -70,7 +70,7 @@ public class ROSProfileForm {
         project.getService(ROSPackageManager.class).getAllPackages()
                 .forEach(pkg -> packages.put(pkg.getName(), pkg.getIcon(0)));
         TextFieldWithAutoCompletionListProvider<String> provider =
-                new TextFieldWithAutoCompletionListProvider<String>(packages.keySet()){
+                new TextFieldWithAutoCompletionListProvider<>(packages.keySet()) {
                     @NotNull
                     @Override
                     protected String getLookupString(@NotNull String item) {

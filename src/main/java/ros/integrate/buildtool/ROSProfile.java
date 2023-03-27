@@ -70,7 +70,7 @@ public class ROSProfile {
 
     /**
      * @return the buildtool that is used to build this profile as shown by the GUI
-     * This is not necessarily the real buildtool of the profile, for that use {@link ROSProfile#getBuildtool()} ()}
+     * This is not necessarily the real buildtool of the profile, for that use {@link ROSProfile#getBuildtool()}
      */
     @NotNull
     public ROSBuildTool getGuiBuildtool() {
@@ -93,7 +93,7 @@ public class ROSProfile {
     }
 
     /**
-     * set whether or not this profile will trigger an "install" step in the build process
+     * set whether this profile will trigger an "install" step in the build process
      * @param doInstall true if there should be an "install" step, false otherwise.
      */
     public void setInstall(boolean doInstall) {
@@ -181,7 +181,7 @@ public class ROSProfile {
 
     /**
      * @return the absolute path to the root development directory.
-     * Here, the profile will place all of the result build-related files, though in a less efficient way
+     * Here, the profile will place all the result build-related files, though in a less efficient way
      */
     public String getDevelDirectory() {
         return develDir;
@@ -189,7 +189,7 @@ public class ROSProfile {
 
     /**
      * @return the absolute path to the root installation directory.
-     * Here, the profile will place all of the files necessary to operate, but not develop,
+     * Here, the profile will place all the files necessary to operate, but not develop,
      * the packages built by the profile.
      */
     public String getInstallDirectory() {
@@ -245,7 +245,7 @@ public class ROSProfile {
     }
 
     /**
-     * change the deny list
+     * change the "deny" list
      * @param denyList a list of comma separated package names that should not be built
      */
     public void setDenyList(String denyList) {
@@ -253,7 +253,7 @@ public class ROSProfile {
     }
 
     /**
-     * change the allow list
+     * change the "allow" list
      * @param allowList a list of comma separated package names that should be built
      */
     public void setAllowList(String allowList) {

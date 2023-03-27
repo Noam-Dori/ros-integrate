@@ -53,14 +53,14 @@ public class PackageGroupAnnotator {
             return;
         }
         for (int i = 0; i < groups.size(); i++) {
-            holder.newAnnotation(HighlightSeverity.ERROR, "member_of_group is supported from format 3")
+            holder.newAnnotation(HighlightSeverity.ERROR, "Member_of_group is supported from format 3")
                     .range(groupTrs.get(i))
                     .withFix(new ReformatPackageXmlFix(pkgXml, true))
                     .withFix(new RemoveGroupTagQuickFix(pkgXml, i, false))
                     .create();
         }
         for (int i = 0; i < groupDepends.size(); i++) {
-            holder.newAnnotation(HighlightSeverity.ERROR, "group_depend is supported from format 3")
+            holder.newAnnotation(HighlightSeverity.ERROR, "Group_depend is supported from format 3")
                     .range(groupDependTrs.get(i))
                     .withFix(new ReformatPackageXmlFix(pkgXml, true))
                     .withFix(new RemoveGroupTagQuickFix(pkgXml, i, true))

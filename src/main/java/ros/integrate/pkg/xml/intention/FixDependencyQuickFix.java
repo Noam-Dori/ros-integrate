@@ -15,7 +15,7 @@ import ros.integrate.pkg.xml.VersionRange;
 import java.util.Optional;
 
 /**
- * an intention that repairs dependency tags so they can be valid
+ * an intention that repairs dependency tags, so they can be valid
  * @author Noam Dori
  */
 public class FixDependencyQuickFix extends BaseIntentionAction implements LocalQuickFix {
@@ -28,7 +28,7 @@ public class FixDependencyQuickFix extends BaseIntentionAction implements LocalQ
      * construct a new intention
      * @param pkgXml the relevant package.xml file
      * @param id the index of the tag in the package.xml
-     * @param strongFix whether or not the intention may override the version range attributes to ensure validity,
+     * @param strongFix whether the intention may override the version range attributes to ensure validity,
      *                  specifically in relation to the package this tag points to
      */
     public FixDependencyQuickFix(@NotNull ROSPackageXml pkgXml, int id, boolean strongFix) {

@@ -14,7 +14,7 @@ import java.util.List;
 import static ros.integrate.pkt.psi.ROSPktElementFactory.ANNOTATION_PREFIX;
 
 /**
- * a utility class implementing all of the ROSMsg PSI objects' methods.
+ * a utility class implementing all the ROSMsg PSI objects' methods.
  * Also hold all documentation for them since it just passes them to the sub-utilities.
  * @author Noam Dori
  */
@@ -186,7 +186,7 @@ public class ROSPktPsiImplUtil {
     }
 
     /**
-     * checks whether or not this field is a sufficient constant,
+     * checks whether this field is a sufficient constant,
      * that is, it can contain the numerical value provided with the given memory it is permitted to use,
      * and is properly formatted to be properly kept.
      * @param field the field to check.
@@ -195,7 +195,6 @@ public class ROSPktPsiImplUtil {
      *              - the value within the field cannot be contained within the type provided in it.
      *         otherwise, returns true.
      */
-    @Contract("null -> false")
     static boolean isLegalConstant(@NotNull ROSPktFieldBase field) {
         return ROSPktFieldUtil.isLegalConstant(field);
     }
@@ -247,7 +246,7 @@ public class ROSPktPsiImplUtil {
      * @param queryClass the class of which to search. If limited to complete fields, use {@link ROSPktField}
      *                   if fragments need be searched use {@link ROSPktFieldFrag}.
      *                   if you want both, use {@link ROSPktFieldBase}
-     * @param includeConstants whether or not constant fields should be included
+     * @param includeConstants whether constant fields should be included
      */
     @NotNull
     public static <T extends ROSPktFieldBase> List<T> getFields(@NotNull ROSPktSection section, Class<T> queryClass,

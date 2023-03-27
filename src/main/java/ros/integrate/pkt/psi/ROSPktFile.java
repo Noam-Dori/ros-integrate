@@ -79,7 +79,7 @@ public abstract class ROSPktFile extends PsiFileBase implements PsiNameIdentifie
     public abstract String getTooManySeparatorsMessage();
 
     /**
-     * declare whether or not the "remove all separators fix should be suggested"
+     * declare whether the "remove all separators fix should be suggested"
      * @param separatorCount the number of separators found in this file.
      * @return true if the quickfix should be activated, false otherwise.
      */
@@ -110,7 +110,7 @@ public abstract class ROSPktFile extends PsiFileBase implements PsiNameIdentifie
      * @param queryClass the class of which to search. If limited to complete fields, use {@link ROSPktField}
      *                   if fragments need be searched use {@link ROSPktFieldFrag}.
      *                   if you want both, use {@link ROSPktFieldBase}
-     * @param includeConstants whether or not constant fields should be included
+     * @param includeConstants whether constant fields should be included
      */
     @NotNull
     public <T extends ROSPktFieldBase> List<T> getFields(Class<T> queryClass, boolean includeConstants) {

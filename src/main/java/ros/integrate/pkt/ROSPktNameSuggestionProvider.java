@@ -73,8 +73,8 @@ public class ROSPktNameSuggestionProvider extends PreferrableNameSuggestionProvi
         while (!parts.isEmpty()) {
             builder.insert(0, capitalize(parts.pop()));
             if (list != null) {
-                result.add(builder.toString() + capitalize(list));
-                result.add(builder.toString() + "s");
+                result.add(builder + capitalize(list));
+                result.add(builder + "s");
             } else {
                 result.add(builder.toString());
             }

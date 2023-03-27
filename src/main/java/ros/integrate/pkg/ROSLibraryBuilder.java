@@ -1,6 +1,5 @@
 package ros.integrate.pkg;
 
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;

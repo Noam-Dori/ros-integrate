@@ -48,9 +48,8 @@ public abstract class ROSPackageReferenceBase<T extends PsiElement> extends PsiP
         return handleElementRename(((ROSPackage)element).getName());
     }
 
-    @NotNull
     @Override
-    public ResolveResult[] multiResolve(boolean incompleteCode) {
+    public ResolveResult @NotNull [] multiResolve(boolean incompleteCode) {
         List<ResolveResult> ret = new ArrayList<>();
         resolvePackage().ifPresent(pkg -> {
                     ret.add(new PsiElementResolveResult(pkg));

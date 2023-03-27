@@ -52,9 +52,8 @@ public class CMakeSyntaxHighlighter extends SyntaxHighlighterBase {
         return new CMakeLexerAdapter();
     }
 
-    @NotNull
     @Override
-    public TextAttributesKey[] getTokenHighlights(@NotNull IElementType tokenType) {
+    public TextAttributesKey @NotNull [] getTokenHighlights(@NotNull IElementType tokenType) {
         if (tokenType.equals(CMakeTypes.TEXT_ELEMENT)) {
             return new TextAttributesKey[]{STRING};
         }

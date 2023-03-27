@@ -43,9 +43,8 @@ public class ROSConditionSyntaxHighlighter extends SyntaxHighlighterBase {
         return new ROSConditionLexerAdapter();
     }
 
-    @NotNull
     @Override
-    public TextAttributesKey[] getTokenHighlights(@NotNull IElementType tokenType) {
+    public TextAttributesKey @NotNull [] getTokenHighlights(@NotNull IElementType tokenType) {
         if (tokenType.equals(ROSConditionTypes.LOGIC_OPERATOR)) {
             return LOGIC_OPERATOR_KEYS;
         } else if (tokenType.equals(ROSConditionTypes.COMPARISON)) {

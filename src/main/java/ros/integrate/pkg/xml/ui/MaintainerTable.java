@@ -44,7 +44,7 @@ public class MaintainerTable extends ListTableWithButtons<MaintainerTable.Entry>
 
     @Override
     protected ListTableModel<?> createListModel() {
-        return new ListTableModel<>(new ElementsColumnInfoBase<Entry>("name") {
+        return new ListTableModel<>(new ElementsColumnInfoBase<Entry>("Name") {
             @NotNull
             @Override
             public String valueOf(@NotNull Entry entry) {
@@ -54,7 +54,7 @@ public class MaintainerTable extends ListTableWithButtons<MaintainerTable.Entry>
             @NotNull
             @Override
             protected String getDescription(@NotNull Entry entry) {
-                return "the name of the maintainer";
+                return "The name of the maintainer";
             }
 
             @Override
@@ -70,7 +70,7 @@ public class MaintainerTable extends ListTableWithButtons<MaintainerTable.Entry>
             public boolean isCellEditable(Entry path) {
                 return true;
             }
-        }, new ElementsColumnInfoBase<Entry>("email") {
+        }, new ElementsColumnInfoBase<Entry>("Email") {
             @NotNull
             @Override
             public String valueOf(@NotNull Entry entry) {

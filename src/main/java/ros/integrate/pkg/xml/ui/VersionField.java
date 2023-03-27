@@ -31,7 +31,7 @@ public class VersionField extends JPanel {
         c.weighty = 0;
         c.fill = NONE;
         c.anchor = WEST;
-        c.insets = JBUI.insets(0, 0, 0, 0);
+        c.insets = JBUI.emptyInsets();
         add(data[0], c);
 
         c.gridx++;
@@ -47,7 +47,7 @@ public class VersionField extends JPanel {
         add(compatibilityLabel, c);
 
         c.gridx++;
-        c.insets = JBUI.insets(0, 0, 0, 0);
+        c.insets = JBUI.emptyInsets();
         data[3].setCanBeEmpty(true);
         add(data[3], c);
 

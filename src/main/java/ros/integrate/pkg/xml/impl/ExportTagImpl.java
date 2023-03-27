@@ -16,28 +16,23 @@ import java.util.stream.Collectors;
 
 /**
  * implements the data representation of the export tag. This implementation works alongside the actual XML tag.
+ *
  * @author Noam Dori
  */
-public class ExportTagImpl implements ExportTag {
-    private static final String MESSAGE_GENERATOR = "message_generator",
-            ARCHITECTURE_INDEPENDENT = "architecture_independent",
-            DEPRECATED = "deprecated",
-            METAPACKAGE = "metapackage",
-            BUILD_TYPE = "build_type";
-
-    @NotNull
-    private final XmlTag tag;
-    @NotNull
-    private final ROSPackageXml pkgXml;
+public record ExportTagImpl(@NotNull XmlTag tag, @NotNull ROSPackageXml pkgXml) implements ExportTag {
+    private static final String MESSAGE_GENERATOR = "message_generator";
+    private static final String ARCHITECTURE_INDEPENDENT = "architecture_independent";
+    private static final String DEPRECATED = "deprecated";
+    private static final String METAPACKAGE = "metapackage";
+    private static final String BUILD_TYPE = "build_type";
 
     /**
      * construct a new export tag representation.
-     * @param tag the real PSI export tag
+     *
+     * @param tag    the real PSI export tag
      * @param pkgXml the parent package.xml file
      */
-    public ExportTagImpl(@NotNull XmlTag tag, @NotNull ROSPackageXml pkgXml) {
-        this.tag = tag;
-        this.pkgXml = pkgXml;
+    public ExportTagImpl {
     }
 
     @NotNull
@@ -90,7 +85,7 @@ public class ExportTagImpl implements ExportTag {
     @Override
     public List<BuildType> getBuildTypes() {
         return Arrays.stream(tag.findSubTags(BUILD_TYPE)).map(buildTag ->
-                new BuildType(buildTag.getValue().getText(), PackageXmlUtil.getCondition(buildTag)))
+                        new BuildType(buildTag.getValue().getText(), PackageXmlUtil.getCondition(buildTag)))
                 .collect(Collectors.toList());
     }
 
@@ -117,7 +112,7 @@ public class ExportTagImpl implements ExportTag {
         if (buildTypeTags.length > id) {
             XmlTag newTag = tag.createChildTag(BUILD_TYPE, null, newBuildType.getType(), false);
             if (newBuildType.getCondition() != null) {
-                newTag.setAttribute("condition",newBuildType.getCondition().getText());
+                newTag.setAttribute("condition", newBuildType.getCondition().getText());
             }
             buildTypeTags[id].replace(newTag);
         }

@@ -67,22 +67,18 @@ public interface ROSPackageXml {
     /**
      * the logical representation of contributors: authors or maintainers
      */
-    class Contributor {
+    record Contributor(@NotNull String name, @NotNull String email) {
         public static final String EMAIL_REGEX =
                 "[-a-zA-Z0-9_%+]+(\\.[-a-zA-Z0-9_%+]+)*@[-a-zA-Z0-9%]+(\\.[-a-zA-Z0-9%]+)*\\.[a-zA-Z]{2,}";
 
-        @NotNull
-        private final String name, email;
-
         /**
          * construct a new contributor
-         * @param name the name of the contributor, specified by the tag value. This is required.
+         *
+         * @param name  the name of the contributor, specified by the tag value. This is required.
          * @param email the email of the contributor, for contacting. required for maintainers,
          *              authors may put in an empty string to represent "no email"
          */
-        public Contributor(@NotNull String name, @NotNull String email) {
-            this.email = email;
-            this.name = name;
+        public Contributor {
         }
 
         /**
@@ -287,9 +283,9 @@ public interface ROSPackageXml {
      * @return the format of this manifest:
      * <ul>
      *   <li>{@literal 0}: invalid root tag</li>
-     *   <li>{@literal 1}: manifest format 1: https://www.ros.org/reps/rep-0127.html</li>
-     *   <li>{@literal 2}: manifest format 2: https://www.ros.org/reps/rep-0140.html</li>
-     *   <li>{@literal 3}: manifest format 3: https://www.ros.org/reps/rep-0149.html</li>
+     *   <li>{@literal 1}: manifest format 1: <a href="https://www.ros.org/reps/rep-0127.html">...</a></li>
+     *   <li>{@literal 2}: manifest format 2: <a href="https://www.ros.org/reps/rep-0140.html">...</a></li>
+     *   <li>{@literal 3}: manifest format 3: <a href="https://www.ros.org/reps/rep-0149.html">...</a></li>
      * </ul>
      */
     int getFormat();
@@ -546,7 +542,7 @@ public interface ROSPackageXml {
      * @param condition specific conditions that need to be met for this dependency to be active.
      *                  If set to <code>null</code> or <literal>"true"</literal> or the condition is not valid,
      *                  the dependency will not have a condition (always active).
-     * @param checkRepeating also check whether or not the dependency exists already before adding this new one
+     * @param checkRepeating also check whether the dependency exists already before adding this new one
      */
     void addDependency(@NotNull DependencyType type, @NotNull ROSPackage pkg,
                        @NotNull VersionRange versionRange,

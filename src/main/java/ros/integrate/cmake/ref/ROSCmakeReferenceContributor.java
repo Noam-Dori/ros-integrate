@@ -15,9 +15,8 @@ public class ROSCmakeReferenceContributor extends PsiReferenceContributor {
     public void registerReferenceProviders(@NotNull PsiReferenceRegistrar registrar) {
         registrar.registerReferenceProvider(PlatformPatterns.psiElement(CMakeClasses.getCMakeArgClass()),
                 new PsiReferenceProvider() {
-            @NotNull
             @Override
-            public PsiReference [] getReferencesByElement(@NotNull PsiElement element,
+            public PsiReference @NotNull [] getReferencesByElement(@NotNull PsiElement element,
                                                                    @NotNull ProcessingContext context) {
                 // check if the file this element is part of is part of a package, and promptly check if the file
                 // is a CMakeLists.txt file

@@ -35,7 +35,7 @@ public class DependencyTable extends ListTableWithButtons<DependencyTable.Entry>
     private final Project project;
     private int format = 0;
 
-    Collection<ROSPackage> packages = new HashSet<>();
+    final Collection<ROSPackage> packages = new HashSet<>();
 
     public DependencyTable(@NotNull Project project, @NotNull IntegerField formatField) {
         this.project = project;
@@ -161,7 +161,7 @@ public class DependencyTable extends ListTableWithButtons<DependencyTable.Entry>
             @Override
             public TableCellEditor getEditor(Entry entry) {
                 TextFieldWithAutoCompletionListProvider<ROSPackage> provider =
-                        new TextFieldWithAutoCompletionListProvider<ROSPackage>(packages){
+                        new TextFieldWithAutoCompletionListProvider<>(packages) {
                             @NotNull
                             @Override
                             protected String getLookupString(@NotNull ROSPackage item) {

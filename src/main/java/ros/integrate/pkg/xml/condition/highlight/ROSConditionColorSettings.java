@@ -5,8 +5,6 @@ import com.intellij.openapi.fileTypes.SyntaxHighlighter;
 import com.intellij.openapi.options.colors.AttributesDescriptor;
 import com.intellij.openapi.options.colors.ColorDescriptor;
 import com.intellij.openapi.options.colors.ColorSettingsPage;
-import com.intellij.openapi.util.Pair;
-import com.intellij.util.containers.ContainerUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.ROSIcons;
@@ -42,25 +40,23 @@ public class ROSConditionColorSettings implements ColorSettingsPage {
     @Nullable
     @Override
     public Map<String, TextAttributesKey> getAdditionalHighlightingTagToDescriptorMap() {
-        return ContainerUtil.newHashMap(Pair.create("ignored", ROSConditionSyntaxHighlighter.IGNORED));
+        return Map.of("ignored", ROSConditionSyntaxHighlighter.IGNORED);
     }
 
-    @NotNull
     @Override
-    public AttributesDescriptor[] getAttributeDescriptors() {
+    public AttributesDescriptor @NotNull [] getAttributeDescriptors() {
         return new AttributesDescriptor[] {
-                new AttributesDescriptor("Logic Operator", ROSConditionSyntaxHighlighter.LOGIC_OPERATOR),
-                new AttributesDescriptor("Comparison Sign", ROSConditionSyntaxHighlighter.COMPARISON),
+                new AttributesDescriptor("Logic operator", ROSConditionSyntaxHighlighter.LOGIC_OPERATOR),
+                new AttributesDescriptor("Comparison sign", ROSConditionSyntaxHighlighter.COMPARISON),
                 new AttributesDescriptor("Parentheses", ROSConditionSyntaxHighlighter.PARENTHESES),
-                new AttributesDescriptor("Literal Values", ROSConditionSyntaxHighlighter.LITERAL),
+                new AttributesDescriptor("Literal values", ROSConditionSyntaxHighlighter.LITERAL),
                 new AttributesDescriptor("Variables", ROSConditionSyntaxHighlighter.VARIABLE),
-                new AttributesDescriptor("Ignored Conditions", ROSConditionSyntaxHighlighter.IGNORED),
+                new AttributesDescriptor("Ignored conditions", ROSConditionSyntaxHighlighter.IGNORED),
         };
     }
 
-    @NotNull
     @Override
-    public ColorDescriptor[] getColorDescriptors() {
+    public ColorDescriptor @NotNull [] getColorDescriptors() {
         return ColorDescriptor.EMPTY_ARRAY;
     }
 

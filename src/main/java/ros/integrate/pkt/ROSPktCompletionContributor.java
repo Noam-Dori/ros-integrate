@@ -37,12 +37,12 @@ public class ROSPktCompletionContributor extends CompletionContributor {
     public ROSPktCompletionContributor() {
         extend(CompletionType.BASIC,
                 PlatformPatterns.psiElement(ROSPktTypes.CUSTOM_TYPE).withLanguage(ROSPktLanguage.INSTANCE),
-                new CompletionProvider<CompletionParameters>() {
+                new CompletionProvider<>() {
                     public void addCompletions(@NotNull CompletionParameters parameters,
                                                @NotNull ProcessingContext context,
                                                @NotNull CompletionResultSet resultSet) {
                         PsiElement element = parameters.getPosition();
-                        if(!element.getText().contains("/")) {
+                        if (!element.getText().contains("/")) {
                             resultSet.addElement(LookupElementBuilder.create("string").bold()
                                     .withTypeText("string of characters"));
                             resultSet.addElement(LookupElementBuilder.create("time").bold()
@@ -68,7 +68,7 @@ public class ROSPktCompletionContributor extends CompletionContributor {
                 }
         );
         extend(CompletionType.BASIC,PlatformPatterns.psiElement(ROSPktTypes.NAME),
-                new CompletionProvider<CompletionParameters>() {
+                new CompletionProvider<>() {
                     public void addCompletions(@NotNull CompletionParameters parameters,
                                                @NotNull ProcessingContext context,
                                                @NotNull CompletionResultSet resultSet) {
@@ -76,7 +76,7 @@ public class ROSPktCompletionContributor extends CompletionContributor {
                         PsiElement element = parameters.getPosition();
                         Set<String> stringResults = new HashSet<>();
                         if (provider != null) {
-                            provider.getSuggestedNames(element,((ROSPktFieldBase)element.getParent().getParent()).getTypeBase(),stringResults);
+                            provider.getSuggestedNames(element, ((ROSPktFieldBase) element.getParent().getParent()).getTypeBase(), stringResults);
                         }
 
                         stringResults.forEach(result -> resultSet.addElement(LookupElementBuilder.create(result)));

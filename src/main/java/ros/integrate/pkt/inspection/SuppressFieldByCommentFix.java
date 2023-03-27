@@ -45,7 +45,7 @@ class SuppressFieldByCommentFix extends SuppressByCommentFix {
 
     @Override
     protected boolean replaceSuppressionComments(@Nullable PsiElement container) {
-        if (getElementToAnnotate(container) != null) return false;
+        if (getElementToAnnotate(container) == null) return false;
         return super.replaceSuppressionComments(container);
     }
 

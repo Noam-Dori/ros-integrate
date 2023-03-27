@@ -19,7 +19,6 @@ import ros.integrate.pkg.xml.condition.highlight.ROSConditionSyntaxHighlighter;
 import ros.integrate.pkg.xml.intention.*;
 
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -70,14 +69,14 @@ class PackageDependencyAnnotator {
     }
 
     /**
-     * annotates tags that are not allowed to be used the the manifest's current format.
+     * annotates tags that are not allowed to be used in the manifest's current format.
      * For example, run_depend is only allowed in format 1 manifests
      */
     void annInvalidDependencyName() {
         // get invalid tag names
         List<String> relevant = Arrays.stream(DependencyType.values())
                 .filter(dep -> !dep.relevant(pkgXml.getFormat())).map(DependencyType::getTagName)
-                .collect(Collectors.toList());
+                .toList();
         for (int i = 0; i < dependencies.size(); i++) {
             String tagName = dependencies.get(i).getType().getTagName();
             if (relevant.contains(tagName)) {
@@ -195,7 +194,7 @@ class PackageDependencyAnnotator {
             result = Stream.concat(result, Stream.of(Objects.requireNonNull(pkgXml.getRawXml().getRootTag())
                     .findSubTags(dep.getTagName())));
         }
-        List<XmlTag> rawDependencies = result.collect(Collectors.toList());
+        List<XmlTag> rawDependencies = result.toList();
         for (int i = 0; i < rawDependencies.size(); i++) {
             XmlTag dep = rawDependencies.get(i);
             boolean hasLt = dep.getAttribute("version_lt") != null,

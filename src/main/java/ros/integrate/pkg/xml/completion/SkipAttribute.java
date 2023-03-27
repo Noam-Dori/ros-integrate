@@ -20,7 +20,7 @@ class SkipAttribute implements InsertHandler<LookupElement> {
 
     /**
      * constructs a new handler that is triggered from "completing" an attribute name
-     * @param newCompletion whether or not to start a new completion
+     * @param newCompletion whether to start a new completion
      */
     SkipAttribute(boolean newCompletion) {
         this.newCompletion = newCompletion;

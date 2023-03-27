@@ -37,7 +37,7 @@ class ROSPktFieldUtil {
     }
 
     /**
-     * checks whether or not this field is a sufficient constant,
+     * checks whether this field is a sufficient constant,
      * that is, it can contain the numerical value provided with the given memory it is permitted to use,
      * and is properly formatted to be properly kept.
      * @param field the field to check.
@@ -46,7 +46,6 @@ class ROSPktFieldUtil {
      *              - the value within the field cannot be contained within the type provided in it.
      *         otherwise, returns true.
      */
-    @Contract("null -> false")
     static boolean isLegalConstant(@NotNull ROSPktFieldBase field) {
         ROSPktConst msgConst = field.getConst();
         if (msgConst == null) { return false; }
