@@ -6,20 +6,18 @@ import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNamedElement;
 import com.intellij.openapi.util.TextRange;
-import ros.integrate.cmake.ref.CMakeVariableReference;
+import com.intellij.psi.PsiReference;
 
 public interface CMakeUnquotedArgument extends CMakeArgument, PsiNamedElement {
 
   TextRange getArgTextRange();
 
-  @NotNull
-  String getArgText();
+  @NotNull String getArgText();
 
   String getName();
 
   PsiElement setName(@NotNull String newName);
 
-  @NotNull
-  CMakeVariableReference[] getReferences();
+  @NotNull PsiReference @NotNull [] getReferences();
 
 }

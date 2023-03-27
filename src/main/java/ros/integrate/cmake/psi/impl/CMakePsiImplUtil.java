@@ -3,17 +3,13 @@ package ros.integrate.cmake.psi.impl;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
+import com.intellij.psi.impl.source.resolve.reference.ReferenceProvidersRegistry;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.cmake.psi.*;
-import ros.integrate.cmake.ref.CMakeCommandReference;
-import ros.integrate.cmake.ref.CMakeVariableReference;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class CMakePsiImplUtil {
     @NotNull
@@ -89,36 +85,17 @@ public class CMakePsiImplUtil {
     }
 
     public static PsiElement setName(@NotNull CMakeUnquotedArgument arg, @NotNull String newName) {
-        return arg.replace(CMakeElementFactory.createCommand(arg.getProject(), "set", newName));
+        return arg.replace(CMakeElementFactory.createArgument(arg.getProject(), newName));
     }
 
     @NotNull
     @Contract("_ -> new")
     public static PsiReference getReference(@NotNull CMakeCommand cmd) {
-        return new CMakeCommandReference(cmd);
+        return ReferenceProvidersRegistry.getReferencesFromProviders(cmd)[0]; // there must be at least one.
     }
 
     @NotNull
-    public static CMakeVariableReference[] getReferences(@NotNull CMakeUnquotedArgument arg) {
-        return getVarTextRanges(arg.getText(), 0).stream()
-                .map(range -> new CMakeVariableReference(arg, range))
-                .toArray(CMakeVariableReference[]::new);
-    }
-
-    @NotNull
-    private static List<TextRange> getVarTextRanges(String text, int offset) {
-        Matcher varMatcher = Pattern.compile("\\$(?:ENV)?\\{(.*)}").matcher(text);
-        List<TextRange> result = new ArrayList<>();
-        while (varMatcher.find()) {
-            if (varMatcher.start(1) < varMatcher.end(1)) {
-                // there is a found variable
-                List<TextRange> insideResult = getVarTextRanges(varMatcher.group(1), offset + varMatcher.start(1));
-                if (insideResult.isEmpty()) {
-                    // this is the leaf variable level - add a reference!
-                    result.add(TextRange.create(varMatcher.start(1), varMatcher.end(1)).shiftRight(offset));
-                }
-            }
-        }
-        return result;
+    public static PsiReference @NotNull [] getReferences(@NotNull CMakeUnquotedArgument arg) {
+        return ReferenceProvidersRegistry.getReferencesFromProviders(arg);
     }
 }

@@ -15,18 +15,14 @@ public interface CMakeCommand extends CMakeOperation, PsiNameIdentifierOwner {
   @NotNull
   CMakeCommandName getCommandName();
 
-  @NotNull
-  List<CMakeArgument> getArguments();
+  @NotNull List<CMakeArgument> getArguments();
 
-  @NotNull
-  String getName();
+  @NotNull String getName();
 
   PsiElement setName(@NotNull String newName);
 
-  @NotNull
-  CMakeCommandName getNameIdentifier();
+  @NotNull CMakeCommandName getNameIdentifier();
 
-  @NotNull
-  PsiReference getReference();
+  @NotNull PsiReference getReference();
 
 }

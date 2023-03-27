@@ -11,7 +11,7 @@ import static ros.integrate.cmake.psi.CMakeTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import ros.integrate.cmake.psi.*;
 import com.intellij.openapi.util.TextRange;
-import ros.integrate.cmake.ref.CMakeVariableReference;
+import com.intellij.psi.PsiReference;
 
 public class CMakeUnquotedArgumentImpl extends ASTWrapperPsiElement implements CMakeUnquotedArgument {
 
@@ -35,8 +35,7 @@ public class CMakeUnquotedArgumentImpl extends ASTWrapperPsiElement implements C
   }
 
   @Override
-  @NotNull
-  public String getArgText() {
+  public @NotNull String getArgText() {
     return CMakePsiImplUtil.getArgText(this);
   }
 
@@ -51,8 +50,7 @@ public class CMakeUnquotedArgumentImpl extends ASTWrapperPsiElement implements C
   }
 
   @Override
-  @NotNull
-  public CMakeVariableReference[] getReferences() {
+  public @NotNull PsiReference @NotNull [] getReferences() {
     return CMakePsiImplUtil.getReferences(this);
   }
 

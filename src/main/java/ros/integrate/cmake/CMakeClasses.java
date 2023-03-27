@@ -1,14 +1,14 @@
 package ros.integrate.cmake;
 
-import com.intellij.lang.LanguageAnnotators;
-import com.intellij.lang.LanguageBraceMatching;
-import com.intellij.lang.LanguageCommenters;
-import com.intellij.lang.LanguageParserDefinitions;
+import com.intellij.lang.*;
 import com.intellij.lang.folding.LanguageFolding;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.fileTypes.SyntaxHighlighterFactory;
+import com.intellij.psi.ElementManipulators;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNameIdentifierOwner;
+import com.intellij.refactoring.rename.RenameHandler;
+import com.intellij.refactoring.rename.RenameHandlerRegistry;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.cmake.annotate.CMakeHomeAnnotator;
 import ros.integrate.cmake.folding.CMakeFoldingBuilder;
@@ -43,10 +43,8 @@ public interface CMakeClasses {
     }
 
     @NotNull
-    static Class<? extends PsiNameIdentifierOwner> getCMakeArgClass() {
-        return (Class<? extends PsiNameIdentifierOwner>)
-                getClass("psi.CMakeLiteral.class",
-                        CMakeArgument.class);
+    static Class<? extends PsiNameIdentifierOwner> getLiteralClass() {
+        return (Class<? extends PsiNameIdentifierOwner>) getClass("psi.CMakeLiteral.class", CMakeArgument.class);
     }
 
     static void addHomeDependencies() {
@@ -58,6 +56,8 @@ public interface CMakeClasses {
             LanguageAnnotators.INSTANCE.addExplicitExtension(CMakeLanguage.INSTANCE, new CMakeHomeAnnotator());
             LanguageFolding.INSTANCE.addExplicitExtension(CMakeLanguage.INSTANCE, new CMakeFoldingBuilder());
             LanguageBraceMatching.INSTANCE.addExplicitExtension(CMakeLanguage.INSTANCE, new CMakeBraceMatcher());
+            LanguageRefactoringSupport.INSTANCE.addExplicitExtension(CMakeLanguage.INSTANCE, new CMakeRefactoringSupportProvider());
+            ElementManipulators.INSTANCE.addExplicitExtension(PsiElement.class, new CMakeElementManipulator());
         });
     }
 

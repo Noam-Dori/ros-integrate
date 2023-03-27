@@ -1,12 +1,14 @@
 <idea-plugin>
     <extensions defaultExtensionNs="com.intellij">
-        <!-- (CMake exists as a language ID both in CLion and and using the alternate)-->
-        <psi.referenceContributor language="CMake" implementation="ros.integrate.cmake.ref.ROSCmakeReferenceContributor"/>
+        <!-- (CMake exists as a language ID both in CLion and using the alternate)-->
+        <psi.referenceContributor language="CMake" implementation="ros.integrate.cmake.ref.ROSCMakeReferenceContributor"/>
         <psi.referenceContributor language="CMake" implementation="ros.integrate.cmake.ref.CMakeReferenceContributor"/>
         <!--suppress PluginXmlValidity -->
         <!-- This class is used to initialize all "home" CMake plugin components, as there is no "depend unless" option. -->
         <fileTypeFactory implementation="ros.integrate.cmake.lang.CMakeFileTypeFactory"/>
         <!-- this will be used by both the CLion plugin and the PyCharm one. -->
         <colorSettingsPage implementation="ros.integrate.cmake.highlight.CMakeColorSettings"/>
+        <!-- since this is language independent I can cancel it for CLion -->
+        <renameHandler implementation="ros.integrate.cmake.CMakeArgumentInplaceRenameHandler"/>
     </extensions>
 </idea-plugin>

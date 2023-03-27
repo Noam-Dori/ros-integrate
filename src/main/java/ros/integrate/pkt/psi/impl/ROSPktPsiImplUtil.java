@@ -146,8 +146,7 @@ public class ROSPktPsiImplUtil {
      * @param type the type to getValue the reference of
      * @return the references from this psi type to something else
      */
-    @NotNull
-    static PsiReference[] getReferences(@NotNull ROSPktTypeBase type) {
+    static PsiReference @NotNull [] getReferences(@NotNull ROSPktTypeBase type) {
         return ROSPktTypeUtil.getReferences(type);
     }
 

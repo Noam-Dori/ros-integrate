@@ -41,14 +41,12 @@ public class CMakeCommandImpl extends ASTWrapperPsiElement implements CMakeComma
   }
 
   @Override
-  @NotNull
-  public List<CMakeArgument> getArguments() {
+  public @NotNull List<CMakeArgument> getArguments() {
     return CMakePsiImplUtil.getArguments(this);
   }
 
   @Override
-  @NotNull
-  public String getName() {
+  public @NotNull String getName() {
     return CMakePsiImplUtil.getName(this);
   }
 
@@ -58,14 +56,12 @@ public class CMakeCommandImpl extends ASTWrapperPsiElement implements CMakeComma
   }
 
   @Override
-  @NotNull
-  public CMakeCommandName getNameIdentifier() {
+  public @NotNull CMakeCommandName getNameIdentifier() {
     return CMakePsiImplUtil.getNameIdentifier(this);
   }
 
   @Override
-  @NotNull
-  public PsiReference getReference() {
+  public @NotNull PsiReference getReference() {
     return CMakePsiImplUtil.getReference(this);
   }
 

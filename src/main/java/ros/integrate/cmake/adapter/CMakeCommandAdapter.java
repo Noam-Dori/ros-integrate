@@ -20,4 +20,8 @@ public class CMakeCommandAdapter {
             return new ArrayList<>(); // TODO adapt to CLion. properly.
         }
     }
+
+    public boolean isCustomCommand() {
+        return true; // TODO
+    }
 }

@@ -8,10 +8,8 @@ import com.intellij.openapi.util.TextRange;
 
 public interface CMakeBracketArgument extends CMakeArgument {
 
-  @NotNull
-  TextRange getArgTextRange();
+  @NotNull TextRange getArgTextRange();
 
-  @NotNull
-  String getArgText();
+  @NotNull String getArgText();
 
 }

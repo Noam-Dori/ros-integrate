@@ -10,13 +10,13 @@ import ros.integrate.pkg.ref.ROSPackageReferenceBase;
  * <a href="http://wiki.ros.org/catkin/CMakeLists.txt#Package_name">...</a>
  * <a href="https://docs.ros.org/en/foxy/How-To-Guides/Ament-CMake-Documentation.html#basic-project-outline">...</a>
  */
-public class ROSCmakeToPackageReference extends ROSPackageReferenceBase<PsiElement> {
+public class ROSCMakeToPackageReference extends ROSPackageReferenceBase<PsiElement> {
     /**
      * construct a new reference
      *
      * @param element the referencing element.
      */
-    public ROSCmakeToPackageReference(@NotNull PsiElement element) {
+    public ROSCMakeToPackageReference(@NotNull PsiElement element) {
         super(element, new TextRange(0, element.getTextLength()));
         pkgName = element.getText();
     }

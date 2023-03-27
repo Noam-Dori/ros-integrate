@@ -10,10 +10,10 @@ import ros.integrate.pkg.psi.ROSPackage;
 
 import java.util.Objects;
 
-public class ROSCmakeReferenceContributor extends PsiReferenceContributor {
+public class ROSCMakeReferenceContributor extends PsiReferenceContributor {
     @Override
     public void registerReferenceProviders(@NotNull PsiReferenceRegistrar registrar) {
-        registrar.registerReferenceProvider(PlatformPatterns.psiElement(CMakeClasses.getCMakeArgClass()),
+        registrar.registerReferenceProvider(PlatformPatterns.psiElement(CMakeClasses.getUnquotedArgClass()),
                 new PsiReferenceProvider() {
             @Override
             public PsiReference @NotNull [] getReferencesByElement(@NotNull PsiElement element,
@@ -29,7 +29,7 @@ public class ROSCmakeReferenceContributor extends PsiReferenceContributor {
                     // check if this is a "project" command then convert it to a reference somehow
                     // platform independent way to check this is a project command
                     if ("project".equals(element.getParent().getParent().getFirstChild().getText())) {
-                        return new PsiReference[]{new ROSCmakeToPackageReference(element)};
+                        return new PsiReference[]{new ROSCMakeToPackageReference(element)};
                     }
                 }
                 return PsiReference.EMPTY_ARRAY;
