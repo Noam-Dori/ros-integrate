@@ -177,4 +177,9 @@ public abstract class ROSPackageBase extends PsiElementBase implements ROSPackag
     public void setPackageXml(XmlFile newPackageXml) {
         pkgXml.setRawXml(newPackageXml);
     }
+
+    @Override
+    public boolean isWritable() {
+        return getNavigationElement().isWritable();
+    }
 }
