@@ -1,6 +1,7 @@
 package ros.integrate.pkt.lang;
 
 import com.intellij.lang.Language;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * the formal language definition for packet files (.msg, .srv, .action)
@@ -11,5 +12,10 @@ public class ROSPktLanguage extends Language {
 
     private ROSPktLanguage() {
         super("ROSPkt");
+    }
+
+    @Override
+    public @NotNull String getDisplayName() {
+        return "ROS Interface";
     }
 }

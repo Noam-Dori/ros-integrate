@@ -2,6 +2,8 @@ package ros.integrate.pkt.file;
 
 import com.intellij.openapi.fileTypes.LanguageFileType;
 import com.intellij.psi.FileViewProvider;
+import org.jetbrains.annotations.Nls;
+import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkt.lang.ROSPktLanguage;
 import ros.integrate.pkt.psi.ROSPktFile;
 
@@ -25,4 +27,9 @@ public abstract class ROSPktFileType extends LanguageFileType {
      * @return a new file of the type of this class.
      */
     public abstract ROSPktFile newPktFile(FileViewProvider viewProvider);
+
+    @Override
+    public @Nls @NotNull String getDisplayName() {
+        return "ROS " + getDescription();
+    }
 }
