@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.cmake.adapter.CMakeArgumentAdapter;
 
-public class CMakeElementManipulator extends AbstractElementManipulator<PsiElement> {
+public class CMakeUnquotedArgumentManipulator extends AbstractElementManipulator<PsiElement> {
     @Override
     public @Nullable PsiElement handleContentChange(@NotNull PsiElement element, @NotNull TextRange range, String newContent) throws IncorrectOperationException {
         if (CMakeClasses.getUnquotedArgClass().isInstance(element)) {

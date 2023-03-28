@@ -7,8 +7,6 @@ import com.intellij.openapi.fileTypes.SyntaxHighlighterFactory;
 import com.intellij.psi.ElementManipulators;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNameIdentifierOwner;
-import com.intellij.refactoring.rename.RenameHandler;
-import com.intellij.refactoring.rename.RenameHandlerRegistry;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.cmake.annotate.CMakeHomeAnnotator;
 import ros.integrate.cmake.folding.CMakeFoldingBuilder;
@@ -57,7 +55,7 @@ public interface CMakeClasses {
             LanguageFolding.INSTANCE.addExplicitExtension(CMakeLanguage.INSTANCE, new CMakeFoldingBuilder());
             LanguageBraceMatching.INSTANCE.addExplicitExtension(CMakeLanguage.INSTANCE, new CMakeBraceMatcher());
             LanguageRefactoringSupport.INSTANCE.addExplicitExtension(CMakeLanguage.INSTANCE, new CMakeRefactoringSupportProvider());
-            ElementManipulators.INSTANCE.addExplicitExtension(PsiElement.class, new CMakeElementManipulator());
+            ElementManipulators.INSTANCE.addExplicitExtension(getUnquotedArgClass(), new CMakeUnquotedArgumentManipulator());
         });
     }
 
