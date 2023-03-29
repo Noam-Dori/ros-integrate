@@ -2,6 +2,7 @@ package ros.integrate.pkg.psi.impl;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDirectory;
+import com.intellij.psi.PsiFile;
 import com.intellij.psi.xml.XmlFile;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
@@ -14,6 +15,7 @@ import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * represents packages that are not compiled. There packages contain source code and can be quite messy.
@@ -95,6 +97,16 @@ public class ROSSourcePackage extends ROSPackageBase {
             foundPaths.add("msg"); // the default
         PsiDirectory msgDir = root.findSubdirectory(commonPath(foundPaths.toArray(String[]::new)));
         return msgDir == null ? root : msgDir;
+    }
+
+    @Override
+    public void setCMakeLists(@Nullable PsiFile cmakeFile) {
+        this.cmakeFile = Optional.ofNullable(cmakeFile).map(CMakeFileAdapter::new).orElse(null);
+    }
+
+    @Override
+    public @Nullable CMakeFileAdapter getCMakeLists() {
+        return cmakeFile;
     }
 
     public static String commonPath(String @NotNull ... paths){

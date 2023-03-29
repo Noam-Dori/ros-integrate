@@ -12,6 +12,7 @@ import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import ros.integrate.cmake.adapter.CMakeFileAdapter;
 import ros.integrate.pkg.xml.ROSPackageXml;
 import ros.integrate.pkt.psi.ROSPktFile;
 
@@ -146,12 +147,23 @@ public interface ROSPackage extends PsiCheckedRenameElement, NavigatablePsiEleme
     /*@NotNull
     ROSBundleFile[] getBundles(@NotNull GlobalSearchScope scope);*/
 
-//    /**
-//     * @return {@code null} if compiled package, the CMakeLists.txt file otherwise.
-//     *         for source directories, this is simply in the root of the source folder.
-//     */
-//    @Nullable
-//    PsiFile getCMakeLists();
+    /**
+     * @return {@code null} if compiled package, the CMakeLists.txt file otherwise.
+     * for source directories, this is simply in the root of the source folder.
+     */
+    default @Nullable CMakeFileAdapter getCMakeLists() {
+        return null;
+    }
+
+    /**
+     * Sets the CMakeLists.txt file relevant to the package
+     * @param cmakeFile the file to use as project configuration.
+     */
+    default void setCMakeLists(@Nullable PsiFile cmakeFile) {}
+
+    default void setCMakeLists(@NotNull CMakeFileAdapter cmakeFile) {
+        setCMakeLists(cmakeFile.raw());
+    }
 
 //    /**
 //     * Returns the list of all files in the package, restricted by the specified scope. (This is

@@ -10,5 +10,6 @@
         <colorSettingsPage implementation="ros.integrate.cmake.highlight.CMakeColorSettings"/>
         <!-- since this is language independent I can cancel it for CLion -->
         <renameHandler implementation="ros.integrate.cmake.CMakeArgumentInplaceRenameHandler"/>
+        <moveFileHandler implementation="ros.integrate.cmake.MoveCMakeFileHandler"/>
     </extensions>
 </idea-plugin>
