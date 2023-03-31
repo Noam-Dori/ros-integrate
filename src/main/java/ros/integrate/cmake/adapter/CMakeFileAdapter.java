@@ -23,7 +23,10 @@ public class CMakeFileAdapter {
 
     @Nullable
     public ROSPackage getPackage() {
-        return raw.getProject().getService(ROSPackageManager.class).findPackage(raw.getContainingDirectory());
+        var dir = raw.getContainingDirectory();
+        if (dir == null)
+            return null;
+        return raw.getProject().getService(ROSPackageManager.class).findPackage(dir);
     }
 
     /**

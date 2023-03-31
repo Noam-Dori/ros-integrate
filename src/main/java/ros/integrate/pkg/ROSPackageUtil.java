@@ -71,7 +71,7 @@ class ROSPackageUtil {
      * @param childDirectory the directory to check
      * @return true if the directory is a child of the package directly or indirectly, false otherwise.
      */
-    static boolean belongToPackage(@NotNull ROSPackage pkg, PsiDirectory childDirectory) {
+    static boolean belongToPackage(@NotNull ROSPackage pkg, @NotNull PsiDirectory childDirectory) {
         for (PsiDirectory root : pkg.getRoots()) {
             if (childOf(root.getVirtualFile().getPath(), childDirectory.getVirtualFile().getPath())) {
                 return true;
