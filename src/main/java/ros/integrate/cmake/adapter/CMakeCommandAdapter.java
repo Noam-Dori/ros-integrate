@@ -1,7 +1,9 @@
 package ros.integrate.cmake.adapter;
 
 import com.intellij.psi.PsiElement;
+import org.jetbrains.annotations.Nullable;
 import ros.integrate.cmake.psi.CMakeCommand;
+import ros.integrate.pkg.psi.ROSPackage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +23,23 @@ public class CMakeCommandAdapter {
         }
     }
 
+    public String getName() {
+        if (raw instanceof CMakeCommand) {
+            return ((CMakeCommand) raw).getName();
+        }
+        return raw.getFirstChild().getText(); // TODO CLion ?
+    }
+
     public boolean isCustomCommand() {
         return true; // TODO
+    }
+
+    public CMakeFileAdapter getFile() {
+        return new CMakeFileAdapter(raw.getContainingFile());
+    }
+
+    @Nullable
+    public ROSPackage getPackage() {
+        return getFile().getPackage();
     }
 }

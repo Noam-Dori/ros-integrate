@@ -3,6 +3,7 @@ package ros.integrate.cmake.ref;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
+import ros.integrate.cmake.adapter.CMakeArgumentAdapter;
 import ros.integrate.pkg.ref.ROSPackageReferenceBase;
 
 /**
@@ -16,8 +17,8 @@ public class ROSCMakeToPackageReference extends ROSPackageReferenceBase<PsiEleme
      *
      * @param element the referencing element.
      */
-    public ROSCMakeToPackageReference(@NotNull PsiElement element) {
-        super(element, new TextRange(0, element.getTextLength()));
+    public ROSCMakeToPackageReference(@NotNull CMakeArgumentAdapter element) {
+        super(element.raw(), new TextRange(0, element.getTextLength()));
         pkgName = element.getText();
     }
 }

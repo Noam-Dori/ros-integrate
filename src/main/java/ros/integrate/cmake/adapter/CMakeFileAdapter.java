@@ -2,6 +2,7 @@ package ros.integrate.cmake.adapter;
 
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import ros.integrate.cmake.CMakeUtil;
 import ros.integrate.pkg.ROSPackageManager;
 import ros.integrate.pkg.psi.ROSPackage;
@@ -20,6 +21,7 @@ public class CMakeFileAdapter {
         return CMakeUtil.findCommands(raw, commandNames).stream().map(CMakeCommandAdapter::new).toList();
     }
 
+    @Nullable
     public ROSPackage getPackage() {
         return raw.getProject().getService(ROSPackageManager.class).findPackage(raw.getContainingDirectory());
     }
