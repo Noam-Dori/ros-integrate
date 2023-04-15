@@ -3,4 +3,8 @@
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
          on how to target different products -->
     <depends>com.intellij.modules.lang</depends>
+
+    <!-- Explicitly depend on CLion plugin, so it is loaded and available before this plugin -->
+    <depends optional="true" config-file="dummy-config.xml">com.intellij.clion</depends>
+
 </idea-plugin>
