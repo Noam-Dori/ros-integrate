@@ -6,10 +6,8 @@ import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.util.PsiTreeUtil;
 import org.codehaus.plexus.util.StringUtils;
 import org.jetbrains.annotations.NotNull;
-import ros.integrate.cmake.highlight.CMakeSyntaxHighlighter;
 import ros.integrate.cmake.psi.*;
 import ros.integrate.settings.ROSSettings;
 

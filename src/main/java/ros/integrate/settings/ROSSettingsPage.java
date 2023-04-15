@@ -1,5 +1,6 @@
 package ros.integrate.settings;
 
+import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.SearchableConfigurable;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
@@ -8,7 +9,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.ui.DocumentAdapter;
 import com.intellij.ui.components.JBLabel;
-import com.intellij.util.Consumer;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
@@ -16,6 +16,8 @@ import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkg.ROSDepKeyCache;
 import ros.integrate.pkg.xml.ROSLicenses;
 import ros.integrate.ui.*;
+
+import java.util.function.Consumer;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import java.util.Optional;
@@ -25,6 +27,7 @@ import java.util.stream.Collectors;
 /**
  * the user interface that allows the user to fill persistent, important configurations about the ROS plugin and the
  * user's ROS environment
+ *
  * @author Noam Dori
  */
 public class ROSSettingsPage implements SearchableConfigurable {
@@ -68,6 +71,7 @@ public class ROSSettingsPage implements SearchableConfigurable {
 
     /**
      * construct a new settings page
+     *
      * @param project the project this settings page belongs to
      */
     public ROSSettingsPage(Project project) {
@@ -108,7 +112,7 @@ public class ROSSettingsPage implements SearchableConfigurable {
         additionalSources.installHistory(project, HistoryKey.EXTRA_SOURCES);
         additionalSources.installBrowser("Modify source path",
                 "This is the a root directory to additional sources outside of the workspace.");
-                additionalSources.installListExpansion("Configure Paths to Source");
+        additionalSources.installListExpansion("Configure Paths to Source");
         excludedXmls.installHistory(project, HistoryKey.EXCLUDED_XMLS);
         excludedXmls.installBrowser("Modify Excluded XMLs",
                 "These XML files will not be processed by the ROS plugin, and will not get extra context.");
@@ -157,13 +161,13 @@ public class ROSSettingsPage implements SearchableConfigurable {
 
     @Override
     public boolean isModified() {
-        return isModified(rosRoot.getTextEditor(), data.getROSPath())
-                || isModified(workspace.getTextEditor(), data.getWorkspacePath())
-                || isModified(additionalSources.getTextEditor(), data.getRawAdditionalSources())
-                || isModified(excludedXmls.getTextEditor(), data.getRawExcludedXmls())
+        return Configurable.isFieldModified(rosRoot.getTextEditor(), data.getROSPath())
+                || Configurable.isFieldModified(workspace.getTextEditor(), data.getWorkspacePath())
+                || Configurable.isFieldModified(additionalSources.getTextEditor(), data.getRawAdditionalSources())
+                || Configurable.isFieldModified(excludedXmls.getTextEditor(), data.getRawExcludedXmls())
                 || isModified(licenseLinkType, data.getLicenseLinkType())
-                || isModified(rosdepSources.getTextEditor(), data.getRawROSDepSources())
-                || isModified(knownRosdepKeys.getTextEditor(), data.getRawKnownROSDepKeys());
+                || Configurable.isFieldModified(rosdepSources.getTextEditor(), data.getRawROSDepSources())
+                || Configurable.isFieldModified(knownRosdepKeys.getTextEditor(), data.getRawKnownROSDepKeys());
     }
 
     private boolean isModified(@NotNull ComboBox<String> field, @NotNull String value) {
@@ -173,7 +177,10 @@ public class ROSSettingsPage implements SearchableConfigurable {
     @NotNull
     @Contract(pure = true)
     private BiConsumer<String, String> withTrigger(Consumer<String> function) {
-        return (fieldName, topic) -> {function.consume(fieldName); data.triggerListeners(topic);};
+        return (fieldName, topic) -> {
+            function.accept(fieldName);
+            data.triggerListeners(topic);
+        };
     }
 
     @Override
