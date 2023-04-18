@@ -4,12 +4,13 @@ import com.intellij.codeInspection.InspectionManager;
 import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.ui.components.JBCheckBox;
-import com.intellij.util.Consumer;
 import com.intellij.util.ui.FormBuilder;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.pkt.intention.RemoveStampQuickFix;
 import ros.integrate.pkt.psi.*;
+
+import java.util.function.Consumer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,16 +18,16 @@ import java.util.List;
 
 /**
  * <p>Checks for use of stamped types within a message definition
- *     (for example, PointStamped is a stamped variant of Point) and if a non-stamped alternative exists.</p>
+ * (for example, PointStamped is a stamped variant of Point) and if a non-stamped alternative exists.</p>
  * <p>Using stamped types is generally discouraged,
- *     so a <code>std_msgs/Header</code> is placed instead at the top level of the message</p>
+ * so a <code>std_msgs/Header</code> is placed instead at the top level of the message</p>
  * <p>However, there are many exceptions to this rule, like nav_msgs/Path which may need to track an object relative to time.
  * </p>
  * <p>This inspection has many options that may be toggled in the inspection profile.
  * </p>
  * <p>sometimes there are exceptions
- *     (like <code>nav_msgs/Path</code> containing an array of <code>std_msgs/PointStamped</code>)
- *     so you can configure what field types will be scanned:</p>
+ * (like <code>nav_msgs/Path</code> containing an array of <code>std_msgs/PointStamped</code>)
+ * so you can configure what field types will be scanned:</p>
  * <ul>
  *     <li>
  *         Inspect objects: will raise errors for stamped types without an array descriptor.<br/>
@@ -46,6 +47,7 @@ import java.util.List;
  * <ol>
  *     <li>convert the stamped type to the corresponding non-stamped type (for example, PointStamped -> Point)</li>
  * </ol>
+ *
  * @author Noam Dori
  */
 public class RedundantStampingInspection extends ROSPktInspectionBase {
@@ -109,7 +111,7 @@ public class RedundantStampingInspection extends ROSPktInspectionBase {
     @NotNull
     private JBCheckBox bindCheckBox(boolean loadValue, Consumer<JBCheckBox> onChange) {
         JBCheckBox ret = new JBCheckBox(null, loadValue);
-        ret.addChangeListener(event -> onChange.consume(ret));
+        ret.addChangeListener(event -> onChange.accept(ret));
         return ret;
     }
 }

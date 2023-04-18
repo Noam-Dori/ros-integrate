@@ -1,8 +1,10 @@
 package ros.integrate.cmake;
 
+import com.intellij.ide.plugins.PluginManagerCore;
 import com.intellij.lang.*;
 import com.intellij.lang.folding.LanguageFolding;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.fileTypes.SyntaxHighlighterFactory;
 import com.intellij.psi.ElementManipulators;
 import com.intellij.psi.PsiElement;
@@ -27,17 +29,13 @@ public interface CMakeClasses {
     static Class<?> getClass(String clionClassName, Class<?> internalClass) {
         try {
             return Class.forName("com.jetbrains.cmake." + clionClassName);
-        } catch (ClassNotFoundException ignored) {}
+        } catch (ClassNotFoundException ignored) {
+        }
         return internalClass;
     }
 
     static boolean checkCLion() {
-        try {
-            Class.forName("com.jetbrains.cmake.CMakeLanguage");
-            return true;
-        } catch (ClassNotFoundException e) {
-            return false;
-        }
+        return PluginManagerCore.getPlugin(PluginId.getId("com.intellij.clion")) != null;
     }
 
     @NotNull
