@@ -19,9 +19,6 @@ tasks.withType(JavaCompile).configureEach {
 
 dependencies {
     //testCompile group: 'junit', name: 'junit', version: '4.12'
-
-    // https://mvnrepository.com/artifact/org.codehaus.plexus/plexus-utils
-    implementation group: 'org.codehaus.plexus', name: 'plexus-utils', version: '3.5.1'
 }
 
 intellij {

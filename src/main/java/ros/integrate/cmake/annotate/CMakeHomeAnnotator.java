@@ -6,7 +6,7 @@ import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
-import org.codehaus.plexus.util.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import ros.integrate.cmake.psi.*;
 import ros.integrate.settings.ROSSettings;
@@ -74,7 +74,7 @@ public class CMakeHomeAnnotator implements Annotator {
                 String errorMessage;
                 if (isFuncName) {
                     textColor = COMMAND_DECLARATION;
-                    errorMessage = StringUtils.capitalise(block.getBlockType()) + " name must be unquoted";
+                    errorMessage = StringUtils.capitalize(block.getBlockType()) + " name must be unquoted";
                 } else {
                     textColor = VARIABLE;
                     errorMessage = "Named arguments must be unquoted";
