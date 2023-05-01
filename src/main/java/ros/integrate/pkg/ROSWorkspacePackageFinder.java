@@ -24,7 +24,6 @@ import ros.integrate.pkt.psi.ROSPktFile;
 import ros.integrate.settings.ROSSettings;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -39,8 +38,6 @@ public class ROSWorkspacePackageFinder extends ROSPackageFinderBase {
     private static final String WS_LIB = "workspace";
     private static final VirtualFileSystem FILE_SYSTEM = VirtualFileManager.getInstance()
             .getFileSystem(LocalFileSystem.PROTOCOL);
-
-    private final Map<Project, Library> wsLib = new ConcurrentHashMap<>(1);
     private final Map<Project, String> wsPath = new HashMap<>(1);
 
     @Nullable
@@ -65,10 +62,8 @@ public class ROSWorkspacePackageFinder extends ROSPackageFinderBase {
 
     @NotNull
     private Library getLibrary(Project project) {
-        return wsLib.computeIfAbsent(project, p -> {
-            LibraryTable table = LibraryTablesRegistrar.getInstance().getLibraryTable(project);
-            return Optional.ofNullable(table.getLibraryByName(WS_LIB)).orElseGet(() -> table.createLibrary(WS_LIB));
-        });
+        LibraryTable table = LibraryTablesRegistrar.getInstance().getLibraryTable(project);
+        return Optional.ofNullable(table.getLibraryByName(WS_LIB)).orElseGet(() -> table.createLibrary(WS_LIB));
     }
 
     @Override

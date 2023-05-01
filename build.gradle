@@ -19,7 +19,7 @@ dependencies {
 
 intellij {
 //    version 'LATEST-EAP-SNAPSHOT'
-    version.set('IC-2022.3.2')
+    version.set('IC-2023.1')
     updateSinceUntilBuild.set(false)
 }
 

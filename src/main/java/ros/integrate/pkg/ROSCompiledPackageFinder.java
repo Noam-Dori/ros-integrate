@@ -34,15 +34,12 @@ import static ros.integrate.pkg.psi.impl.ROSCompiledPackage.RootType;
  */
 public class ROSCompiledPackageFinder extends ROSPackageFinderBase {
     private static final Logger LOG = Logger.getInstance("#ros.integrate.workspace.ROSCompiledPackageFinder");
-    private final Map<Project, Library> rosLib = new HashMap<>();
     private static final String ROS_LIB = "ROS";
 
     @NotNull
     private Library getLibrary(Project project) {
-        return rosLib.computeIfAbsent(project, p -> {
-            LibraryTable table = LibraryTablesRegistrar.getInstance().getLibraryTable(project);
-            return Optional.ofNullable(table.getLibraryByName(ROS_LIB)).orElseGet(() -> table.createLibrary(ROS_LIB));
-        });
+        LibraryTable table = LibraryTablesRegistrar.getInstance().getLibraryTable(project);
+        return Optional.ofNullable(table.getLibraryByName(ROS_LIB)).orElseGet(() -> table.createLibrary(ROS_LIB));
     }
 
     @Nullable
