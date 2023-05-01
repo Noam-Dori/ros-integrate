@@ -110,11 +110,11 @@ public class ROSCompiledPackageFinder extends ROSPackageFinderBase {
     private boolean addPath(@NotNull Library lib, @NotNull String path,
                             @NotNull BiPredicate<Library.ModifiableModel, String> predicate) {
         Library.ModifiableModel model = lib.getModifiableModel();
-        String url = VirtualFileManager.constructUrl(LocalFileSystem.PROTOCOL, path);
+        String url = VirtualFileManager.constructUrl(LocalFileSystem.PROTOCOL, path).replaceAll("\\\\", "/");
         if (!predicate.test(model, url)) {
             return false;
         }
-        if (!path.isEmpty()) {
+        if (!path.isEmpty() && !Arrays.asList(model.getUrls(OrderRootType.CLASSES)).contains(url)) {
             VirtualFile file = VirtualFileManager.getInstance().findFileByUrl(url);
             if (file != null) {
                 // note: OrderRootType.SOURCES also works, but will not show in external libraries.

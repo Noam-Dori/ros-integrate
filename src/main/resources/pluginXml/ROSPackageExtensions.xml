@@ -10,6 +10,6 @@
         <postStartupActivity implementation="ros.integrate.pkg.ROSLibraryBuilder"/>
 
         <!-- model features -->
-        <iconProvider implementation="ros.integrate.pkg.ROSPackageIconProvider" order="first"/>
+        <iconProvider implementation="ros.integrate.pkg.ROSPackageIconProvider" order="before directory"/>
     </extensions>
 </idea-plugin>
