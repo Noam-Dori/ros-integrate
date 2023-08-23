@@ -18,17 +18,21 @@ public class ROSPackageIconProvider extends IconProvider {
     @Nullable
     @Override
     public Icon getIcon(@NotNull PsiElement element, int flags) {
-        if(element instanceof PsiDirectory) {
-            ROSPackage pkg = element.getProject().getService(ROSPackageManager.class).findPackage((PsiDirectory) element);
-            return pkg != null &&
-                    search(pkg.getRoots(), (PsiDirectory) element)
-                    ? pkg.getIcon(flags) : null;
+        if (!(element instanceof PsiDirectory dir)) {
+            return null;
         }
-        return null;
+        var pkgManager = ROSPackageManager.getInstance(element.getProject());
+        if (!pkgManager.isLoaded()) {
+            return null;
+        }
+        ROSPackage pkg = pkgManager.findPackage(dir);
+        return pkg != null &&
+                search(pkg.getRoots(), dir)
+                ? pkg.getIcon(flags) : null;
     }
 
     @Contract(pure = true)
-    private boolean search(@NotNull PsiDirectory[] roots, PsiDirectory potentialRoot) {
+    private boolean search(@NotNull PsiDirectory @NotNull [] roots, PsiDirectory potentialRoot) {
         for (PsiDirectory root : roots) {
             if(root.getVirtualFile().getPath().equals(potentialRoot.getVirtualFile().getPath())) {
                 return true;

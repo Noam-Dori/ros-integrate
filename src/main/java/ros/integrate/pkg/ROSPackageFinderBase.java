@@ -1,6 +1,8 @@
 package ros.integrate.pkg;
 
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
 import com.intellij.psi.PsiDirectory;
@@ -33,7 +35,7 @@ public abstract class ROSPackageFinderBase implements ROSPackageFinder {
     @Override
     public void findAndCache(Project project, ConcurrentMap<String, ROSPackage> pkgCache) {
         /*
-         * the files that actually determine whether or not a directory is a package is the package.xml file.
+         * the files that actually determine whether a directory is a package is the package.xml file.
          * the following condition is true:
          * A directory is a ROS package iff one of its roots directly contains a package.xml file
          */
@@ -43,7 +45,7 @@ public abstract class ROSPackageFinderBase implements ROSPackageFinder {
 
     public void findAndCacheOneFile(@NotNull VirtualFile vXml, Project project,
                                     ConcurrentMap<String, ROSPackage> pkgCache) {
-        if (!getScope(project).accept(vXml)) {
+        if (!runReadAction(() -> getScope(project).accept(vXml))) {
             return;
         }
         ROSPackage pkg = investigateXml(vXml, project, pkgCache);
@@ -62,9 +64,10 @@ public abstract class ROSPackageFinderBase implements ROSPackageFinder {
         if (pkgCache != null && pkgCache.getOrDefault(pkgName, ROSPackage.ORPHAN) != ROSPackage.ORPHAN)
             return ROSPackage.ORPHAN;
         // 3. get package.xml file in XML PSI form
-        XmlFile pkgXml = (XmlFile) Objects.requireNonNull(PsiManager.getInstance(project).findFile(vXml));
+        var pkgXml = (XmlFile) Objects.requireNonNull(runReadAction(() ->
+                PsiManager.getInstance(project).findFile(vXml)));
         // 4. get package root dir
-        PsiDirectory xmlRoot = pkgXml.getContainingDirectory();
+        PsiDirectory xmlRoot = runReadAction(pkgXml::getContainingDirectory);
         // 4.5. TODO other roots of compiled packages: lib,include,bin(?),etc
         // 5. TODO try getting CMakeLists.txt since this is a project package
         // 6. find all packet files
@@ -78,15 +81,19 @@ public abstract class ROSPackageFinderBase implements ROSPackageFinder {
     @NotNull
     private List<ROSPktFile> findPacketFiles(@NotNull PsiDirectory pkgRoot) {
         List<ROSPktFile> ret = new SortedList<>(Comparator.comparing(ROSPktFile::getQualifiedName));
-        for (PsiFile file : pkgRoot.getFiles()) {
+        for (PsiFile file : runReadAction(pkgRoot::getFiles)) {
             if (file.getLanguage() == ROSPktLanguage.INSTANCE) {
                 ret.add((ROSPktFile) file);
             }
         }
-        for (PsiDirectory subDir : pkgRoot.getSubdirectories()) {
+        for (PsiDirectory subDir : runReadAction(pkgRoot::getSubdirectories)) {
             ret.addAll(findPacketFiles(subDir));
         }
         return ret;
+    }
+
+    private static <T> T runReadAction(Computable<T> calculation) {
+        return ApplicationManager.getApplication().runReadAction(calculation);
     }
 
     @Override
@@ -157,7 +164,7 @@ public abstract class ROSPackageFinderBase implements ROSPackageFinder {
         // 0. check the package is under the jurisdiction of this finder.
         PsiDirectory xmlRoot = Objects.requireNonNull(pkg.getRoot(RootType.SHARE));
         if(notInFinder(xmlRoot.getVirtualFile(), project)) { // something is up with the root
-            if(xmlRoot.getParentDirectory() != null && // check parent - if its in the project, the dir was deleted.
+            if(xmlRoot.getParentDirectory() != null && // check parent - if it's in the project, the dir was deleted.
                     notInFinder(xmlRoot.getParentDirectory().getVirtualFile(), project)) {
                 return null;
             }

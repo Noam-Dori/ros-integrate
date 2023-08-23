@@ -1,5 +1,6 @@
 package ros.integrate.pkg;
 
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.xml.XmlFile;
@@ -93,4 +94,20 @@ public interface ROSPackageManager {
      * @param events the events that happened
      */
     void filesChanged(List<? extends VFileEvent> events);
+
+    /**
+     * Indicates the state of the index, useful for determining whether to do calculations
+     * as loading the index is a heavy operation.
+     * @return <code>true</code> if the package index was loaded, false otherwise.
+     */
+    boolean isLoaded();
+
+    /**
+     * a shortcut for retrieving the package manager instance for the project
+     * @param project the project the target package manager belongs to
+     * @return the corresponding package manager.
+     */
+    static ROSPackageManager getInstance(@NotNull Project project) {
+        return project.getService(ROSPackageManager.class);
+    }
 }

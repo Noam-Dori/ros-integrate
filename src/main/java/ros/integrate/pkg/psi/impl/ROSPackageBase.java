@@ -1,8 +1,10 @@
 package ros.integrate.pkg.psi.impl;
 
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Queryable;
+import com.intellij.openapi.util.Computable;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
@@ -147,8 +149,10 @@ public abstract class ROSPackageBase extends PsiElementBase implements ROSPackag
     @NotNull
     @Override
     public ROSPktFile[] getPackets(@NotNull GlobalSearchScope scope) {
-        return packets.parallelStream()
-                .filter(pkt -> scope.accept(pkt.getVirtualFile())).toArray(ROSPktFile[]::new);
+        return packets.stream()
+                .filter(pkt -> ApplicationManager.getApplication().runReadAction((Computable<Boolean>) () ->
+                        scope.accept(pkt.getVirtualFile())))
+                .toArray(ROSPktFile[]::new);
     }
 
     @Nullable

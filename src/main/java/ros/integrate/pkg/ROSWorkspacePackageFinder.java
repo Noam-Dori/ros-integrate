@@ -16,6 +16,7 @@ import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.GlobalSearchScopesCore;
 import com.intellij.psi.xml.XmlFile;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ros.integrate.pkg.psi.ROSPackage;
@@ -24,6 +25,7 @@ import ros.integrate.pkt.psi.ROSPktFile;
 import ros.integrate.settings.ROSSettings;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -98,7 +100,7 @@ public class ROSWorkspacePackageFinder extends ROSPackageFinderBase {
         Set<VirtualFile> files = settings.getAdditionalSources().stream().map(this::toVirtualFile)
                 .collect(Collectors.toSet());
         Optional.ofNullable(settings.getWorkspacePath())
-                .map(path -> wsPath.put(project, path))
+                .map(peek(path -> wsPath.put(project, path)))
                 .map(this::toVirtualFile)
                 .map(root -> root.findChild("src"))
                 .map(VirtualFile::getChildren)
@@ -166,5 +168,10 @@ public class ROSWorkspacePackageFinder extends ROSPackageFinderBase {
 
     boolean inFinder(@NotNull VFileEvent event, @NotNull Project project) {
         return getWorkspaceRoots(project).stream().anyMatch(root -> ROSPackageUtil.belongsToRoot(root, event));
+    }
+
+    @Contract(pure = true)
+    private static <T, R> @NotNull Function<T, T> peek(Function<T, R> f) {
+        return t -> {f.apply(t); return t;};
     }
 }

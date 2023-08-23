@@ -51,6 +51,10 @@ public class ROSPackageManagerImpl implements ROSPackageManager {
         }
     }
 
+    public boolean isLoaded() {
+        return loaded;
+    }
+
     @Override
     public void invalidateIndex() {
         if (loaded) {

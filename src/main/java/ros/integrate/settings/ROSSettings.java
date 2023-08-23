@@ -22,6 +22,7 @@ public class ROSSettings implements PersistentStateComponent<ROSSettings.State> 
     private static final Logger LOG = Logger.getLogger("#ros.integrate.settings.ROSSettings");
     private static boolean settingsLoaded = false;
     private static final Properties prop = loadProperties();
+    private final Project project;
 
     @NotNull
     private static Properties loadProperties() {
@@ -65,7 +66,7 @@ public class ROSSettings implements PersistentStateComponent<ROSSettings.State> 
             state.rosPath = rosPath.substring(0, rosPath.length() - "/share/ros".length());
         }
 
-        state.workspacePath = Optional.ofNullable(ROSSettingsUtil.detectWorkspace(project)).orElse("");
+        state.workspacePath = "";
 
         // use System.getenv("ROS_PACKAGE_PATH") (with filter) once we no longer need to init from .bashrc
         state.additionalSources = "";
@@ -78,10 +79,19 @@ public class ROSSettings implements PersistentStateComponent<ROSSettings.State> 
 
         state.depSources = "";
 
+        this.project = project;
+
         if (settingsLoaded) {
             state.depSources = prop.getProperty("depSources"); // " is the standard delimiter for URLs
             state.knownKeys = prop.getProperty("knownKeys");
             state.licenseLinkType = prop.getProperty("licenseLinkType");
+        }
+    }
+
+    @Override
+    public void initializeComponent() {
+        if (getWorkspacePath().isEmpty()) {
+            Optional.ofNullable(ROSSettingsUtil.detectWorkspace(project)).ifPresent(this::setWorkspacePath);
         }
     }
 

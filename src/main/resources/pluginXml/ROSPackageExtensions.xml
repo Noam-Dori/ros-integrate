@@ -7,7 +7,7 @@
         <projectService serviceInterface="ros.integrate.pkg.ROSDepKeyCache"
                         serviceImplementation="ros.integrate.pkg.ROSDepKeyCacheImpl"/>
 
-        <postStartupActivity implementation="ros.integrate.pkg.ROSLibraryBuilder"/>
+        <postStartupActivity implementation="ros.integrate.pkg.LoadROSLibrariesAndIndex"/>
 
         <!-- model features -->
         <iconProvider implementation="ros.integrate.pkg.ROSPackageIconProvider" order="before directory"/>

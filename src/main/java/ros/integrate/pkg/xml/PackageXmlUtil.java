@@ -1,7 +1,9 @@
 package ros.integrate.pkg.xml;
 
 import com.intellij.ide.highlighter.XmlFileType;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Computable;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
@@ -77,11 +79,15 @@ public class PackageXmlUtil {
      */
     @Contract("_, _ -> !null")
     public static List<XmlFile> findPackageXmls(Project project, @NotNull GlobalSearchScope scope) {
-        return FileTypeIndex.getFiles(XmlFileType.INSTANCE, scope)
-                .stream().filter(xml -> xml.getName().equals(PackageXmlUtil.PACKAGE_XML))
+        var xmlFiles = runReadAction(() -> FileTypeIndex.getFiles(XmlFileType.INSTANCE, scope));
+        return xmlFiles.stream().filter(xml -> xml.getName().equals(PackageXmlUtil.PACKAGE_XML))
                 .filter(xml -> !ROSSettings.getInstance(project).getExcludedXmls().contains(xml.getPath()))
-                .map(xml -> (XmlFile) PsiManager.getInstance(project).findFile(xml))
+                .map(xml -> runReadAction(() -> (XmlFile) PsiManager.getInstance(project).findFile(xml)))
                 .collect(Collectors.toList());
+    }
+
+    private static <T> T runReadAction(Computable<T> calculation) {
+        return ApplicationManager.getApplication().runReadAction(calculation);
     }
 
     /**

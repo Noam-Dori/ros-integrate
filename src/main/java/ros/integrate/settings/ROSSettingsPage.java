@@ -8,7 +8,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.ui.DocumentAdapter;
 import com.intellij.ui.components.JBLabel;
-import com.intellij.util.Consumer;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
@@ -20,6 +19,7 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import java.util.Optional;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -173,7 +173,7 @@ public class ROSSettingsPage implements SearchableConfigurable {
     @NotNull
     @Contract(pure = true)
     private BiConsumer<String, String> withTrigger(Consumer<String> function) {
-        return (fieldName, topic) -> {function.consume(fieldName); data.triggerListeners(topic);};
+        return (fieldName, topic) -> {function.accept(fieldName); data.triggerListeners(topic);};
     }
 
     @Override
