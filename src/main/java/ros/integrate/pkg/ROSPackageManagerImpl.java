@@ -1,7 +1,6 @@
 package ros.integrate.pkg;
 
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.openapi.vfs.newvfs.events.VFileContentChangeEvent;
@@ -45,9 +44,9 @@ public class ROSPackageManagerImpl implements ROSPackageManager {
     }
 
     private void loadIndex() {
-        if (!loaded && !DumbService.isDumb(project)) {
-            loaded = true;
+        if (!loaded) {
             findPackages();
+            loaded = true;
         }
     }
 
@@ -80,7 +79,7 @@ public class ROSPackageManagerImpl implements ROSPackageManager {
                 affectedOrphansOld.forEach(event -> sortToLists(event, affectedPackages, affectedOrphans));
                 // 2. figure out what happened per package per file & react accordingly (create new package, delete new package, modify details)
                 affectedPackages.forEach(this::applyChangesToPackage);
-                if (affectedOrphans.containsAll(affectedOrphansOld)) {
+                if (new HashSet<>(affectedOrphans).containsAll(affectedOrphansOld)) {
                     orphansRemainedTheSame = true;
                 } else {
                     affectedOrphansOld.retainAll(affectedOrphans);
@@ -121,18 +120,12 @@ public class ROSPackageManagerImpl implements ROSPackageManager {
                 continue;
             }
             switch (cmd) {
-                case DELETE: {
-                    pkgCache.remove(pkg.getName());
-                    break;
-                }
-                case RENAME: {
+                case DELETE -> pkgCache.remove(pkg.getName());
+                case RENAME -> {
                     pkgCache.remove(oldName);
                     pkgCache.putIfAbsent(pkg.getName(), pkg);
-                    break;
                 }
-                case NONE:
-                default:
-                    break;
+                default -> {}
             }
         }
     }
